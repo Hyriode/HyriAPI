@@ -26,6 +26,16 @@ repositories {
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
 }
 
+jar {
+    from {
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/.SF"
+        exclude "META-INF/.DSA"
+        exclude "META-INF/*.RSA"
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
