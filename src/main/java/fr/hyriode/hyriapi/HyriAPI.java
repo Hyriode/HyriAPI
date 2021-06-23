@@ -1,32 +1,24 @@
 package fr.hyriode.hyriapi;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
-
-public class HyriAPI extends JavaPlugin {
+public class HyriAPI extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-
-    }
-
-    private void registerCommands() {
-        CommandMap commandMap = null;
-        try {
-            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-            bukkitCommandMap.setAccessible(true);
-            commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        this.getServer().getPluginManager().registerEvents(this, this);
     }
 
     @Override
     public void onDisable() {
+
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
 
     }
 
