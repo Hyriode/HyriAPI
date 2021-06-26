@@ -1,28 +1,24 @@
 package fr.hyriode.hyriapi;
 
-import fr.hyriode.hyriapi.bossbar.BossBar;
-import fr.hyriode.hyriapi.item.ItemBuilder;
+import fr.hyriode.hyriapi.bossbar.BossBarHandler;
+import fr.hyriode.hyriapi.bossbar.BossBarManager;
 import fr.hyriode.hyriapi.item.ItemManager;
-import fr.hyriode.hyriapi.item.ItemNBT;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class HyriAPI extends JavaPlugin implements Listener {
+import java.util.Arrays;
 
-    private ItemManager itemManager;
+public class HyriAPI extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.itemManager = new ItemManager(this);
-
-        this.getServer().getPluginManager().registerEvents(this, this);
+        new ItemManager(this);
+        new BossBarHandler(this);
     }
 
     @Override
@@ -30,15 +26,4 @@ public class HyriAPI extends JavaPlugin implements Listener {
 
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        final BossBar bossBar = new BossBar(this, ChatColor.DARK_AQUA + "okml");
-
-        bossBar.setProgress(0.33D);
-        bossBar.addPlayer(event.getPlayer());
-    }
-
-    public ItemManager getItemManager() {
-        return this.itemManager;
-    }
 }
