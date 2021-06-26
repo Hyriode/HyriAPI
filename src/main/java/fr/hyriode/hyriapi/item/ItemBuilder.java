@@ -2,7 +2,6 @@ package fr.hyriode.hyriapi.item;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import fr.hyriode.hyriapi.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -16,21 +15,26 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class ItemBuilder {
 
+    private final ItemNBT itemNBT;
+    private final ItemData itemData;
     private final ItemStack itemStack;
     private final ItemMeta itemMeta;
-    private final Map<Class<? extends Event>, Consumer<Supplier<? extends Event>>> events;
 
     public ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.itemMeta = this.itemStack.getItemMeta();
-        this.events = new HashMap<>();
+        this.itemData = new ItemData();
+        this.itemNBT = new ItemNBT(this.itemStack);
     }
 
     public ItemBuilder(Material material) {
@@ -87,10 +91,13 @@ public class ItemBuilder {
 
             profile.getProperties().put("textures", new Property("textures", name));
 
-            Reflection.setField(skullMeta.getClass().getDeclaredField("profile"), skullMeta, profile);
+            final Field profileField = skullMeta.getClass().getDeclaredField("profile");
+
+            profileField.setAccessible(true);
+            profileField.set(skullMeta, profile);
 
             this.itemStack.setItemMeta(skullMeta);
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return this;
@@ -140,28 +147,42 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder withEvent(Class<? extends Event> eventClass, Consumer<Supplier<? extends Event>> eventConsumer) {
-        this.events.put(eventClass, eventConsumer);
+    public ItemBuilder withEvent(Class<? extends Event> eventClass, ItemConsumer<ItemSupplier<? extends Event>> eventConsumer) {
+        this.itemData.addEvent(eventClass, eventConsumer);
 
         return this;
     }
 
-    public ItemStack build(ItemManager itemManager) {
+    public ItemBuilder clone() {
+        return new ItemBuilder(this.itemStack);
+    }
+
+    public ItemNBT nbt() {
         this.itemStack.setItemMeta(this.itemMeta);
 
-        if (itemManager != null) {
-            itemManager.registerItemEvents(this.itemStack, this.events);
-        }
-
-        return this.itemStack;
+        return new ItemNBT(this.itemStack);
     }
 
     public ItemStack build() {
-        return this.build(null);
+        this.itemStack.setItemMeta(this.itemMeta);
+
+        return new ItemNBT(this.itemStack).setByteArray("ItemEvent", this.serializeData()).build();
     }
 
-    public Map<Class<? extends Event>, Consumer<Supplier<? extends Event>>> getEvents() {
-        return this.events;
+    private byte[] serializeData() {
+        try {
+            final ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(arrayOutputStream);
+
+            objectOutputStream.writeObject(this.itemData);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+
+            return arrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new byte[] {};
     }
 
 }
