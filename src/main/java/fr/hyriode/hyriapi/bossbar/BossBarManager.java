@@ -16,8 +16,8 @@ public class BossBarManager {
         return bossBars.get(player);
     }
 
-    public static BossBar setBar(JavaPlugin plugin, Player player, List<String> titles, int delay) {
-        final BossBar bossBar = new BossBar(plugin, player, titles, delay);
+    public static BossBar setBar(JavaPlugin plugin, Player player, List<String> titles, int delay, int timeout, boolean updateProgressWithTimeout) {
+        final BossBar bossBar = new BossBar(plugin, player, titles, delay, timeout, updateProgressWithTimeout);
 
         bossBar.setVisible(true);
 
@@ -26,14 +26,34 @@ public class BossBarManager {
         return bossBar;
     }
 
+    public static BossBar setBar(JavaPlugin plugin, Player player,List<String> titles, int timeout, boolean updateProgressWithTimeout) {
+        return setBar(plugin, player, titles, 0, timeout, updateProgressWithTimeout);
+    }
+
+    public static BossBar setBar(JavaPlugin plugin, Player player,List<String> titles, int timeout) {
+        return setBar(plugin, player, titles, 0, timeout, false);
+    }
+
+    public static BossBar setBar(JavaPlugin plugin, Player player, String title, int timeout, boolean updateProgressWithTimeout) {
+        return setBar(plugin, player, Collections.singletonList(title), 0, timeout, updateProgressWithTimeout);
+    }
+
+    public static BossBar setBar(JavaPlugin plugin, Player player, String title, int timeout) {
+        return setBar(plugin, player, Collections.singletonList(title), 0, timeout, false);
+    }
+
     public static BossBar setBar(JavaPlugin plugin, Player player, String title) {
-        return setBar(plugin, player, Collections.singletonList(title), 0);
+        return setBar(plugin, player, Collections.singletonList(title), 0, 0, false);
     }
 
     public static void removeBar(Player player) {
-        bossBars.get(player).destroy();
-        bossBars.remove(player);
+        if (hasBar(player)) {
+            bossBars.get(player).destroy();
+            bossBars.remove(player);
+        }
     }
+
+
 
     public static boolean hasBar(Player player) {
         return bossBars.containsKey(player);

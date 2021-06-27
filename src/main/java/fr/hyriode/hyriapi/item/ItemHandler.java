@@ -25,13 +25,13 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemManager {
+public class ItemHandler {
 
     private final List<Listener> listeners;
 
     private final JavaPlugin plugin;
 
-    public ItemManager(JavaPlugin plugin) {
+    public ItemHandler(JavaPlugin plugin) {
         this.plugin = plugin;
         this.listeners = new ArrayList<>();
 

@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,10 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BossBar {
 
-    protected int cooldown;
+    protected int messageCooldown;
     protected final int delay;
+    protected double timeoutCooldown;
+    protected final int timeout;
 
     protected boolean visible;
+    protected boolean updateProgressWithTimeout;
     protected float progress = 1.0F;
 
     private EntityWither wither;
@@ -26,20 +30,23 @@ public class BossBar {
     private AtomicInteger actualPlayerTitle;
     protected List<String> titles;
 
+    protected final BukkitTask timeoutTask;
+    protected final BukkitTask witherTask;
+
     protected final Player player;
 
-    public BossBar(JavaPlugin plugin, Player player, List<String> titles, int delay) {
+    public BossBar(JavaPlugin plugin, Player player, List<String> titles, int delay, int timeout, boolean updateProgressWithTimeout) {
         this.player = player;
         this.titles = titles;
         this.delay = delay;
+        this.timeout = timeout;
+        this.updateProgressWithTimeout = updateProgressWithTimeout;
         this.visible = false;
-        this.cooldown = 0;
+        this.messageCooldown = 0;
+        this.timeoutCooldown = 0;
 
-        this.witherTask().runTaskTimer(plugin, 20, 20);
-    }
-
-    public BossBar(JavaPlugin plugin, Player player, String title) {
-        this(plugin, player, Collections.singletonList(title), 0);
+        this.witherTask = this.witherTask().runTaskTimer(plugin, 20, 20);
+        this.timeoutTask = this.timeoutTask().runTaskTimer(plugin, 1, 1);
     }
 
     protected void spawn() {
@@ -65,6 +72,7 @@ public class BossBar {
             PacketUtil.sendPacket(player, new PacketPlayOutEntityDestroy(wither.getId()));
 
             this.visible = false;
+            this.witherTask.cancel();
         }
     }
 
@@ -87,16 +95,36 @@ public class BossBar {
                 updateMovement();
 
                 // Change title
-                cooldown += 1;
+                messageCooldown++;
 
-                if (cooldown == delay) {
+                if (messageCooldown == delay) {
                     wither.setCustomName(titles.get(actualPlayerTitle.get()));
 
                     sendMetaData();
 
                     if (actualPlayerTitle.addAndGet(1) >= titles.size()) actualPlayerTitle.set(0);
 
-                    cooldown = 0;
+                    messageCooldown = 0;
+                }
+            }
+        };
+    }
+
+    private BukkitRunnable timeoutTask() {
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Check timeout
+                if (timeout > 0) {
+                    timeoutCooldown += 0.04;
+
+                    if (timeoutCooldown >= timeout) {
+                        setVisible(false);
+                    }
+
+                    if (updateProgressWithTimeout) {
+                        setProgress((float) timeoutCooldown / timeout);
+                    }
                 }
             }
         };
