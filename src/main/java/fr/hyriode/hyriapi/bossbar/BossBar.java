@@ -1,7 +1,6 @@
 package fr.hyriode.hyriapi.bossbar;
 
 import fr.hyriode.hyriapi.util.PacketUtil;
-import fr.hyriode.hyriapi.util.Reflection;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -10,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +19,6 @@ public class BossBar {
     protected double timeoutCooldown;
     protected final int timeout;
 
-    protected boolean visible;
     protected boolean updateProgressWithTimeout;
     protected float progress = 1.0F;
 
@@ -30,23 +27,22 @@ public class BossBar {
     private AtomicInteger actualPlayerTitle;
     protected List<String> titles;
 
-    protected final BukkitTask timeoutTask;
-    protected final BukkitTask witherTask;
+    protected BukkitTask timeoutTask;
+    protected BukkitTask witherTask;
 
     protected final Player player;
 
+    protected final JavaPlugin plugin;
+
     public BossBar(JavaPlugin plugin, Player player, List<String> titles, int delay, int timeout, boolean updateProgressWithTimeout) {
+        this.plugin = plugin;
         this.player = player;
         this.titles = titles;
         this.delay = delay;
         this.timeout = timeout;
         this.updateProgressWithTimeout = updateProgressWithTimeout;
-        this.visible = false;
         this.messageCooldown = 0;
         this.timeoutCooldown = 0;
-
-        this.witherTask = this.witherTask().runTaskTimer(plugin, 20, 20);
-        this.timeoutTask = this.timeoutTask().runTaskTimer(plugin, 1, 1);
     }
 
     protected void spawn() {
@@ -64,15 +60,16 @@ public class BossBar {
         PacketUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(wither));
 
         this.actualPlayerTitle = new AtomicInteger(1);
-        this.visible = true;
+        this.witherTask = this.witherTask().runTaskTimer(plugin, 20, 20);
+        this.timeoutTask = this.timeoutTask().runTaskTimer(plugin, 1, 1);
     }
 
     protected void destroy() {
         if (this.wither != null) {
             PacketUtil.sendPacket(player, new PacketPlayOutEntityDestroy(wither.getId()));
 
-            this.visible = false;
             this.witherTask.cancel();
+            this.timeoutTask.cancel();
         }
     }
 
@@ -119,11 +116,15 @@ public class BossBar {
                     timeoutCooldown += 0.04;
 
                     if (timeoutCooldown >= timeout) {
-                        setVisible(false);
+                        BossBarManager.removeBar(player);
                     }
 
                     if (updateProgressWithTimeout) {
-                        setProgress((float) timeoutCooldown / timeout);
+                        final float progress = (float) (timeoutCooldown / timeout);
+
+                        if (progress * wither.getMaxHealth() > 1) {
+                            setProgress(progress);
+                        }
                     }
                 }
             }
@@ -141,7 +142,7 @@ public class BossBar {
         this.wither.setHealth(this.progress * this.wither.getMaxHealth());
 
         if (this.wither.getHealth() <= 1) {
-            this.setVisible(false);
+            BossBarManager.removeBar(this.player);
         } else {
             this.sendMetaData();
         }
@@ -153,20 +154,6 @@ public class BossBar {
 
     public List<String> getTitles() {
         return this.titles;
-    }
-
-    public boolean isVisible() {
-        return this.visible;
-    }
-
-    public void setVisible(boolean visible) {
-        if (this.visible != visible) {
-            if (visible) {
-                this.spawn();
-            } else {
-                this.destroy();
-            }
-        }
     }
 
     private Location getWitherLocation(Location base) {

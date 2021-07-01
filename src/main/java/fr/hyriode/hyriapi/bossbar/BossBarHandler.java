@@ -61,12 +61,12 @@ public class BossBarHandler implements Listener {
         if (BossBarManager.hasBar(player)) {
             final BossBar bossBar = BossBarManager.getBar(player);
 
-            bossBar.setVisible(false);
+            BossBarManager.removeBar(player);
 
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    bossBar.setVisible(true);
+                    BossBarManager.setBar(plugin, player, bossBar.getTitles(), bossBar.delay, bossBar.timeout, bossBar.updateProgressWithTimeout);
                 }
             }.runTaskLater(this.plugin, 2);
         }

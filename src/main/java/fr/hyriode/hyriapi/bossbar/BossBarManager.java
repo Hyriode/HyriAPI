@@ -19,7 +19,11 @@ public class BossBarManager {
     public static BossBar setBar(JavaPlugin plugin, Player player, List<String> titles, int delay, int timeout, boolean updateProgressWithTimeout) {
         final BossBar bossBar = new BossBar(plugin, player, titles, delay, timeout, updateProgressWithTimeout);
 
-        bossBar.setVisible(true);
+        bossBar.spawn();
+
+        if (hasBar(player)) {
+            removeBar(player);
+        }
 
         bossBars.put(player, bossBar);
 
@@ -52,8 +56,6 @@ public class BossBarManager {
             bossBars.remove(player);
         }
     }
-
-
 
     public static boolean hasBar(Player player) {
         return bossBars.containsKey(player);
