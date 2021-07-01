@@ -3,23 +3,8 @@ package fr.hyriode.hyriapi.impl;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.bossbar.BossBarHandler;
 import fr.hyriode.hyriapi.item.ItemHandler;
-import fr.hyriode.hyriapi.npc.NPC;
 import fr.hyriode.hyriapi.npc.NPCHandler;
-import fr.hyriode.hyriapi.npc.NPCManager;
-import fr.hyriode.hyriapi.util.reflection.entity.EnumItemSlot;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.UUID;
 
 public class HyriAPIPlugin extends JavaPlugin {
 
