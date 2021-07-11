@@ -1,6 +1,8 @@
 package fr.hyriode.hyriapi;
 
+import fr.hyriode.hyriapi.tools.npc.NPCManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.Jedis;
 
 public abstract class HyriAPI {
 
@@ -12,6 +14,10 @@ public abstract class HyriAPI {
         this.plugin = plugin;
         instance = this;
     }
+
+    public abstract Jedis getJedisResource();
+
+    public abstract NPCManager getNPCManager();
 
     public JavaPlugin getPlugin() {
         return this.plugin;

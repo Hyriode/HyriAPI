@@ -43,8 +43,10 @@ public class Reflection {
         return null;
     }
 
-    public static void setField(Field field, Object fieldObject, Object value) {
+    public static void setField(String fieldName, Object fieldObject, Object value) {
         try {
+            final Field field = getField(fieldObject.getClass(), fieldName);
+
             field.setAccessible(true);
             field.set(fieldObject, value);
         } catch (IllegalAccessException e) {
