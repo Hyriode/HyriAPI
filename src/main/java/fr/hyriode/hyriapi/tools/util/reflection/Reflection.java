@@ -1,4 +1,4 @@
-package fr.hyriode.hyriapi.util.reflection;
+package fr.hyriode.hyriapi.tools.util.reflection;
 
 import org.bukkit.Bukkit;
 

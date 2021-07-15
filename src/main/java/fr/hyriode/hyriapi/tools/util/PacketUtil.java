@@ -1,4 +1,4 @@
-package fr.hyriode.hyriapi.util;
+package fr.hyriode.hyriapi.tools.util;
 
 import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;

@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.tools.title;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.entity.Player;

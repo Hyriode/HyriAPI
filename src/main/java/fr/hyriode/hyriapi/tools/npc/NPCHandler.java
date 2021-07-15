@@ -1,8 +1,8 @@
 package fr.hyriode.hyriapi.tools.npc;
 
 import fr.hyriode.hyriapi.HyriAPI;
-import fr.hyriode.hyriapi.util.PacketUtil;
-import fr.hyriode.hyriapi.util.reflection.Reflection;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.reflection.Reflection;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -25,10 +25,8 @@ public class NPCHandler implements Listener {
 
     private final NPCManager npcManager;
 
-    public NPCHandler() {
+    public NPCHandler(JavaPlugin plugin) {
         this.npcManager = HyriAPI.get().getNPCManager();
-
-        final JavaPlugin plugin = HyriAPI.get().getPlugin();
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }

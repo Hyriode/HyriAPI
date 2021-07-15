@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.tools.hologram;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata;

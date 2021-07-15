@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.tools.scoreboard;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

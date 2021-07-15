@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.tools.chat;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import io.netty.util.internal.ConcurrentSet;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.Packet;

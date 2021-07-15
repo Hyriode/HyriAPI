@@ -1,4 +1,4 @@
-package fr.hyriode.hyriapi.util;
+package fr.hyriode.hyriapi.tools.util;
 
 /**
  * Project: HyriAPI

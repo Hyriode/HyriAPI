@@ -1,7 +1,7 @@
 package fr.hyriode.hyriapi.tools.scoreboard.team;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
-import fr.hyriode.hyriapi.util.reflection.Reflection;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.reflection.Reflection;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import org.bukkit.Bukkit;

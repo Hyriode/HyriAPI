@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.tools.sign;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;

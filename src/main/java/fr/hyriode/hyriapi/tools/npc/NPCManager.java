@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.tools.hologram.Hologram;
-import fr.hyriode.hyriapi.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.World;
@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
@@ -25,9 +26,12 @@ import java.util.function.Consumer;
 
 public class NPCManager {
 
+    private final JavaPlugin plugin;
+
     private final Map<NPC, Hologram> allNpc;
 
-    public NPCManager() {
+    public NPCManager(JavaPlugin plugin) {
+        this.plugin = plugin;
         this.allNpc = new HashMap<>();
     }
 
@@ -47,7 +51,7 @@ public class NPCManager {
 
     private NPC createNPC(Location location, GameProfile gameProfile, String[] hologramLines) {
         final World world = ((CraftWorld) location.getWorld()).getHandle();
-        final NPC npc = new NPC(HyriAPI.get().getPlugin(), location, world, gameProfile);
+        final NPC npc = new NPC(this.plugin, location, world, gameProfile);
         final Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
 
         Team npcTeam = null;
@@ -69,7 +73,7 @@ public class NPCManager {
         this.sendMetadataNPC(npc);
 
         if (hologramLines != null) {
-            final Hologram hologram = new Hologram(HyriAPI.get().getPlugin(), hologramLines);
+            final Hologram hologram = new Hologram(this.plugin, hologramLines);
 
             hologram.setLocation(npc.getLocation().clone().add(0.0D, 1.8D, 0.0D));
             hologram.generateLines();
@@ -97,7 +101,7 @@ public class NPCManager {
                 public void run() {
                     PacketUtil.sendPacket(player, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc));
                 }
-            }.runTaskLater(HyriAPI.get().getPlugin(), 20L);
+            }.runTaskLater(this.plugin, 20L);
         };
 
         if (npc.isShowingToAll()) {

@@ -2,8 +2,8 @@ package fr.hyriode.hyriapi.tools.npc;
 
 import com.mojang.authlib.GameProfile;
 import fr.hyriode.hyriapi.tools.hologram.Hologram;
-import fr.hyriode.hyriapi.util.PacketUtil;
-import fr.hyriode.hyriapi.util.reflection.entity.EnumItemSlot;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.reflection.entity.EnumItemSlot;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

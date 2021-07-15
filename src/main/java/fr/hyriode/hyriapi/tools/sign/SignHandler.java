@@ -1,7 +1,7 @@
 package fr.hyriode.hyriapi.tools.sign;
 
-import fr.hyriode.hyriapi.util.PacketUtil;
-import fr.hyriode.hyriapi.util.reflection.Reflection;
+import fr.hyriode.hyriapi.tools.util.PacketUtil;
+import fr.hyriode.hyriapi.tools.util.reflection.Reflection;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;

@@ -1,4 +1,4 @@
-package fr.hyriode.hyriapi.impl.configuration.nested;
+package fr.hyriode.hyriapi.implementation.configuration.nested;
 
 public class RedisConfiguration {
 

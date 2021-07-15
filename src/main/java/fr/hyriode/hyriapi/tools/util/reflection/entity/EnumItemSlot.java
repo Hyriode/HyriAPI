@@ -1,6 +1,6 @@
-package fr.hyriode.hyriapi.util.reflection.entity;
+package fr.hyriode.hyriapi.tools.util.reflection.entity;
 
-import fr.hyriode.hyriapi.util.reflection.Reflection;
+import fr.hyriode.hyriapi.tools.util.reflection.Reflection;
 
 public enum EnumItemSlot {
 
