@@ -7,7 +7,7 @@ import fr.hyriode.hyggdrasilconnector.api.ServerState;
  * Created by AstFaster
  * on 16/07/2021 at 09:54
  */
-public abstract class Server {
+public abstract class AbstractServer {
 
     /**
      * Get server id

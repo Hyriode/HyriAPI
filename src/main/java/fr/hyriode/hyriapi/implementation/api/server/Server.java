@@ -1,14 +1,14 @@
 package fr.hyriode.hyriapi.implementation.api.server;
 
 import fr.hyriode.hyggdrasilconnector.api.ServerState;
-import fr.hyriode.hyriapi.server.Server;
+import fr.hyriode.hyriapi.server.AbstractServer;
 
 /**
  * Project: HyriAPI
  * Created by AstFaster
  * on 16/07/2021 at 10:01
  */
-public class HyriServer extends Server {
+public class Server extends AbstractServer {
 
     private ServerState state;
 
@@ -19,7 +19,7 @@ public class HyriServer extends Server {
 
     private final String id;
 
-    public HyriServer(String id, long startedTime, int slots, int players, ServerState state) {
+    public Server(String id, long startedTime, int slots, int players, ServerState state) {
         this.id = id;
         this.startedTime = startedTime;
         this.slots = slots;

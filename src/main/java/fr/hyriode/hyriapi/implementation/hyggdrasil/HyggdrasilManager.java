@@ -10,16 +10,18 @@ import fr.hyriode.hyggdrasilconnector.protocol.packet.common.HeartbeatPacket;
 import fr.hyriode.hyggdrasilconnector.protocol.packet.server.ServerAskInfoPacket;
 import fr.hyriode.hyggdrasilconnector.protocol.packet.server.ServerInfoPacket;
 import fr.hyriode.hyriapi.implementation.HyriPlugin;
-import fr.hyriode.hyriapi.implementation.api.server.HyriServer;
+import fr.hyriode.hyriapi.implementation.api.server.Server;
 import fr.hyriode.hyriapi.implementation.configuration.nested.RedisConfiguration;
 import fr.hyriode.hyriapi.implementation.hyggdrasil.listener.HyggdrasilClientPacketListener;
 import fr.hyriode.hyriapi.implementation.hyggdrasil.task.HeartbeatTask;
 import fr.hyriode.hyriapi.implementation.thread.ThreadPool;
-import fr.hyriode.hyriapi.server.Server;
+import fr.hyriode.hyriapi.server.AbstractServer;
 import org.bukkit.Bukkit;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +38,7 @@ public class HyggdrasilManager {
     private ScheduledFuture<?> heartbeatTask;
 
     private String clientId;
-    private Server server;
+    private AbstractServer server;
 
     private final HyggdrasilConnector hyggdrasilConnector;
 
@@ -81,7 +83,7 @@ public class HyggdrasilManager {
         final int slots = Integer.parseInt(System.getenv("SLOTS"));
         final ServerState serverState = ServerState.fromInteger(Integer.parseInt(System.getenv("STATE")));
 
-        this.server = new HyriServer(serverId, startedTime, slots, Bukkit.getOnlinePlayers().size(), serverState);
+        this.server = new Server(serverId, startedTime, slots, Bukkit.getOnlinePlayers().size(), serverState);
     }
 
     public void heartbeat(HeartbeatPacket packet) {
@@ -112,8 +114,10 @@ public class HyggdrasilManager {
         this.getConnectionManager().sendPacket(channel, packet);
     }
 
-    public void sendPacket(HyggdrasilChannel channel, HyggdrasilPacket packet) {
+    public HyggdrasilPacketResponse sendPacket(HyggdrasilChannel channel, HyggdrasilPacket packet) {
         this.getConnectionManager().sendPacket(channel, packet);
+
+        return new HyggdrasilPacketResponse(this);
     }
 
     public HyggdrasilConnectionManager getConnectionManager() {
@@ -124,7 +128,7 @@ public class HyggdrasilManager {
         return this.hyggdrasilConnector;
     }
 
-    public Server getServer() {
+    public AbstractServer getServer() {
         return this.server;
     }
 
