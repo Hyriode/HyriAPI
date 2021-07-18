@@ -33,6 +33,8 @@ public class NPCManager {
     public NPCManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.allNpc = new HashMap<>();
+
+        new NPCHandler(this.plugin, this);
     }
 
     public NPC createNPC(Location location, NPCSkin skin, String[] hologramLines) {

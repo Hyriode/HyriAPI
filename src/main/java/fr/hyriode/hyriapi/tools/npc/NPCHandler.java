@@ -25,8 +25,8 @@ public class NPCHandler implements Listener {
 
     private final NPCManager npcManager;
 
-    public NPCHandler(JavaPlugin plugin) {
-        this.npcManager = HyriAPI.get().getNPCManager();
+    public NPCHandler(JavaPlugin plugin, NPCManager npcManager) {
+        this.npcManager = npcManager;
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }

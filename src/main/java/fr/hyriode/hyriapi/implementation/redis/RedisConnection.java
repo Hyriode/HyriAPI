@@ -2,6 +2,7 @@ package fr.hyriode.hyriapi.implementation.redis;
 
 import fr.hyriode.hyriapi.implementation.HyriPlugin;
 import fr.hyriode.hyriapi.implementation.configuration.nested.RedisConfiguration;
+import fr.hyriode.hyriapi.implementation.thread.ThreadPool;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -25,7 +26,7 @@ public class RedisConnection {
     private void start() {
         this.connect();
 
-        this.plugin.getExecutor().scheduleAtFixedRate(() -> {
+        ThreadPool.EXECUTOR.scheduleAtFixedRate(() -> {
             try {
                 this.getResource();
             } catch (Exception e) {

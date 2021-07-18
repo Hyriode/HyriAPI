@@ -1,8 +1,10 @@
 package fr.hyriode.hyriapi.implementation;
 
+import fr.hyriode.hyggdrasilconnector.api.ServerState;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.implementation.configuration.Configuration;
 import fr.hyriode.hyriapi.implementation.configuration.ConfigurationManager;
+import fr.hyriode.hyriapi.implementation.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.hyriapi.implementation.redis.RedisConnection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,14 +14,14 @@ import java.util.logging.Level;
 
 public class HyriPlugin extends JavaPlugin {
 
+    /** Hyggdrasil */
+    private HyggdrasilManager hyggdrasilManager;
+
     /** Redis */
     private RedisConnection redisConnection;
 
     /** Configuration */
     private ConfigurationManager configurationManager;
-
-    /** Thread / Execution */
-    private ScheduledExecutorService executor;
 
     /** API */
     private HyriAPI api;
@@ -34,18 +36,23 @@ public class HyriPlugin extends JavaPlugin {
         log("# Authors: AstFaster, Keinz_                   #");
         log("#==============================================#");
 
-        this.executor = Executors.newScheduledThreadPool(32);
-
         this.configurationManager = new ConfigurationManager(this, true);
 
         this.redisConnection = new RedisConnection(this);
 
+        this.hyggdrasilManager = new HyggdrasilManager(this);
+        this.hyggdrasilManager.start();
+
         this.api = new HyriImplementation(this);
+
+        this.api.getServer().setState(ServerState.READY);
     }
 
     @Override
     public void onDisable() {
         this.redisConnection.stop();
+
+        this.hyggdrasilManager.stop();
     }
 
     public void log(Level level, String message) {
@@ -61,10 +68,6 @@ public class HyriPlugin extends JavaPlugin {
         return this.api;
     }
 
-    public ScheduledExecutorService getExecutor() {
-        return this.executor;
-    }
-
     public ConfigurationManager getConfigurationManager() {
         return this.configurationManager;
     }
@@ -75,6 +78,10 @@ public class HyriPlugin extends JavaPlugin {
 
     public RedisConnection getRedisConnection() {
         return this.redisConnection;
+    }
+
+    public HyggdrasilManager getHyggdrasilManager() {
+        return this.hyggdrasilManager;
     }
 
 }
