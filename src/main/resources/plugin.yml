@@ -1,3 +1,3 @@
 name: HyriAPI
-main: fr.hyriode.hyriapi.implementation.HyriPlugin
+main: fr.hyriode.hyriapi.impl.HyriPlugin
 version: 1.0.0-SNAPSHOT

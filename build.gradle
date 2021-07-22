@@ -1,4 +1,5 @@
 import java.nio.charset.StandardCharsets
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id "com.github.johnrengelman.shadow" version "6.0.0"
@@ -42,10 +43,17 @@ repositories {
 
 shadowJar {
     configurations = [project.configurations.shadow]
+    exclude 'fr/hyriode/hyriapi/impl'
+}
+
+task implJar(type: ShadowJar) {
+    archiveBaseName.set('Impl')
+    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
+    configurations = [project.configurations.shadow]
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    classifier 'sources'
     from sourceSets.main.allSource
 }
 
@@ -90,7 +98,7 @@ publishing {
 
 dependencies {
     shadow fileTree(include: ['*.jar'], dir: 'libs')
-    api 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
-    api 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
-    api 'redis.clients:jedis:3.6.1'
+    shadow 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+    shadow 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
+    shadow 'redis.clients:jedis:3.6.1'
 }
