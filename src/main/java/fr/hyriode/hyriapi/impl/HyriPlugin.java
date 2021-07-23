@@ -48,17 +48,6 @@ public class HyriPlugin extends JavaPlugin {
         //this.api.getServer().setState(ServerState.READY);
     }
 
-    @EventHandler
-    public void onPreJoin(AsyncPlayerPreLoginEvent event) {
-        IHyriPlayer player = this.api.getPlayerManager().getPlayer(event.getUniqueId());
-
-        if (player == null) {
-            player = this.api.getPlayerManager().createPlayer(event.getUniqueId());
-        }
-
-        System.out.println(player.getName() + " account successfully loaded!");
-    }
-
     @Override
     public void onDisable() {
         this.redisConnection.stop();

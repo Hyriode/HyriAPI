@@ -19,6 +19,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     private HyriPlayerSettings settings;
 
+    private UUID party;
+
     private HyodeMoney hyode;
     private HyrisMoney hyris;
 
@@ -30,6 +32,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.uuid = uuid;
         this.hyris = new HyrisMoney(this.uuid);
         this.hyode = new HyodeMoney(this.uuid);
+        this.party = null;
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
     }
 
@@ -47,6 +50,11 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public String getDisplayName() {
         return this.hasNickname() ? this.getCustomName() : this.getName();
+    }
+
+    @Override
+    public boolean hasNickname() {
+        return this.getCustomName() != null;
     }
 
     @Override
@@ -74,8 +82,18 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public boolean hasNickname() {
-        return this.getCustomName() != null;
+    public UUID getParty() {
+        return this.party;
+    }
+
+    @Override
+    public void setParty(UUID party) {
+        this.party = party;
+    }
+
+    @Override
+    public boolean hasParty() {
+        return this.getParty() != null;
     }
 
     @Override

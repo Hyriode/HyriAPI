@@ -2,10 +2,12 @@ package fr.hyriode.hyriapi.impl;
 
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.api.money.HyriMoneyManager;
+import fr.hyriode.hyriapi.impl.api.party.HyriPartyManager;
 import fr.hyriode.hyriapi.impl.api.player.HyriPlayerManager;
 import fr.hyriode.hyriapi.impl.api.server.HyriServerManager;
 import fr.hyriode.hyriapi.impl.api.settings.HyriPlayerSettingsManager;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
+import fr.hyriode.hyriapi.party.IHyriPartyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
@@ -17,6 +19,9 @@ import fr.hyriode.tools.scoreboard.team.ScoreboardTeamHandler;
 import redis.clients.jedis.Jedis;
 
 public class HyriImplementation extends HyriAPI {
+
+    /** Party */
+    private final IHyriPartyManager partyManager;
 
     /** Money */
     private final IHyriMoneyManager moneyManager;
@@ -40,6 +45,7 @@ public class HyriImplementation extends HyriAPI {
         this.playerManager = new HyriPlayerManager(this.plugin);
         this.playerSettingsManager = new HyriPlayerSettingsManager(this.plugin);
         this.moneyManager = new HyriMoneyManager(this.plugin);
+        this.partyManager = new HyriPartyManager(this.plugin);
 
         new ItemHandler(this.plugin);
         new InventoryHandler(this.plugin);
@@ -75,6 +81,11 @@ public class HyriImplementation extends HyriAPI {
     @Override
     public IHyriMoneyManager getMoneyManager() {
         return this.moneyManager;
+    }
+
+    @Override
+    public IHyriPartyManager getPartyManager() {
+        return this.partyManager;
     }
 
 }

@@ -1,6 +1,7 @@
 package fr.hyriode.hyriapi;
 
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
+import fr.hyriode.hyriapi.party.IHyriPartyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
@@ -63,6 +64,13 @@ public abstract class HyriAPI {
      * @return - {@link IHyriMoneyManager}
      */
     public abstract IHyriMoneyManager getMoneyManager();
+
+    /**
+     * Get the party manager
+     *
+     * @return - {@link IHyriPartyManager}
+     */
+    public abstract IHyriPartyManager getPartyManager();
 
     /**
      * Get the instance of {@link HyriAPI}

@@ -1,6 +1,7 @@
 package fr.hyriode.hyriapi.player;
 
 import fr.hyriode.hyriapi.money.IHyriMoney;
+import fr.hyriode.hyriapi.party.IHyriParty;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
@@ -34,6 +35,13 @@ public interface IHyriPlayer {
     String getDisplayName();
 
     /**
+     * Get if player has nickname
+     *
+     * @return <code>true</code> if player has nickname
+     */
+    boolean hasNickname();
+
+    /**
      * Get player uuid
      *
      * @return - Player {@link UUID}
@@ -62,11 +70,25 @@ public interface IHyriPlayer {
     void setMoney(IHyriMoney money);
 
     /**
-     * Get if player has nickname
+     * Get the party {@link UUID} of the player
      *
-     * @return <code>true</code> if player has nickname
+     * @return - Player party
      */
-    boolean hasNickname();
+    UUID getParty();
+
+    /**
+     * Set the party {@link UUID} of the player
+     *
+     * @param party - Party {@link UUID}
+     */
+    void setParty(UUID party);
+
+    /**
+     * Get if the player is in a party
+     *
+     * @return - <code>true</code> if player has one
+     */
+    boolean hasParty();
 
     /**
      * Get the settings of the player
