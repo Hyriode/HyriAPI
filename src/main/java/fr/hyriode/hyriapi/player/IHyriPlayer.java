@@ -1,7 +1,7 @@
 package fr.hyriode.hyriapi.player;
 
 import fr.hyriode.hyriapi.money.IHyriMoney;
-import fr.hyriode.hyriapi.money.IHyriMoneyCallback;
+import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
 
@@ -67,5 +67,19 @@ public interface IHyriPlayer {
      * @return <code>true</code> if player has nickname
      */
     boolean hasNickname();
+
+    /**
+     * Get the settings of the player
+     *
+     * @return - Player settings
+     */
+    IHyriPlayerSettings getSettings();
+
+    /**
+     * Set the settings of the player
+     *
+     * @param settings - New settings
+     */
+    void setSettings(IHyriPlayerSettings settings);
 
 }

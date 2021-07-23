@@ -1,10 +1,12 @@
 package fr.hyriode.hyriapi.impl.api.player;
 
-import fr.hyriode.hyriapi.impl.api.money.HyriMoney;
+import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.api.money.model.HyodeMoney;
 import fr.hyriode.hyriapi.impl.api.money.model.HyrisMoney;
+import fr.hyriode.hyriapi.impl.api.settings.HyriPlayerSettings;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
+import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
 
@@ -14,6 +16,8 @@ import java.util.UUID;
  * on 21/07/2021 at 22:23
  */
 public class HyriPlayer implements IHyriPlayer {
+
+    private HyriPlayerSettings settings;
 
     private HyodeMoney hyode;
     private HyrisMoney hyris;
@@ -26,6 +30,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.uuid = uuid;
         this.hyris = new HyrisMoney(this.uuid);
         this.hyode = new HyodeMoney(this.uuid);
+        this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
     }
 
     @Override
@@ -71,6 +76,16 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public boolean hasNickname() {
         return this.getCustomName() != null;
+    }
+
+    @Override
+    public IHyriPlayerSettings getSettings() {
+        return this.settings;
+    }
+
+    @Override
+    public void setSettings(IHyriPlayerSettings settings) {
+        this.settings = (HyriPlayerSettings) settings;
     }
 
 }

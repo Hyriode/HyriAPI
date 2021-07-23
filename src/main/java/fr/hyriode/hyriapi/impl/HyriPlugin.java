@@ -5,6 +5,9 @@ import fr.hyriode.hyriapi.impl.configuration.Configuration;
 import fr.hyriode.hyriapi.impl.configuration.ConfigurationManager;
 import fr.hyriode.hyriapi.impl.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.hyriapi.impl.redis.RedisConnection;
+import fr.hyriode.hyriapi.player.IHyriPlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -43,6 +46,17 @@ public class HyriPlugin extends JavaPlugin {
         this.api = new HyriImplementation(this);
 
         //this.api.getServer().setState(ServerState.READY);
+    }
+
+    @EventHandler
+    public void onPreJoin(AsyncPlayerPreLoginEvent event) {
+        IHyriPlayer player = this.api.getPlayerManager().getPlayer(event.getUniqueId());
+
+        if (player == null) {
+            player = this.api.getPlayerManager().createPlayer(event.getUniqueId());
+        }
+
+        System.out.println(player.getName() + " account successfully loaded!");
     }
 
     @Override

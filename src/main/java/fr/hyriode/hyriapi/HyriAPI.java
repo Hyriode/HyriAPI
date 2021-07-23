@@ -4,6 +4,7 @@ import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
+import fr.hyriode.hyriapi.settings.IHyriPlayerSettingsManager;
 import redis.clients.jedis.Jedis;
 
 public abstract class HyriAPI {
@@ -48,6 +49,13 @@ public abstract class HyriAPI {
      * @return - {@link IHyriPlayerManager}
      */
     public abstract IHyriPlayerManager getPlayerManager();
+
+    /**
+     * Get the player settings manager
+     *
+     * @return - {@link IHyriPlayerSettingsManager}
+     */
+    public abstract IHyriPlayerSettingsManager getPlayerSettingsManager();
 
     /**
      * Get the money manager

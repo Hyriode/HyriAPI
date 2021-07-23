@@ -5,8 +5,10 @@ import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.HyriPlugin;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
+import fr.hyriode.hyriapi.player.event.HyriPlayerCreatedEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -42,10 +44,12 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public IHyriPlayer createPlayer(UUID uuid) {
-        final Player player = Bukkit.getPlayer(uuid);
+        final OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         final IHyriPlayer hyriPlayer = new HyriPlayer(player.getName(), uuid);
 
         this.sendPlayer(hyriPlayer);
+
+        this.plugin.getServer().getPluginManager().callEvent(new HyriPlayerCreatedEvent(hyriPlayer));
 
         return hyriPlayer;
     }

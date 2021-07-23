@@ -4,10 +4,12 @@ import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.api.money.HyriMoneyManager;
 import fr.hyriode.hyriapi.impl.api.player.HyriPlayerManager;
 import fr.hyriode.hyriapi.impl.api.server.HyriServerManager;
+import fr.hyriode.hyriapi.impl.api.settings.HyriPlayerSettingsManager;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
+import fr.hyriode.hyriapi.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.tools.bossbar.BossBarHandler;
 import fr.hyriode.tools.inventory.InventoryHandler;
 import fr.hyriode.tools.item.ItemHandler;
@@ -18,6 +20,9 @@ public class HyriImplementation extends HyriAPI {
 
     /** Money */
     private final IHyriMoneyManager moneyManager;
+
+    /** Player Settings */
+    private final IHyriPlayerSettingsManager playerSettingsManager;
 
     /** Player */
     private final IHyriPlayerManager playerManager;
@@ -33,6 +38,7 @@ public class HyriImplementation extends HyriAPI {
 
         this.serverManager = new HyriServerManager(this.plugin);
         this.playerManager = new HyriPlayerManager(this.plugin);
+        this.playerSettingsManager = new HyriPlayerSettingsManager(this.plugin);
         this.moneyManager = new HyriMoneyManager(this.plugin);
 
         new ItemHandler(this.plugin);
@@ -59,6 +65,11 @@ public class HyriImplementation extends HyriAPI {
     @Override
     public IHyriPlayerManager getPlayerManager() {
         return this.playerManager;
+    }
+
+    @Override
+    public IHyriPlayerSettingsManager getPlayerSettingsManager() {
+        return this.playerSettingsManager;
     }
 
     @Override
