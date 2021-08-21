@@ -33,7 +33,8 @@ repositories {
 
     maven {
         name = 'HyggdrasilConnector_maven'
-        url 'https://maven.pkg.github.com/Hyriode/HyggdrasilConnector/'
+        url = 'https://maven.pkg.github.com/Hyriode/HyggdrasilConnector/'
+
         credentials {
             username System.getenv('USERNAME')
             password System.getenv('TOKEN')
@@ -72,7 +73,6 @@ publishing {
             from components.java
             artifact tasks.sourcesJar
             artifact tasks.javadocJar
-            artifact tasks.shadowJar
 
             pom {
                 groupId = project.group
