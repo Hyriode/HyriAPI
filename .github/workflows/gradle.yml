@@ -19,14 +19,9 @@ jobs:
 
       - name: Build with Gradle
         run: gradle build
-
-      - name: Test
-        run: |
-          echo ${{ github.actor }}
-          echo ${{ secrets.TOKEN }}
-
-      - name: Publish to GitHub Packages
-        run: gradle publish
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Publish to GitHub Packages
+        run: gradle publish
