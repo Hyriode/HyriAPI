@@ -19,8 +19,9 @@ public interface IHyriServerManager {
 
     /**
      * Get the list of all servers currently running with a given prefix
-     * Example: "lobby" prefix given -> return all servers with an id starting with lobby
+     * Example: "lobby" prefix given, return all servers with an id starting with lobby
      *
+     * @param prefix - Servers prefix
      * @return - A list of {@link String} (a {@link String} represents in this case the id of a server)
      */
     List<String> getServers(String prefix);

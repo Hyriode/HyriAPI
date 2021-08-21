@@ -21,6 +21,7 @@ public interface IHyriPlayerManager {
      * Create a player with a given {@link UUID}
      *
      * @param uuid - Player {@link UUID}
+     * @return - The created player
      */
     IHyriPlayer createPlayer(UUID uuid);
 
@@ -67,6 +68,7 @@ public interface IHyriPlayerManager {
      * Get a player ping with a given {@link UUID}
      *
      * @param uuid - Player {@link UUID}
+     * @return - Player ping
      */
     int getPing(UUID uuid);
 
