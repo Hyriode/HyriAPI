@@ -5,7 +5,6 @@ import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.HyriPlugin;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
-import fr.hyriode.hyriapi.player.event.HyriPlayerCreatedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -47,8 +46,6 @@ public class HyriPlayerManager implements IHyriPlayerManager {
         final IHyriPlayer hyriPlayer = new HyriPlayer(player.getName(), uuid);
 
         this.sendPlayer(hyriPlayer);
-
-        this.plugin.getServer().getPluginManager().callEvent(new HyriPlayerCreatedEvent(hyriPlayer));
 
         return hyriPlayer;
     }
