@@ -72,6 +72,7 @@ publishing {
             from components.java
             artifact tasks.sourcesJar
             artifact tasks.javadocJar
+            artifact tasks.shadowJar
 
             pom {
                 groupId = project.group
