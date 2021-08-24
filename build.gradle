@@ -10,7 +10,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 archivesBaseName = 'HyriAPI'
 
 java {
