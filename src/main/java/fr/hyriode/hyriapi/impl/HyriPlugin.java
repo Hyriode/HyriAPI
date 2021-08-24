@@ -1,13 +1,17 @@
 package fr.hyriode.hyriapi.impl;
 
 import fr.hyriode.hyriapi.HyriAPI;
+import fr.hyriode.hyriapi.impl.api.rank.EHyriRankImpl;
 import fr.hyriode.hyriapi.impl.configuration.Configuration;
 import fr.hyriode.hyriapi.impl.configuration.ConfigurationManager;
 import fr.hyriode.hyriapi.impl.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.hyriapi.impl.redis.RedisConnection;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;

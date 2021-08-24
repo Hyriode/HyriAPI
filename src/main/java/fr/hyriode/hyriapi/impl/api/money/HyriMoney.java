@@ -3,8 +3,6 @@ package fr.hyriode.hyriapi.impl.api.money;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.money.IHyriMoneyCallback;
-import fr.hyriode.hyriapi.money.IHyriMoneyManager;
-import fr.hyriode.hyriapi.player.IHyriPlayer;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;

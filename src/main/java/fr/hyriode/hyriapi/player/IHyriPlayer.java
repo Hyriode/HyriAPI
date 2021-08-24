@@ -1,7 +1,7 @@
 package fr.hyriode.hyriapi.player;
 
 import fr.hyriode.hyriapi.money.IHyriMoney;
-import fr.hyriode.hyriapi.party.IHyriParty;
+import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
@@ -47,6 +47,20 @@ public interface IHyriPlayer {
      * @return - Player {@link UUID}
      */
     UUID getUUID();
+
+    /**
+     * Get player rank
+     *
+     * @return - {@link HyriRank}
+     */
+    HyriRank getRank();
+
+    /**
+     * Set player rank
+     *
+     * @param rank - {@link HyriRank}
+     */
+    void setRank(HyriRank rank);
 
     /**
      * Get player Hyris money

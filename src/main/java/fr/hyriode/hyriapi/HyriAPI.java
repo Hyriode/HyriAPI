@@ -3,6 +3,7 @@ package fr.hyriode.hyriapi;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.party.IHyriPartyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
+import fr.hyriode.hyriapi.rank.IHyriRankManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettingsManager;
@@ -71,6 +72,13 @@ public abstract class HyriAPI {
      * @return - {@link IHyriPartyManager}
      */
     public abstract IHyriPartyManager getPartyManager();
+
+    /**
+     * Get the rank manager
+     *
+     * @return - {@link IHyriRankManager}
+     */
+    public abstract IHyriRankManager getRankManager();
 
     /**
      * Get the instance of {@link HyriAPI}

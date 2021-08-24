@@ -3,9 +3,12 @@ package fr.hyriode.hyriapi.impl.api.player;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.api.money.model.HyodeMoney;
 import fr.hyriode.hyriapi.impl.api.money.model.HyrisMoney;
+import fr.hyriode.hyriapi.impl.api.rank.DefaultHyriRank;
+import fr.hyriode.hyriapi.impl.api.rank.EHyriRankImpl;
 import fr.hyriode.hyriapi.impl.api.settings.HyriPlayerSettings;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
+import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
@@ -24,12 +27,15 @@ public class HyriPlayer implements IHyriPlayer {
     private HyodeMoney hyode;
     private HyrisMoney hyris;
 
+    private DefaultHyriRank rank;
+
     private final UUID uuid;
     private final String name;
 
     public HyriPlayer(String name, UUID uuid) {
         this.name = name;
         this.uuid = uuid;
+        this.rank = (DefaultHyriRank) EHyriRankImpl.PLAYER.get();
         this.hyris = new HyrisMoney(this.uuid);
         this.hyode = new HyodeMoney(this.uuid);
         this.party = null;
@@ -63,6 +69,16 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
+    public HyriRank getRank() {
+        return this.rank;
+    }
+
+    @Override
+    public void setRank(HyriRank rank) {
+        this.rank = (DefaultHyriRank) rank;
+    }
+
+    @Override
     public IHyriMoney getHyris() {
         return this.hyris;
     }
@@ -77,7 +93,7 @@ public class HyriPlayer implements IHyriPlayer {
         if (money instanceof HyrisMoney) {
             this.hyris = (HyrisMoney) money;
         } else if (money instanceof HyodeMoney) {
-            this.hyris = (HyrisMoney) money;
+            this.hyode = (HyodeMoney) money;
         }
     }
 

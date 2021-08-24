@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 public class HyriPlayerManager implements IHyriPlayerManager {
 
-    public static final String REDIS_KEY = "players:";
+    private static final String REDIS_KEY = "players:";
 
     private final HyriAPI api;
 
