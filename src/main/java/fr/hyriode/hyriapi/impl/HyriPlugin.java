@@ -5,6 +5,7 @@ import fr.hyriode.hyriapi.impl.api.rank.EHyriRankImpl;
 import fr.hyriode.hyriapi.impl.configuration.Configuration;
 import fr.hyriode.hyriapi.impl.configuration.ConfigurationManager;
 import fr.hyriode.hyriapi.impl.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.hyriapi.impl.listener.global.GlobalJoinHandler;
 import fr.hyriode.hyriapi.impl.redis.RedisConnection;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
 import org.bukkit.entity.Player;
@@ -50,6 +51,12 @@ public class HyriPlugin extends JavaPlugin {
         this.api = new HyriImplementation(this);
 
         //this.api.getServer().setState(ServerState.READY);
+
+        this.registerListeners();
+    }
+
+    private void registerListeners() {
+        new GlobalJoinHandler(this);
     }
 
     @Override
