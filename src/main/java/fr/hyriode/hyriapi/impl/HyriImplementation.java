@@ -14,10 +14,6 @@ import fr.hyriode.hyriapi.rank.IHyriRankManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettingsManager;
-import fr.hyriode.tools.bossbar.BossBarHandler;
-import fr.hyriode.tools.inventory.InventoryHandler;
-import fr.hyriode.tools.item.ItemHandler;
-import fr.hyriode.tools.scoreboard.team.ScoreboardTeamHandler;
 import redis.clients.jedis.Jedis;
 
 public class HyriImplementation extends HyriAPI {
@@ -52,11 +48,6 @@ public class HyriImplementation extends HyriAPI {
         this.moneyManager = new HyriMoneyManager(this.plugin);
         this.partyManager = new HyriPartyManager(this.plugin);
         this.rankManager = new HyriRankManager();
-
-        new ItemHandler(this.plugin);
-        new InventoryHandler(this.plugin);
-        new BossBarHandler(this.plugin);
-        new ScoreboardTeamHandler(this.plugin);
     }
 
     @Override

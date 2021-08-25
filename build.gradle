@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 apply plugin: 'idea'
@@ -10,7 +10,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 archivesBaseName = 'HyriAPI'
 
 java {
@@ -34,6 +34,16 @@ repositories {
     maven {
         name = 'HyggdrasilConnector_maven'
         url = 'https://maven.pkg.github.com/Hyriode/HyggdrasilConnector/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
+
+    maven {
+        name = 'HyriCommon_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/HyriCommon/'
 
         credentials {
             username System.getenv('USERNAME')
@@ -101,5 +111,6 @@ dependencies {
     shadow fileTree(include: ['*.jar'], dir: 'libs')
     shadow 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     shadow 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
-    shadow 'redis.clients:jedis:3.6.1'
+    shadow 'fr.hyriode:hyricommon:1.0.0-SNAPSHOT'
+    shadow 'redis.clients:jedis:3.6.3'
 }

@@ -1,9 +1,9 @@
 package fr.hyriode.hyriapi.impl.listener.global;
 
+import fr.hyriode.common.title.Title;
 import fr.hyriode.hyriapi.impl.HyriPlugin;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
-import fr.hyriode.tools.title.Title;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
