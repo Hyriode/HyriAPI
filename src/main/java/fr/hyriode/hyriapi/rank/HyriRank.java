@@ -70,4 +70,16 @@ public abstract class HyriRank {
         this.permissions = permissions;
     }
 
+    public void addPermission(HyriPermission permission) {
+        this.permissions.add(permission);
+    }
+
+    public void removePermission(HyriPermission permission) {
+        this.permissions.remove(permission);
+    }
+
+    public boolean hasPermission(HyriPermission permission) {
+        return this.permissions.contains(permission);
+    }
+
 }
