@@ -10,7 +10,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '0.0.3-SNAPSHOT'
+version = '0.0.4-SNAPSHOT'
 archivesBaseName = 'HyriAPI'
 
 java {
@@ -40,26 +40,9 @@ repositories {
             password System.getenv('TOKEN')
         }
     }
-
-    maven {
-        name = 'HyriCommon_maven'
-        url = 'https://maven.pkg.github.com/Hyriode/HyriCommon/'
-
-        credentials {
-            username System.getenv('USERNAME')
-            password System.getenv('TOKEN')
-        }
-    }
 }
 
 shadowJar {
-    configurations = [project.configurations.shadow]
-    exclude 'fr/hyriode/hyriapi/impl'
-}
-
-task implJar(type: ShadowJar) {
-    archiveBaseName.set('Impl')
-    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
     configurations = [project.configurations.shadow]
 }
 
@@ -108,9 +91,6 @@ publishing {
 }
 
 dependencies {
-    shadow fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     shadow 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
-    shadow 'fr.hyriode:hyricommon:1.0.0-SNAPSHOT'
     shadow 'redis.clients:jedis:3.6.3'
 }
