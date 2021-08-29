@@ -21,9 +21,10 @@ public interface IHyriPlayerManager {
      * Create a player with a given {@link UUID}
      *
      * @param uuid - Player {@link UUID}
+     * @param name - Player name
      * @return - The created player
      */
-    IHyriPlayer createPlayer(UUID uuid);
+    IHyriPlayer createPlayer(UUID uuid, String name);
 
     /**
      * Send a player in Redis cache
