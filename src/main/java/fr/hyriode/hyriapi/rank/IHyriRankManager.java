@@ -1,5 +1,7 @@
 package fr.hyriode.hyriapi.rank;
 
+import java.util.List;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -38,5 +40,12 @@ public interface IHyriRankManager {
      * @param permission - Given permission (to remove)
      */
     void removePermission(HyriRank rank, HyriPermission permission);
+
+    /**
+     * Get all ranks
+     *
+     * @return - A list of rank
+     */
+    List<HyriRank> getRanks();
 
 }
