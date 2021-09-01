@@ -77,6 +77,14 @@ public interface IHyriPlayer {
     IHyriMoney getHyode();
 
     /**
+     * Get money by name
+     *
+     * @param name - Money name
+     * @return - {@link IHyriMoney}
+     */
+    IHyriMoney getMoney(String name);
+
+    /**
      * Replace Hyris or Hyode if instance of
      *
      * @param money - New money

@@ -105,4 +105,24 @@ public interface IHyriPlayerSettings {
      */
     void setTagSoundEnabled(boolean tagSoundEnabled);
 
+    /**
+     * Get player language
+     *
+     * @return - {@link Language}
+     */
+    Language getLanguage();
+
+
+    /**
+     * Set player language
+     *
+     * @param language - {@link Language}
+     */
+    void setLanguage(Language language);
+
+    enum Language {
+        FR,
+        EN
+    }
+
 }
