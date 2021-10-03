@@ -1,6 +1,5 @@
 package fr.hyriode.hyriapi.cosmetics;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,5 +66,5 @@ public interface IHyriCosmeticsManager {
      * Get all registered cosmetics
      * @return The map of all registered cosmetics
      */
-    HashMap<String, IHyriCosmetic> getRegisteredCosmetics();
+    List<IHyriCosmetic> getRegisteredCosmetics();
 }
