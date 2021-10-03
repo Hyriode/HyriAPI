@@ -128,7 +128,21 @@ public interface IHyriPlayer {
      */
     void setSettings(IHyriPlayerSettings settings);
 
+    /**
+     * Get the cosmetics of the player
+     * @return A list of cosmetics
+     */
     List<IHyriCosmetic> getCosmetics();
-    void giveCosmetic(IHyriCosmetic cosmetic);
-    void giveCosmetics(List<IHyriCosmetic> cosmetics);
+
+    /**
+     * Add a cosmetic to the player
+     * @param cosmetic The cosmetic to add
+     */
+    void addCosmetic(IHyriCosmetic cosmetic);
+
+    /**
+     * Remove cosmetic to the player
+     * @param cosmetic The cosmetic to remove
+     */
+    void removeCosmetic(IHyriCosmetic cosmetic);
 }
