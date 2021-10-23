@@ -23,10 +23,5 @@ public interface IHyriCosmetic {
     /**
      * Turn on the cosmetic
      */
-    void activate();
-
-    /**
-     * Stop the cosmetic run task
-     */
-    void stop();
+    void start();
 }
