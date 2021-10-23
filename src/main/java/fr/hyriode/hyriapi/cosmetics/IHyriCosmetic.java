@@ -1,5 +1,7 @@
 package fr.hyriode.hyriapi.cosmetics;
 
+import fr.hyriode.hyriapi.player.IHyriPlayer;
+
 public interface IHyriCosmetic {
 
     /**
@@ -21,7 +23,8 @@ public interface IHyriCosmetic {
     HyriCosmeticRarity getRarity();
 
     /**
-     * Turn on the cosmetic
+     * Get The Runnable Task
+     * @return The task
      */
-    void start();
+    IHyriCosmeticTask getTask(IHyriPlayer player);
 }
