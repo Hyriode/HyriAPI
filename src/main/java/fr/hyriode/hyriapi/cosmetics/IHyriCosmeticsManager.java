@@ -15,10 +15,17 @@ public interface IHyriCosmeticsManager {
     IHyriCosmetic getCosmetic(String name);
 
     /**
+     * Get a cosmetic with his Class
+     * @param cosmetic The class of the Cosmetic
+     * @return The cosmetic registered with the given class
+     */
+    IHyriCosmetic getCosmetic(Class<? extends IHyriCosmetic> cosmetic);
+
+    /**
      * Register a cosmetic
      * @param cosmetic The cosmetic to register
      */
-    void registerCosmetic(IHyriCosmetic cosmetic);
+    void registerCosmetic(Class<? extends IHyriCosmetic> cosmetic);
 
 
     /**
@@ -26,7 +33,7 @@ public interface IHyriCosmeticsManager {
      * @param uuid The player UUID
      * @return A list of owned cosmetics
      */
-    List<IHyriCosmetic> getCosmetics(UUID uuid);
+    List<Class<? extends IHyriCosmetic>> getCosmetics(UUID uuid);
 
     /**
      * Check if player has a cosmetic
@@ -68,25 +75,11 @@ public interface IHyriCosmeticsManager {
      * Get all registered cosmetics
      * @return The map of all registered cosmetics
      */
-    List<IHyriCosmetic> getRegisteredCosmetics();
+    List<Class<? extends IHyriCosmetic>> getRegisteredCosmetics();
 
     /**
-     * Turn on a Cosmetic for a Player
-     * @param player The player to activate cosmetic
-     * @param cosmetic The cosmetic to turn on
+     * Stop a cosmetic for all players
+     * @param cosmetic The cosmetic to stop
      */
-    void callCosmetic(IHyriPlayer player, IHyriCosmetic cosmetic);
-
-    /**
-     * Turn off a Cosmetic for a Player
-     * @param player The player to turn off cosmetic
-     * @param cosmetic The cosmetic to turn off
-     */
-    void stopCosmetic(IHyriPlayer player, IHyriCosmetic cosmetic);
-
-    /**
-     * Stop all cosmetics for a player
-     * @param player The player to stop cosmetics
-     */
-    void stopAllCosmetics(IHyriPlayer player);
+    void stopForAllPlayers(IHyriCosmetic cosmetic);
 }

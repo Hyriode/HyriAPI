@@ -23,8 +23,19 @@ public interface IHyriCosmetic {
     HyriCosmeticRarity getRarity();
 
     /**
-     * Get The Runnable Task
-     * @return The task
+     * Start the cosmetic
+     * @param player The player to start cosmetic
      */
-    IHyriCosmeticTask getTask(IHyriPlayer player);
+    void start(IHyriPlayer player);
+
+    /**
+     * Stop the cosmetic
+     * @param player The player to stop cosmetic
+     */
+    void stop(IHyriPlayer player);
+
+    /**
+     * Stop all this cosmetic
+     */
+    void stopAll();
 }
