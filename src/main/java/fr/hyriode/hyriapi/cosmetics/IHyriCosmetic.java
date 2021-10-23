@@ -35,7 +35,7 @@ public interface IHyriCosmetic {
     void stop(IHyriPlayer player);
 
     /**
-     * Stop all this cosmetic
+     * Stop this cosmetic for all players who have activated it
      */
-    void stopAll();
+    void stop();
 }
