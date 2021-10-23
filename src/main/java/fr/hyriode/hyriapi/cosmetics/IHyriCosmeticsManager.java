@@ -1,5 +1,7 @@
 package fr.hyriode.hyriapi.cosmetics;
 
+import fr.hyriode.hyriapi.player.IHyriPlayer;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -67,4 +69,18 @@ public interface IHyriCosmeticsManager {
      * @return The map of all registered cosmetics
      */
     List<IHyriCosmetic> getRegisteredCosmetics();
+
+    /**
+     * Turn on a Cosmetic for a Player
+     * @param player The player to activate cosmetic
+     * @param cosmetic The cosmetic to turn on
+     */
+    void callCosmetic(IHyriPlayer player, IHyriCosmetic cosmetic);
+
+    /**
+     * Turn off a Cosmetic for a Player
+     * @param player The player to turn off cosmetic
+     * @param cosmetic The cosmetic to turn off
+     */
+    void stopCosmetic(IHyriPlayer player, IHyriCosmetic cosmetic);
 }
