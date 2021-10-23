@@ -83,4 +83,10 @@ public interface IHyriCosmeticsManager {
      * @param cosmetic The cosmetic to turn off
      */
     void stopCosmetic(IHyriPlayer player, IHyriCosmetic cosmetic);
+
+    /**
+     * Stop all cosmetics for a player
+     * @param player The player to stop cosmetics
+     */
+    void stopAllCosmetics(IHyriPlayer player);
 }
