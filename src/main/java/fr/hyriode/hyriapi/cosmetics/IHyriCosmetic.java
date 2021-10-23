@@ -22,9 +22,8 @@ public interface IHyriCosmetic {
 
     /**
      * Turn on the cosmetic
-     * @return A runnable, which represent the Cosmetic Task
      */
-    Runnable activate();
+    void activate();
 
     /**
      * Stop the cosmetic run task
