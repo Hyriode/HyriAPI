@@ -76,10 +76,4 @@ public interface IHyriCosmeticsManager {
      * @return The map of all registered cosmetics
      */
     List<Class<? extends IHyriCosmetic>> getRegisteredCosmetics();
-
-    /**
-     * Stop a cosmetic for all players
-     * @param cosmetic The cosmetic to stop
-     */
-    void stopForAllPlayers(Class<? extends IHyriCosmetic> cosmetic);
 }
