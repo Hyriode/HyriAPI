@@ -19,4 +19,15 @@ public interface IHyriCosmetic {
      * @return The rarity of the cosmetic
      */
     HyriCosmeticRarity getRarity();
+
+    /**
+     * Turn on the cosmetic
+     * @return A runnable, which represent the Cosmetic Task
+     */
+    Runnable activate();
+
+    /**
+     * Stop the cosmetic run task
+     */
+    void stop();
 }
