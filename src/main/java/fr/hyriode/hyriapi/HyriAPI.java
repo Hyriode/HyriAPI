@@ -1,5 +1,6 @@
 package fr.hyriode.hyriapi;
 
+import fr.hyriode.hyriapi.cosmetics.IHyriCosmeticsManager;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.party.IHyriPartyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
@@ -79,6 +80,13 @@ public abstract class HyriAPI {
      * @return - {@link IHyriRankManager}
      */
     public abstract IHyriRankManager getRankManager();
+
+    /**
+     * Get the cosmetics manager
+     * @return {@link IHyriCosmeticsManager}
+     */
+
+    public abstract IHyriCosmeticsManager getCosmeticsManager();
 
     /**
      * Get the instance of {@link HyriAPI}
