@@ -1,9 +1,11 @@
 package fr.hyriode.hyriapi.player;
 
+import fr.hyriode.hyriapi.cosmetics.HyriCosmetic;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -126,4 +128,21 @@ public interface IHyriPlayer {
      */
     void setSettings(IHyriPlayerSettings settings);
 
+    /**
+     * Get the cosmetics of the player
+     * @return A list of cosmetics
+     */
+    List<Class<? extends HyriCosmetic>> getCosmetics();
+
+    /**
+     * Add a cosmetic to the player
+     * @param cosmetic The cosmetic to add
+     */
+    void addCosmetic(Class<? extends HyriCosmetic> cosmetic);
+
+    /**
+     * Remove cosmetic to the player
+     * @param cosmetic The cosmetic to remove
+     */
+    void removeCosmetic(Class<? extends HyriCosmetic> cosmetic);
 }
