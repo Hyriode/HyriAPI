@@ -16,6 +16,7 @@ public abstract class HyriCosmetic {
 
     /**
      * Get the name of the cosmetic
+     *
      * @return Cosmetic name
      */
     public String getName() {
@@ -24,6 +25,7 @@ public abstract class HyriCosmetic {
 
     /**
      * Get the type of the cosmetic
+     *
      * @return The type of the cosmetic
      */
     public HyriCosmeticType getType() {
@@ -32,6 +34,7 @@ public abstract class HyriCosmetic {
 
     /**
      * Get the rarity of the cosmetic
+     *
      * @return The rarity of the cosmetic
      */
     public HyriCosmeticRarity getRarity() {
@@ -40,11 +43,13 @@ public abstract class HyriCosmetic {
 
     /**
      * Start the cosmetic
+     *
      * @param player The player to start cosmetic
      */
     public abstract void start(IHyriPlayer player);
 
     /**
+     *
      * Stop the cosmetic
      * @param player The player to stop cosmetic
      */
@@ -54,4 +59,5 @@ public abstract class HyriCosmetic {
      * Stop this cosmetic for all players who have activated it
      */
     public abstract void stop();
+
 }

@@ -1,16 +1,9 @@
-import java.nio.charset.StandardCharsets
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-plugins {
-    id "com.github.johnrengelman.shadow" version "7.0.0"
-}
-
 apply plugin: 'idea'
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '0.0.7-SNAPSHOT'
+version = '0.0.8'
 archivesBaseName = 'HyriAPI'
 
 java {
@@ -20,16 +13,12 @@ java {
 }
 
 compileJava {
-    targetCompatibility = sourceCompatibility = JavaVersion.VERSION_1_8
-    options.encoding = StandardCharsets.UTF_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'UTF-8'
 }
 
 repositories {
     mavenCentral()
-
-    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-
-    maven { url = 'https://oss.sonatype.org/content/groups/public/' }
 
     maven {
         name = 'HyggdrasilConnector_maven'
@@ -40,10 +29,6 @@ repositories {
             password System.getenv('TOKEN')
         }
     }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadow]
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -72,7 +57,7 @@ publishing {
                 artifactId = 'hyriapi'
                 version = project.version
                 name = 'HyriAPI'
-                description = 'Project with abstract layer of HyriAPI'
+                description = 'Project with the abstract layer of HyriAPI'
                 url = 'https://github.com/Hyriode/HyriAPI'
             }
         }
@@ -91,6 +76,6 @@ publishing {
 }
 
 dependencies {
-    shadow 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
-    shadow 'redis.clients:jedis:3.6.3'
+    api 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
+    api 'redis.clients:jedis:3.7.0'
 }

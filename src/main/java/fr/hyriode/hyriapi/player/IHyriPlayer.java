@@ -5,6 +5,7 @@ import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +50,41 @@ public interface IHyriPlayer {
      * @return - Player {@link UUID}
      */
     UUID getUUID();
+
+    /**
+     * Get the first login {@link Date} of the player
+     *
+     * @return - {@link Date}
+     */
+    Date getFirstLoginDate();
+
+    /**
+     * Get the last login {@link Date} of the player
+     *
+     * @return - {@link Date}
+     */
+    Date getLastLoginDate();
+
+    /**
+     * Set the last login {@link Date} of the player
+     *
+     * @param date - The new {@link Date}
+     */
+    void setLastLoginDate(Date date);
+
+    /**
+     * Get player play time on the network
+     *
+     * @return - Player play time
+     */
+    long getPlayTime();
+
+    /**
+     * Set player play time on the network
+     *
+     * @param time - New player play time
+     */
+    void setPlayTime(long time);
 
     /**
      * Get player rank
@@ -108,7 +144,7 @@ public interface IHyriPlayer {
     void setParty(UUID party);
 
     /**
-     * Get if the player is in a party
+     * Check if the player is in a member of a party
      *
      * @return - <code>true</code> if player has one
      */
@@ -130,19 +166,23 @@ public interface IHyriPlayer {
 
     /**
      * Get the cosmetics of the player
+     *
      * @return A list of cosmetics
      */
     List<Class<? extends HyriCosmetic>> getCosmetics();
 
     /**
      * Add a cosmetic to the player
+     *
      * @param cosmetic The cosmetic to add
      */
     void addCosmetic(Class<? extends HyriCosmetic> cosmetic);
 
     /**
      * Remove cosmetic to the player
+     *
      * @param cosmetic The cosmetic to remove
      */
     void removeCosmetic(Class<? extends HyriCosmetic> cosmetic);
+
 }
