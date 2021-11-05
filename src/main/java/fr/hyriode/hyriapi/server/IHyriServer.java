@@ -10,11 +10,19 @@ import fr.hyriode.hyggdrasilconnector.api.ServerState;
 public interface IHyriServer {
 
     /**
-     * Get server id
+     * Get server name
      *
-     * @return Server id
+     * @return Server name
      */
-    String getId();
+    String getName();
+
+
+    /**
+     * Get server type
+     *
+     * @return Server type
+     */
+    String getType();
 
     /**
      * Get server started time
@@ -24,20 +32,6 @@ public interface IHyriServer {
     long getStartedTime();
 
     /**
-     * Get server slots
-     *
-     * @return Server slots
-     */
-    int getSlots();
-
-    /**
-     * Set server slots
-     *
-     * @param slots - Server slots
-     */
-    void setSlots(int slots);
-
-    /**
      * Get server players
      *
      * @return Server players
@@ -45,24 +39,10 @@ public interface IHyriServer {
     int getPlayers();
 
     /**
-     * Set server players
-     *
-     * @param players - Server players
-     */
-    void setPlayers(int players);
-
-    /**
      * Get server state
      *
      * @return Server state
      */
     ServerState getState();
-
-    /**
-     * Set server state
-     *
-     * @param state - Server state
-     */
-    void setState(ServerState state);
 
 }

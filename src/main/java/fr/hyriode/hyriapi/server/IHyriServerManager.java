@@ -13,25 +13,25 @@ public interface IHyriServerManager {
     /**
      * Get the list of all servers currently running
      *
-     * @return - A list of {@link String} (a {@link String} represents in this case the id of a server)
+     * @return - A list of {@link IHyriServer}
      */
-    List<String> getServers();
+    List<IHyriServer> getServers();
 
     /**
-     * Get the list of all servers currently running with a given prefix
-     * Example: "lobby" prefix given, return all servers with an id starting with lobby
+     * Get the list of all servers currently running with the given type
+     * Example: "lobby" type given, return all servers with the same type
      *
-     * @param prefix - Servers prefix
-     * @return - A list of {@link String} (a {@link String} represents in this case the id of a server)
+     * @param type - Servers type
+     * @return - A list of {@link IHyriServer}
      */
-    List<String> getServers(String prefix);
+    List<IHyriServer> getServers(String type);
 
     /**
      * Get the actual best lobby server
      *
-     * @return - A {@link String} which represents the id of the lobby server
+     * @return - A {@link IHyriServer}
      */
-    String getLobbyServer();
+    IHyriServer getLobbyServer();
 
     /**
      * Send a player to a lobby
@@ -44,9 +44,16 @@ public interface IHyriServerManager {
      * Send a player to a given server
      *
      * @param playerUuid - The {@link UUID} of a given player
-     * @param server - A {@link String} which represents the id of a server
+     * @param serverId - A {@link String} which represents the id of a server
      */
-    void sendPlayerToServer(UUID playerUuid, String server);
+    void sendPlayerToServer(UUID playerUuid, String serverId);
+
+    /**
+     * Create a server with a given type
+     *
+     * @param type - Server type
+     */
+    void createServer(String type);
 
 
 }

@@ -4,6 +4,7 @@ import fr.hyriode.hyriapi.cosmetics.IHyriCosmeticsManager;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.party.IHyriPartyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayerManager;
+import fr.hyriode.hyriapi.pubsub.IHyriPubSub;
 import fr.hyriode.hyriapi.rank.IHyriRankManager;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
@@ -31,9 +32,15 @@ public abstract class HyriAPI {
      */
     public abstract Jedis getJedisResource();
 
+    /**
+     * Get the Redis PubSub manager
+     *
+     * @return - {@link IHyriPubSub}
+     */
+    public abstract IHyriPubSub getPubSub();
 
     /**
-     * Get the current server where HyriAPI is running (ex: lobby-dsf546)
+     * Get the current server where HyriAPI is running (ex: lobby-d7g2)
      *
      * @return - Current server
      */
