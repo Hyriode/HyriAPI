@@ -19,7 +19,7 @@ public class HyriPacket {
      *
      * @param json - Given json
      */
-    void setJson(String json) {
+    public void setJson(String json) {
         this.json = json;
     }
 
