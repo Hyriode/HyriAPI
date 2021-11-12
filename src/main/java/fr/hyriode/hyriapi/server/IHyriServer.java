@@ -1,7 +1,5 @@
 package fr.hyriode.hyriapi.server;
 
-import fr.hyriode.hyggdrasilconnector.api.ServerState;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -38,11 +36,11 @@ public interface IHyriServer {
      */
     int getPlayers();
 
-    /**
+    /** IN DEV: WAITING NEW HYGGDRASIL VERSION
      * Get server state
      *
      * @return Server state
      */
-    ServerState getState();
+    // ServerState getState();
 
 }

@@ -1,6 +1,5 @@
 package fr.hyriode.hyriapi.rank;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,10 +32,6 @@ public abstract class HyriRank {
         this.description = description;
         this.permissions = permissions;
     }
-
-    /**
-     * Getters and Setters
-     */
 
     public String getName() {
         return this.name;

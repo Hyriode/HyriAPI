@@ -3,7 +3,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '0.0.9'
+version = '1.0.0'
 archivesBaseName = 'HyriAPI'
 
 java {
@@ -19,16 +19,6 @@ compileJava {
 
 repositories {
     mavenCentral()
-
-    maven {
-        name = 'HyggdrasilConnector_maven'
-        url = 'https://maven.pkg.github.com/Hyriode/HyggdrasilConnector/'
-
-        credentials {
-            username System.getenv('USERNAME')
-            password System.getenv('TOKEN')
-        }
-    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -76,6 +66,6 @@ publishing {
 }
 
 dependencies {
-    api 'fr.hyriode:hyggdrasil-connector:1.0.12-SNAPSHOT'
     api 'redis.clients:jedis:3.7.0'
+    api 'com.google.code.gson:gson:2.8.9'
 }
