@@ -1,7 +1,7 @@
 package fr.hyriode.hyriapi.pubsub.receiver;
 
 /**
- * Project: TestProject
+ * Project: HyriAPI
  * Created by AstFaster
  * on 04/11/2021 at 13:54
  */

@@ -3,7 +3,7 @@ package fr.hyriode.hyriapi.pubsub.receiver;
 import fr.hyriode.hyriapi.pubsub.HyriPacket;
 
 /**
- * Project: TestProject
+ * Project: HyriAPI
  * Created by AstFaster
  * on 05/11/2021 at 10:27
  */

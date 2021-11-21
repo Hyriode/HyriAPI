@@ -108,21 +108,16 @@ public interface IHyriPlayerSettings {
     /**
      * Get player language
      *
-     * @return - {@link Language}
+     * @return - {@link HyriLanguage}
      */
-    Language getLanguage();
+    HyriLanguage getLanguage();
 
 
     /**
      * Set player language
      *
-     * @param language - {@link Language}
+     * @param language - {@link HyriLanguage}
      */
-    void setLanguage(Language language);
-
-    enum Language {
-        FR,
-        EN
-    }
+    void setLanguage(HyriLanguage language);
 
 }

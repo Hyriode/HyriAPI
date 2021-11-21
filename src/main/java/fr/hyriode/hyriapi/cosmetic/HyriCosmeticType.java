@@ -1,4 +1,4 @@
-package fr.hyriode.hyriapi.cosmetics;
+package fr.hyriode.hyriapi.cosmetic;
 
 public enum HyriCosmeticType {
     PARTICLES,

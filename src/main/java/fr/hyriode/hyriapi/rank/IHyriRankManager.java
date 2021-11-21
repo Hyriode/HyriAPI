@@ -34,12 +34,37 @@ public interface IHyriRankManager {
     void addPermission(HyriRank rank, HyriPermission permission);
 
     /**
+     * Add a permission to a given rank
+     *
+     * @param rank - Given rank
+     * @param permission - Given permission (to add)
+     */
+    void addPermission(EHyriRank rank, HyriPermission permission);
+
+    /**
      * Remove a permission from a given rank
      *
      * @param rank - Given rank
      * @param permission - Given permission (to remove)
      */
     void removePermission(HyriRank rank, HyriPermission permission);
+
+    /**
+     * Remove a permission from a given rank
+     *
+     * @param rank - Given rank
+     * @param permission - Given permission (to remove)
+     */
+    void removePermission(EHyriRank rank, HyriPermission permission);
+
+    /**
+     * Check if a given rank has a permission
+     *
+     * @param rank Rank
+     * @param permission Permission to check
+     * @return <code>true</code> if yes
+     */
+    boolean hasPermission(EHyriRank rank, HyriPermission permission);
 
     /**
      * Get all ranks
