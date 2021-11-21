@@ -1,5 +1,7 @@
 package fr.hyriode.hyriapi.player;
 
+import fr.hyriode.hyriapi.rank.HyriPermission;
+
 import java.util.UUID;
 
 /**
@@ -72,5 +74,14 @@ public interface IHyriPlayerManager {
      * @return - Player ping
      */
     int getPing(UUID uuid);
+
+    /**
+     * Check if a player has a given permission
+     *
+     * @param uuid Player {@link UUID}
+     * @param permission Permission to check
+     * @return <code>true</code> if yes
+     */
+    boolean hasPermission(UUID uuid, HyriPermission permission);
 
 }

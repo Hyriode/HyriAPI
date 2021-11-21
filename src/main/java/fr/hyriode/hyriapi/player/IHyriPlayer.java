@@ -1,6 +1,6 @@
 package fr.hyriode.hyriapi.player;
 
-import fr.hyriode.hyriapi.cosmetics.HyriCosmetic;
+import fr.hyriode.hyriapi.cosmetic.HyriCosmetic;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
@@ -31,6 +31,13 @@ public interface IHyriPlayer {
     String getCustomName();
 
     /**
+     * Set player's custom name
+     *
+     * @param customName - Player's custom name
+     */
+    void setCustomName(String customName);
+
+    /**
      * Get current display name: name or custom name
      *
      * @return - Display name
@@ -38,11 +45,11 @@ public interface IHyriPlayer {
     String getDisplayName();
 
     /**
-     * Get if player has nickname
+     * Get if player has a custom name
      *
-     * @return <code>true</code> if player has nickname
+     * @return <code>true</code> if player has a custom name
      */
-    boolean hasNickname();
+    boolean hasCustomName();
 
     /**
      * Get player uuid
@@ -99,6 +106,20 @@ public interface IHyriPlayer {
      * @param rank - {@link HyriRank}
      */
     void setRank(HyriRank rank);
+
+    /**
+     * Set player prefix
+     *
+     * @return - Player's prefix
+     */
+    String getPrefix();
+
+    /**
+     * Set player's prefix
+     *
+     * @param prefix - New prefix
+     */
+    void setPrefix(String prefix);
 
     /**
      * Get player Hyris money

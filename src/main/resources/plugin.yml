@@ -1,0 +1,3 @@
+name: HyriAPI
+main: fr.hyriode.hyriapi.impl.HyriAPIPlugin
+version: 1.0.1

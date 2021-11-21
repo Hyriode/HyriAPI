@@ -1,9 +1,9 @@
-package fr.hyriode.hyriapi.cosmetics;
+package fr.hyriode.hyriapi.cosmetic;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface IHyriCosmeticsManager {
+public interface IHyriCosmeticManager {
 
     /**
      * Get a cosmetic with his name
@@ -74,4 +74,5 @@ public interface IHyriCosmeticsManager {
      * @return The map of all registered cosmetics
      */
     List<Class<? extends HyriCosmetic>> getRegisteredCosmetics();
+
 }
