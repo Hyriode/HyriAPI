@@ -22,12 +22,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
-        env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.TOKEN }}
-
       - name: Build shaded implementation Jar
         run: ./gradlew implJar
         env:
