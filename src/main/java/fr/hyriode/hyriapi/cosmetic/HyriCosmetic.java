@@ -1,7 +1,6 @@
 package fr.hyriode.hyriapi.cosmetic;
 
 import fr.hyriode.hyriapi.player.IHyriPlayer;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class HyriCosmetic {
 
@@ -52,10 +51,9 @@ public abstract class HyriCosmetic {
     /**
      * Stop the cosmetic
      *
-     * @param plugin Spigot plugin
      * @param player The player to stop cosmetic
      */
-    public abstract void stop(JavaPlugin plugin, IHyriPlayer player);
+    public abstract void stop(IHyriPlayer player);
 
     /**
      * Stop this cosmetic for all players who have activated it
