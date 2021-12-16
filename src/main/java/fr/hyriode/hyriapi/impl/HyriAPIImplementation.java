@@ -61,8 +61,6 @@ public class HyriAPIImplementation extends HyriAPI {
     private final HyriRedisProcessor redisProcessor;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
-        super(plugin.getLogger());
-
         this.redisConnection = new HyriRedisConnection(plugin);
         this.redisProcessor = new HyriRedisProcessor();
         this.pubSub = new HyriPubSub();

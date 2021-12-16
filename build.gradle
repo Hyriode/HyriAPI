@@ -9,7 +9,7 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '1.0.1'
+version = '1.0.2'
 archivesBaseName = 'HyriAPI'
 
 java {
@@ -31,6 +31,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
     exclude 'fr/hyriode/hyriapi/impl'
     exclude 'plugin.yml'
+    classifier ''
 }
 
 task implJar(type: ShadowJar) {
@@ -59,10 +60,10 @@ artifacts {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        maven(MavenPublication) { publication ->
+            project.shadow.component(publication)
             artifact tasks.sourcesJar
             artifact tasks.javadocJar
-            artifact shadowJar
 
             pom {
                 groupId = project.group
@@ -92,4 +93,10 @@ dependencies {
     shadow 'redis.clients:jedis:3.7.0'
     shadow 'com.google.code.gson:gson:2.8.9'
     shadow 'org.slf4j:slf4j-nop:1.7.32'
+}
+
+processResources {
+    filter {
+        it.replace('@version@', project.version)
+    }
 }

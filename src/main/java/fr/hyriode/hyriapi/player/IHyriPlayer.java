@@ -108,20 +108,6 @@ public interface IHyriPlayer {
     void setRank(HyriRank rank);
 
     /**
-     * Set player prefix
-     *
-     * @return - Player's prefix
-     */
-    String getPrefix();
-
-    /**
-     * Set player's prefix
-     *
-     * @param prefix - New prefix
-     */
-    void setPrefix(String prefix);
-
-    /**
      * Get player Hyris money
      *
      * @return - Hyris money

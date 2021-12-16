@@ -33,7 +33,6 @@ public class HyriPlayer implements IHyriPlayer {
     private HyrisMoney hyris;
 
     private String rank;
-    private String prefix;
 
     private long playTime;
 
@@ -50,7 +49,6 @@ public class HyriPlayer implements IHyriPlayer {
         this.firstLoginDate = new Date(System.currentTimeMillis());
         this.lastLoginDate = this.firstLoginDate;
         this.rank = EHyriRankImpl.PLAYER.get().getName();
-        this.prefix = this.getRank().getDisplayName();
         this.hyris = new HyrisMoney(this.uuid);
         this.hyode = new HyodeMoney(this.uuid);
         this.party = null;
@@ -121,16 +119,6 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setRank(HyriRank rank) {
         this.rank = rank.getName();
-    }
-
-    @Override
-    public String getPrefix() {
-        return this.prefix;
-    }
-
-    @Override
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @Override

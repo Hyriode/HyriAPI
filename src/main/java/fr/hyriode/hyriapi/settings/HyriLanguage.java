@@ -34,4 +34,13 @@ public enum HyriLanguage {
         return this.code;
     }
 
+    public static HyriLanguage getByCode(String code) {
+        for (HyriLanguage language : values()) {
+            if (language.getCode().equalsIgnoreCase(code)) {
+                return language;
+            }
+        }
+        return null;
+    }
+
 }

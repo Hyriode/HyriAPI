@@ -11,10 +11,10 @@ import fr.hyriode.hyriapi.redis.IHyriRedisProcessor;
 import fr.hyriode.hyriapi.server.IHyriServer;
 import fr.hyriode.hyriapi.server.IHyriServerManager;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettingsManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
 import redis.clients.jedis.Jedis;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class HyriAPI {
 
@@ -25,10 +25,18 @@ public abstract class HyriAPI {
      */
     private static HyriAPI instance;
 
-    public HyriAPI(Logger logger) {
+    public HyriAPI() {
         instance = this;
 
-        logger.log(Level.INFO, "Registered '" + this.getClass().getName() + "' as an implementation of " + NAME + ".");
+        final ChatColor color = ChatColor.DARK_AQUA;
+        final ConsoleCommandSender sender = Bukkit.getConsoleSender();
+
+        sender.sendMessage(color + "  _  _          _   _   ___ ___ ");
+        sender.sendMessage(color + " | || |_  _ _ _(_) /_\\ | _ \\_ _|");
+        sender.sendMessage(color + " | __ | || | '_| |/ _ \\|  _/| | ");
+        sender.sendMessage(color + " |_||_|\\_, |_| |_/_/ \\_\\_| |___|");
+        sender.sendMessage(color + "       |__/                     ");
+        sender.sendMessage(color + "[" + NAME + "] " + ChatColor.RESET + "Registered '" + this.getClass().getName() + "' as an implementation of " + NAME + ".");
     }
 
     /**
@@ -121,6 +129,18 @@ public abstract class HyriAPI {
      */
     public static HyriAPI get() {
         return instance;
+    }
+
+    private static final class HyrameNotRegisteredException extends IllegalStateException {
+
+        public HyrameNotRegisteredException() {
+            super(NAME + " has not been registered yet!\n" +
+                    "\n        These might be the following reasons:\n" +
+                    "          1) The " + NAME + " plugin is not installed or it failed while enabling\n" +
+                    "          2) Your plugin is loading before " + NAME + "\n" +
+                    "          3) No implementation of " + NAME + " exists\n");
+        }
+
     }
 
 }

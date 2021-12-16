@@ -1,6 +1,9 @@
 package fr.hyriode.hyriapi.rank;
 
+import fr.hyriode.hyriapi.settings.HyriLanguage;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * Project: HyriAPI
@@ -9,27 +12,23 @@ import java.util.List;
  */
 public abstract class HyriRank {
 
-    /**
-     * Fields
-     */
-
+    /** Rank's name */
     private String name;
-    private String displayName;
-    private String description;
+    /** Rank's display names */
+    private Map<HyriLanguage, String> displayNames;
+    /** Permissions associated to the ranks */
     private List<HyriPermission> permissions;
 
     /**
      * Default constructor of {@link HyriRank}
      *
-     * @param name - Rank name
-     * @param displayName - Rank display name
-     * @param description - Rank description
-     * @param permissions - Rank permissions
+     * @param name Rank name
+     * @param displayNames Rank display names
+     * @param permissions Rank permissions
      */
-    public HyriRank(String name, String displayName, String description, List<HyriPermission> permissions) {
+    public HyriRank(String name, Map<HyriLanguage, String> displayNames, List<HyriPermission> permissions) {
         this.name = name;
-        this.displayName = displayName;
-        this.description = description;
+        this.displayNames = displayNames;
         this.permissions = permissions;
     }
 
@@ -41,20 +40,12 @@ public abstract class HyriRank {
         this.name = name;
     }
 
-    public String getDisplayName() {
-        return this.displayName;
+    public Map<HyriLanguage, String> getDisplayNames() {
+        return this.displayNames;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDisplayNames(Map<HyriLanguage, String> displayNames) {
+        this.displayNames = displayNames;
     }
 
     public List<HyriPermission> getPermissions() {
@@ -75,6 +66,10 @@ public abstract class HyriRank {
 
     public boolean hasPermission(HyriPermission permission) {
         return this.permissions.contains(permission);
+    }
+
+    public EHyriRank getType() {
+        return EHyriRank.getByName(this.name);
     }
 
 }

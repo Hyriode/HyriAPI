@@ -5,4 +5,5 @@ public enum HyriCosmeticType {
     TRAIL,
     MOUNT,
     PET,
+    GADGET
 }
