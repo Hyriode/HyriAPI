@@ -1,7 +1,12 @@
 package fr.hyriode.hyriapi.impl.rank;
 
+import fr.hyriode.hyriapi.rank.EHyriRank;
 import fr.hyriode.hyriapi.rank.HyriRank;
+import fr.hyriode.hyriapi.settings.HyriLanguage;
 import org.bukkit.ChatColor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Project: HyriAPI
@@ -11,33 +16,39 @@ import org.bukkit.ChatColor;
 public enum EHyriRankImpl {
 
     /** Player */
-    PLAYER(11, new DefaultHyriRank("player", ChatColor.GRAY + "Joueur", "")),
-    CUSTOM(10, new DefaultHyriRank("custom", ChatColor.DARK_GRAY + "Custom", "")),
+    PLAYER(EHyriRank.PLAYER, ChatColor.GRAY, "", ""),
+    VIP(EHyriRank.VIP, ChatColor.YELLOW, "VIP", "VIP"),
+    VIP_PLUS(EHyriRank.VIP_PLUS,  ChatColor.GREEN, "VIP+", "VIP+"),
+    EPIC(EHyriRank.EPIC, ChatColor.AQUA, "Epic", "Epic"),
 
     /** Content creator */
-    STREAMER(9, new DefaultHyriRank("streamer", ChatColor.DARK_PURPLE + "Streamer", "")),
-    YOUTUBER(8, new DefaultHyriRank("youtuber", ChatColor.GOLD + "Youtubeur", "")),
+    STREAMER(EHyriRank.STREAMER, ChatColor.LIGHT_PURPLE, "Streamer", "Streamer"),
+    YOUTUBER(EHyriRank.YOUTUBER, ChatColor.GOLD, "Youtubeur", "Youtuber"),
 
     /** Staff */
-    BUILDER(7, new DefaultHyriRank("builder", ChatColor.DARK_GREEN + "Buildeur", "")),
-    DESIGNER(6, new DefaultHyriRank("designer", ChatColor.DARK_GREEN + "Graphiste", "")),
-    DEVELOPER(5,new DefaultHyriRank("developer", ChatColor.DARK_GREEN + "Développeur", "")),
-    HELPER(4, new DefaultHyriRank("helper", ChatColor.BLUE + "Assistant", "")),
-    MODERATOR(3, new DefaultHyriRank("moderator", ChatColor.BLUE + "Modérateur", "")),
-    SUPER_MODERATOR(2, new DefaultHyriRank("super_moderator", ChatColor.BLUE + "SuperMod.", "")),
-    MANAGER(1, new DefaultHyriRank("manager", ChatColor.RED + "Responsable", "")),
-    ADMINISTRATOR(0, new DefaultHyriRank("administrator", ChatColor.DARK_RED + "Admin", ""));
+    STAFF(EHyriRank.STAFF, ChatColor.DARK_GRAY, "Staff", "Staff"),
+    HELPER(EHyriRank.HELPER, ChatColor.DARK_PURPLE, "Assistant", "Helper"),
+    DEVELOPER(EHyriRank.DEVELOPER, ChatColor.DARK_GREEN, "Dev", "Dev"),
+    MODERATOR(EHyriRank.MODERATOR, ChatColor.DARK_AQUA, "Mod", "Mod"),
+    MANAGER(EHyriRank.MANAGER, ChatColor.BLUE, "Resp", "Manager"),
+    ADMINISTRATOR(EHyriRank.ADMINISTRATOR, ChatColor.RED, "Admin", "Admin");
 
-    private final int id;
+    private final EHyriRank initial;
     private final HyriRank rank;
 
-    EHyriRankImpl(int id, HyriRank rank) {
-        this.id = id;
-        this.rank = rank;
+    EHyriRankImpl(EHyriRank initial, ChatColor color, String frenchDisplayName, String englishDisplayName) {
+        this.initial = initial;
+
+        final Map<HyriLanguage, String> displayNames = new HashMap<>();
+
+        displayNames.put(HyriLanguage.EN, color + englishDisplayName);
+        displayNames.put(HyriLanguage.FR, color + frenchDisplayName);
+
+        this.rank = new DefaultHyriRank(this.initial.getName(), displayNames);
     }
 
-    public int getId() {
-        return this.id;
+    public EHyriRank getInitial() {
+        return this.initial;
     }
 
     public HyriRank get() {
@@ -48,24 +59,6 @@ public enum EHyriRankImpl {
         for (EHyriRankImpl rank : values()) {
             if (rank.get().getName().equalsIgnoreCase(name)) {
                 return rank.get();
-            }
-        }
-        return null;
-    }
-
-    public static EHyriRankImpl getEnumByName(String name) {
-        for (EHyriRankImpl rank : values()) {
-            if (rank.get().getName().equalsIgnoreCase(name)) {
-                return rank;
-            }
-        }
-        return null;
-    }
-
-    public static EHyriRankImpl getById(int id) {
-        for (EHyriRankImpl rank : values()) {
-            if (rank.getId() == id) {
-                return rank;
             }
         }
         return null;

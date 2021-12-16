@@ -33,9 +33,13 @@ public class HyriPartyManager implements IHyriPartyManager {
     @Override
     public IHyriParty getParty(UUID uuid) {
         final Jedis jedis = HyriAPI.get().getRedisResource();
-        final IHyriParty party = HyriAPIPlugin.GSON.fromJson(this.getJedisKey(uuid), HyriParty.class);
 
-        jedis.close();
+        IHyriParty party;
+        try {
+            party = HyriAPIPlugin.GSON.fromJson(this.getJedisKey(uuid), HyriParty.class);
+        } finally {
+            jedis.close();
+        }
 
         return party;
     }
@@ -56,10 +60,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void sendParty(IHyriParty party) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.set(this.getJedisKey(party.getId()), HyriAPIPlugin.GSON.toJson(party));
-            jedis.close();
-        });
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getJedisKey(party.getId()), HyriAPIPlugin.GSON.toJson(party)));
     }
 
     @Override
@@ -75,10 +76,7 @@ public class HyriPartyManager implements IHyriPartyManager {
             playerManager.sendPlayer(player);
         }
 
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.del(this.getJedisKey(uuid));
-            jedis.close();
-        });
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getJedisKey(uuid)));
     }
 
     /**

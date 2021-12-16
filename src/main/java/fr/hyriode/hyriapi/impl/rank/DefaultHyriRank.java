@@ -1,8 +1,10 @@
 package fr.hyriode.hyriapi.impl.rank;
 
 import fr.hyriode.hyriapi.rank.HyriRank;
+import fr.hyriode.hyriapi.settings.HyriLanguage;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Project: HyriAPI
@@ -11,8 +13,8 @@ import java.util.ArrayList;
  */
 public class DefaultHyriRank extends HyriRank {
 
-    public DefaultHyriRank(String name, String displayName, String description) {
-        super(name, displayName, description, new ArrayList<>());
+    public DefaultHyriRank(String name, Map<HyriLanguage, String> displayNames) {
+        super(name, displayNames, new ArrayList<>());
     }
 
 }

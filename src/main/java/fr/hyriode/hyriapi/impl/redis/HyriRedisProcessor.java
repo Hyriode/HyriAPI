@@ -66,7 +66,9 @@ public class HyriRedisProcessor implements IHyriRedisProcessor, Runnable {
                 while (!performed) {
                     final Runnable callback = action.getCallback();
 
-                    action.getAction().accept(HyriAPI.get().getRedisResource());
+                    try (Jedis jedis = HyriAPI.get().getRedisResource()) {
+                        action.getAction().accept(jedis);
+                    }
 
                     if (callback != null) {
                         callback.run();

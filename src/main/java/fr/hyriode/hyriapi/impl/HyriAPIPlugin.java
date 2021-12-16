@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.configuration.HyriAPIConfiguration;
 import fr.hyriode.hyriapi.impl.pubsub.HyriPubSub;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -24,20 +25,8 @@ public class HyriAPIPlugin extends JavaPlugin {
     /** API */
     private HyriAPIImplementation api;
 
-    /** Logger */
-    private static Logger logger;
-
     @Override
     public void onEnable() {
-        logger = this.getLogger();
-
-        log("#=================[HyriAPI]=================#");
-        log("# HyriAPI is now starting...                #");
-        log("#===========================================#");
-        log("# HyriAPI is a production of Hyriode        #");
-        log("# Authors: AstFaster, Yggdrasil80, Keinz_   #");
-        log("#===========================================#");
-
         this.configuration = HyriAPIConfiguration.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
     }
@@ -53,7 +42,17 @@ public class HyriAPIPlugin extends JavaPlugin {
     }
 
     public static void log(Level level, String message) {
-        logger.log(level, message);
+        String prefix = ChatColor.DARK_AQUA + "[" + HyriAPI.NAME + "] ";
+
+        if (level == Level.SEVERE) {
+            prefix += ChatColor.RED;
+        } else if (level == Level.WARNING) {
+            prefix += ChatColor.YELLOW;
+        } else {
+            prefix += ChatColor.RESET;
+        }
+
+        Bukkit.getConsoleSender().sendMessage(prefix + message);
     }
 
     public static void log(String message) {

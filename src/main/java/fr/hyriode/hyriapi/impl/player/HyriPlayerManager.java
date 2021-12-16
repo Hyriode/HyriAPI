@@ -38,9 +38,13 @@ public class HyriPlayerManager implements IHyriPlayerManager {
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
         final Jedis jedis = HyriAPI.get().getRedisResource();
-        final IHyriPlayer player = HyriAPIPlugin.GSON.fromJson(jedis.get(this.getJedisKey(uuid)), HyriPlayer.class);
 
-        jedis.close();
+        IHyriPlayer player;
+        try {
+            player = HyriAPIPlugin.GSON.fromJson(jedis.get(this.getJedisKey(uuid)), HyriPlayer.class);
+        } finally {
+            jedis.close();
+        }
 
         return player;
     }
@@ -60,18 +64,12 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void sendPlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.set(this.getJedisKey(player.getUUID()), HyriAPIPlugin.GSON.toJson(player));
-            jedis.close();
-        });
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getJedisKey(player.getUUID()), HyriAPIPlugin.GSON.toJson(player)));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.del(this.getJedisKey(uuid));
-            jedis.close();
-        });
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getJedisKey(uuid)));
     }
 
     private String getJedisKey(UUID uuid) {
