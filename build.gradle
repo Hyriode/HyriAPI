@@ -9,17 +9,17 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '1.0.2'
+version = '1.0.3'
 archivesBaseName = 'HyriAPI'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(16)
     }
 }
 
 compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_16
     options.encoding = 'UTF-8'
 }
 
