@@ -8,6 +8,7 @@ import fr.hyriode.hyriapi.impl.rank.EHyriRankImpl;
 import fr.hyriode.hyriapi.impl.settings.HyriPlayerSettings;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
+import fr.hyriode.hyriapi.rank.EHyriRank;
 import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
@@ -48,7 +49,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.uuid = uuid;
         this.firstLoginDate = new Date(System.currentTimeMillis());
         this.lastLoginDate = this.firstLoginDate;
-        this.rank = EHyriRankImpl.PLAYER.get().getName();
+        this.rank = EHyriRank.PLAYER.getName();
         this.hyris = new HyrisMoney(this.uuid);
         this.hyode = new HyodeMoney(this.uuid);
         this.party = null;
