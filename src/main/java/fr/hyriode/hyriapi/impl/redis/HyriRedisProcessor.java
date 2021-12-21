@@ -31,6 +31,8 @@ public class HyriRedisProcessor implements IHyriRedisProcessor, Runnable {
     }
 
     private void start() {
+        HyriAPIPlugin.log("Starting Redis processor...");
+
         this.running = true;
 
         this.thread = new Thread(this);
@@ -38,6 +40,8 @@ public class HyriRedisProcessor implements IHyriRedisProcessor, Runnable {
     }
 
     public void stop() {
+        HyriAPIPlugin.log("Stopping Redis processor...");
+
         this.running  = false;
 
         this.thread.interrupt();

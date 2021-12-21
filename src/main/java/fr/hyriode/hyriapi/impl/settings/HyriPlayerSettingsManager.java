@@ -11,13 +11,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriPlayerSettingsManager implements IHyriPlayerSettingsManager {
-
-    private final HyriAPIPlugin plugin;
-
-    public HyriPlayerSettingsManager(HyriAPIPlugin plugin) {
-        this.plugin = plugin;
-    }
+public record HyriPlayerSettingsManager(HyriAPIPlugin plugin) implements IHyriPlayerSettingsManager {
 
     @Override
     public IHyriPlayerSettings getPlayerSettings(UUID uuid) {

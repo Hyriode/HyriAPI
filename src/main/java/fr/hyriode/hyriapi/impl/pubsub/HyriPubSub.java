@@ -2,6 +2,7 @@ package fr.hyriode.hyriapi.impl.pubsub;
 
 import com.google.gson.Gson;
 import fr.hyriode.hyriapi.HyriAPI;
+import fr.hyriode.hyriapi.impl.HyriAPIPlugin;
 import fr.hyriode.hyriapi.pubsub.HyriPacket;
 import fr.hyriode.hyriapi.pubsub.IHyriPubSub;
 import fr.hyriode.hyriapi.pubsub.receiver.IHyriChannelPacketReceiver;
@@ -33,6 +34,8 @@ public class HyriPubSub implements IHyriPubSub {
     }
 
     private void start() {
+        System.out.println("Starting Redis PubSub...");
+
         this.running = true;
 
         this.senderThread = new Thread(sender, "SenderThread");
@@ -60,6 +63,8 @@ public class HyriPubSub implements IHyriPubSub {
     }
 
     public void stop() {
+        HyriAPIPlugin.log("Stopping Redis PubSub...");
+
         this.running = false;
 
         this.sender.setRunning(this.running);

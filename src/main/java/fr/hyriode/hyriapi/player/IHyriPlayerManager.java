@@ -28,6 +28,13 @@ public interface IHyriPlayerManager {
     void setPlayerId(String name, UUID uuid);
 
     /**
+     * Remove player's id
+     *
+     * @param name Player's name
+     */
+    void removePlayerId(String name);
+
+    /**
      * Get a player with a given {@link UUID}
      *
      * @param uuid Player {@link UUID}

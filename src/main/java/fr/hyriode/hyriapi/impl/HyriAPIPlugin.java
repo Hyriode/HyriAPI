@@ -36,9 +36,10 @@ public class HyriAPIPlugin extends JavaPlugin {
         if (this.api.getRedisConnection().isConnected()) {
             ((HyriPubSub) this.api.getPubSub()).stop();
             this.api.getRedisProcessor().stop();
-
             this.api.getRedisConnection().stop();
         }
+
+        log(HyriAPI.NAME + " is now disabled. See you soon!");
     }
 
     public static void log(Level level, String message) {

@@ -1,5 +1,6 @@
 package fr.hyriode.hyriapi.impl.redis;
 
+import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.HyriAPIPlugin;
 import fr.hyriode.hyriapi.impl.configuration.nested.RedisConfiguration;
 import fr.hyriode.hyriapi.redis.IHyriRedisConnection;
@@ -60,7 +61,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
             this.connected = true;
 
-            HyriAPIPlugin.log("Connection set between " + this.plugin.getName() + " and Redis");
+            HyriAPIPlugin.log("Connection set between " + HyriAPI.NAME + " and Redis");
         } catch (Exception e) {
             this.plugin.getLogger().log(Level.SEVERE, "An error occurred during connecting to Redis! ", e);
             HyriAPIPlugin.log(Level.SEVERE, "Try to fix it! Bukkit is now stopping...");
@@ -70,6 +71,8 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     }
 
     public void stop() {
+        HyriAPIPlugin.log("Stopping Redis connection...");
+
         this.jedisPool.close();
         this.jedisPool.destroy();
     }
