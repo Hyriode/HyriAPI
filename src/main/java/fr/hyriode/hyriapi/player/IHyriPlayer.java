@@ -25,6 +25,14 @@ public interface IHyriPlayer {
     String getName();
 
     /**
+     * Set player's name<br>
+     * Warning: Use this method ONLY to change the real player name
+     *
+     * @param name Player's name
+     */
+    void setName(String name);
+
+    /**
      * Get the custom name of player
      *
      * @return - Custom name
