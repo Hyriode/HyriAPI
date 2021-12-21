@@ -47,6 +47,11 @@ public record HyriPlayerManager(HyriAPIPlugin plugin) implements IHyriPlayerMana
     }
 
     @Override
+    public void removePlayerId(String name) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getIdsKey(name)));
+    }
+
+    @Override
     public IHyriPlayer getPlayer(UUID uuid) {
         final Jedis jedis = HyriAPI.get().getRedisResource();
 
