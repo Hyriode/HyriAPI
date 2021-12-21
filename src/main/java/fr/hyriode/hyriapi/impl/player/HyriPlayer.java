@@ -24,25 +24,25 @@ import java.util.UUID;
  */
 public class HyriPlayer implements IHyriPlayer {
 
-    private final List<Class<? extends HyriCosmetic>> cosmetics;
-
-    private HyriPlayerSettings settings;
-
-    private UUID party;
-
-    private HyodeMoney hyode;
-    private HyrisMoney hyris;
-
-    private String rank;
-
-    private long playTime;
+    private String name;
+    private String customName = null;
+    private final UUID uuid;
 
     private Date lastLoginDate;
     private final Date firstLoginDate;
 
-    private final UUID uuid;
-    private final String name;
-    private String customName = null;
+    private long playTime;
+
+    private String rank;
+
+    private HyodeMoney hyode;
+    private HyrisMoney hyris;
+
+    private UUID party;
+
+    private HyriPlayerSettings settings;
+
+    private final List<Class<? extends HyriCosmetic>> cosmetics;
 
     public HyriPlayer(String name, UUID uuid) {
         this.name = name;
@@ -60,6 +60,11 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
