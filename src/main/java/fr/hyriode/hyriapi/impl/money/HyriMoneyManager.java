@@ -1,13 +1,12 @@
 package fr.hyriode.hyriapi.impl.money;
 
+import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.impl.HyriAPIPlugin;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.money.IHyriMoneyCallback;
 import fr.hyriode.hyriapi.money.IHyriMoneyManager;
 import fr.hyriode.hyriapi.player.IHyriPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 
 import java.util.concurrent.Executors;
 
@@ -16,13 +15,7 @@ import java.util.concurrent.Executors;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriMoneyManager implements IHyriMoneyManager {
-
-    private final HyriAPIPlugin plugin;
-
-    public HyriMoneyManager(HyriAPIPlugin plugin) {
-        this.plugin = plugin;
-    }
+public record HyriMoneyManager(HyriAPIPlugin plugin) implements IHyriMoneyManager {
 
     @Override
     public void creditMoney(IHyriPlayer player, IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, boolean sendMessage, String reason, IHyriMoneyCallback callback) {
@@ -45,11 +38,8 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
             if (sendMessage) {
                 final String message = this.getMoneyMessage(action, money, amount, reason);
-                final OfflinePlayer p = Bukkit.getPlayer(player.getUUID());
 
-                if (p.isOnline()) {
-                    p.getPlayer().sendMessage(message);
-                }
+                HyriAPI.get().getPlayerManager().sendMessage(player.getUUID(), message);
             }
 
             if (callback != null) {

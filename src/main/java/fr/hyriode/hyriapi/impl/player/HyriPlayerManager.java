@@ -62,7 +62,12 @@ public record HyriPlayerManager(HyriAPIPlugin plugin) implements IHyriPlayerMana
 
     @Override
     public IHyriPlayer getPlayer(String name) {
-        return this.getPlayer(this.getPlayerId(name));
+        final UUID uuid = this.getPlayerId(name);
+
+        if (uuid != null) {
+            return this.getPlayer(uuid);
+        }
+        return null;
     }
 
     @Override

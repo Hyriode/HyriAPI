@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class HyriPacket {
 
+    /** Packet json */
     private String json;
 
     /**
