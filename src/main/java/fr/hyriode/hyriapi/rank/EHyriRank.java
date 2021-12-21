@@ -1,5 +1,7 @@
 package fr.hyriode.hyriapi.rank;
 
+import fr.hyriode.hyriapi.HyriAPI;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -31,6 +33,10 @@ public enum EHyriRank {
     EHyriRank(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public HyriRank get() {
+        return HyriAPI.get().getRankManager().getRank(this);
     }
 
     public int getId() {

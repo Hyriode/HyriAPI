@@ -4,6 +4,7 @@ import fr.hyriode.hyriapi.cosmetic.HyriCosmetic;
 import fr.hyriode.hyriapi.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.hyriapi.impl.HyriAPIPlugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,8 +27,8 @@ public class HyriCosmeticManager implements IHyriCosmeticManager {
     @Override
     public HyriCosmetic getCosmetic(String name) {
         try {
-            return this.cosmetics.stream().filter(cos -> cos.getName().equalsIgnoreCase(name)).findFirst().orElse(null).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.cosmetics.stream().filter(cos -> cos.getName().equalsIgnoreCase(name)).findFirst().orElse(null).getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             System.err.println(e.getMessage());
             return null;
         }
@@ -36,8 +37,8 @@ public class HyriCosmeticManager implements IHyriCosmeticManager {
     @Override
     public HyriCosmetic getCosmetic(Class<? extends HyriCosmetic> cosmetic) {
         try {
-            return this.cosmetics.stream().filter(cos -> cos.equals(cosmetic)).findFirst().orElse(null).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.cosmetics.stream().filter(cos -> cos.equals(cosmetic)).findFirst().orElse(null).getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             System.err.println(e.getMessage());
             return null;
         }

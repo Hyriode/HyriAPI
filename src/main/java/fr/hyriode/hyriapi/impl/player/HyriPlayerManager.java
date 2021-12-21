@@ -18,22 +18,33 @@ import java.util.UUID;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriPlayerManager implements IHyriPlayerManager {
+public record HyriPlayerManager(HyriAPIPlugin plugin) implements IHyriPlayerManager {
 
     private static final String REDIS_KEY = "players:";
+    private static final String IDS_KEY = "uuid:";
 
-    private final HyriAPI api;
+    @Override
+    public UUID getPlayerId(String name) {
+        final Jedis jedis = HyriAPI.get().getRedisResource();
 
-    private final HyriAPIPlugin plugin;
+        UUID uuid = null;
+        try {
+            final String result = jedis.get(this.getIdsKey(name));
 
-    public HyriPlayerManager(HyriAPIPlugin plugin) {
-        this.plugin = plugin;
-        this.api = this.plugin.getAPI();
+            if (result != null) {
+                uuid = UUID.fromString(result);
+            }
+        } finally {
+            jedis.close();
+        }
+
+        return uuid;
     }
 
-    /**
-     * Redis player management
-     */
+    @Override
+    public void setPlayerId(String name, UUID uuid) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getIdsKey(name), uuid.toString()));
+    }
 
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
@@ -41,12 +52,17 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
         IHyriPlayer player;
         try {
-            player = HyriAPIPlugin.GSON.fromJson(jedis.get(this.getJedisKey(uuid)), HyriPlayer.class);
+            player = HyriAPIPlugin.GSON.fromJson(jedis.get(this.getPlayersKey(uuid)), HyriPlayer.class);
         } finally {
             jedis.close();
         }
 
         return player;
+    }
+
+    @Override
+    public IHyriPlayer getPlayer(String name) {
+        return this.getPlayer(this.getPlayerId(name));
     }
 
     @Override
@@ -57,6 +73,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
             hyriPlayer.setRank(EHyriRankImpl.ADMINISTRATOR.get());
         }
 
+        this.setPlayerId(name, uuid);
         this.sendPlayer(hyriPlayer);
 
         return hyriPlayer;
@@ -64,21 +81,21 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void sendPlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getJedisKey(player.getUUID()), HyriAPIPlugin.GSON.toJson(player)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getPlayersKey(player.getUUID()), HyriAPIPlugin.GSON.toJson(player)));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getJedisKey(uuid)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getPlayersKey(uuid)));
     }
 
-    private String getJedisKey(UUID uuid) {
+    private String getPlayersKey(UUID uuid) {
         return REDIS_KEY + uuid.toString();
     }
 
-    /**
-     * In Game player management
-     */
+    private String getIdsKey(String name) {
+        return IDS_KEY + name.toLowerCase();
+    }
 
     @Override
     public void kickPlayer(UUID uuid, String reason) {
@@ -91,7 +108,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void connectPlayer(UUID uuid, String server) {
-        this.api.getServerManager().sendPlayerToServer(uuid, server);
+        HyriAPI.get().getServerManager().sendPlayerToServer(uuid, server);
     }
 
     @Override

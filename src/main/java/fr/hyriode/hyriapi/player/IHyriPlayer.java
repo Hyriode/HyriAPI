@@ -2,6 +2,7 @@ package fr.hyriode.hyriapi.player;
 
 import fr.hyriode.hyriapi.cosmetic.HyriCosmetic;
 import fr.hyriode.hyriapi.money.IHyriMoney;
+import fr.hyriode.hyriapi.rank.EHyriRank;
 import fr.hyriode.hyriapi.rank.HyriRank;
 import fr.hyriode.hyriapi.settings.IHyriPlayerSettings;
 
@@ -106,6 +107,15 @@ public interface IHyriPlayer {
      * @param rank - {@link HyriRank}
      */
     void setRank(HyriRank rank);
+
+    /**
+     * Set player rank
+     *
+     * @param rank Rank type
+     */
+    default void setRank(EHyriRank rank) {
+        this.setRank(rank.get());
+    }
 
     /**
      * Get player Hyris money
