@@ -34,7 +34,7 @@ public class HyriPubSub implements IHyriPubSub {
     }
 
     private void start() {
-        System.out.println("Starting Redis PubSub...");
+        HyriAPIPlugin.log("Starting Redis PubSub...");
 
         this.running = true;
 

@@ -9,17 +9,17 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'fr.hyriode'
-version = '1.0.6'
+version = '1.0.7'
 archivesBaseName = 'HyriAPI'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(16)
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
 compileJava {
-    sourceCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_1_8
     options.encoding = 'UTF-8'
 }
 
@@ -90,8 +90,7 @@ publishing {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'redis.clients:jedis:3.7.0'
-    shadow 'com.google.code.gson:gson:2.8.9'
+    shadow 'redis.clients:jedis:4.0.0'
     shadow 'org.slf4j:slf4j-nop:1.7.32'
 }
 
