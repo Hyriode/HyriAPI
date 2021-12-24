@@ -18,10 +18,16 @@ import java.util.UUID;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public record HyriPlayerManager(HyriAPIPlugin plugin) implements IHyriPlayerManager {
+public class HyriPlayerManager implements IHyriPlayerManager {
 
     private static final String REDIS_KEY = "players:";
     private static final String IDS_KEY = "uuid:";
+
+    private final HyriAPIPlugin plugin;
+
+    public HyriPlayerManager(HyriAPIPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public UUID getPlayerId(String name) {

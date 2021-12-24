@@ -4,7 +4,6 @@ import fr.hyriode.hyriapi.HyriAPI;
 import fr.hyriode.hyriapi.cosmetic.HyriCosmetic;
 import fr.hyriode.hyriapi.impl.money.model.HyodeMoney;
 import fr.hyriode.hyriapi.impl.money.model.HyrisMoney;
-import fr.hyriode.hyriapi.impl.rank.EHyriRankImpl;
 import fr.hyriode.hyriapi.impl.settings.HyriPlayerSettings;
 import fr.hyriode.hyriapi.money.IHyriMoney;
 import fr.hyriode.hyriapi.player.IHyriPlayer;

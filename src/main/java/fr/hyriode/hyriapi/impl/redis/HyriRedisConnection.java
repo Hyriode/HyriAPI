@@ -37,7 +37,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
-                this.getResource();
+                this.getResource().close();
             } catch (Exception e) {
                 HyriAPIPlugin.log(Level.SEVERE, "An error occurred in Redis connection ! Trying to reconnect...");
 
@@ -57,7 +57,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
         this.jedisPool = new JedisPool(config, configuration.getIp(), configuration.getPort(), 2000, configuration.getPassword());
 
         try {
-            this.getResource();
+            this.getResource().close();
 
             this.connected = true;
 

@@ -15,7 +15,13 @@ import java.util.concurrent.Executors;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public record HyriMoneyManager(HyriAPIPlugin plugin) implements IHyriMoneyManager {
+public class HyriMoneyManager implements IHyriMoneyManager {
+
+    private final HyriAPIPlugin plugin;
+
+    public HyriMoneyManager(HyriAPIPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void creditMoney(IHyriPlayer player, IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, boolean sendMessage, String reason, IHyriMoneyCallback callback) {
