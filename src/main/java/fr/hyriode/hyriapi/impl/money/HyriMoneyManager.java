@@ -67,7 +67,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
         final ChatColor color = ChatColor.getByChar(money.getColorChar());
 
-        return color + sign + " " + amount + " " + money.getName() + (reason != null && !reason.isEmpty() ? " : " + reason : "");
+        return color + sign + amount + " " + money.getName() + (reason != null && !reason.isEmpty() ? " : " + reason : "");
     }
 
 }
