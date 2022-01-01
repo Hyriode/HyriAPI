@@ -51,6 +51,7 @@ public class HyriAPIImplementation extends HyriAPI {
     private final IHyriPlayerManager playerManager;
 
     /** Server */
+    private final IHyriServer server;
     private final IHyriServerManager serverManager;
 
     /** PubSub */
@@ -64,6 +65,7 @@ public class HyriAPIImplementation extends HyriAPI {
         this.redisConnection = new HyriRedisConnection(plugin);
         this.redisProcessor = new HyriRedisProcessor();
         this.pubSub = new HyriPubSub();
+        this.server = new HyriServer("server-" + UUID.randomUUID().toString().split("-")[0], "server", System.currentTimeMillis(), 0);
         this.serverManager = new HyriServerManager(plugin);
         this.playerManager = new HyriPlayerManager(plugin);
         this.playerSettingsManager = new HyriPlayerSettingsManager(plugin);
@@ -95,7 +97,7 @@ public class HyriAPIImplementation extends HyriAPI {
 
     @Override
     public IHyriServer getServer() {
-        return new HyriServer("server-" + UUID.randomUUID().toString().split("-")[0], "server", System.currentTimeMillis(), 0);
+        return this.server;
     }
 
     @Override

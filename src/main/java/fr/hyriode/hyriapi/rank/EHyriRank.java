@@ -22,8 +22,8 @@ public enum EHyriRank {
     /** Staff */
     STAFF(5, "staff"),
     HELPER(4, "helper"),
-    DEVELOPER(3, "developer"),
-    MODERATOR(2, "moderator"),
+    MODERATOR(3, "moderator"),
+    DEVELOPER(2, "developer"),
     MANAGER(1, "manager"),
     ADMINISTRATOR(0, "administrator");
 
