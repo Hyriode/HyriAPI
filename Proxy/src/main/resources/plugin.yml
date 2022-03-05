@@ -1,0 +1,4 @@
+main: fr.hyriode.api.impl.proxy.HyriAPIPlugin
+name: HyriAPI
+version: @version@
+author: AstFaster

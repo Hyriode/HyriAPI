@@ -1,0 +1,45 @@
+plugins {
+    id "com.github.johnrengelman.shadow"
+}
+
+apply plugin: 'maven-publish'
+
+archivesBaseName = 'HyriAPI-Common'
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) { publication ->
+            project.shadow.component(publication)
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+
+            pom {
+                groupId = project.group
+                artifactId = 'api-common'
+                version = project.version
+                name = 'HyriAPI-Common'
+                description = 'Project with the common implementation of HyriAPI'
+                url = 'https://github.com/Hyriode/HyriAPI'
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username System.getenv('USERNAME')
+                password System.getenv('TOKEN')
+            }
+            name = "HyriAPI_maven"
+            url = "https://maven.pkg.github.com/Hyriode/HyriAPI"
+        }
+    }
+}
+
+dependencies {
+    api project(':API')
+}

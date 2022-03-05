@@ -1,0 +1,6 @@
+devEnvironment: true
+hyggdrasil: true
+redis:
+  hostname: 127.0.0.1
+  port: 6379
+  password: p@ssw0rd

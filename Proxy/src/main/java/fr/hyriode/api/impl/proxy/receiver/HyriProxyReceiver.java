@@ -1,0 +1,68 @@
+package fr.hyriode.api.impl.proxy.receiver;
+
+import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
+import fr.hyriode.api.packet.HyriPacket;
+import fr.hyriode.api.packet.IHyriPacketReceiver;
+import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
+import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacket;
+import fr.hyriode.hyggdrasil.api.protocol.packet.model.proxy.HyggProxyServerActionPacket;
+import fr.hyriode.hyggdrasil.api.protocol.packet.model.proxy.HyggStopProxyPacket;
+import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
+import fr.hyriode.hyggdrasil.api.protocol.request.HyggRequestHeader;
+import fr.hyriode.hyggdrasil.api.protocol.response.HyggResponse;
+import fr.hyriode.hyggdrasil.api.protocol.response.IHyggResponse;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.net.InetSocketAddress;
+
+/**
+ * Project: HyriAPI
+ * Created by AstFaster
+ * on 16/02/2022 at 22:13
+ */
+public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiver {
+
+    @Override
+    public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
+        if (packet instanceof HyggProxyServerActionPacket) {
+            final long before = System.currentTimeMillis();
+            final HyggProxyServerActionPacket serverAction = (HyggProxyServerActionPacket) packet;
+            final HyggProxyServerActionPacket.Action action = serverAction.getAction();
+            final String serverName = serverAction.getServerName();
+            final int serverPort = serverAction.getServerPort();
+
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(serverName);
+            if (serverInfo != null && action == HyggProxyServerActionPacket.Action.REMOVE) {
+                ProxyServer.getInstance().getServers().remove(serverName);
+
+                HyriAPIPlugin.log("Removed '" + serverName + "' server (time: " + (System.currentTimeMillis() - before) + ").");
+            } else if (serverInfo == null && action == HyggProxyServerActionPacket.Action.ADD) {
+                serverInfo = ProxyServer.getInstance().constructServerInfo(serverName, new InetSocketAddress(serverName, serverPort), "", false);
+
+                ProxyServer.getInstance().getServers().put(serverName, serverInfo);
+
+                HyriAPIPlugin.log("Added '" + serverName + "' server (time: " + (System.currentTimeMillis() - before) + ").");
+            }
+            return HyggResponse.Type.SUCCESS;
+        } else if (packet instanceof HyggStopProxyPacket) {
+            return HyggResponse.Type.SUCCESS;
+        }
+        return HyggResponse.Type.NONE;
+    }
+
+    @Override
+    public void receive(String channel, HyriPacket packet) {
+        if (packet instanceof HyriSendPlayerPacket) {
+            final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
+            final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(sendPacket.getServerName());
+            final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(sendPacket.getPlayerUUID());
+
+            if (player != null && player.isConnected() && serverInfo != null) {
+                player.connect(serverInfo);
+            }
+        }
+    }
+
+}
