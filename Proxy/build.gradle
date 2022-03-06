@@ -1,0 +1,24 @@
+plugins {
+    id "com.github.johnrengelman.shadow"
+}
+
+archivesBaseName = 'HyriAPI-Proxy'
+
+repositories {
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/public/" }
+}
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+dependencies {
+    implementation project(':Common')
+    implementation 'net.md-5:bungeecord-api:1.16-R0.4'
+}
+
+processResources {
+    filter {
+        it.replace('@version@', project.version)
+    }
+}

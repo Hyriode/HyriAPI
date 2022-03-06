@@ -1,0 +1,24 @@
+plugins {
+    id "com.github.johnrengelman.shadow"
+}
+
+archivesBaseName = 'HyriAPI-Server'
+
+repositories {
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/public/" }
+}
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+dependencies {
+    implementation project(':Common')
+    implementation 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+}
+
+processResources {
+    filter {
+        it.replace('@version@', project.version)
+    }
+}

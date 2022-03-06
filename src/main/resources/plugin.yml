@@ -1,3 +1,0 @@
-name: HyriAPI
-main: fr.hyriode.hyriapi.impl.HyriAPIPlugin
-version: @version@
