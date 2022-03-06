@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 allprojects {
@@ -25,5 +25,20 @@ allprojects {
 
     repositories {
         mavenCentral()
+
+        maven {
+            name = 'Hyggdrasil_maven'
+            url = 'https://maven.pkg.github.com/Hyriode/Hyggdrasil/'
+
+            credentials {
+                username System.getenv('USERNAME')
+                password System.getenv('TOKEN')
+            }
+        }
     }
+
+    dependencies {
+        api 'fr.hyriode:hyggdrasil-api:1.0.0'
+    }
+
 }

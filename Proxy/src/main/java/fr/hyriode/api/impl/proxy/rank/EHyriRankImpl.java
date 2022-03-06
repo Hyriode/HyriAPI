@@ -29,6 +29,8 @@ public enum EHyriRankImpl {
     /** Staff */
     STAFF(EHyriRank.STAFF, ChatColor.DARK_GRAY, "Staff", "Staff"),
     HELPER(EHyriRank.HELPER, ChatColor.DARK_PURPLE, "Assistant", "Helper"),
+    DESIGNER(EHyriRank.DESIGNER, ChatColor.GREEN, "Graphiste", "Designer"),
+    BUILDER(EHyriRank.BUILDER, ChatColor.GREEN, "Builder", "Builder"),
     MODERATOR(EHyriRank.MODERATOR, ChatColor.DARK_AQUA, "Mod", "Mod"),
     DEVELOPER(EHyriRank.DEVELOPER, ChatColor.DARK_GREEN, "Dev", "Dev"),
     MANAGER(EHyriRank.MANAGER, ChatColor.BLUE, "Resp", "Manager"),

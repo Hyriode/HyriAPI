@@ -10,18 +10,20 @@ import fr.hyriode.api.HyriAPI;
 public enum EHyriRank {
 
     /** Player */
-    PLAYER(11, "player"),
-    VIP(10, "vip"),
-    VIP_PLUS(9, "vip+"),
-    EPIC(8, "epic"),
+    PLAYER(13, "player"),
+    VIP(12, "vip"),
+    VIP_PLUS(11, "vip+"),
+    EPIC(10, "epic"),
 
     /** Content creator */
-    STREAMER(7, "streamer"),
-    YOUTUBER(6, "youtuber"),
+    STREAMER(9, "streamer"),
+    YOUTUBER(8, "youtuber"),
 
     /** Staff */
-    STAFF(5, "staff"),
-    HELPER(4, "helper"),
+    STAFF(7, "staff"),
+    HELPER(6, "helper"),
+    DESIGNER(5, "designer"),
+    BUILDER(4, "builder"),
     MODERATOR(3, "moderator"),
     DEVELOPER(2, "developer"),
     MANAGER(1, "manager"),
