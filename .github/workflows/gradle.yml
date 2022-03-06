@@ -28,8 +28,8 @@ jobs:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Build shaded implementation Jar
-        run: ./gradlew implJar
+      - name: Build shade jar with Gradle
+        run: ./gradlew shadowJar
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.TOKEN }}
@@ -38,4 +38,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: HyriAPI
-          path: build/libs/
+          path: |
+            API/build/libs/
+            Common/build/libs/
+            Server/build/libs/
+            Proxy/build/libs/
