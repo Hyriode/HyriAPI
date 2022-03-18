@@ -43,15 +43,20 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private IHyriProxy createProxy() {
-        final HyggApplication application = this.hyggdrasilManager.getApplication();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggApplication application = this.hyggdrasilManager.getApplication();
 
-        return new HyriProxy(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+            return new HyriProxy(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+        }
+        return new HyriProxy(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis());
     }
 
     private void registerReceivers() {
-        final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
-        processor.registerReceiver(HyggChannel.PROXIES, new HyriProxyReceiver());
+            processor.registerReceiver(HyggChannel.PROXIES, new HyriProxyReceiver());
+        }
     }
 
     @Override

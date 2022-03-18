@@ -5,6 +5,8 @@ import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import org.bukkit.Bukkit;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster

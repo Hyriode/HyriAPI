@@ -37,7 +37,7 @@ public class HyriPlayerListener implements Listener {
 
             IHyriPlayer player = playerManager.getPlayer(uuid);
             if (player == null) {
-                player = playerManager.createPlayer(uuid, event.getName());
+                player = playerManager.createPlayer(true, uuid, event.getName());
             }
 
             if (player != null) {

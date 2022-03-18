@@ -19,6 +19,20 @@ import java.util.UUID;
 public interface IHyriPlayer {
 
     /**
+     * Check if the player is currently connected on the network
+     *
+     * @return <code>true</code> if he is connected
+     */
+    boolean isOnline();
+
+    /**
+     * Set if the player is connected or not
+     *
+     * @param online New online state
+     */
+    void setOnline(boolean online);
+
+    /**
      * Get default player name
      *
      * @return Default name
@@ -59,7 +73,9 @@ public interface IHyriPlayer {
      *
      * @return <code>true</code> if player has a custom name
      */
-    boolean hasCustomName();
+    default boolean hasCustomName() {
+        return this.getCustomName() != null;
+    }
 
     /**
      * Get player uuid
@@ -176,25 +192,34 @@ public interface IHyriPlayer {
     void setSettings(IHyriPlayerSettings settings);
 
     /**
-     * Get the cosmetics of the player
+     * Get the name of the current server where the player is.<br>
+     * Warning: if the player is not connected, it will return <code>null</code>
      *
-     * @return A list of cosmetics
+     * @return A server name
      */
-    List<Class<? extends HyriCosmetic>> getCosmetics();
+    String getCurrentServer();
 
     /**
-     * Add a cosmetic to the player
+     * Set the current server where the player is connected
      *
-     * @param cosmetic The cosmetic to add
+     * @param currentServer The name of the server
      */
-    void addCosmetic(Class<? extends HyriCosmetic> cosmetic);
+    void setCurrentServer(String currentServer);
 
     /**
-     * Remove cosmetic to the player
+     * Get the last server where the player was.<br>
+     * Warning: if the player is connected on a server it will return the old one not the current. To get the current server use {@link #getCurrentServer()}
      *
-     * @param cosmetic The cosmetic to remove
+     * @return A server name
      */
-    void removeCosmetic(Class<? extends HyriCosmetic> cosmetic);
+    String getLastServer();
+
+    /**
+     * Set the last server where the player was connected
+     *
+     * @param lastServer The name of the server
+     */
+    void setLastServer(String lastServer);
 
     /**
      * Update the player account in database

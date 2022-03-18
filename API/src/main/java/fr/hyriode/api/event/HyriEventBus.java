@@ -60,22 +60,25 @@ public class HyriEventBus implements IHyriEventBus {
     public void publish(HyriEvent event) {
         try {
             final Queue<Object> objects = this.eventHandlers.get(event.getClass());
-            final Map<HyriEventPriority, Map.Entry<Object, Method>> methods = new HashMap<>();
 
-            for (Object object : objects) {
-                final Class<?> objectClass = object.getClass();
+            if (objects != null) {
+                final Map<HyriEventPriority, Map.Entry<Object, Method>> methods = new HashMap<>();
 
-                for (Method method : objectClass.getDeclaredMethods()) {
-                    if (this.isMethodValid(method)) {
-                        methods.put(method.getAnnotation(HyriEventHandler.class).priority(), new AbstractMap.SimpleEntry<>(object, method));
+                for (Object object : objects) {
+                    final Class<?> objectClass = object.getClass();
+
+                    for (Method method : objectClass.getDeclaredMethods()) {
+                        if (this.isMethodValid(method)) {
+                            methods.put(method.getAnnotation(HyriEventHandler.class).priority(), new AbstractMap.SimpleEntry<>(object, method));
+                        }
                     }
                 }
-            }
 
-            for (Map.Entry<HyriEventPriority, Map.Entry<Object, Method>> sorted : methods.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
-                final Map.Entry<Object, Method> entry = sorted.getValue();
+                for (Map.Entry<HyriEventPriority, Map.Entry<Object, Method>> sorted : methods.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
+                    final Map.Entry<Object, Method> entry = sorted.getValue();
 
-                entry.getValue().invoke(entry.getKey(), event);
+                    entry.getValue().invoke(entry.getKey(), event);
+                }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();

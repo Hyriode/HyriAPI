@@ -53,11 +53,12 @@ public interface IHyriPlayerManager {
     /**
      * Create a player with a given {@link UUID}
      *
+     * @param online Set if the player is currently connected on the network
      * @param uuid Player {@link UUID}
      * @param name Player name
      * @return The created player
      */
-    IHyriPlayer createPlayer(UUID uuid, String name);
+    IHyriPlayer createPlayer(boolean online, UUID uuid, String name);
 
     /**
      * Send a player in Redis cache
@@ -74,7 +75,7 @@ public interface IHyriPlayerManager {
     void removePlayer(UUID uuid);
 
     /**
-     * Kick a player from network with a give reason
+     * Kick a player from network with a given reason
      *
      * @param uuid Player {@link UUID}
      * @param reason Reason to display to player
@@ -97,6 +98,17 @@ public interface IHyriPlayerManager {
      */
     void sendMessage(UUID uuid, String message);
 
+    /**
+     * Send a title to a player
+     *
+     * @param uuid The unique id of the player
+     * @param title The title to send
+     * @param subtitle The subtitle to send
+     * @param fadeIn The time to take to show the screen
+     * @param stay The time to take to stay on the screen
+     * @param fadeOut The time to take to disappear from the screen
+     */
+    void sendTitle(UUID uuid, String title, String subtitle, int fadeIn, int stay, int fadeOut);
 
     /**
      * Get a player ping with a given {@link UUID}

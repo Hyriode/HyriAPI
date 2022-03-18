@@ -19,6 +19,7 @@ import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
 import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -110,7 +111,11 @@ public class HyggdrasilManager {
         }
     }
 
-    private boolean withHyggdrasil() {
+    public String generateDevApplicationName() {
+        return "dev-" + UUID.randomUUID().toString().substring(0, 5);
+    }
+
+    public boolean withHyggdrasil() {
         return this.implementation.getConfiguration().withHyggdrasil();
     }
 

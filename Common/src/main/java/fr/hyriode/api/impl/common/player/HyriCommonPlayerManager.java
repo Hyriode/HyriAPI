@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
@@ -79,8 +80,8 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
-    public IHyriPlayer createPlayer(UUID uuid, String name) {
-        final IHyriPlayer player = new HyriPlayer(name, uuid);
+    public IHyriPlayer createPlayer(boolean online, UUID uuid, String name) {
+        final IHyriPlayer player = new HyriPlayer(online, name, uuid);
 
         if (this.implementation.getConfiguration().isDevEnvironment()) {
             player.setRank(EHyriRank.ADMINISTRATOR.get());
@@ -88,6 +89,8 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
 
         this.setPlayerId(name, uuid);
         this.sendPlayer(player);
+
+        HyriAPI.get().getEventBus().publishAsync(new HyriAccountCreatedEvent(player));
 
         return player;
     }
