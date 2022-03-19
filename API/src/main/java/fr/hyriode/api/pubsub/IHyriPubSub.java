@@ -1,4 +1,4 @@
-package fr.hyriode.api.player.pubsub;
+package fr.hyriode.api.pubsub;
 
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
