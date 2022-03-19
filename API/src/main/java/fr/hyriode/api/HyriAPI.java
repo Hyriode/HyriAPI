@@ -10,7 +10,7 @@ import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
-import fr.hyriode.api.player.pubsub.IHyriPubSub;
+import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.rank.IHyriRankManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
