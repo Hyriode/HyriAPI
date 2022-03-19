@@ -9,12 +9,12 @@ repositories {
 }
 
 shadowJar {
-    configurations = [project.configurations.runtimeClasspath]
+    configurations = [project.configurations.shadow]
 }
 
 dependencies {
-    implementation project(':Common')
-    implementation 'net.md-5:bungeecord-api:1.16-R0.4'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    shadow project(':Common')
 }
 
 processResources {

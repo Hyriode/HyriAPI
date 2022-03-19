@@ -17,11 +17,11 @@ public class SpigotReflection {
         return invokeMethod(player, "getHandle");
     }
 
-    public static Object invokeMethod(Object object, String methodName) {
+    public static Object invokeMethod(Object object, String methodName, Object... args) {
         try {
             final Method method = object.getClass().getMethod(methodName);
 
-            return method.invoke(object);
+            return method.invoke(object, args);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }

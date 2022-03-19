@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;

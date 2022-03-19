@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.server.configuration;
 
-import fr.hyriode.api.impl.common.configuration.HyriRedisConfiguration;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.HyriRedisConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

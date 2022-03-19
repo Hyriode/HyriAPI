@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.configuration;
 
-import fr.hyriode.api.impl.common.configuration.HyriRedisConfiguration;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.HyriRedisConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;

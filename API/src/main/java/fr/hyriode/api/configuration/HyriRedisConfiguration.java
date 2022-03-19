@@ -1,4 +1,4 @@
-package fr.hyriode.api.impl.common.configuration;
+package fr.hyriode.api.configuration;
 
 /**
  * Project: HyriAPI

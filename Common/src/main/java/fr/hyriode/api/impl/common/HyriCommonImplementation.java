@@ -4,7 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.common.cosmetic.HyriCosmeticManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
@@ -89,6 +89,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         }
     }
 
+    @Override
     public IHyriAPIConfiguration getConfiguration() {
         return this.configuration;
     }

@@ -5,104 +5,63 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
 import redis.clients.jedis.Jedis;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.logging.Level;
+import java.util.function.Function;
 
 /**
  * Project: HyriAPI
  * Created by AstFaster
  * on 21/11/2021 at 17:40
  */
-public class HyriRedisProcessor implements IHyriRedisProcessor, Runnable {
+public class HyriRedisProcessor implements IHyriRedisProcessor {
 
-    private Jedis jedis;
-
-    private boolean running;
-
-    private Thread thread;
-
-    private final LinkedBlockingQueue<HyriRedisProcessorAction> actions;
-
-    public HyriRedisProcessor() {
-        this.actions = new LinkedBlockingQueue<>();
-
-        this.start();
-    }
-
-    private void start() {
-        HyriCommonImplementation.log("Starting Redis processor...");
-
-        this.running = true;
-
-        this.thread = new Thread(this);
-        this.thread.start();
-    }
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public void stop() {
-        HyriCommonImplementation.log("Stopping Redis processor...");
+        HyriCommonImplementation.log("Stopping Redis processor (waiting for last requests to be done)...");
 
-        this.running  = false;
+        try {
+            if (!this.executorService.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
+                HyriCommonImplementation.log("Redis processor couldn't handle last Redis requests!");
 
-        this.thread.interrupt();
+                this.executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            this.executorService.shutdownNow();
+        }
     }
 
     @Override
     public void process(Consumer<Jedis> action) {
-        this.process(action, null);
-    }
-
-    @Override
-    public void process(Consumer<Jedis> action, Runnable callback) {
-        this.actions.add(new HyriRedisProcessorAction(action, callback));
-    }
-
-    @Override
-    public void run() {
-        this.check();
-
-        while (this.running) {
-            try {
-                final HyriRedisProcessorAction action = this.actions.take();
-
-                boolean performed = false;
-
-                while (!performed) {
-                    final Runnable callback = action.getCallback();
-
-                    try (Jedis jedis = HyriAPI.get().getRedisResource()) {
-                        if (jedis != null) {
-                            action.getAction().accept(jedis);
-
-                            if (callback != null) {
-                                callback.run();
-                            }
-
-                            performed = true;
-                        }
-                    }
-                }
-            } catch (InterruptedException e) {
-                this.jedis.close();
-                return;
+        try (final Jedis jedis = HyriAPI.get().getRedisResource()) {
+            if (jedis != null) {
+                action.accept(jedis);
             }
         }
     }
 
-    private void check() {
-        try {
-            this.jedis = HyriAPI.get().getRedisResource();
-        } catch (Exception e) {
-            HyriCommonImplementation.log(Level.SEVERE, "[" + this.getClass().getSimpleName() + "] Couldn't contact Redis server. Error: " + e.getMessage() + ". Rechecking in 5 seconds...");
+    @Override
+    public void processAsync(Consumer<Jedis> action) {
+        this.executorService.execute(() -> this.process(action));
+    }
 
-            try {
-                Thread.sleep(5000);
-
-                this.check();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+    @Override
+    public <R> R get(Function<Jedis, R> action) {
+        try (final Jedis jedis = HyriAPI.get().getRedisResource()) {
+            if (jedis != null) {
+                return action.apply(jedis);
             }
         }
+        return null;
+    }
+
+    @Override
+    public <R> Future<R> getAsync(Function<Jedis, R> action) {
+        return this.executorService.submit(() -> get(action));
     }
 
 }

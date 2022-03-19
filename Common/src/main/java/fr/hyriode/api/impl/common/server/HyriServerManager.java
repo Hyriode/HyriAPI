@@ -11,7 +11,6 @@ import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Project: HyriAPI
@@ -24,10 +23,10 @@ public class HyriServerManager implements IHyriServerManager {
 
     private final Map<String, HyggServer> servers;
 
-    private final Supplier<HyggServerRequester> serverRequester;
+    private final HyriCommonImplementation implementation;
 
     public HyriServerManager(HyriCommonImplementation implementation) {
-        this.serverRequester = () -> implementation.getHyggdrasilManager().getHyggdrasilAPI().getServerRequester();
+        this.implementation = implementation;
         this.servers = new HashMap<>();
     }
 
@@ -109,22 +108,32 @@ public class HyriServerManager implements IHyriServerManager {
 
     @Override
     public void createServer(String serverType, Consumer<HyggServer> onCreated) {
-        this.serverRequester.get().createServer(serverType, onCreated);
+        this.runActionOnRequester(requester -> requester.createServer(serverType, onCreated));
     }
 
     @Override
     public void removeServer(String serverName, Runnable onRemoved) {
-        this.serverRequester.get().removeServer(serverName, onRemoved);
+        this.runActionOnRequester(requester -> requester.removeServer(serverName, onRemoved));
     }
 
     @Override
     public void waitForState(String serverName, HyggServerState state, Consumer<HyggServer> callback) {
-        this.serverRequester.get().waitForServerState(serverName, state, callback);
+        this.runActionOnRequester(requester -> requester.waitForServerState(serverName, state, callback));
     }
 
     @Override
     public void waitForPlayers(String serverName, int players, Consumer<HyggServer> callback) {
-        this.serverRequester.get().waitForServerPlayers(serverName, players, callback);
+        this.runActionOnRequester(requester -> requester.waitForServerPlayers(serverName, players, callback));
+    }
+
+    private void runActionOnRequester(Consumer<HyggServerRequester> action) {
+        if (HyriAPI.get().getConfiguration().withHyggdrasil()) {
+            final HyggServerRequester requester = this.implementation.getHyggdrasilManager().getHyggdrasilAPI().getServerRequester();
+
+            if (requester != null) {
+                action.accept(requester);
+            }
+        }
     }
 
 }

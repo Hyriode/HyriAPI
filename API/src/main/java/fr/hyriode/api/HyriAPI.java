@@ -2,6 +2,7 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -9,7 +10,7 @@ import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
-import fr.hyriode.api.pubsub.IHyriPubSub;
+import fr.hyriode.api.player.pubsub.IHyriPubSub;
 import fr.hyriode.api.rank.IHyriRankManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
@@ -82,18 +83,18 @@ public abstract class HyriAPI {
     }
 
     /**
+     * Get the configuration of HyriAPI
+     *
+     * @return The {@link IHyriAPIConfiguration} instance
+     */
+    public abstract IHyriAPIConfiguration getConfiguration();
+
+    /**
      * Get a resource of {@link Jedis}
      *
      * @return {@link Jedis} resource
      */
     public abstract Jedis getRedisResource();
-
-    /**
-     * Get the default event bus
-     *
-     * @return The default {@link IHyriEventBus} instance
-     */
-    public abstract IHyriEventBus getEventBus();
 
     /**
      * Get the Redis connection
@@ -108,6 +109,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriRedisProcessor}
      */
     public abstract IHyriRedisProcessor getRedisProcessor();
+
+    /**
+     * Get the default event bus
+     *
+     * @return The default {@link IHyriEventBus} instance
+     */
+    public abstract IHyriEventBus getEventBus();
 
     /**
      * Get the Redis PubSub manager

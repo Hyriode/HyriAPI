@@ -4,7 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
-import fr.hyriode.api.pubsub.IHyriPubSub;
+import fr.hyriode.api.player.pubsub.IHyriPubSub;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
