@@ -37,7 +37,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     private UUID party;
 
-    private IHyriPlayerSettings settings;
+    private HyriPlayerSettings settings;
 
     private String currentServer;
     private String lastServer;
@@ -52,7 +52,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.hyris = new Hyris(this.uuid);
         this.hyode = new Hyode(this.uuid);
         this.party = null;
-        this.settings = HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
+        this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
     }
 
     @Override

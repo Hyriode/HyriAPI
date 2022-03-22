@@ -1,13 +1,11 @@
 package fr.hyriode.api.impl.server.player;
 
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.player.HyriCommonPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -19,10 +17,6 @@ import java.util.function.Consumer;
  * on 13/02/2022 at 15:30
  */
 public class HyriPlayerManager extends HyriCommonPlayerManager {
-
-    public HyriPlayerManager(HyriCommonImplementation implementation) {
-        super(implementation);
-    }
 
     @Override
     public void kickPlayer(UUID uuid, String reason) {

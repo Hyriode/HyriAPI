@@ -1,12 +1,13 @@
 package fr.hyriode.api.impl.common;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.common.cosmetic.HyriCosmeticManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.network.HyriNetwork;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
@@ -39,6 +40,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final HyriPubSub pubSub;
 
+    protected final HyriNetwork network;
+
     protected final HyggdrasilManager hyggdrasilManager;
 
     protected final HyriServerManager serverManager;
@@ -65,6 +68,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.redisProcessor = new HyriRedisProcessor();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
+        this.network = new HyriNetwork();
         this.hyggdrasilManager = new HyggdrasilManager(logger, this);
         this.serverManager = new HyriServerManager(this);
         this.playerSettingsManager = new HyriPlayerSettingsManager();
@@ -110,11 +114,6 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriEventBus getEventBus() {
-        return this.eventBus;
-    }
-
-    @Override
     public HyriRedisConnection getRedisConnection() {
         return this.redisConnection;
     }
@@ -125,8 +124,18 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
+    public IHyriEventBus getEventBus() {
+        return this.eventBus;
+    }
+
+    @Override
     public HyriPubSub getPubSub() {
         return this.pubSub;
+    }
+
+    @Override
+    public HyriNetwork getNetwork() {
+        return this.network;
     }
 
     public HyggdrasilManager getHyggdrasilManager() {

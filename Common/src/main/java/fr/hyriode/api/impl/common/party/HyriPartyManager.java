@@ -1,12 +1,10 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import redis.clients.jedis.Jedis;
 
 import java.util.List;
 import java.util.UUID;

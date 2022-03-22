@@ -35,17 +35,12 @@ public class HyriPlayerListener implements Listener {
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final UUID uuid = event.getUniqueId();
 
-            IHyriPlayer player = playerManager.getPlayer(uuid);
-            if (player == null) {
-                player = playerManager.createPlayer(true, uuid, event.getName());
+            if (playerManager.getPlayer(uuid) == null) {
+                playerManager.createPlayer(true, uuid, event.getName());
             }
-
-            if (player != null) {
-                return;
-            }
-        } catch (Exception ignored) {}
-
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "An error occurred while loading your profile!");
+        } catch (Exception e) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "An error occurred while loading your profile!");
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)

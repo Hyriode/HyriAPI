@@ -1,14 +1,12 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.cosmetic.HyriCosmetic;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**

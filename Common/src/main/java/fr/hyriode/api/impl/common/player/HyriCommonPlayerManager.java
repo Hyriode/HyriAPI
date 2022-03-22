@@ -2,12 +2,10 @@ package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriPermission;
-import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 

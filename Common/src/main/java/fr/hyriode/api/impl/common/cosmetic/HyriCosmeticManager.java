@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.common.cosmetic;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.cosmetic.HyriCosmetic;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 

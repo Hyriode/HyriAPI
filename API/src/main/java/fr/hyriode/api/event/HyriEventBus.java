@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
  */
 public class HyriEventBus implements IHyriEventBus {
 
-    private final Map<Class<? extends HyriEvent>, Queue<Object>> eventHandlers = new ConcurrentHashMap<>();
+    protected final Map<Class<? extends HyriEvent>, Queue<Object>> eventHandlers = new ConcurrentHashMap<>();
 
-    private final String name;
+    protected final String name;
 
     public HyriEventBus(String name) {
         this.name = name;

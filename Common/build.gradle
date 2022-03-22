@@ -40,4 +40,7 @@ publishing {
 
 dependencies {
     api project(':API')
+    // https://mvnrepository.com/artifact/redis.clients/jedis
+    implementation 'redis.clients:jedis:4.1.1'
+
 }

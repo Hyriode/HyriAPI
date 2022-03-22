@@ -34,7 +34,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.plugin = plugin;
         this.server = this.createServer();
-        this.playerManager = new HyriPlayerManager(this);
+        this.playerManager = new HyriPlayerManager();
         this.moneyManager = new HyriMoneyManager();
         this.rankManager = new HyriRankManager();
 

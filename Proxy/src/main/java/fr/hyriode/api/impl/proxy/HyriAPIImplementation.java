@@ -38,6 +38,10 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.moneyManager = new HyriMoneyManager();
         this.rankManager = new HyriRankManager();
 
+        if (this.network.getSlots() == -1) {
+            this.network.setSlots(this.plugin.getConfiguration().getSlots());
+        }
+
         this.hyggdrasilManager.start();
         this.registerReceivers();
     }
