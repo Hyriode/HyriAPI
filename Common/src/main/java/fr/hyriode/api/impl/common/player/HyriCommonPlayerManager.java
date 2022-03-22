@@ -71,7 +71,7 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void sendPlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getPlayersKey(player.getUUID()), HyriAPI.GSON.toJson(player)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getPlayersKey(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
     }
 
     @Override

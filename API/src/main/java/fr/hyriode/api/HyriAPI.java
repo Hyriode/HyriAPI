@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.IHyriEventBus;
+import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.packet.HyriPacket;
@@ -166,6 +167,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPartyManager}
      */
     public abstract IHyriPartyManager getPartyManager();
+
+    /**
+     * Get the friend manager instance
+     *
+     * @return The {@link IHyriFriendManager} instance
+     */
+    public abstract IHyriFriendManager getFriendManager();
 
     /**
      * Get the rank manager

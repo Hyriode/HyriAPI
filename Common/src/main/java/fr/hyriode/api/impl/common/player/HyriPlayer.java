@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.impl.common.money.Hyode;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
@@ -91,7 +92,7 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public UUID getUUID() {
+    public UUID getUniqueId() {
         return this.uuid;
     }
 
@@ -183,6 +184,11 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setLastServer(String lastServer) {
         this.lastServer = lastServer;
+    }
+
+    @Override
+    public IHyriFriendHandler getFriendHandler() {
+        return HyriAPI.get().getFriendManager().loadFriends(this.uuid);
     }
 
 }

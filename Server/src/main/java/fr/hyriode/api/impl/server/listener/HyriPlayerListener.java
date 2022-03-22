@@ -49,10 +49,16 @@ public class HyriPlayerListener implements Listener {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
-        account.setName(player.getName());
-        account.setLastLoginDate(new Date(System.currentTimeMillis()));
+        if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
+            account.setName(player.getName());
+            account.setLastLoginDate(new Date(System.currentTimeMillis()));
+            account.setOnline(true);
 
-        playerManager.setPlayerId(account.getName(), account.getUUID());
+            playerManager.setPlayerId(account.getName(), account.getUniqueId());
+        }
+
+        account.setCurrentServer(HyriAPI.get().getServer().getName());
+        account.update();
 
         this.hyggdrasilManager.sendData();
     }
@@ -63,9 +69,16 @@ public class HyriPlayerListener implements Listener {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
-        account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+        if (account != null) {
+            if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
+                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+                account.setOnline(false);
+            }
 
-        playerManager.sendPlayer(account);
+            account.setLastServer(HyriAPI.get().getServer().getName());
+            account.setCurrentServer(null);
+            account.update();
+        }
 
         this.hyggdrasilManager.sendData();
     }

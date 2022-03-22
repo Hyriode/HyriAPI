@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
@@ -20,6 +21,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -40,15 +42,24 @@ public class HyriJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onPreLogin(LoginEvent event) {
+    public void onLogin(LoginEvent event) {
         try {
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final PendingConnection connection = event.getConnection();
             final UUID uuid = connection.getUniqueId();
 
-            if (playerManager.getPlayer(uuid) == null) {
-                playerManager.createPlayer(true, uuid, connection.getName());
+            IHyriPlayer player = playerManager.getPlayer(uuid);
+            if (player == null) {
+                player = playerManager.createPlayer(true, uuid, connection.getName());
             }
+
+            player.setName(player.getName());
+            player.setLastLoginDate(new Date(System.currentTimeMillis()));
+            player.setOnline(true);
+
+            player.update();
+
+            playerManager.setPlayerId(player.getName(), player.getUniqueId());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -93,6 +104,16 @@ public class HyriJoinListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
+        final ProxiedPlayer player = event.getPlayer();
+        final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
+        final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
+
+        if (account != null) {
+            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+            account.setOnline(false);
+            account.update();
+        }
+
         this.hyggdrasilManager.sendData();
     }
 

@@ -1,6 +1,7 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriRank;
@@ -80,7 +81,7 @@ public interface IHyriPlayer {
      *
      * @return Player {@link UUID}
      */
-    UUID getUUID();
+    UUID getUniqueId();
 
     /**
      * Get the first login {@link Date} of the player
@@ -218,6 +219,13 @@ public interface IHyriPlayer {
      * @param lastServer The name of the server
      */
     void setLastServer(String lastServer);
+
+    /**
+     * Get the handler of player's friends
+     *
+     * @return A {@link IHyriFriendHandler} instance
+     */
+    IHyriFriendHandler getFriendHandler();
 
     /**
      * Update the player account in database

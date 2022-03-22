@@ -5,7 +5,9 @@ import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
+import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.cosmetic.HyriCosmeticManager;
+import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.network.HyriNetwork;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
@@ -50,6 +52,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final IHyriPartyManager partyManager;
 
+    protected final IHyriFriendManager friendManager;
+
     protected final IHyriCosmeticManager cosmeticManager;
 
     private static BiConsumer<Level, String> logging;
@@ -73,6 +77,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.serverManager = new HyriServerManager(this);
         this.playerSettingsManager = new HyriPlayerSettingsManager();
         this.partyManager = new HyriPartyManager();
+        this.friendManager = new HyriFriendManager();
         this.cosmeticManager = new HyriCosmeticManager();
     }
 
@@ -155,6 +160,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public IHyriPartyManager getPartyManager() {
         return this.partyManager;
+    }
+
+    @Override
+    public IHyriFriendManager getFriendManager() {
+        return this.friendManager;
     }
 
     @Override
