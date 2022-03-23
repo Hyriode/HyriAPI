@@ -35,17 +35,12 @@ public class HyriPlayerListener implements Listener {
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final UUID uuid = event.getUniqueId();
 
-            IHyriPlayer player = playerManager.getPlayer(uuid);
-            if (player == null) {
-                player = playerManager.createPlayer(uuid, event.getName());
+            if (playerManager.getPlayer(uuid) == null) {
+                playerManager.createPlayer(true, uuid, event.getName());
             }
-
-            if (player != null) {
-                return;
-            }
-        } catch (Exception ignored) {}
-
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "An error occurred while loading your profile!");
+        } catch (Exception e) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "An error occurred while loading your profile!");
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -54,10 +49,16 @@ public class HyriPlayerListener implements Listener {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
-        account.setName(player.getName());
-        account.setLastLoginDate(new Date(System.currentTimeMillis()));
+        if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
+            account.setName(player.getName());
+            account.setLastLoginDate(new Date(System.currentTimeMillis()));
+            account.setOnline(true);
 
-        playerManager.setPlayerId(account.getName(), account.getUUID());
+            playerManager.setPlayerId(account.getName(), account.getUniqueId());
+        }
+
+        account.setCurrentServer(HyriAPI.get().getServer().getName());
+        account.update();
 
         this.hyggdrasilManager.sendData();
     }
@@ -68,9 +69,16 @@ public class HyriPlayerListener implements Listener {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
-        account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+        if (account != null) {
+            if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
+                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+                account.setOnline(false);
+            }
 
-        playerManager.sendPlayer(account);
+            account.setLastServer(HyriAPI.get().getServer().getName());
+            account.setCurrentServer(null);
+            account.update();
+        }
 
         this.hyggdrasilManager.sendData();
     }

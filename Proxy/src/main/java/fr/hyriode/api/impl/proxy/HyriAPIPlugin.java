@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
@@ -19,9 +18,9 @@ import java.util.logging.Level;
  * Created by AstFaster
  * on 13/02/2022 at 15:58
  */
-public class HyriAPIPlugin extends Plugin {
+public class HyriAPIPlugin extends Plugin  {
 
-    private IHyriAPIConfiguration configuration;
+    private HyriAPIConfiguration configuration;
 
     private HyriAPIImplementation api;
 
@@ -61,11 +60,11 @@ public class HyriAPIPlugin extends Plugin {
     private void registerListeners() {
         final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
 
-        register.accept(new HyriProxyListener());
-        register.accept(new HyriJoinListener(this.api.getHyggdrasilManager()));
+        register.accept(new HyriProxyListener(this.configuration));
+        register.accept(new HyriJoinListener(this.api, this.api.getHyggdrasilManager()));
     }
 
-    public IHyriAPIConfiguration getConfiguration() {
+    public HyriAPIConfiguration getConfiguration() {
         return this.configuration;
     }
 

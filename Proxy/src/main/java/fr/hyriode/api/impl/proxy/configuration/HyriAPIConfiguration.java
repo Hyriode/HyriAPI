@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.configuration;
 
-import fr.hyriode.api.impl.common.configuration.HyriRedisConfiguration;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.HyriRedisConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -23,11 +23,15 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     private final boolean devEnvironment;
     private final boolean hyggdrasil;
     private final HyriRedisConfiguration redisConfiguration;
+    private final String serverIcon;
+    private final int slots;
 
-    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfiguration redisConfiguration) {
+    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfiguration redisConfiguration, String serverIcon, int slots) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.redisConfiguration = redisConfiguration;
+        this.serverIcon = serverIcon;
+        this.slots = slots;
     }
 
     @Override
@@ -45,19 +49,34 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         return this.redisConfiguration;
     }
 
+    public String getServerIcon() {
+        return this.serverIcon;
+    }
+
+    public int getSlots() {
+        return this.slots;
+    }
+
     public static class Loader {
 
         private static final String DEV_ENVIRONMENT_PATH = "devEnvironment";
         private static final String HYGGDRASIL_PATH = "hyggdrasil";
         private static final String REDIS_PATH = "redis";
+        private static final String SERVER_ICON_PATH = "server-icon";
+        private static final String SLOTS_PATH = "slots";
 
         private static final String REDIS_HOSTNAME = "hostname";
         private static final String REDIS_PORT = "port";
         private static final String REDIS_PASSWORD = "password";
 
-        public static IHyriAPIConfiguration load(Plugin plugin) {
+        public static HyriAPIConfiguration load(Plugin plugin) {
             try {
-                final File configurationFile = new File(plugin.getDataFolder(), "config.yml");
+                final File dataFolder = plugin.getDataFolder();
+                final File configurationFile = new File(dataFolder, "config.yml");
+
+                if (!dataFolder.exists()) {
+                    dataFolder.mkdir();
+                }
 
                 if (!configurationFile.exists()) {
                     final InputStream inputStream = HyriAPIPlugin.class.getResourceAsStream("config.yml");
@@ -69,7 +88,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
                 final Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configurationFile);
 
-                return new HyriAPIConfiguration(configuration.getBoolean(DEV_ENVIRONMENT_PATH), configuration.getBoolean(HYGGDRASIL_PATH), loadRedisConfiguration(configuration.getSection(REDIS_PATH)));
+                return new HyriAPIConfiguration(configuration.getBoolean(DEV_ENVIRONMENT_PATH), configuration.getBoolean(HYGGDRASIL_PATH), loadRedisConfiguration(configuration.getSection(REDIS_PATH)), configuration.getString(SERVER_ICON_PATH), configuration.getInt(SLOTS_PATH));
             } catch (IOException e) {
                 e.printStackTrace();
             }

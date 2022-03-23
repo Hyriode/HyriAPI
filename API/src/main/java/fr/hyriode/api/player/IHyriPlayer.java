@@ -1,14 +1,13 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.cosmetic.HyriCosmetic;
+import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -17,6 +16,20 @@ import java.util.UUID;
  * on 21/07/2021 at 18:40
  */
 public interface IHyriPlayer {
+
+    /**
+     * Check if the player is currently connected on the network
+     *
+     * @return <code>true</code> if he is connected
+     */
+    boolean isOnline();
+
+    /**
+     * Set if the player is connected or not
+     *
+     * @param online New online state
+     */
+    void setOnline(boolean online);
 
     /**
      * Get default player name
@@ -59,14 +72,16 @@ public interface IHyriPlayer {
      *
      * @return <code>true</code> if player has a custom name
      */
-    boolean hasCustomName();
+    default boolean hasCustomName() {
+        return this.getCustomName() != null;
+    }
 
     /**
      * Get player uuid
      *
      * @return Player {@link UUID}
      */
-    UUID getUUID();
+    UUID getUniqueId();
 
     /**
      * Get the first login {@link Date} of the player
@@ -176,25 +191,55 @@ public interface IHyriPlayer {
     void setSettings(IHyriPlayerSettings settings);
 
     /**
-     * Get the cosmetics of the player
+     * Get the name of the current server where the player is.<br>
+     * Warning: if the player is not connected, it will return <code>null</code>
      *
-     * @return A list of cosmetics
+     * @return A server name
      */
-    List<Class<? extends HyriCosmetic>> getCosmetics();
+    String getCurrentServer();
 
     /**
-     * Add a cosmetic to the player
+     * Set the current server where the player is connected
      *
-     * @param cosmetic The cosmetic to add
+     * @param currentServer The name of the server
      */
-    void addCosmetic(Class<? extends HyriCosmetic> cosmetic);
+    void setCurrentServer(String currentServer);
 
     /**
-     * Remove cosmetic to the player
+     * Get the last server where the player was.<br>
+     * Warning: if the player is connected on a server it will return the old one not the current. To get the current server use {@link #getCurrentServer()}
      *
-     * @param cosmetic The cosmetic to remove
+     * @return A server name
      */
-    void removeCosmetic(Class<? extends HyriCosmetic> cosmetic);
+    String getLastServer();
+
+    /**
+     * Set the last server where the player was connected
+     *
+     * @param lastServer The name of the server
+     */
+    void setLastServer(String lastServer);
+
+    /**
+     * Get the name of the proxy that manages the player
+     *
+     * @return A proxy name
+     */
+    String getCurrentProxy();
+
+    /**
+     * Set the current proxy that manages the player
+     *
+     * @param currentProxy A proxy name
+     */
+    void setCurrentProxy(String currentProxy);
+
+    /**
+     * Get the handler of player's friends
+     *
+     * @return A {@link IHyriFriendHandler} instance
+     */
+    IHyriFriendHandler getFriendHandler();
 
     /**
      * Update the player account in database

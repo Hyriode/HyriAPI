@@ -34,24 +34,33 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.plugin = plugin;
         this.proxy = this.createProxy();
-        this.playerManager = new HyriPlayerManager(this);
+        this.playerManager = new HyriPlayerManager();
         this.moneyManager = new HyriMoneyManager();
         this.rankManager = new HyriRankManager();
+
+        if (this.network.getSlots() == -1) {
+            this.network.setSlots(this.plugin.getConfiguration().getSlots());
+        }
 
         this.hyggdrasilManager.start();
         this.registerReceivers();
     }
 
     private IHyriProxy createProxy() {
-        final HyggApplication application = this.hyggdrasilManager.getApplication();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggApplication application = this.hyggdrasilManager.getApplication();
 
-        return new HyriProxy(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+            return new HyriProxy(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+        }
+        return new HyriProxy(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis());
     }
 
     private void registerReceivers() {
-        final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
-        processor.registerReceiver(HyggChannel.PROXIES, new HyriProxyReceiver());
+            processor.registerReceiver(HyggChannel.PROXIES, new HyriProxyReceiver());
+        }
     }
 
     @Override

@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.common.redis;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.configuration.HyriRedisConfiguration;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.configuration.HyriRedisConfiguration;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -68,8 +68,9 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
             HyriCommonImplementation.log("Connection set between " + HyriAPI.NAME + " and Redis");
         } catch (Exception e) {
-            HyriCommonImplementation.log(Level.SEVERE, "An error occurred during connecting to Redis! ");
+            HyriCommonImplementation.log(Level.SEVERE, "An error occurred while connecting to Redis! ");
             HyriCommonImplementation.log(Level.SEVERE, "Try to fix it! Bukkit is now stopping...");
+            e.printStackTrace();
 
             System.exit(-1);
         }

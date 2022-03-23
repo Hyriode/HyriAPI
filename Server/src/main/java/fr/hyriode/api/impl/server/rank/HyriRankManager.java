@@ -13,7 +13,10 @@ public class HyriRankManager extends HyriCommonRankManager {
 
     @Override
     public HyriRank getRank(EHyriRank rank) {
-        return EHyriRankImpl.getByName(rank.getName());
+        if (rank != null) {
+            return EHyriRankImpl.getByName(rank.getName());
+        }
+        return null;
     }
 
 }

@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.server.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.server.listener.HyriPlayerListener;
 import fr.hyriode.api.server.IHyriServer;

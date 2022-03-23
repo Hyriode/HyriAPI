@@ -72,12 +72,12 @@ public class HyriPubSub implements IHyriPubSub {
 
     @Override
     public void subscribe(String channel, IHyriPacketReceiver receiver) {
-        this.subscriber.registerReceiver(channel, receiver);
+        this.subscriber.registerReceiver(CHANNEL_PREFIX + channel, receiver);
     }
 
     @Override
     public void send(String channel, HyriPacket packet, Runnable callback) {
-        this.sender.send(new HyriPubSubMessage(channel, HyriAPI.GSON.toJson(packet), callback));
+        this.sender.send(new HyriPubSubMessage(CHANNEL_PREFIX + channel, HyriAPI.GSON.toJson(packet), callback));
     }
 
     @Override
@@ -164,7 +164,7 @@ public class HyriPubSub implements IHyriPubSub {
         @Override
         public void onPMessage(String pattern, String channel, String message) {
             final HyriPacket packet = HyriAPI.GSON.fromJson(message, HyriPacket.class);
-            final Set<IHyriPacketReceiver> receivers = this.receivers.get(pattern);
+            final Set<IHyriPacketReceiver> receivers = this.receivers.get(channel);
 
             if (receivers != null) {
                 receivers.forEach(receiver -> receiver.receive(channel, packet));

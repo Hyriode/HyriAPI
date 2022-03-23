@@ -34,7 +34,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.plugin = plugin;
         this.server = this.createServer();
-        this.playerManager = new HyriPlayerManager(this);
+        this.playerManager = new HyriPlayerManager();
         this.moneyManager = new HyriMoneyManager();
         this.rankManager = new HyriRankManager();
 
@@ -43,15 +43,20 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private IHyriServer createServer() {
-        final HyggApplication application = this.hyggdrasilManager.getApplication();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggApplication application = this.hyggdrasilManager.getApplication();
 
-        return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+            return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+        }
+        return new HyriServer(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis());
     }
 
     private void registerReceivers() {
-        final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
-        processor.registerReceiver(HyggChannel.SERVERS, new HyriServerReceiver());
+            processor.registerReceiver(HyggChannel.SERVERS, new HyriServerReceiver());
+        }
     }
 
     @Override

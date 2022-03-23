@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.common.cosmetic;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.cosmetic.HyriCosmetic;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 
@@ -58,36 +57,32 @@ public class HyriCosmeticManager implements IHyriCosmeticManager {
 
     @Override
     public List<Class<? extends HyriCosmetic>> getCosmetics(UUID uuid) {
-        return HyriAPI.get().getPlayerManager().getPlayer(uuid).getCosmetics();
+        return new ArrayList<>();
     }
 
     @Override
     public boolean hasCosmetic(Class<? extends HyriCosmetic> cosmetic, UUID uuid) {
-        return HyriAPI.get().getPlayerManager().getPlayer(uuid).getCosmetics().contains(cosmetic);
+        return true;
     }
 
     @Override
     public void addCosmetic(Class<? extends HyriCosmetic> cosmetic, UUID uuid) {
-        HyriAPI.get().getPlayerManager().getPlayer(uuid).addCosmetic(cosmetic);
+
     }
 
     @Override
     public void addCosmetics(List<Class<? extends HyriCosmetic>> list, UUID uuid) {
-        for (Class<? extends HyriCosmetic> cosmetic : list) {
-            HyriAPI.get().getPlayerManager().getPlayer(uuid).addCosmetic(cosmetic);
-        }
+
     }
 
     @Override
     public void removeCosmetic(Class<? extends HyriCosmetic> cosmetic, UUID uuid) {
-        HyriAPI.get().getPlayerManager().getPlayer(uuid).removeCosmetic(cosmetic);
+
     }
 
     @Override
     public void removeCosmetics(List<Class<? extends HyriCosmetic>> list, UUID uuid) {
-        for (Class<? extends HyriCosmetic> cosmetic : list) {
-            HyriAPI.get().getPlayerManager().getPlayer(uuid).removeCosmetic(cosmetic);
-        }
+
     }
 
 }

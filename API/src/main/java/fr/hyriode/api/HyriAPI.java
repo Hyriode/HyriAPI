@@ -2,9 +2,12 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.IHyriEventBus;
+import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
+import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
@@ -82,18 +85,18 @@ public abstract class HyriAPI {
     }
 
     /**
+     * Get the configuration of HyriAPI
+     *
+     * @return The {@link IHyriAPIConfiguration} instance
+     */
+    public abstract IHyriAPIConfiguration getConfiguration();
+
+    /**
      * Get a resource of {@link Jedis}
      *
      * @return {@link Jedis} resource
      */
     public abstract Jedis getRedisResource();
-
-    /**
-     * Get the default event bus
-     *
-     * @return The default {@link IHyriEventBus} instance
-     */
-    public abstract IHyriEventBus getEventBus();
 
     /**
      * Get the Redis connection
@@ -110,11 +113,25 @@ public abstract class HyriAPI {
     public abstract IHyriRedisProcessor getRedisProcessor();
 
     /**
+     * Get the default event bus
+     *
+     * @return The default {@link IHyriEventBus} instance
+     */
+    public abstract IHyriEventBus getEventBus();
+
+    /**
      * Get the Redis PubSub manager
      *
      * @return {@link IHyriPubSub}
      */
     public abstract IHyriPubSub getPubSub();
+
+    /**
+     * Get the class that can be used to get or edit information of the network
+     *
+     * @return The {@link IHyriNetwork} instance
+     */
+    public abstract IHyriNetwork getNetwork();
 
     /**
      * Get the server manager
@@ -150,6 +167,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPartyManager}
      */
     public abstract IHyriPartyManager getPartyManager();
+
+    /**
+     * Get the friend manager instance
+     *
+     * @return The {@link IHyriFriendManager} instance
+     */
+    public abstract IHyriFriendManager getFriendManager();
 
     /**
      * Get the rank manager

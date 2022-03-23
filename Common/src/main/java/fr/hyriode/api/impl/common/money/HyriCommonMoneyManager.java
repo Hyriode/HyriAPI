@@ -32,7 +32,7 @@ public abstract class HyriCommonMoneyManager implements IHyriMoneyManager {
         if (sendMessage) {
             final String message = this.getMoneyMessage(action, money, amount, reason);
 
-            HyriAPI.get().getPlayerManager().sendMessage(player.getUUID(), message);
+            HyriAPI.get().getPlayerManager().sendMessage(player.getUniqueId(), message);
         }
 
         if (callback != null) {
