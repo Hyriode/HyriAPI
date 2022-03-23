@@ -27,7 +27,9 @@ public interface IHyriFriendManager {
     IHyriFriendHandler loadFriends(UUID playerId);
 
     /**
-     * Update friends in database
+     * Update friends in database from a {@link IHyriFriendHandler}
+     *
+     * @param friendHandler The {@link IHyriFriendHandler} with data
      */
     void updateFriends(IHyriFriendHandler friendHandler);
 
