@@ -221,6 +221,20 @@ public interface IHyriPlayer {
     void setLastServer(String lastServer);
 
     /**
+     * Get the name of the proxy that manages the player
+     *
+     * @return A proxy name
+     */
+    String getCurrentProxy();
+
+    /**
+     * Set the current proxy that manages the player
+     *
+     * @param currentProxy A proxy name
+     */
+    void setCurrentProxy(String currentProxy);
+
+    /**
      * Get the handler of player's friends
      *
      * @return A {@link IHyriFriendHandler} instance

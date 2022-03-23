@@ -43,6 +43,8 @@ public class HyriPlayer implements IHyriPlayer {
     private String currentServer;
     private String lastServer;
 
+    private String currentProxy;
+
     public HyriPlayer(boolean online, String name, UUID uuid) {
         this.online = online;
         this.name = name;
@@ -184,6 +186,16 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setLastServer(String lastServer) {
         this.lastServer = lastServer;
+    }
+
+    @Override
+    public String getCurrentProxy() {
+        return this.currentProxy;
+    }
+
+    @Override
+    public void setCurrentProxy(String currentProxy) {
+        this.currentProxy = currentProxy;
     }
 
     @Override

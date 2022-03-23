@@ -56,6 +56,7 @@ public class HyriJoinListener implements Listener {
             player.setName(player.getName());
             player.setLastLoginDate(new Date(System.currentTimeMillis()));
             player.setOnline(true);
+            player.setCurrentProxy(HyriAPI.get().getProxy().getName());
 
             player.update();
 
@@ -111,6 +112,7 @@ public class HyriJoinListener implements Listener {
         if (account != null) {
             account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
             account.setOnline(false);
+            account.setCurrentProxy(null);
             account.update();
         }
 
