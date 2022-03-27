@@ -18,7 +18,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public IHyriParty getParty(UUID uuid) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(this.getJedisKey(uuid), HyriParty.class));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(this.getJedisKey(uuid)), HyriParty.class));
     }
 
     @Override
