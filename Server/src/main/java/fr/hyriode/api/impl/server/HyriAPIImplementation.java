@@ -1,9 +1,12 @@
 package fr.hyriode.api.impl.server;
 
+import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.chat.IHyriChatManager;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.server.money.HyriMoneyManager;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.rank.HyriRankManager;
+import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
@@ -57,6 +60,8 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
             processor.registerReceiver(HyggChannel.SERVERS, new HyriServerReceiver());
         }
+
+        HyriAPI.get().getPubSub().subscribe(IHyriChatManager.PUBSUB_CHANNEL, new HyriChatReceiver());
     }
 
     @Override

@@ -1,9 +1,6 @@
 package fr.hyriode.api.impl.common.settings;
 
-import fr.hyriode.api.settings.HyriLanguage;
-import fr.hyriode.api.settings.HyriPlayersVisibilityLevel;
-import fr.hyriode.api.settings.HyriPrivateMessagesLevel;
-import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.settings.*;
 
 /**
  * Project: HyriAPI
@@ -20,8 +17,9 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     private boolean privateMessagesSoundEnabled;
     private boolean tagSoundEnabled;
     private HyriLanguage language;
+    private String chatChannel;
 
-    public HyriPlayerSettings(boolean partyRequestsEnabled, boolean friendRequestsEnabled, HyriPrivateMessagesLevel privateMessagesLevel, HyriPlayersVisibilityLevel playersVisibilityLevel, boolean globalChatMessagesEnabled, boolean privateMessagesSoundEnabled, boolean tagSoundEnabled, HyriLanguage language) {
+    public HyriPlayerSettings(boolean partyRequestsEnabled, boolean friendRequestsEnabled, HyriPrivateMessagesLevel privateMessagesLevel, HyriPlayersVisibilityLevel playersVisibilityLevel, boolean globalChatMessagesEnabled, boolean privateMessagesSoundEnabled, boolean tagSoundEnabled, HyriLanguage language, String chatChannel) {
         this.partyRequestsEnabled = partyRequestsEnabled;
         this.friendRequestsEnabled = friendRequestsEnabled;
         this.privateMessagesLevel = privateMessagesLevel;
@@ -30,6 +28,7 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
         this.privateMessagesSoundEnabled = privateMessagesSoundEnabled;
         this.tagSoundEnabled = tagSoundEnabled;
         this.language = language;
+        this.chatChannel = chatChannel;
     }
 
     @Override
@@ -110,6 +109,16 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     @Override
     public void setLanguage(HyriLanguage language) {
         this.language = language;
+    }
+
+    @Override
+    public String getChatChannel() {
+        return this.chatChannel;
+    }
+
+    @Override
+    public void setChatChannel(String chatChannel) {
+        this.chatChannel = chatChannel;
     }
 
 }

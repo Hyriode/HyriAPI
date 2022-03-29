@@ -20,7 +20,7 @@ public class HyriPlayerSettingsManager implements IHyriPlayerSettingsManager {
 
     @Override
     public IHyriPlayerSettings createPlayerSettings() {
-        return new HyriPlayerSettings(true, true, HyriPrivateMessagesLevel.ALL, HyriPlayersVisibilityLevel.ALL, true, true, true, HyriLanguage.EN);
+        return new HyriPlayerSettings(true, true, HyriPrivateMessagesLevel.ALL, HyriPlayersVisibilityLevel.ALL, true, true, true, HyriLanguage.EN, "global");
     }
 
     @Override

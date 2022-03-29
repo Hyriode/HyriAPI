@@ -2,6 +2,7 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.chat.IHyriChatManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.IHyriEventBus;
@@ -187,6 +188,12 @@ public abstract class HyriAPI {
      * @return {@link IHyriCosmeticManager}
      */
     public abstract IHyriCosmeticManager getCosmeticManager();
+
+    /**
+     * Get the chat manager
+     * @return {@link IHyriChatManager}
+     */
+    public abstract IHyriChatManager getChatManager();
 
     /**
      * Get the instance of {@link HyriAPI}
