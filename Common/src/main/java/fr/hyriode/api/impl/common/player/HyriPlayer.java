@@ -34,6 +34,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     private String rank;
 
+    private UUID lastPrivateMessage;
+
     private final Hyode hyode;
     private final Hyris hyris;
 
@@ -56,6 +58,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
         this.rank = EHyriRank.PLAYER.getName();
+        this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.hyode = new Hyode(this.uuid);
         this.party = null;
@@ -153,6 +156,17 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public IHyriPlayer setRank(HyriRank rank) {
         this.rank = rank.getName();
+        return this;
+    }
+
+    @Override
+    public UUID getLastPrivateMessagePlayer() {
+        return this.lastPrivateMessage;
+    }
+
+    @Override
+    public IHyriPlayer setLastPrivateMessagePlayer(UUID player) {
+        this.lastPrivateMessage = player;
         return this;
     }
 

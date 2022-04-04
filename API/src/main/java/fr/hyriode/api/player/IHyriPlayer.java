@@ -164,6 +164,21 @@ public interface IHyriPlayer {
     }
 
     /**
+     * Get the {@link UUID} of the last player which this player talks with in private chat
+     *
+     * @return {@link UUID}
+     */
+    UUID getLastPrivateMessagePlayer();
+
+    /**
+     * Set the {@link UUID} of the last player which this player talks with in private chat
+     *
+     * @param player {@link UUID}
+     * @return This {@link IHyriPlayer} instance
+     */
+    IHyriPlayer setLastPrivateMessagePlayer(UUID player);
+
+    /**
      * Get player Hyris money
      *
      * @return Hyris money
