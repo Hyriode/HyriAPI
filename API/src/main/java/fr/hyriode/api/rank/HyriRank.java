@@ -1,9 +1,6 @@
 package fr.hyriode.api.rank;
 
-import fr.hyriode.api.settings.HyriLanguage;
-
 import java.util.List;
-import java.util.Map;
 
 /**
  * Project: HyriAPI
@@ -13,22 +10,22 @@ import java.util.Map;
 public abstract class HyriRank {
 
     /** Rank's name */
-    private String name;
-    /** Rank's display names */
-    private Map<HyriLanguage, String> displayNames;
+    private final String name;
+    /** Rank's prefix */
+    private final String prefix;
     /** Permissions associated to the ranks */
-    private List<HyriPermission> permissions;
+    private final List<HyriPermission> permissions;
 
     /**
      * Constructor of {@link HyriRank}
      *
      * @param name Rank name
-     * @param displayNames Rank display names
+     * @param prefix Rank display name
      * @param permissions Rank permissions
      */
-    public HyriRank(String name, Map<HyriLanguage, String> displayNames, List<HyriPermission> permissions) {
+    public HyriRank(String name, String prefix, List<HyriPermission> permissions) {
         this.name = name;
-        this.displayNames = displayNames;
+        this.prefix = prefix;
         this.permissions = permissions;
     }
 
@@ -36,24 +33,12 @@ public abstract class HyriRank {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Map<HyriLanguage, String> getDisplayNames() {
-        return this.displayNames;
-    }
-
-    public void setDisplayNames(Map<HyriLanguage, String> displayNames) {
-        this.displayNames = displayNames;
+    public String getPrefix() {
+        return this.prefix;
     }
 
     public List<HyriPermission> getPermissions() {
         return this.permissions;
-    }
-
-    public void setPermissions(List<HyriPermission> permissions) {
-        this.permissions = permissions;
     }
 
     public void addPermission(HyriPermission permission) {
@@ -71,5 +56,4 @@ public abstract class HyriRank {
     public EHyriRank getType() {
         return EHyriRank.getByName(this.name);
     }
-
 }

@@ -4,22 +4,18 @@ import fr.hyriode.api.packet.HyriPacket;
 
 import java.util.UUID;
 
-public class MessageAcrossNetworkPacket extends HyriPacket {
+public class ChatMessagePacket extends HyriPacket {
 
     private final String channel;
     private final String message;
     private final UUID sender;
+    private final boolean force;
 
-    public MessageAcrossNetworkPacket(String channel, String message) {
-        this.channel = channel;
-        this.message = message;
-        this.sender = null;
-    }
-
-    public MessageAcrossNetworkPacket(String channel, String message, UUID sender) {
+    public ChatMessagePacket(String channel, String message, UUID sender, boolean force) {
         this.channel = channel;
         this.message = message;
         this.sender = sender;
+        this.force = force;
     }
 
     public String getChannel() {
@@ -32,5 +28,9 @@ public class MessageAcrossNetworkPacket extends HyriPacket {
 
     public UUID getSender() {
         return this.sender;
+    }
+
+    public boolean isForce() {
+        return this.force;
     }
 }

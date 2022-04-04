@@ -2,7 +2,7 @@ package fr.hyriode.api.party;
 
 import fr.hyriode.api.player.IHyriPlayer;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -67,11 +67,11 @@ public interface IHyriPartyManager {
     UUID getPartyLeader(UUID uuid);
 
     /**
-     * Get the list of members in a party by giving his id
+     * Get the list of members at a party by giving his id
      *
      * @param uuid - Party id
-     * @return - A list of member {@link UUID}
+     * @return - A list of member {@link UUID} with his rank
      */
-    List<UUID> getMembersInParty(UUID uuid);
+    Map<UUID, HyriPartyRank> getMembersInParty(UUID uuid);
 
 }

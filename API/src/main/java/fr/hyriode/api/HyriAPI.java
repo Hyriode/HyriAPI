@@ -2,9 +2,8 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.hyriode.api.chat.IHyriChatManager;
+import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
-import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -184,16 +183,10 @@ public abstract class HyriAPI {
     public abstract IHyriRankManager getRankManager();
 
     /**
-     * Get the cosmetics manager
-     * @return {@link IHyriCosmeticManager}
-     */
-    public abstract IHyriCosmeticManager getCosmeticManager();
-
-    /**
      * Get the chat manager
-     * @return {@link IHyriChatManager}
+     * @return {@link IHyriChatChannelManager}
      */
-    public abstract IHyriChatManager getChatManager();
+    public abstract IHyriChatChannelManager getChatChannelManager();
 
     /**
      * Get the instance of {@link HyriAPI}
