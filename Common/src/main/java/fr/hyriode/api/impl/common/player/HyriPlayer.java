@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
-import fr.hyriode.api.impl.common.money.Hyode;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.money.IHyriMoney;
@@ -36,7 +35,6 @@ public class HyriPlayer implements IHyriPlayer {
 
     private UUID lastPrivateMessage;
 
-    private final Hyode hyode;
     private final Hyris hyris;
 
     private UUID party;
@@ -60,7 +58,6 @@ public class HyriPlayer implements IHyriPlayer {
         this.rank = EHyriRank.PLAYER.getName();
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
-        this.hyode = new Hyode(this.uuid);
         this.party = null;
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
         this.moderationMode = this.getRank().getType().getId() >= EHyriRank.MODERATOR.getId();
@@ -173,11 +170,6 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public IHyriMoney getHyris() {
         return this.hyris;
-    }
-
-    @Override
-    public IHyriMoney getHyode() {
-        return this.hyode;
     }
 
     @Override

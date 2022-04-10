@@ -186,13 +186,6 @@ public interface IHyriPlayer {
     IHyriMoney getHyris();
 
     /**
-     * Get player Hyode money
-     *
-     * @return Hyode money
-     */
-    IHyriMoney getHyode();
-
-    /**
      * Get the party {@link UUID} of the player
      *
      * @return Player party
