@@ -7,7 +7,7 @@ allprojects {
     apply plugin: 'java-library'
 
     group = 'fr.hyriode'
-    version = '1.1.0'
+    version = '1.1.1'
 
     java {
         withSourcesJar()
@@ -40,5 +40,4 @@ allprojects {
     dependencies {
         api 'fr.hyriode:hyggdrasil-api:1.0.0'
     }
-
 }

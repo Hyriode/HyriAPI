@@ -1,12 +1,12 @@
 package fr.hyriode.api.impl.common;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
-import fr.hyriode.api.cosmetic.IHyriCosmeticManager;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
-import fr.hyriode.api.impl.common.cosmetic.HyriCosmeticManager;
+import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.network.HyriNetwork;
@@ -54,7 +54,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final IHyriFriendManager friendManager;
 
-    protected final IHyriCosmeticManager cosmeticManager;
+    protected final IHyriChatChannelManager chatChannelManager;
 
     private static BiConsumer<Level, String> logging;
 
@@ -78,7 +78,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.playerSettingsManager = new HyriPlayerSettingsManager();
         this.partyManager = new HyriPartyManager();
         this.friendManager = new HyriFriendManager();
-        this.cosmeticManager = new HyriCosmeticManager();
+        this.chatChannelManager = new HyriChatChannelManager();
     }
 
     public static void log(Level level, String message) {
@@ -168,8 +168,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriCosmeticManager getCosmeticManager() {
-        return this.cosmeticManager;
+    public IHyriChatChannelManager getChatChannelManager() {
+        return this.chatChannelManager;
     }
-
 }

@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
-import fr.hyriode.api.impl.common.money.Hyode;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.money.IHyriMoney;
@@ -25,6 +24,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     private String name;
     private String customName = null;
+    private String nameWithRank = null;
     private final UUID uuid;
 
     private long lastLoginDate;
@@ -33,7 +33,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     private String rank;
 
-    private final Hyode hyode;
+    private UUID lastPrivateMessage;
+
     private final Hyris hyris;
 
     private UUID party;
@@ -45,6 +46,9 @@ public class HyriPlayer implements IHyriPlayer {
 
     private String currentProxy;
 
+    private boolean moderationMode;
+    private boolean vanishMode;
+
     public HyriPlayer(boolean online, String name, UUID uuid) {
         this.online = online;
         this.name = name;
@@ -52,10 +56,12 @@ public class HyriPlayer implements IHyriPlayer {
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
         this.rank = EHyriRank.PLAYER.getName();
+        this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
-        this.hyode = new Hyode(this.uuid);
         this.party = null;
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
+        this.moderationMode = this.getRank().getType().getId() >= EHyriRank.MODERATOR.getId();
+        this.vanishMode = false;
     }
 
     @Override
@@ -64,8 +70,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setOnline(boolean online) {
+    public IHyriPlayer setOnline(boolean online) {
         this.online = online;
+        return this;
     }
 
     @Override
@@ -74,8 +81,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setName(String name) {
+    public IHyriPlayer setName(String name) {
         this.name = name;
+        return this;
     }
 
     @Override
@@ -84,13 +92,25 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setCustomName(String customName) {
+    public IHyriPlayer setCustomName(String customName) {
         this.customName = customName;
+        return this;
     }
 
     @Override
     public String getDisplayName() {
         return this.hasCustomName() ? this.getCustomName() : this.getName();
+    }
+
+    @Override
+    public String getNameWithRank() {
+        return this.nameWithRank;
+    }
+
+    @Override
+    public IHyriPlayer setNameWithRank(String nameWithRank) {
+        this.nameWithRank = nameWithRank;
+        return this;
     }
 
     @Override
@@ -109,8 +129,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setLastLoginDate(Date lastLoginDate) {
+    public IHyriPlayer setLastLoginDate(Date lastLoginDate) {
         this.lastLoginDate = lastLoginDate.getTime();
+        return this;
     }
 
     @Override
@@ -119,8 +140,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setPlayTime(long playTime) {
+    public IHyriPlayer setPlayTime(long playTime) {
         this.playTime = playTime;
+        return this;
     }
 
     @Override
@@ -129,8 +151,20 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setRank(HyriRank rank) {
+    public IHyriPlayer setRank(HyriRank rank) {
         this.rank = rank.getName();
+        return this;
+    }
+
+    @Override
+    public UUID getLastPrivateMessagePlayer() {
+        return this.lastPrivateMessage;
+    }
+
+    @Override
+    public IHyriPlayer setLastPrivateMessagePlayer(UUID player) {
+        this.lastPrivateMessage = player;
+        return this;
     }
 
     @Override
@@ -139,18 +173,14 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriMoney getHyode() {
-        return this.hyode;
-    }
-
-    @Override
     public UUID getParty() {
         return this.party;
     }
 
     @Override
-    public void setParty(UUID party) {
+    public IHyriPlayer setParty(UUID party) {
         this.party = party;
+        return this;
     }
 
     @Override
@@ -164,8 +194,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setSettings(IHyriPlayerSettings settings) {
+    public IHyriPlayer setSettings(IHyriPlayerSettings settings) {
         this.settings = (HyriPlayerSettings) settings;
+        return this;
     }
 
     @Override
@@ -174,8 +205,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setCurrentServer(String currentServer) {
+    public IHyriPlayer setCurrentServer(String currentServer) {
         this.currentServer = currentServer;
+        return this;
     }
 
     @Override
@@ -184,8 +216,9 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setLastServer(String lastServer) {
+    public IHyriPlayer setLastServer(String lastServer) {
         this.lastServer = lastServer;
+        return this;
     }
 
     @Override
@@ -194,13 +227,36 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setCurrentProxy(String currentProxy) {
+    public IHyriPlayer setCurrentProxy(String currentProxy) {
         this.currentProxy = currentProxy;
+        return this;
     }
 
     @Override
     public IHyriFriendHandler getFriendHandler() {
         return HyriAPI.get().getFriendManager().loadFriends(this.uuid);
+    }
+
+    @Override
+    public boolean isInModerationMode() {
+        return this.moderationMode;
+    }
+
+    @Override
+    public IHyriPlayer setInModerationMode(boolean inModerationMode) {
+        this.moderationMode = inModerationMode;
+        return this;
+    }
+
+    @Override
+    public boolean isInVanishMode() {
+        return this.vanishMode;
+    }
+
+    @Override
+    public IHyriPlayer setInVanishMode(boolean inVanishMode) {
+        this.vanishMode = inVanishMode;
+        return this;
     }
 
 }

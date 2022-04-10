@@ -1,12 +1,13 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -18,7 +19,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public IHyriParty getParty(UUID uuid) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(this.getJedisKey(uuid), HyriParty.class));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(this.getJedisKey(uuid)), HyriParty.class));
     }
 
     @Override
@@ -42,9 +43,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void removeParty(UUID uuid) {
-        final List<UUID> members = this.getMembersInParty(uuid);
-
-        for (UUID member : members) {
+        for (UUID member : this.getMembersInParty(uuid).keySet()) {
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final IHyriPlayer player = playerManager.getPlayer(member);
 
@@ -71,7 +70,7 @@ public class HyriPartyManager implements IHyriPartyManager {
     }
 
     @Override
-    public List<UUID> getMembersInParty(UUID uuid) {
+    public Map<UUID, HyriPartyRank> getMembersInParty(UUID uuid) {
         final IHyriParty party = this.getParty(uuid);
 
         return party != null ? party.getMembers() : null;

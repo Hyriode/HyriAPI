@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
@@ -90,6 +91,11 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
     @Override
     public void connectPlayer(UUID uuid, String server) {
         HyriAPI.get().getServerManager().sendPlayerToServer(uuid, server);
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String message) {
+        HyriAPI.get().getChatChannelManager().sendMessageToPlayer(HyriDefaultChatChannel.PLUGIN.getChannel(), message, uuid, true);
     }
 
     @Override
