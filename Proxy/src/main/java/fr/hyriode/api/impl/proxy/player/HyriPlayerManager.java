@@ -25,15 +25,6 @@ public class HyriPlayerManager extends HyriCommonPlayerManager {
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
-        final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
-
-        if (player != null) {
-            player.sendMessage(TextComponent.fromLegacyText(message));
-        }
-    }
-
-    @Override
     public void sendTitle(UUID uuid, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 

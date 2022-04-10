@@ -120,4 +120,18 @@ public interface IHyriPlayerSettings {
      */
     void setLanguage(HyriLanguage language);
 
+    /**
+     * Get the player chat channel
+     *
+     * @return - The player chat channel
+     */
+    String getChatChannel();
+
+    /**
+     * Set the player chat channel
+     *
+     * @param chatChannel - String
+     */
+    void setChatChannel(String chatChannel);
+
 }

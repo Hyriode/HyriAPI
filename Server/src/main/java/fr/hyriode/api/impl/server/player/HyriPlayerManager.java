@@ -28,15 +28,6 @@ public class HyriPlayerManager extends HyriCommonPlayerManager {
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
-        final Player player = Bukkit.getPlayer(uuid);
-
-        if (player != null) {
-            player.sendMessage(message);
-        }
-    }
-
-    @Override
     public void sendTitle(UUID uuid, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         final Player player = Bukkit.getPlayer(uuid);
 
