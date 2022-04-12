@@ -41,7 +41,7 @@ public class ChatUtil {
                     .append(ChatColor.AQUA + "Click to " + ChatColor.GOLD + "teleport" + ChatColor.AQUA + " on his server.").create()));
             builder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hyriserver " + account.getCurrentServer()));
         }
-        System.out.println(Arrays.toString(builder.append(color + message).event((ClickEvent) null).event((HoverEvent) null).create()));
+
         return builder.append(color + message).event((ClickEvent) null).event((HoverEvent) null);
     }
 }
