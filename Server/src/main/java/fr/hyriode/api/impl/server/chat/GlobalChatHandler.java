@@ -65,7 +65,7 @@ public class GlobalChatHandler implements IHyriChatChannelHandler {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!manager.getPlayer(player.getUniqueId()).getSettings().isGlobalChatMessagesEnabled()) {
+            if (!force && !manager.getPlayer(player.getUniqueId()).getSettings().isGlobalChatMessagesEnabled()) {
                 continue;
             }
 

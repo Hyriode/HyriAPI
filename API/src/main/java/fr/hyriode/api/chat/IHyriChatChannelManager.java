@@ -116,6 +116,6 @@ public interface IHyriChatChannelManager {
      * @return <code>true</code> if the player can use the channel.
      */
     static boolean canPlayerAccessChannel(String channel, IHyriPlayer player) {
-        return HyriAPI.get().getChatChannelManager().getHandler(channel).getRequiredRank().getId() >= player.getRank().getType().getId();
+        return HyriAPI.get().getChatChannelManager().getHandler(channel).getRequiredRank().getId() <= player.getRank().getType().getId();
     }
 }

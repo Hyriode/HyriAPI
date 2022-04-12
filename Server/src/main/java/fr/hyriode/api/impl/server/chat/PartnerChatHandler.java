@@ -47,7 +47,7 @@ public class PartnerChatHandler implements IHyriChatChannelHandler {
     @Override
     public void onMessage(String channel, String message, UUID sender, boolean force) {
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            if (IHyriChatChannelManager.canPlayerAccessChannel(channel, HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId()))) {
+            if (!force && IHyriChatChannelManager.canPlayerAccessChannel(channel, HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId()))) {
                 continue;
             }
 

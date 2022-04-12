@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class ChatUtil {
@@ -40,7 +41,7 @@ public class ChatUtil {
                     .append(ChatColor.AQUA + "Click to " + ChatColor.GOLD + "teleport" + ChatColor.AQUA + " on his server.").create()));
             builder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hyriserver " + account.getCurrentServer()));
         }
-
+        System.out.println(Arrays.toString(builder.append(color + message).event((ClickEvent) null).event((HoverEvent) null).create()));
         return builder.append(color + message).event((ClickEvent) null).event((HoverEvent) null);
     }
 }

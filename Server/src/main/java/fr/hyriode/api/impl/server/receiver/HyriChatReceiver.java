@@ -12,14 +12,14 @@ import fr.hyriode.api.player.IHyriPlayerManager;
 public class HyriChatReceiver implements IHyriPacketReceiver {
 
     @Override
-    public void receive(String channel, HyriPacket packet) {
+    public void receive(String redisChannel, HyriPacket packet) {
         final IHyriChatChannelManager chat = HyriAPI.get().getChatChannelManager();
         final IHyriPlayerManager player = HyriAPI.get().getPlayerManager();
 
         if (packet instanceof ChatMessagePacket) {
             final ChatMessagePacket message = (ChatMessagePacket) packet;
 
-            final IHyriChatChannelHandler handler = chat.getHandler(channel);
+            final IHyriChatChannelHandler handler = chat.getHandler(message.getChannel());
 
             if (handler == null) {
                 return;
