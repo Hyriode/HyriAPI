@@ -239,7 +239,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public IHyriFriendHandler getFriendHandler() {
-        return HyriAPI.get().getFriendManager().loadFriends(this.uuid);
+        return HyriAPI.get().getFriendManager().createHandler(this.uuid);
     }
 
     @Override

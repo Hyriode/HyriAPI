@@ -74,7 +74,7 @@ public class PrivateChatHandler implements IHyriChatChannelHandler {
                 case NONE:
                     return;
                 case FRIENDS:
-                    if (HyriAPI.get().getFriendManager().loadFriends(senderID).areFriends(receiverID)) {
+                    if (HyriAPI.get().getFriendManager().createHandler(senderID).areFriends(receiverID)) {
                         break;
                     }
                 case ALL:

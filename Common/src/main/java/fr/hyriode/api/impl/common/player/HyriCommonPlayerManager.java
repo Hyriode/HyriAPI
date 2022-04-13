@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.common.player;
 
 import com.google.gson.JsonElement;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
