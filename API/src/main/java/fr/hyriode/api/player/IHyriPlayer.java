@@ -3,8 +3,9 @@ package fr.hyriode.api.player;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 import java.util.Date;
@@ -147,12 +148,21 @@ public interface IHyriPlayer {
     void setRank(HyriRank rank);
 
     /**
-     * Set player rank
+     * Set the player rank of the player
      *
-     * @param rank Rank type
+     * @param playerRankType A {@link HyriPlayerRankType}
      */
-    default void setRank(EHyriRank rank) {
-        this.setRank(rank.get());
+    default void setPlayerRank(HyriPlayerRankType playerRankType) {
+        this.getRank().setPlayerType(playerRankType);
+    }
+
+    /**
+     * Set the staff rank of the player
+     *
+     * @param staffRankType A {@link HyriStaffRankType}
+     */
+    default void setStaffRank(HyriStaffRankType staffRankType) {
+        this.getRank().setStaffType(staffRankType);
     }
 
     /**
@@ -272,9 +282,9 @@ public interface IHyriPlayer {
     /**
      * Set if the player is in moderation mode
      *
-     * @param inModerationMode <code>true</code> if the player is in the moderation mode
+     * @param moderationMode <code>true</code> if the player is in the moderation mode
      */
-    void setInModerationMode(boolean inModerationMode);
+    void setInModerationMode(boolean moderationMode);
 
     /**
      * Get if the player is in vanish mode
@@ -286,9 +296,9 @@ public interface IHyriPlayer {
     /**
      * Set if the player is in vanish mode
      *
-     * @param inVanishMode <code>true</code> if the player is in the vanish mode
+     * @param vanishMode <code>true</code> if the player is in the vanish mode
      */
-    void setInVanishMode(boolean inVanishMode);
+    void setInVanishMode(boolean vanishMode);
 
     /**
      * Update the player account in database

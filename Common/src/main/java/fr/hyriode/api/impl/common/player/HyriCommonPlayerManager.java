@@ -5,8 +5,9 @@ import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.rank.EHyriRank;
-import fr.hyriode.api.rank.HyriPermission;
+import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 
 import java.util.UUID;
 
@@ -59,7 +60,11 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
         final IHyriPlayer player = new HyriPlayer(online, name, uuid);
 
         if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
-            player.setRank(EHyriRank.ADMINISTRATOR.get());
+            final HyriRank rank = new HyriRank(HyriPlayerRankType.PLAYER);
+
+            rank.setStaffType(HyriStaffRankType.ADMINISTRATOR);
+
+            player.setRank(rank);
         }
 
         this.setPlayerId(name, uuid);
@@ -96,11 +101,6 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
     @Override
     public void sendMessage(UUID uuid, String message) {
         HyriAPI.get().getChatChannelManager().sendMessageToPlayer(HyriDefaultChatChannel.PLUGIN.getChannel(), message, uuid, true);
-    }
-
-    @Override
-    public boolean hasPermission(UUID uuid, HyriPermission permission) {
-        return this.getPlayer(uuid).getRank().hasPermission(permission);
     }
 
 }

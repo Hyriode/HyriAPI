@@ -5,7 +5,8 @@ import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.chat.IHyriChatChannelHandler;
 import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.impl.server.util.ChatUtil;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
@@ -22,8 +23,13 @@ public class StaffChatHandler implements IHyriChatChannelHandler {
     }
 
     @Override
-    public EHyriRank getRequiredRank() {
-        return EHyriRank.STAFF;
+    public HyriStaffRankType getRequiredStaffRank() {
+        return HyriStaffRankType.HELPER;
+    }
+
+    @Override
+    public HyriPlayerRankType getRequiredPlayerRank() {
+        return null;
     }
 
     @Override

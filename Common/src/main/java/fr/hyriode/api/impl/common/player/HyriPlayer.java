@@ -6,8 +6,8 @@ import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.rank.EHyriRank;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 import java.util.Date;
@@ -31,7 +31,7 @@ public class HyriPlayer implements IHyriPlayer {
     private final long firstLoginDate;
     private long playTime;
 
-    private String rank;
+    private HyriRank rank;
 
     private UUID lastPrivateMessage;
 
@@ -55,12 +55,12 @@ public class HyriPlayer implements IHyriPlayer {
         this.uuid = uuid;
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
-        this.rank = EHyriRank.PLAYER.getName();
+        this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
-        this.moderationMode = this.getRank().getType().getId() >= EHyriRank.MODERATOR.getId();
+        this.moderationMode = false;
         this.vanishMode = false;
     }
 
@@ -141,12 +141,12 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public HyriRank getRank() {
-        return HyriAPI.get().getRankManager().getRank(this.rank);
+        return this.rank;
     }
 
     @Override
     public void setRank(HyriRank rank) {
-        this.rank = rank.getName();
+        this.rank = rank;
     }
 
     @Override
@@ -230,8 +230,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setInModerationMode(boolean inModerationMode) {
-        this.moderationMode = inModerationMode;
+    public void setInModerationMode(boolean moderationMode) {
+        this.moderationMode = moderationMode;
     }
 
     @Override
@@ -240,8 +240,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void setInVanishMode(boolean inVanishMode) {
-        this.vanishMode = inVanishMode;
+    public void setInVanishMode(boolean vanishMode) {
+        this.vanishMode = vanishMode;
     }
 
 }

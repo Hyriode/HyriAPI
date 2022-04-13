@@ -2,7 +2,8 @@ package fr.hyriode.api.impl.server.chat;
 
 import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.chat.IHyriChatChannelHandler;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,12 @@ public class PluginChatHandler implements IHyriChatChannelHandler {
     }
 
     @Override
-    public EHyriRank getRequiredRank() {
+    public HyriStaffRankType getRequiredStaffRank() {
+        return null;
+    }
+
+    @Override
+    public HyriPlayerRankType getRequiredPlayerRank() {
         return null;
     }
 
@@ -54,4 +60,5 @@ public class PluginChatHandler implements IHyriChatChannelHandler {
 
         player.sendMessage(message);
     }
+
 }

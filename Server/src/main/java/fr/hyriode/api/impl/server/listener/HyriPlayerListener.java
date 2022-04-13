@@ -4,7 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.HyriRank;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,18 +51,20 @@ public class HyriPlayerListener implements Listener {
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
         if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
-            account.setName(player.getName())
-                    .setLastLoginDate(new Date(System.currentTimeMillis()))
-                    .setOnline(true);
+            account.setName(player.getName());
+            account.setLastLoginDate(new Date(System.currentTimeMillis()));
+            account.setOnline(true);
 
             playerManager.setPlayerId(account.getName(), account.getUniqueId());
         }
 
+        final HyriRank rank = account.getRank();
+        final String customName = rank.getPrefix() + ChatColor.WHITE + HyriRank.SEPARATOR + rank.getMainColor().toString() + player.getName();
 
-        final String customName = (account.getRank().getType() != EHyriRank.PLAYER ? account.getRank().getPrefix() + ChatColor.WHITE + "・" + account.getRank().getPrefix().substring(0, 2) : "") + player.getName();
+        account.setCurrentServer(HyriAPI.get().getServer().getName());
+        account.setNameWithRank(customName);
+        account.update();
 
-        account.setCurrentServer(HyriAPI.get().getServer().getName())
-                .setNameWithRank(customName).update();
         player.setDisplayName(customName);
 
         this.hyggdrasilManager.sendData();

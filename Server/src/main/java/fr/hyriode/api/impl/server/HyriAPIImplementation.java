@@ -5,13 +5,11 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.server.chat.*;
 import fr.hyriode.api.impl.server.money.HyriMoneyManager;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
-import fr.hyriode.api.impl.server.rank.HyriRankManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.rank.IHyriRankManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
@@ -33,8 +31,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriMoneyManager moneyManager;
 
-    private final IHyriRankManager rankManager;
-
     private final HyriAPIPlugin plugin;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
@@ -43,7 +39,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.server = this.createServer();
         this.playerManager = new HyriPlayerManager();
         this.moneyManager = new HyriMoneyManager();
-        this.rankManager = new HyriRankManager();
 
         this.hyggdrasilManager.start();
         this.registerReceivers();
@@ -89,11 +84,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     @Override
     public IHyriMoneyManager getMoneyManager() {
         return this.moneyManager;
-    }
-
-    @Override
-    public IHyriRankManager getRankManager() {
-        return this.rankManager;
     }
 
 }

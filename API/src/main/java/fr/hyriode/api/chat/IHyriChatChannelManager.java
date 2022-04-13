@@ -2,6 +2,9 @@ package fr.hyriode.api.chat;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 
 import java.util.UUID;
 
@@ -116,6 +119,19 @@ public interface IHyriChatChannelManager {
      * @return <code>true</code> if the player can use the channel.
      */
     static boolean canPlayerAccessChannel(String channel, IHyriPlayer player) {
-        return HyriAPI.get().getChatChannelManager().getHandler(channel).getRequiredRank().getId() >= player.getRank().getType().getId();
+        final HyriRank rank = player.getRank();
+        final IHyriChatChannelHandler handler = HyriAPI.get().getChatChannelManager().getHandler(channel);
+        final HyriPlayerRankType playerRankType = handler.getRequiredPlayerRank();
+        final HyriStaffRankType staffRankType = handler.getRequiredStaffRank();
+
+        boolean result = playerRankType != null && rank.isNecessary(playerRankType);
+
+        if (staffRankType != null && rank.isNecessary(staffRankType)) {
+            result = true;
+        } else if (staffRankType != null){
+            result = false;
+        }
+        return result;
     }
+
 }

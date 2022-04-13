@@ -1,6 +1,7 @@
 package fr.hyriode.api.chat;
 
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 
 import java.util.UUID;
 
@@ -16,10 +17,16 @@ public interface IHyriChatChannelHandler {
     String getChannel();
 
     /**
-     * Get the required rank to send a message on the channel.
+     * Get the required staff rank to send a message on the channel.
      * @return The required rank.
      */
-    EHyriRank getRequiredRank();
+    HyriStaffRankType getRequiredStaffRank();
+
+    /**
+     * Get the required player rank to send a message on the channel.
+     * @return The required rank.
+     */
+    HyriPlayerRankType getRequiredPlayerRank();
 
     /**
      * Get if the channel is received across the network.
@@ -65,4 +72,5 @@ public interface IHyriChatChannelHandler {
      * @param force <code>true</code> to bypass checks.
      */
     void onMessageToPlayer(String channel, UUID receiver, String message, UUID sender, boolean force);
+
 }

@@ -6,7 +6,8 @@ import fr.hyriode.api.chat.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.server.util.ChatUtil;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -24,8 +25,13 @@ public class GlobalChatHandler implements IHyriChatChannelHandler {
     }
 
     @Override
-    public EHyriRank getRequiredRank() {
-        return EHyriRank.PLAYER;
+    public HyriStaffRankType getRequiredStaffRank() {
+        return null;
+    }
+
+    @Override
+    public HyriPlayerRankType getRequiredPlayerRank() {
+        return HyriPlayerRankType.PLAYER;
     }
 
     @Override
@@ -84,4 +90,5 @@ public class GlobalChatHandler implements IHyriChatChannelHandler {
 
         player.spigot().sendMessage(ChatUtil.formatDefault(this.getPrefix(), this.getMessageFormat(), sender, message).create());
     }
+
 }
