@@ -3,6 +3,7 @@ package fr.hyriode.api.player;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.money.IHyriMoney;
+import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
@@ -164,6 +165,27 @@ public interface IHyriPlayer {
     default void setStaffRank(HyriStaffRankType staffRankType) {
         this.getRank().setStaffType(staffRankType);
     }
+
+    /**
+     * Get Hyri+ offer
+     *
+     * @return The {@link HyriPlus} offer instance
+     */
+    HyriPlus getHyriPlus();
+
+    /**
+     * Set Hyri+ offer
+     *
+     * @param hyriPlus New {@link HyriPlus} offer instance
+     */
+    void setHyriPlus(HyriPlus hyriPlus);
+
+    /**
+     * Check if the player has Hyri+ offer
+     *
+     * @return <code>true</code> if the player has Hyri+
+     */
+    boolean hasHyriPlus();
 
     /**
      * Get the {@link UUID} of the last player which this player talks with in private chat

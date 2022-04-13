@@ -6,6 +6,7 @@ import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
@@ -32,6 +33,7 @@ public class HyriPlayer implements IHyriPlayer {
     private long playTime;
 
     private HyriRank rank;
+    private HyriPlus hyriPlus;
 
     private UUID lastPrivateMessage;
 
@@ -56,6 +58,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
         this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
+        this.hyriPlus = null;
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
@@ -147,6 +150,21 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setRank(HyriRank rank) {
         this.rank = rank;
+    }
+
+    @Override
+    public HyriPlus getHyriPlus() {
+        return this.hyriPlus;
+    }
+
+    @Override
+    public void setHyriPlus(HyriPlus hyriPlus) {
+        this.hyriPlus = hyriPlus;
+    }
+
+    @Override
+    public boolean hasHyriPlus() {
+        return this.hyriPlus != null && !this.hyriPlus.hasExpire();
     }
 
     @Override
