@@ -19,6 +19,8 @@ import java.util.logging.Level;
  */
 public class HyriRedisConnection implements IHyriRedisConnection {
 
+    private boolean running;
+
     private boolean connected;
 
     private JedisPool jedisPool;
@@ -40,6 +42,8 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     }
 
     private void start() {
+        this.running = true;
+
         this.connect();
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -78,6 +82,8 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
     public void stop() {
         HyriCommonImplementation.log("Stopping Redis connection...");
+
+        this.running = false;
 
         this.jedisPool.close();
         this.jedisPool.destroy();

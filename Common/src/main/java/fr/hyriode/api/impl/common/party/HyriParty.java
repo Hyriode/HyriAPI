@@ -1,8 +1,10 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.party.HyriPartyInvitation;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
+import fr.hyriode.api.party.IHyriPartyManager;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,20 +18,22 @@ import java.util.UUID;
  */
 public class HyriParty implements IHyriParty {
 
-    private String server;
-    private UUID leader;
-    private boolean privateParty;
-    private final Date creationDate;
-    private final Map<UUID, HyriPartyRank> members;
     private final UUID id;
+    private UUID leader;
+    private final long creationDate;
+    private final Map<UUID, HyriPartyRank> members;
+    private String server;
+    private boolean privateParty;
 
-    public HyriParty(UUID id, UUID leader, String server) {
-        this.id = id;
+    public HyriParty(UUID leader, String server) {
+        this.id = UUID.randomUUID();
         this.leader = leader;
+        this.creationDate = System.currentTimeMillis();
+        this.members = new HashMap<>();
         this.server = server;
         this.privateParty = true;
-        this.members = new HashMap<>();
-        this.creationDate = new Date(System.currentTimeMillis());
+
+        this.members.put(this.leader, HyriPartyRank.LEADER);
     }
 
     @Override
@@ -43,14 +47,13 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public IHyriParty setLeader(UUID leader) {
+    public void setLeader(UUID leader) {
         this.leader = leader;
-        return this;
     }
 
     @Override
     public Date getCreationDate() {
-        return this.creationDate;
+        return new Date(this.creationDate);
     }
 
     @Override
@@ -59,29 +62,46 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public IHyriParty addMember(UUID uuid, HyriPartyRank rank) {
-        this.members.put(uuid, rank);
-        return this;
+    public void invitePlayer(UUID sender, UUID uuid) {
+        final HyriPartyInvitation invitation = new HyriPartyInvitation(this.id, sender, uuid);
+
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+            final String key = HyriPartyManager.REDIS_KEY + "invitations:" + uuid.toString() + ":" + this.id.toString();
+
+            jedis.set(key, HyriAPI.GSON.toJson(invitation));
+            jedis.expire(key, 60);
+        });
+        HyriAPI.get().getPubSub().send(IHyriPartyManager.REDIS_CHANNEL, new HyriPartyInvitation.Packet(invitation));
+    }
+
+    @Override
+    public void addMember(UUID uuid, HyriPartyRank rank) {
+        this.members.putIfAbsent(uuid, rank);
     }
 
     @Override
     public HyriPartyRank promoteMember(UUID uuid) {
-        final HyriPartyRank rank = HyriPartyRank.getById(this.members.get(uuid).getId() + 1);
-        this.members.put(uuid, rank);
-        return rank;
+        final HyriPartyRank newRank = this.members.get(uuid).getSuperior();
+
+        if (newRank != null) {
+            this.members.put(uuid, newRank);
+        }
+        return null;
     }
 
     @Override
     public HyriPartyRank demoteMember(UUID uuid) {
-        final HyriPartyRank rank = HyriPartyRank.getById(this.members.get(uuid).getId() - 1);
-        this.members.put(uuid, rank);
-        return rank;
+        final HyriPartyRank newRank = this.members.get(uuid).getInferior();
+
+        if (newRank != null) {
+            this.members.put(uuid, newRank);
+        }
+        return null;
     }
 
     @Override
-    public IHyriParty removeMember(UUID uuid) {
+    public void removeMember(UUID uuid) {
         this.members.remove(uuid);
-        return this;
     }
 
     @Override
@@ -90,14 +110,18 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
+    public HyriPartyRank getRank(UUID player) {
+        return this.members.get(player);
+    }
+
+    @Override
     public boolean isPrivate() {
         return this.privateParty;
     }
 
     @Override
-    public IHyriParty setPrivate(boolean privateParty) {
+    public void setPrivate(boolean privateParty) {
         this.privateParty = privateParty;
-        return this;
     }
 
     @Override
@@ -106,9 +130,8 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public IHyriParty setServer(String server) {
+    public void setServer(String server) {
         this.server = server;
-        return this;
     }
 
     @Override
@@ -117,4 +140,5 @@ public class HyriParty implements IHyriParty {
             HyriAPI.get().getChatChannelManager().sendMessageToPlayer(channel, message, uuid, sender, force);
         }
     }
+
 }

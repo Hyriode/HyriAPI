@@ -16,14 +16,14 @@ public interface IHyriParty {
     /**
      * Get the id of the party
      *
-     * @return - Party {@link UUID}
+     * @return Party {@link UUID}
      */
     UUID getId();
 
     /**
      * Get the {@link UUID} of the party leader
      *
-     * @return - Leader {@link UUID}
+     * @return Leader {@link UUID}
      */
     UUID getLeader();
 
@@ -31,82 +31,95 @@ public interface IHyriParty {
      * Set the leader of party by giving his {@link UUID}
      *
      * @param leader - New leader {@link UUID}
-     * @return - This {@link IHyriParty} instance
      */
-    IHyriParty setLeader(UUID leader);
+    void setLeader(UUID leader);
 
     /**
      * Get the creation date of the party
      *
-     * @return - Creation date
+     * @return Creation date
      */
     Date getCreationDate();
 
     /**
      * Get a list of all member {@link UUID}
      *
-     * @return - A list of {@link UUID}
+     * @return A list of {@link UUID}
      */
     Map<UUID, HyriPartyRank> getMembers();
 
     /**
+     * Invite a given player in the party
+     *
+     * @param sender The {@link UUID} of the invitation's sender
+     * @param uuid The {@link UUID} of the player to invite
+     */
+    void invitePlayer(UUID sender, UUID uuid);
+
+    /**
      * Add a member in the party by giving his {@link UUID}
      *
-     * @param uuid - Member {@link UUID}
-     * @param rank - Member rank
-     * @return - This {@link IHyriParty} instance
+     * @param uuid Member {@link UUID}
+     * @param rank Member rank
      */
-    IHyriParty addMember(UUID uuid, HyriPartyRank rank);
+    void addMember(UUID uuid, HyriPartyRank rank);
 
     /**
      * Promote a member of the party by giving his {@link UUID}
      *
-     * @param uuid - Member {@link UUID}
-     * @return - The new rank
+     * @param uuid Member {@link UUID}
+     * @return The new rank
      */
     HyriPartyRank promoteMember(UUID uuid);
 
     /**
      * Demote a member of the party by giving his {@link UUID}
      *
-     * @param uuid - Member {@link UUID}
-     * @return - The new rank
+     * @param uuid Member {@link UUID}
+     * @return The new rank
      */
     HyriPartyRank demoteMember(UUID uuid);
 
     /**
      * Remove a member of the party by giving his {@link UUID}
      *
-     * @param uuid - Member {@link UUID}
-     * @return - This {@link IHyriParty} instance
+     * @param uuid Member {@link UUID}
      */
-    IHyriParty removeMember(UUID uuid);
+    void removeMember(UUID uuid);
 
     /**
      * Get if the party contains a member with the given {@link UUID}
      *
-     * @param uuid - Member {@link UUID}
-     * @return - <code>true</code> if contains member
+     * @param uuid Member {@link UUID}
+     * @return <code>true</code> if contains member
      */
     boolean hasMember(UUID uuid);
 
     /**
+     * Get the party's rank of a given player
+     *
+     * @param player The player {@link UUID}
+     */
+    HyriPartyRank getRank(UUID player);
+
+    /**
      * Check if the party is private
-     * @return - <code>true</code> if private
+     *
+     * @return <code>true</code> if private
      */
     boolean isPrivate();
 
     /**
      * Set the party as private
-     * @param privateParty - <code>true</code> if private
-     * @return - This {@link IHyriParty} instance
+     *
+     * @param value <code>true</code> if private
      */
-    IHyriParty setPrivate(boolean privateParty);
+    void setPrivate(boolean value);
 
     /**
      * Get the current server of the party
      *
-     * @return - A server id
+     * @return A server id
      */
     String getServer();
 
@@ -114,12 +127,12 @@ public interface IHyriParty {
      * Set the current server of the party
      *
      * @param server - New server id
-     * @return - This {@link IHyriParty} instance
      */
-    IHyriParty setServer(String server);
+    void setServer(String server);
 
     /**
      * Send message to all members of the party
+     *
      * @param channel - Channel to send
      * @param message - Message to send
      * @param sender - Sender of the message
@@ -130,6 +143,7 @@ public interface IHyriParty {
 
     /**
      * Send message to all members of the party
+     *
      * @param channel - Channel to send
      * @param message - Message to send
      * @param sender - Sender of the message
@@ -143,4 +157,5 @@ public interface IHyriParty {
     default void update() {
         HyriAPI.get().getPartyManager().sendParty(this);
     }
+
 }

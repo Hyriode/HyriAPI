@@ -39,4 +39,5 @@ public class PlayerMessagePacket extends HyriPacket {
     public boolean isForce() {
         return this.force;
     }
+
 }

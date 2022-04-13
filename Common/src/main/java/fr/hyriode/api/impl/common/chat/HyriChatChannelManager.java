@@ -58,4 +58,5 @@ public class HyriChatChannelManager implements IHyriChatChannelManager {
 
         HyriAPI.get().getPubSub().send(HyriChannel.CHAT, new PlayerMessagePacket(player, channel, message, sender, force));
     }
+
 }

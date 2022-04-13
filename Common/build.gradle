@@ -17,7 +17,7 @@ publishing {
 
             pom {
                 groupId = project.group
-                artifactId = 'api-common'
+                artifactId = 'hyriapi-common'
                 version = project.version
                 name = 'HyriAPI-Common'
                 description = 'Project with the common implementation of HyriAPI'

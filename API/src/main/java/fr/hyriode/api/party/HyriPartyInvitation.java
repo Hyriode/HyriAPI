@@ -4,15 +4,13 @@ import fr.hyriode.api.packet.HyriPacket;
 
 import java.util.UUID;
 
-public class HyriPartyRequest extends HyriPacket {
-
-    public static final String REDIS_CHANNEL = "party_request";
+public class HyriPartyInvitation {
 
     private final UUID partyId;
     private final UUID sender;
     private final UUID receiver;
 
-    public HyriPartyRequest(UUID partyId, UUID sender, UUID receiver) {
+    public HyriPartyInvitation(UUID partyId, UUID sender, UUID receiver) {
         this.partyId = partyId;
         this.sender = sender;
         this.receiver = receiver;
@@ -29,4 +27,19 @@ public class HyriPartyRequest extends HyriPacket {
     public UUID getReceiver() {
         return this.receiver;
     }
+
+    public static class Packet extends HyriPacket {
+
+        private final HyriPartyInvitation invitation;
+
+        public Packet(HyriPartyInvitation invitation) {
+            this.invitation = invitation;
+        }
+
+        public HyriPartyInvitation getInvitation() {
+            return this.invitation;
+        }
+
+    }
+
 }

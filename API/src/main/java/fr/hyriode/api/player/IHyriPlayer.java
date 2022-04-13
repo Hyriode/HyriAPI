@@ -28,9 +28,8 @@ public interface IHyriPlayer {
      * Set if the player is connected or not
      *
      * @param online New online state
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setOnline(boolean online);
+    void setOnline(boolean online);
 
     /**
      * Get default player name
@@ -44,9 +43,8 @@ public interface IHyriPlayer {
      * Warning: Use this method ONLY to change the real player name
      *
      * @param name Player's name
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setName(String name);
+    void setName(String name);
 
     /**
      * Get the custom name of player
@@ -59,9 +57,8 @@ public interface IHyriPlayer {
      * Set player's custom name
      *
      * @param customName Player's custom name
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setCustomName(String customName);
+    void setCustomName(String customName);
 
     /**
      * Get current display name: name or custom name
@@ -81,9 +78,8 @@ public interface IHyriPlayer {
      * Set the player name with the rank prefix
      *
      * @param nameWithRank Player names with the rank prefix
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setNameWithRank(String nameWithRank);
+    void setNameWithRank(String nameWithRank);
 
     /**
      * Get if player has a custom name
@@ -119,9 +115,8 @@ public interface IHyriPlayer {
      * Set the last login {@link Date} of the player
      *
      * @param date The new {@link Date}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastLoginDate(Date date);
+    void setLastLoginDate(Date date);
 
     /**
      * Get player play time on the network
@@ -134,9 +129,8 @@ public interface IHyriPlayer {
      * Set player play time on the network
      *
      * @param time New player play time
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setPlayTime(long time);
+    void setPlayTime(long time);
 
     /**
      * Get player rank
@@ -149,18 +143,16 @@ public interface IHyriPlayer {
      * Set player rank
      *
      * @param rank {@link HyriRank}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setRank(HyriRank rank);
+    void setRank(HyriRank rank);
 
     /**
      * Set player rank
      *
      * @param rank Rank type
-     * @return This {@link IHyriPlayer} instance
      */
-    default IHyriPlayer setRank(EHyriRank rank) {
-        return this.setRank(rank.get());
+    default void setRank(EHyriRank rank) {
+        this.setRank(rank.get());
     }
 
     /**
@@ -174,9 +166,8 @@ public interface IHyriPlayer {
      * Set the {@link UUID} of the last player which this player talks with in private chat
      *
      * @param player {@link UUID}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastPrivateMessagePlayer(UUID player);
+    void setLastPrivateMessagePlayer(UUID player);
 
     /**
      * Get player Hyris money
@@ -196,9 +187,8 @@ public interface IHyriPlayer {
      * Set the party {@link UUID} of the player
      *
      * @param party Party {@link UUID}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setParty(UUID party);
+    void setParty(UUID party);
 
     /**
      * Check if the player is in a member of a party
@@ -218,9 +208,8 @@ public interface IHyriPlayer {
      * Set the settings of the player
      *
      * @param settings New settings
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setSettings(IHyriPlayerSettings settings);
+    void setSettings(IHyriPlayerSettings settings);
 
     /**
      * Get the name of the current server where the player is.<br>
@@ -234,9 +223,8 @@ public interface IHyriPlayer {
      * Set the current server where the player is connected
      *
      * @param currentServer The name of the server
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setCurrentServer(String currentServer);
+    void setCurrentServer(String currentServer);
 
     /**
      * Get the last server where the player was.<br>
@@ -250,9 +238,8 @@ public interface IHyriPlayer {
      * Set the last server where the player was connected
      *
      * @param lastServer The name of the server
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastServer(String lastServer);
+    void setLastServer(String lastServer);
 
     /**
      * Get the name of the proxy that manages the player
@@ -265,9 +252,8 @@ public interface IHyriPlayer {
      * Set the current proxy that manages the player
      *
      * @param currentProxy A proxy name
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setCurrentProxy(String currentProxy);
+    void setCurrentProxy(String currentProxy);
 
     /**
      * Get the handler of player's friends
@@ -287,9 +273,8 @@ public interface IHyriPlayer {
      * Set if the player is in moderation mode
      *
      * @param inModerationMode <code>true</code> if the player is in the moderation mode
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setInModerationMode(boolean inModerationMode);
+    void setInModerationMode(boolean inModerationMode);
 
     /**
      * Get if the player is in vanish mode
@@ -302,9 +287,8 @@ public interface IHyriPlayer {
      * Set if the player is in vanish mode
      *
      * @param inVanishMode <code>true</code> if the player is in the vanish mode
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setInVanishMode(boolean inVanishMode);
+    void setInVanishMode(boolean inVanishMode);
 
     /**
      * Update the player account in database
