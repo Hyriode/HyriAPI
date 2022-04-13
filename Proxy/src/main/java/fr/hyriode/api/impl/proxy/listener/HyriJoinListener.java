@@ -5,6 +5,8 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.party.HyriPartyDisbandReason;
+import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.server.IHyriServerManager;
@@ -33,11 +35,9 @@ public class HyriJoinListener implements Listener {
 
     private static final String WARNING = "\u26A0";
 
-    private final HyriCommonImplementation implementation;
     private final HyggdrasilManager hyggdrasilManager;
 
-    public HyriJoinListener(HyriCommonImplementation implementation, HyggdrasilManager hyggdrasilManager) {
-        this.implementation = implementation;
+    public HyriJoinListener(HyggdrasilManager hyggdrasilManager) {
         this.hyggdrasilManager = hyggdrasilManager;
     }
 
@@ -57,7 +57,6 @@ public class HyriJoinListener implements Listener {
             player.setLastLoginDate(new Date(System.currentTimeMillis()));
             player.setOnline(true);
             player.setCurrentProxy(HyriAPI.get().getProxy().getName());
-
             player.update();
 
             playerManager.setPlayerId(player.getName(), player.getUniqueId());
@@ -110,9 +109,26 @@ public class HyriJoinListener implements Listener {
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
         if (account != null) {
+            final UUID partyId = account.getParty();
+
+            if (partyId != null) {
+                final IHyriParty party = HyriAPI.get().getPartyManager().getParty(partyId);
+
+                if (party != null) {
+                    final UUID playerId = player.getUniqueId();
+
+                    if (party.isLeader(playerId)) {
+                        party.disband(HyriPartyDisbandReason.LEADER_LEAVE);
+                    } else {
+                        party.removeMember(player.getUniqueId());
+                    }
+                }
+            }
+
             account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
             account.setOnline(false);
             account.setCurrentProxy(null);
+            account.setParty(null);
             account.update();
         }
 

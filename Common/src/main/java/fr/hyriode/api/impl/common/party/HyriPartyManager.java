@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.party.event.HyriPartyCreatedEvent;
 import fr.hyriode.api.party.HyriPartyInvitation;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
@@ -39,6 +40,8 @@ public class HyriPartyManager implements IHyriPartyManager {
 
         this.sendParty(party);
 
+        HyriAPI.get().getNetwork().getEventBus().publishAsync(new HyriPartyCreatedEvent(party));
+
         return party;
     }
 
@@ -49,16 +52,19 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void removeParty(UUID uuid) {
-        for (UUID member : this.getMembersInParty(uuid).keySet()) {
-            final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-            final IHyriPlayer player = playerManager.getPlayer(member);
+        final IHyriParty party = this.getParty(uuid);
 
-            player.setParty(null);
+        if (party != null) {
+            for (UUID member : party.getMembers().keySet()) {
+                final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
+                final IHyriPlayer player = playerManager.getPlayer(member);
 
-            playerManager.sendPlayer(player);
+                player.setParty(null);
+                player.update();
+            }
+
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(this.getJedisKey(uuid)));
         }
-
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(this.getJedisKey(uuid)));
     }
 
     @Override

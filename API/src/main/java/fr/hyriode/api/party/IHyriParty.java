@@ -35,6 +35,14 @@ public interface IHyriParty {
     void setLeader(UUID leader);
 
     /**
+     * Check if a player is the leader of the party
+     *
+     * @param player The player {@link UUID}
+     * @return <code>true</code> if the player is the leader of the party
+     */
+    boolean isLeader(UUID player);
+
+    /**
      * Get the creation date of the party
      *
      * @return Creation date
@@ -150,6 +158,13 @@ public interface IHyriParty {
      * @param force - <code>true</code> to bypass checks
      */
     void sendMessage(String channel, String message, UUID sender, boolean force);
+
+    /**
+     * Disband the party
+     *
+     * @param reason The reason of why the party need to be disbanded
+     */
+    void disband(HyriPartyDisbandReason reason);
 
     /**
      * Update a player in Redis

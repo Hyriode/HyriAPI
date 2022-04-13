@@ -1,10 +1,8 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.party.HyriPartyInvitation;
-import fr.hyriode.api.party.HyriPartyRank;
-import fr.hyriode.api.party.IHyriParty;
-import fr.hyriode.api.party.IHyriPartyManager;
+import fr.hyriode.api.party.*;
+import fr.hyriode.api.party.event.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +46,22 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public void setLeader(UUID leader) {
-        this.leader = leader;
+        final HyriPartyRank oldRank = this.members.get(leader);
+
+        if (oldRank != null) {
+            final UUID oldLeader = this.leader;
+
+            this.leader = leader;
+
+            this.members.put(this.leader, HyriPartyRank.LEADER);
+
+            this.triggerEvent(new HyriPartyLeaderEvent(this, this.leader, oldRank, HyriPartyRank.LEADER, oldLeader));
+        }
+    }
+
+    @Override
+    public boolean isLeader(UUID player) {
+        return this.leader == player;
     }
 
     @Override
@@ -76,32 +89,52 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public void addMember(UUID uuid, HyriPartyRank rank) {
-        this.members.putIfAbsent(uuid, rank);
+        if (this.members.get(uuid) == null) {
+            this.members.putIfAbsent(uuid, rank);
+
+            this.triggerEvent(new HyriPartyJoinEvent(this, uuid));
+        }
     }
 
     @Override
     public HyriPartyRank promoteMember(UUID uuid) {
-        final HyriPartyRank newRank = this.members.get(uuid).getSuperior();
+        final HyriPartyRank oldRank = this.members.get(uuid);
 
-        if (newRank != null) {
-            this.members.put(uuid, newRank);
+        if (oldRank != null) {
+            final HyriPartyRank newRank = oldRank.getSuperior();
+
+            if (newRank != null) {
+                this.members.put(uuid, newRank);
+
+                this.triggerEvent(new HyriPartyPromoteEvent(this, uuid, oldRank, newRank));
+            }
         }
         return null;
     }
 
     @Override
     public HyriPartyRank demoteMember(UUID uuid) {
-        final HyriPartyRank newRank = this.members.get(uuid).getInferior();
+        final HyriPartyRank oldRank = this.members.get(uuid);
 
-        if (newRank != null) {
-            this.members.put(uuid, newRank);
+        if (oldRank != null) {
+            final HyriPartyRank newRank = oldRank.getInferior();
+
+            if (newRank != null) {
+                this.members.put(uuid, newRank);
+
+                this.triggerEvent(new HyriPartyDemoteEvent(this, uuid, oldRank, newRank));
+            }
         }
         return null;
     }
 
     @Override
     public void removeMember(UUID uuid) {
-        this.members.remove(uuid);
+        if (this.members.get(uuid) != null) {
+            this.members.remove(uuid);
+
+            this.triggerEvent(new HyriPartyLeaveEvent(this, uuid));
+        }
     }
 
     @Override
@@ -122,6 +155,8 @@ public class HyriParty implements IHyriParty {
     @Override
     public void setPrivate(boolean privateParty) {
         this.privateParty = privateParty;
+
+        this.triggerEvent(new HyriPartyAccessEvent(this));
     }
 
     @Override
@@ -131,7 +166,11 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public void setServer(String server) {
+        final String oldServer = this.server;
+
         this.server = server;
+
+        this.triggerEvent(new HyriPartyServerEvent(this, oldServer, this.server));
     }
 
     @Override
@@ -139,6 +178,17 @@ public class HyriParty implements IHyriParty {
         for (UUID uuid : this.members.keySet()) {
             HyriAPI.get().getChatChannelManager().sendMessageToPlayer(channel, message, uuid, sender, force);
         }
+    }
+
+    @Override
+    public void disband(HyriPartyDisbandReason reason) {
+        HyriAPI.get().getPartyManager().removeParty(this.id);
+
+        this.triggerEvent(new HyriPartyDisbandEvent(this, reason));
+    }
+
+    private void triggerEvent(HyriPartyEvent event) {
+        HyriAPI.get().getNetwork().getEventBus().publishAsync(event);
     }
 
 }

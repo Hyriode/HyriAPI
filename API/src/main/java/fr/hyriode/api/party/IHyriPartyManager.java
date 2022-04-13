@@ -39,7 +39,8 @@ public interface IHyriPartyManager {
     void sendParty(IHyriParty party);
 
     /**
-     * Remove a party with a given {@link UUID}
+     * Remove a party with a given {@link UUID}.<br>
+     * Warning: this method doesn't call {@link fr.hyriode.api.party.event.HyriPartyDisbandEvent}. If you want to trigger it, please refer to {@link IHyriParty#disband(HyriPartyDisbandReason)}
      *
      * @param uuid Party {@link UUID}
      */

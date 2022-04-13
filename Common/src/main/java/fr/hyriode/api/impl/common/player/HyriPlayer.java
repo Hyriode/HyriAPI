@@ -70,9 +70,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setOnline(boolean online) {
+    public void setOnline(boolean online) {
         this.online = online;
-        return this;
     }
 
     @Override
@@ -81,9 +80,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     @Override
@@ -92,9 +90,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setCustomName(String customName) {
+    public void setCustomName(String customName) {
         this.customName = customName;
-        return this;
     }
 
     @Override
@@ -108,9 +105,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setNameWithRank(String nameWithRank) {
+    public void setNameWithRank(String nameWithRank) {
         this.nameWithRank = nameWithRank;
-        return this;
     }
 
     @Override
@@ -129,9 +125,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastLoginDate(Date lastLoginDate) {
+    public void setLastLoginDate(Date lastLoginDate) {
         this.lastLoginDate = lastLoginDate.getTime();
-        return this;
     }
 
     @Override
@@ -140,9 +135,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setPlayTime(long playTime) {
+    public void setPlayTime(long playTime) {
         this.playTime = playTime;
-        return this;
     }
 
     @Override
@@ -151,9 +145,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setRank(HyriRank rank) {
+    public void setRank(HyriRank rank) {
         this.rank = rank.getName();
-        return this;
     }
 
     @Override
@@ -162,9 +155,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastPrivateMessagePlayer(UUID player) {
+    public void setLastPrivateMessagePlayer(UUID player) {
         this.lastPrivateMessage = player;
-        return this;
     }
 
     @Override
@@ -178,9 +170,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setParty(UUID party) {
+    public void setParty(UUID party) {
         this.party = party;
-        return this;
     }
 
     @Override
@@ -194,9 +185,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setSettings(IHyriPlayerSettings settings) {
+    public void setSettings(IHyriPlayerSettings settings) {
         this.settings = (HyriPlayerSettings) settings;
-        return this;
     }
 
     @Override
@@ -205,9 +195,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setCurrentServer(String currentServer) {
+    public void setCurrentServer(String currentServer) {
         this.currentServer = currentServer;
-        return this;
     }
 
     @Override
@@ -216,9 +205,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastServer(String lastServer) {
+    public void setLastServer(String lastServer) {
         this.lastServer = lastServer;
-        return this;
     }
 
     @Override
@@ -227,9 +215,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setCurrentProxy(String currentProxy) {
+    public void setCurrentProxy(String currentProxy) {
         this.currentProxy = currentProxy;
-        return this;
     }
 
     @Override
@@ -243,9 +230,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setInModerationMode(boolean inModerationMode) {
+    public void setInModerationMode(boolean inModerationMode) {
         this.moderationMode = inModerationMode;
-        return this;
     }
 
     @Override
@@ -254,9 +240,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setInVanishMode(boolean inVanishMode) {
+    public void setInVanishMode(boolean inVanishMode) {
         this.vanishMode = inVanishMode;
-        return this;
     }
 
 }
