@@ -24,7 +24,7 @@ public interface IHyriFriendManager {
      * @param playerId The unique id of the player to load his friends
      * @return The generated {@link IHyriFriendHandler}
      */
-    IHyriFriendHandler loadFriends(UUID playerId);
+    IHyriFriendHandler createHandler(UUID playerId);
 
     /**
      * Update friends in database from a {@link IHyriFriendHandler}
@@ -32,5 +32,12 @@ public interface IHyriFriendManager {
      * @param friendHandler The {@link IHyriFriendHandler} with data
      */
     void updateFriends(IHyriFriendHandler friendHandler);
+
+    /**
+     * Remove friends from cache
+     *
+     * @param playerId The {@link UUID} of the player
+     */
+    void removeFriends(UUID playerId);
 
 }

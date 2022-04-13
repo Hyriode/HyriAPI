@@ -62,7 +62,7 @@ public class HyriAPIPlugin extends JavaPlugin {
     private void registerListeners() {
         final Consumer<Listener> register = listener -> this.getServer().getPluginManager().registerEvents(listener, this);
 
-        register.accept(new HyriPlayerListener(this.api.getHyggdrasilManager()));
+        register.accept(new HyriPlayerListener(this.api.getHyggdrasilManager(), this.api.getHydrionManager()));
     }
 
     public IHyriAPIConfiguration getConfiguration() {

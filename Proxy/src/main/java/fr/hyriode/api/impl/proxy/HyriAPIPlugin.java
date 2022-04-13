@@ -61,7 +61,7 @@ public class HyriAPIPlugin extends Plugin  {
         final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
 
         register.accept(new HyriProxyListener(this.configuration));
-        register.accept(new HyriJoinListener(this.api.getHyggdrasilManager()));
+        register.accept(new HyriJoinListener(this.api));
     }
 
     public HyriAPIConfiguration getConfiguration() {

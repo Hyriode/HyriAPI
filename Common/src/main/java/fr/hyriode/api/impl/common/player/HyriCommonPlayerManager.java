@@ -1,15 +1,21 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.google.gson.JsonElement;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.HyriDefaultChatChannel;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.hydrion.client.module.PlayerModule;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 /**
  * Project: HyriAPI
@@ -18,13 +24,21 @@ import java.util.UUID;
  */
 public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
 
-    private static final String REDIS_KEY = "players:";
-    private static final String IDS_KEY = "uuid:";
+    private static final Function<UUID, String> PLAYERS_KEY = uuid -> "players:" + uuid.toString();
+    private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
+
+    private final HydrionManager hydrionManager;
+    private final PlayerModule playerModule;
+
+    public HyriCommonPlayerManager(HydrionManager hydrionManager) {
+        this.hydrionManager = hydrionManager;
+        this.playerModule = this.hydrionManager.getClient().getPlayerModule();
+    }
 
     @Override
     public UUID getPlayerId(String name) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String result = jedis.get(this.getIdsKey(name));
+            final String result = jedis.get(IDS_KEY.apply(name));
 
             return result != null ? UUID.fromString(result) : null;
         });
@@ -32,17 +46,37 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void setPlayerId(String name, UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getIdsKey(name), uuid.toString()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(IDS_KEY.apply(name), uuid.toString()));
     }
 
     @Override
     public void removePlayerId(String name) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getIdsKey(name)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(IDS_KEY.apply(name)));
     }
 
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(this.getPlayersKey(uuid)), HyriPlayer.class));
+        final IHyriPlayer player = HyriAPI.get().getRedisProcessor().get(jedis -> this.deserialize(jedis.get(PLAYERS_KEY.apply(uuid))));
+
+        if (player != null) {
+            return player;
+        }
+
+        if (this.hydrionManager.isEnabled()) {
+            try {
+                return this.playerModule.getPlayer(uuid).thenApply(response -> {
+                    final JsonElement content = response.getContent();
+
+                    if (!content.isJsonNull()) {
+                        return this.deserialize(content.toString());
+                    }
+                    return null;
+                }).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -67,8 +101,9 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
             player.setRank(rank);
         }
 
+        player.update();
+
         this.setPlayerId(name, uuid);
-        this.sendPlayer(player);
 
         HyriAPI.get().getEventBus().publishAsync(new HyriAccountCreatedEvent(player));
 
@@ -77,20 +112,12 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void sendPlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(this.getPlayersKey(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getPlayersKey(uuid)));
-    }
-
-    private String getPlayersKey(UUID uuid) {
-        return REDIS_KEY + uuid.toString();
-    }
-
-    private String getIdsKey(String name) {
-        return IDS_KEY + name.toLowerCase();
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid)));
     }
 
     @Override
@@ -101,6 +128,10 @@ public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
     @Override
     public void sendMessage(UUID uuid, String message) {
         HyriAPI.get().getChatChannelManager().sendMessageToPlayer(HyriDefaultChatChannel.PLUGIN.getChannel(), message, uuid, true);
+    }
+
+    private HyriPlayer deserialize(String json) {
+        return HyriAPI.GSON.fromJson(json, HyriPlayer.class);
     }
 
 }

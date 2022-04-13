@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.server.player;
 
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCommonPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -17,6 +18,10 @@ import java.util.function.Consumer;
  * on 13/02/2022 at 15:30
  */
 public class HyriPlayerManager extends HyriCommonPlayerManager {
+
+    public HyriPlayerManager(HydrionManager hydrionManager) {
+        super(hydrionManager);
+    }
 
     @Override
     public void kickPlayer(UUID uuid, String reason) {

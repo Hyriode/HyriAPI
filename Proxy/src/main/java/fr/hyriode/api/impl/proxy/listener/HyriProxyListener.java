@@ -32,8 +32,8 @@ public class HyriProxyListener implements Listener {
     @EventHandler
     public void onPing(ProxyPingEvent event) {
         final int protocolNumber = event.getConnection().getVersion();
-        final IHyriNetwork network = HyriAPI.get().getNetwork();
-        final int players = network.getPlayers();
+        final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+        final int players = network.getPlayerCount().getPlayers();
         final int slots = network.getSlots();
         final ServerPing ping = new ServerPing();
         final ServerPing.PlayerInfo[] playerInfo = new ServerPing.PlayerInfo[]{};

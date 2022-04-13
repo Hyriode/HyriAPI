@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.proxy.player;
 
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCommonPlayerManager;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;
@@ -14,6 +15,10 @@ import java.util.UUID;
  * on 13/02/2022 at 15:30
  */
 public class HyriPlayerManager extends HyriCommonPlayerManager {
+
+    public HyriPlayerManager(HydrionManager hydrionManager) {
+        super(hydrionManager);
+    }
 
     @Override
     public void kickPlayer(UUID uuid, String reason) {

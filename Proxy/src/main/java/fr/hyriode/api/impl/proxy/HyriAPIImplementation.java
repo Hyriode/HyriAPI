@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.proxy.money.HyriMoneyManager;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.HyriProxyReceiver;
 import fr.hyriode.api.money.IHyriMoneyManager;
+import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -24,17 +25,17 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriMoneyManager moneyManager;
 
-    private final HyriAPIPlugin plugin;
-
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
-        this.plugin = plugin;
         this.proxy = this.createProxy();
-        this.playerManager = new HyriPlayerManager();
+        this.playerManager = new HyriPlayerManager(this.hydrionManager);
         this.moneyManager = new HyriMoneyManager();
 
-        if (this.network.getSlots() == -1) {
-            this.network.setSlots(this.plugin.getConfiguration().getSlots());
+        final IHyriNetwork network = this.networkManager.getNetwork();
+
+        if (network.getSlots() == -1) {
+            network.setSlots(plugin.getConfiguration().getSlots());
+            network.update();
         }
 
         this.hyggdrasilManager.start();

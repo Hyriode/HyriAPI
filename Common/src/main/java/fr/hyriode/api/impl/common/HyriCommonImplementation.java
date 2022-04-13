@@ -8,8 +8,9 @@ import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
-import fr.hyriode.api.impl.common.network.HyriNetwork;
+import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
@@ -42,9 +43,10 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final HyriPubSub pubSub;
 
-    protected final HyriNetwork network;
-
     protected final HyggdrasilManager hyggdrasilManager;
+    protected final HydrionManager hydrionManager;
+
+    protected final HyriNetworkManager networkManager;
 
     protected final HyriServerManager serverManager;
 
@@ -72,12 +74,13 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.redisProcessor = new HyriRedisProcessor();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.network = new HyriNetwork();
         this.hyggdrasilManager = new HyggdrasilManager(logger, this);
+        this.hydrionManager = new HydrionManager();
+        this.networkManager = new HyriNetworkManager(this.hydrionManager);
         this.serverManager = new HyriServerManager(this);
         this.playerSettingsManager = new HyriPlayerSettingsManager();
         this.partyManager = new HyriPartyManager();
-        this.friendManager = new HyriFriendManager();
+        this.friendManager = new HyriFriendManager(this.hydrionManager);
         this.chatChannelManager = new HyriChatChannelManager();
     }
 
@@ -138,13 +141,17 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         return this.pubSub;
     }
 
-    @Override
-    public HyriNetwork getNetwork() {
-        return this.network;
-    }
-
     public HyggdrasilManager getHyggdrasilManager() {
         return this.hyggdrasilManager;
+    }
+
+    public HydrionManager getHydrionManager() {
+        return this.hydrionManager;
+    }
+
+    @Override
+    public HyriNetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 
     @Override
@@ -171,4 +178,5 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     public IHyriChatChannelManager getChatChannelManager() {
         return this.chatChannelManager;
     }
+
 }

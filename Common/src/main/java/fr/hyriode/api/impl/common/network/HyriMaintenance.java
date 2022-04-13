@@ -18,10 +18,6 @@ public class HyriMaintenance implements IHyriMaintenance {
     private UUID trigger;
     private String reason;
 
-    public void update() {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(HyriNetwork.MAINTENANCE_KEY, HyriAPI.GSON.toJson(this)));
-    }
-
     @Override
     public boolean enable(UUID trigger, String reason) {
         if (!this.active) {
@@ -29,8 +25,6 @@ public class HyriMaintenance implements IHyriMaintenance {
                 this.active = true;
                 this.trigger = trigger;
                 this.reason = reason;
-
-                this.update();
 
                 return true;
             }
@@ -47,8 +41,6 @@ public class HyriMaintenance implements IHyriMaintenance {
                 this.active = false;
                 this.trigger = null;
                 this.reason = null;
-
-                this.update();
 
                 return true;
             }
@@ -78,8 +70,6 @@ public class HyriMaintenance implements IHyriMaintenance {
         if (this.active) {
             if (this.triggerEvent(HyriMaintenanceEvent.Action.REASON_CHANGED)) {
                 this.reason = reason;
-
-                this.update();
             }
         }
     }
@@ -87,7 +77,7 @@ public class HyriMaintenance implements IHyriMaintenance {
     private boolean triggerEvent(HyriMaintenanceEvent.Action action) {
         final HyriCancellableEvent event = new HyriMaintenanceEvent(action);
 
-        HyriAPI.get().getNetwork().getEventBus().publish(event);
+        HyriAPI.get().getNetworkManager().getEventBus().publish(event);
 
         return !event.isCancelled();
     }

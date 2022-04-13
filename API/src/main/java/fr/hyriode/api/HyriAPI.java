@@ -8,6 +8,7 @@ import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
@@ -128,9 +129,9 @@ public abstract class HyriAPI {
     /**
      * Get the class that can be used to get or edit information of the network
      *
-     * @return The {@link IHyriNetwork} instance
+     * @return The {@link IHyriNetworkManager} instance
      */
-    public abstract IHyriNetwork getNetwork();
+    public abstract IHyriNetworkManager getNetworkManager();
 
     /**
      * Get the server manager

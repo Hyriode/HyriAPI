@@ -10,6 +10,18 @@ shadowJar {
     configurations = [project.configurations.runtimeClasspath]
 }
 
+repositories {
+    maven {
+        name = 'Hydrion_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/Hydrion/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -40,7 +52,7 @@ publishing {
 
 dependencies {
     api project(':API')
-    // https://mvnrepository.com/artifact/redis.clients/jedis
-    implementation 'redis.clients:jedis:4.1.1'
+    api 'fr.hyriode:hydrion-client:1.0.4'
+    implementation 'redis.clients:jedis:4.2.1'
 
 }

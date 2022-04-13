@@ -188,7 +188,7 @@ public class HyriParty implements IHyriParty {
     }
 
     private void triggerEvent(HyriPartyEvent event) {
-        HyriAPI.get().getNetwork().getEventBus().publishAsync(event);
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(event);
     }
 
 }

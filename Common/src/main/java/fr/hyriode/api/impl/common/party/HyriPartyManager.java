@@ -40,7 +40,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
         this.sendParty(party);
 
-        HyriAPI.get().getNetwork().getEventBus().publishAsync(new HyriPartyCreatedEvent(party));
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriPartyCreatedEvent(party));
 
         return party;
     }

@@ -1,10 +1,14 @@
 package fr.hyriode.api.impl.server.listener;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.hydrion.client.HydrionClient;
+import fr.hyriode.hydrion.client.module.FriendsModule;
+import fr.hyriode.hydrion.client.module.PlayerModule;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,9 +29,18 @@ import java.util.UUID;
 public class HyriPlayerListener implements Listener {
 
     private final HyggdrasilManager hyggdrasilManager;
+    private final HydrionManager hydrionManager;
+    private final PlayerModule playerModule;
+    private final FriendsModule friendsModule;
 
-    public HyriPlayerListener(HyggdrasilManager hyggdrasilManager) {
+    public HyriPlayerListener(HyggdrasilManager hyggdrasilManager, HydrionManager hydrionManager) {
         this.hyggdrasilManager = hyggdrasilManager;
+        this.hydrionManager = hydrionManager;
+
+        final HydrionClient client = this.hydrionManager.getClient();
+
+        this.playerModule = client.getPlayerModule();
+        this.friendsModule = client.getFriendsModule();
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -59,7 +72,7 @@ public class HyriPlayerListener implements Listener {
         }
 
         final HyriRank rank = account.getRank();
-        final String customName = rank.getPrefix() + ChatColor.WHITE + HyriRank.SEPARATOR + rank.getMainColor().toString() + player.getName();
+        final String customName = rank.getPrefix() + ChatColor.WHITE + HyriRank.SEPARATOR + rank.getMainColor().toString() + account.getCustomName();
 
         account.setCurrentServer(HyriAPI.get().getServer().getName());
         account.setNameWithRank(customName);
@@ -73,6 +86,7 @@ public class HyriPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+        final UUID uuid = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
 
@@ -85,6 +99,11 @@ public class HyriPlayerListener implements Listener {
             account.setLastServer(HyriAPI.get().getServer().getName());
             account.setCurrentServer(null);
             account.update();
+
+            if (this.hydrionManager.isEnabled()) {
+                this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(HyriAPI.get().getFriendManager().getFriends(uuid)));
+            }
         }
 
         this.hyggdrasilManager.sendData();
