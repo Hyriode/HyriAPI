@@ -3,15 +3,17 @@ package fr.hyriode.api.impl.common.player;
 import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
+import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
+import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
+import fr.hyriode.api.player.HyriPlayerData;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.statistic.HyriStatistics;
 
 import java.util.*;
 
@@ -53,6 +55,9 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean vanishMode;
 
     private final Map<String, JsonElement> statistics;
+    private final Map<String, JsonElement> data;
+
+    private final NetworkLeveling networkLeveling;
 
     public HyriPlayer(boolean online, String name, UUID uuid) {
         this.online = online;
@@ -65,10 +70,12 @@ public class HyriPlayer implements IHyriPlayer {
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
-        this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
+        //this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
         this.moderationMode = false;
         this.vanishMode = false;
         this.statistics = new HashMap<>();
+        this.data = new HashMap<>();
+        this.networkLeveling = new NetworkLeveling();
     }
 
     @Override
@@ -276,7 +283,7 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public <T extends HyriStatistics> T getStatistics(String key, Class<T> statisticsClass) {
+    public <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass) {
         final JsonElement serialized = this.statistics.get(key);
 
         if (serialized != null) {
@@ -286,7 +293,7 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public void addStatistics(String key, HyriStatistics statistics) {
+    public void addStatistics(String key, HyriPlayerData statistics) {
         this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
     }
 
@@ -298,6 +305,41 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public boolean hasStatistics(String key) {
         return this.statistics.containsKey(key);
+    }
+
+    @Override
+    public List<String> getData() {
+        return new ArrayList<>(this.data.keySet());
+    }
+
+    @Override
+    public <T extends HyriPlayerData> T getData(String key, Class<T> dataClass) {
+        final JsonElement serialized = this.data.get(key);
+
+        if (serialized != null) {
+            return HyriAPI.GSON.fromJson(serialized, dataClass);
+        }
+        return null;
+    }
+
+    @Override
+    public void addData(String key, HyriPlayerData data) {
+        this.data.put(key, HyriAPI.GSON.toJsonTree(data));
+    }
+
+    @Override
+    public void removeData(String key) {
+        this.data.remove(key);
+    }
+
+    @Override
+    public boolean hasData(String key) {
+        return this.data.containsKey(key);
+    }
+
+    @Override
+    public IHyriLeveling getNetworkLeveling() {
+        return this.networkLeveling;
     }
 
 }

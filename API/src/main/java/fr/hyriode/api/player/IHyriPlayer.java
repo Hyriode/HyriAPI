@@ -2,17 +2,16 @@ package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
+import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.statistic.HyriStatistics;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -337,10 +336,10 @@ public interface IHyriPlayer {
      *
      * @param key The key of the statistics
      * @param statisticsClass The class used to deserialize statistics
-     * @param <T> The type of {@link HyriStatistics} to return
-     * @return A {@link HyriStatistics} object
+     * @param <T> The type of {@link HyriPlayerData} to return
+     * @return A {@link HyriPlayerData} object
      */
-    <T extends HyriStatistics> T getStatistics(String key, Class<T> statisticsClass);
+    <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass);
 
     /**
      * Add a statistics in player account
@@ -348,7 +347,7 @@ public interface IHyriPlayer {
      * @param key The key of the statistics
      * @param statistics The statistics to add
      */
-    void addStatistics(String key, HyriStatistics statistics);
+    void addStatistics(String key, HyriPlayerData statistics);
 
     /**
      * Remove a statistics from player account
@@ -364,6 +363,53 @@ public interface IHyriPlayer {
      * @return <code>true</code> if the player has the statistics
      */
     boolean hasStatistics(String key);
+
+    /**
+     * Get all the data key linked to the player account
+     *
+     * @return A list of key
+     */
+    List<String> getData();
+
+    /**
+     * Get data from its key
+     *
+     * @param key The key of the data
+     * @param dataClass The class used to deserialize data
+     * @param <T> The type of {@link HyriPlayerData} to return
+     * @return A {@link HyriPlayerData} object
+     */
+    <T extends HyriPlayerData> T getData(String key, Class<T> dataClass);
+
+    /**
+     * Add a data in player account
+     *
+     * @param key The key of the data
+     * @param data The data to add
+     */
+    void addData(String key, HyriPlayerData data);
+
+    /**
+     * Remove a data from player account
+     *
+     * @param key The key of the data to get
+     */
+    void removeData(String key);
+
+    /**
+     * Check if the player has a data
+     *
+     * @param key The key of the data
+     * @return <code>true</code> if the player has the data
+     */
+    boolean hasData(String key);
+
+    /**
+     * Get the player leveling on the network
+     *
+     * @return A {@link IHyriLeveling} instance
+     */
+    IHyriLeveling getNetworkLeveling();
 
     /**
      * Update the player account in database
