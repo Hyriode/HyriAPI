@@ -6,6 +6,18 @@ apply plugin: 'maven-publish'
 
 archivesBaseName = 'HyriAPI'
 
+repositories {
+    maven {
+        name = 'Hystia_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/Hystia/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
+}
+
 shadowJar {
     configurations = [project.configurations.runtimeClasspath]
 }
@@ -43,6 +55,7 @@ publishing {
 }
 
 dependencies {
+    api 'fr.hyriode:hystia-api:1.0.1'
     api 'org.slf4j:slf4j-nop:1.7.36'
     api 'com.google.guava:guava:31.1-jre'
 }

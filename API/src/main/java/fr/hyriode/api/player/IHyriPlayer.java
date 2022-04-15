@@ -8,8 +8,11 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.statistic.HyriStatistics;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -321,6 +324,46 @@ public interface IHyriPlayer {
      * @param vanishMode <code>true</code> if the player is in the vanish mode
      */
     void setInVanishMode(boolean vanishMode);
+
+    /**
+     * Get all the statistics key linked to the player account
+     *
+     * @return A list of key
+     */
+    List<String> getStatistics();
+
+    /**
+     * Get statistics from its key
+     *
+     * @param key The key of the statistics
+     * @param statisticsClass The class used to deserialize statistics
+     * @param <T> The type of {@link HyriStatistics} to return
+     * @return A {@link HyriStatistics} object
+     */
+    <T extends HyriStatistics> T getStatistics(String key, Class<T> statisticsClass);
+
+    /**
+     * Add a statistics in player account
+     *
+     * @param key The key of the statistics
+     * @param statistics The statistics to add
+     */
+    void addStatistics(String key, HyriStatistics statistics);
+
+    /**
+     * Remove a statistics from player account
+     *
+     * @param key The key of the statistics to get
+     */
+    void removeStatistics(String key);
+
+    /**
+     * Check if the player has a statistics
+     *
+     * @param key The key of the statistics
+     * @return <code>true</code> if the player has the statistics
+     */
+    boolean hasStatistics(String key);
 
     /**
      * Update the player account in database

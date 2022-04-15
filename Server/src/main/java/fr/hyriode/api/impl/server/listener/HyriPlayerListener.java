@@ -78,8 +78,6 @@ public class HyriPlayerListener implements Listener {
         account.setNameWithRank(customName);
         account.update();
 
-        player.setDisplayName(customName);
-
         this.hyggdrasilManager.sendData();
     }
 

@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.impl.common.money.Hyris;
@@ -10,9 +11,9 @@ import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.statistic.HyriStatistics;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Project: HyriAPI
@@ -51,6 +52,8 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean moderationMode;
     private boolean vanishMode;
 
+    private final Map<String, JsonElement> statistics;
+
     public HyriPlayer(boolean online, String name, UUID uuid) {
         this.online = online;
         this.name = name;
@@ -65,6 +68,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
         this.moderationMode = false;
         this.vanishMode = false;
+        this.statistics = new HashMap<>();
     }
 
     @Override
@@ -164,7 +168,11 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasHyriPlus() {
-        return this.hyriPlus != null && !this.hyriPlus.hasExpire();
+        if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
+            this.hyriPlus = null;
+            return false;
+        }
+        return this.hyriPlus != null;
     }
 
     @Override
@@ -260,6 +268,36 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setInVanishMode(boolean vanishMode) {
         this.vanishMode = vanishMode;
+    }
+
+    @Override
+    public List<String> getStatistics() {
+        return new ArrayList<>(this.statistics.keySet());
+    }
+
+    @Override
+    public <T extends HyriStatistics> T getStatistics(String key, Class<T> statisticsClass) {
+        final JsonElement serialized = this.statistics.get(key);
+
+        if (serialized != null) {
+            return HyriAPI.GSON.fromJson(serialized, statisticsClass);
+        }
+        return null;
+    }
+
+    @Override
+    public void addStatistics(String key, HyriStatistics statistics) {
+        this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
+    }
+
+    @Override
+    public void removeStatistics(String key) {
+        this.statistics.remove(key);
+    }
+
+    @Override
+    public boolean hasStatistics(String key) {
+        return this.statistics.containsKey(key);
     }
 
 }

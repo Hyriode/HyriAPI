@@ -83,11 +83,6 @@ public class HyriJoinListener implements Listener {
                 } else {
                     event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
 
-                    final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId());
-                    final HyriRank rank = account.getRank();
-
-                    player.setDisplayName(rank.getPrefix() + ChatColor.WHITE + HyriRank.SEPARATOR + rank.getMainColor().toString() + account.getCustomName());
-
                     this.hyggdrasilManager.sendData();
                 }
             }

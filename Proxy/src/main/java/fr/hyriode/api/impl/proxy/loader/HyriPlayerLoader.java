@@ -35,7 +35,7 @@ public class HyriPlayerLoader {
             account = playerManager.createPlayer(true, uuid, name);
         }
 
-        account.setName(account.getName());
+        account.setName(name);
         account.setLastLoginDate(new Date(System.currentTimeMillis()));
         account.setOnline(true);
         account.setCurrentProxy(HyriAPI.get().getProxy().getName());

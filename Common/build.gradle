@@ -6,10 +6,6 @@ apply plugin: 'maven-publish'
 
 archivesBaseName = 'HyriAPI-Common'
 
-shadowJar {
-    configurations = [project.configurations.runtimeClasspath]
-}
-
 repositories {
     maven {
         name = 'Hydrion_maven'
@@ -20,6 +16,10 @@ repositories {
             password System.getenv('TOKEN')
         }
     }
+}
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 publishing {
