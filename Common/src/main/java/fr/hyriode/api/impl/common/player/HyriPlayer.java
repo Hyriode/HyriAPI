@@ -70,12 +70,12 @@ public class HyriPlayer implements IHyriPlayer {
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
-        //this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
+        this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
         this.moderationMode = false;
         this.vanishMode = false;
         this.statistics = new HashMap<>();
         this.data = new HashMap<>();
-        this.networkLeveling = new NetworkLeveling();
+        this.networkLeveling = new NetworkLeveling(this.uuid);
     }
 
     @Override

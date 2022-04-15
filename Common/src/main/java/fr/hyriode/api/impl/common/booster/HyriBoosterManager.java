@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.common.booster;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.booster.HyriBoosterEvent;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
@@ -116,6 +117,23 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     @Override
     public IHyriBooster getBooster(UUID identifier) {
+        final String json = HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(KEY_FORMATTER.apply(identifier)));
+
+        if (json != null) {
+            return HyriAPI.GSON.fromJson(json, HyriBooster.class);
+        }
+        try {
+            return this.boostersModule.getBoosters().thenApply(response -> {
+                final JsonElement content = response.getContent();
+
+                if (content != null) {
+                    return HyriAPI.GSON.fromJson(content.toString(), HyriBooster.class);
+                }
+                return null;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -129,15 +147,21 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         if (this.hydrionManager.isEnabled()) {
             this.boostersModule.addBooster(identifier, json);
         }
+
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriBoosterEvent(booster, HyriBoosterEvent.Action.ENABLED));
     }
 
     @Override
     public void removeBooster(UUID identifier) {
+        final IHyriBooster booster = this.getBooster(identifier);
+
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY_FORMATTER.apply(identifier)));
 
         if (this.hydrionManager.isEnabled()) {
             this.boostersModule.removeBooster(identifier);
         }
+
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriBoosterEvent(booster, HyriBoosterEvent.Action.REMOVED));
     }
 
 }

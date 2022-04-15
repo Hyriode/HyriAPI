@@ -1,6 +1,11 @@
 package fr.hyriode.api.impl.common.leveling;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.leveling.IHyriLeveling;
+import fr.hyriode.api.leveling.event.HyriGainLevelEvent;
+import fr.hyriode.api.player.IHyriPlayer;
+
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -14,7 +19,10 @@ public class NetworkLeveling implements IHyriLeveling {
 
     private final transient IHyriLeveling.Algorithm algorithm = new Algo();
 
-    public NetworkLeveling() {
+    private final transient UUID playerId;
+
+    public NetworkLeveling(UUID playerId) {
+        this.playerId = playerId;
         this.name = "network";
     }
 
@@ -30,17 +38,17 @@ public class NetworkLeveling implements IHyriLeveling {
 
     @Override
     public void setExperience(double experience) {
-        this.experience = experience;
+        this.runAction(() -> this.experience = experience);
     }
 
     @Override
     public void addExperience(double experience) {
-        this.experience += experience;
+        this.runAction(() -> this.experience += experience);
     }
 
     @Override
     public void removeExperience(double experience) {
-        this.experience -= experience;
+        this.runAction(() -> this.experience -= experience);
     }
 
     @Override
@@ -51,6 +59,20 @@ public class NetworkLeveling implements IHyriLeveling {
     @Override
     public Algorithm getAlgorithm() {
         return this.algorithm;
+    }
+
+    private void runAction(Runnable action) {
+        final int oldLevel = this.getLevel();
+
+        action.run();
+
+        final int newLevel = this.getLevel();
+
+        if (newLevel > oldLevel) {
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(this.playerId);
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriGainLevelEvent(account, this, oldLevel, newLevel));
+        }
     }
 
     public static class Algo implements Algorithm {
