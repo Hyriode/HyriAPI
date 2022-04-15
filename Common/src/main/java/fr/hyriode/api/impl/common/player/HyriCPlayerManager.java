@@ -21,26 +21,41 @@ import java.util.function.Function;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public abstract class HyriCommonPlayerManager implements IHyriPlayerManager {
+public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     private static final Function<UUID, String> PLAYERS_KEY = uuid -> "players:" + uuid.toString();
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
 
-    private final HydrionManager hydrionManager;
-    private final PlayerModule playerModule;
+    protected final HydrionManager hydrionManager;
+    protected final PlayerModule playerModule;
 
-    public HyriCommonPlayerManager(HydrionManager hydrionManager) {
+    public HyriCPlayerManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
         this.playerModule = this.hydrionManager.getClient().getPlayerModule();
     }
 
     @Override
-    public UUID getPlayerId(String name) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+    public UUID getPlayerId(String name, boolean allowHydrionCheck) {
+        final UUID playerId = HyriAPI.get().getRedisProcessor().get(jedis -> {
             final String result = jedis.get(IDS_KEY.apply(name));
 
             return result != null ? UUID.fromString(result) : null;
         });
+
+        if (playerId != null) {
+            return playerId;
+        }
+
+        if (!this.hydrionManager.isEnabled() || !allowHydrionCheck) {
+            return null;
+        }
+
+        try {
+            return this.hydrionManager.getClient().getUUIDModule().getUUID(name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

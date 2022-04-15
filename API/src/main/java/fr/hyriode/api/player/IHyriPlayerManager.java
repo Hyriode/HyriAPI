@@ -13,9 +13,20 @@ public interface IHyriPlayerManager {
      * Get player unique id from his name
      *
      * @param name Player's name
+     * @param allowHydrionCheck Is Hydrion uuid fetching allowed
      * @return Player {@link UUID} or <code>null</code>
      */
-    UUID getPlayerId(String name);
+    UUID getPlayerId(String name, boolean allowHydrionCheck);
+
+    /**
+     * Get player unique id from his name
+     *
+     * @param name Player's name
+     * @return Player {@link UUID} or <code>null</code>
+     */
+    default UUID getPlayerId(String name) {
+        return this.getPlayerId(name, true);
+    }
 
     /**
      * Set player's id

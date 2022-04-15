@@ -2,12 +2,12 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
-import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
@@ -153,6 +153,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPlayerSettingsManager}
      */
     public abstract IHyriPlayerSettingsManager getPlayerSettingsManager();
+
+    /**
+     * Get the booster manager
+     *
+     * @return The {@link IHyriBoosterManager} instance
+     */
+    public abstract IHyriBoosterManager getBoosterManager();
 
     /**
      * Get the money manager

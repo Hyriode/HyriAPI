@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyCallback;
 
@@ -15,15 +16,15 @@ public abstract class HyriMoney implements IHyriMoney {
 
     protected long amount;
 
-    private final char colorChar;
+    private final HyriChatColor color;
     private final String name;
 
     private final UUID playerUUID;
 
-    public HyriMoney(UUID playerUUID, String name, char colorChar) {
+    public HyriMoney(UUID playerUUID, String name, HyriChatColor color) {
         this.playerUUID = playerUUID;
         this.name = name;
-        this.colorChar = colorChar;
+        this.color = color;
     }
 
     @Override
@@ -127,8 +128,8 @@ public abstract class HyriMoney implements IHyriMoney {
     }
 
     @Override
-    public char getColorChar() {
-        return this.colorChar;
+    public HyriChatColor getColor() {
+        return this.color;
     }
 
 }

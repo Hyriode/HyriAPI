@@ -1,8 +1,6 @@
 package fr.hyriode.api.network;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.network.event.HyriNetworkEventBus;
 
 /**
  * Project: HyriAPI

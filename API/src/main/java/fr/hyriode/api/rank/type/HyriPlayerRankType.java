@@ -25,7 +25,7 @@ public enum HyriPlayerRankType implements IHyriRankType {
 
     HyriPlayerRankType(int id, String defaultPrefix, HyriChatColor defaultColor, boolean separator) {
         this.id = id;
-        this.defaultPrefix = defaultColor.getName() + defaultPrefix;
+        this.defaultPrefix = defaultColor.toString() + defaultPrefix;
         this.defaultColor = defaultColor;
         this.separator = separator;
     }

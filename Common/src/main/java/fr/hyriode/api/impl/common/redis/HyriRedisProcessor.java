@@ -5,7 +5,10 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
 import redis.clients.jedis.Jedis;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

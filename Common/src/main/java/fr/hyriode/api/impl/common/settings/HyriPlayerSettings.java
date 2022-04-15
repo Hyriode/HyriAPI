@@ -1,6 +1,9 @@
 package fr.hyriode.api.impl.common.settings;
 
-import fr.hyriode.api.settings.*;
+import fr.hyriode.api.settings.HyriLanguage;
+import fr.hyriode.api.settings.HyriPlayersVisibilityLevel;
+import fr.hyriode.api.settings.HyriPrivateMessagesLevel;
+import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 /**
  * Project: HyriAPI

@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.server.player;
 
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
-import fr.hyriode.api.impl.common.player.HyriCommonPlayerManager;
+import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -17,10 +17,20 @@ import java.util.function.Consumer;
  * Created by AstFaster
  * on 13/02/2022 at 15:30
  */
-public class HyriPlayerManager extends HyriCommonPlayerManager {
+public class HyriPlayerManager extends HyriCPlayerManager {
 
     public HyriPlayerManager(HydrionManager hydrionManager) {
         super(hydrionManager);
+    }
+
+    @Override
+    public UUID getPlayerId(String name, boolean allowHydrionCheck) {
+        final Player player = Bukkit.getPlayer(name);
+
+        if (player != null) {
+            return player.getUniqueId();
+        }
+        return super.getPlayerId(name, allowHydrionCheck);
     }
 
     @Override
@@ -71,4 +81,5 @@ public class HyriPlayerManager extends HyriCommonPlayerManager {
         }
         return -1;
     }
+
 }

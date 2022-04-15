@@ -1,5 +1,7 @@
 package fr.hyriode.api.impl.common.money;
 
+import fr.hyriode.api.color.HyriChatColor;
+
 import java.util.UUID;
 
 /**
@@ -10,7 +12,7 @@ import java.util.UUID;
 public class Hyris extends HyriMoney {
 
     public Hyris(UUID playerUUID) {
-        super(playerUUID, "Hyris", '6');
+        super(playerUUID, "Hyris", HyriChatColor.GOLD);
     }
 
 }

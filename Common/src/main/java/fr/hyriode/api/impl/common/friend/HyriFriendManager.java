@@ -7,7 +7,6 @@ import fr.hyriode.api.friend.IHyriFriend;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
-import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.FriendsModule;
 
 import java.util.ArrayList;

@@ -1,10 +1,8 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.proxy.money.HyriMoneyManager;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.HyriProxyReceiver;
-import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -23,13 +21,10 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriPlayerManager playerManager;
 
-    private final IHyriMoneyManager moneyManager;
-
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.proxy = this.createProxy();
         this.playerManager = new HyriPlayerManager(this.hydrionManager);
-        this.moneyManager = new HyriMoneyManager();
 
         final IHyriNetwork network = this.networkManager.getNetwork();
 
@@ -67,11 +62,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     @Override
     public IHyriPlayerManager getPlayerManager() {
         return this.playerManager;
-    }
-
-    @Override
-    public IHyriMoneyManager getMoneyManager() {
-        return this.moneyManager;
     }
 
 }

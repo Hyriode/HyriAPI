@@ -11,7 +11,7 @@ import fr.hyriode.api.player.IHyriPlayer;
  * Created by AstFaster
  * on 12/02/2022 at 15:54
  */
-public abstract class HyriCommonMoneyManager implements IHyriMoneyManager {
+public class HyriMoneyManager implements IHyriMoneyManager {
 
     @Override
     public void creditMoney(IHyriPlayer player, IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, boolean sendMessage, String reason, IHyriMoneyCallback callback) {
@@ -40,6 +40,18 @@ public abstract class HyriCommonMoneyManager implements IHyriMoneyManager {
         }
 
         HyriAPI.get().getPlayerManager().sendPlayer(player);
+    }
+
+    @Override
+    public String getMoneyMessage(IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, String reason) {
+        String sign = "";
+        if (action.equals(IHyriMoney.HyriMoneyAction.ADD)) {
+            sign = "+";
+        } else if (action.equals(IHyriMoney.HyriMoneyAction.REMOVE)) {
+            sign = "-";
+        }
+
+        return money.getColor() + sign + amount + " " + money.getName() + (reason != null && !reason.isEmpty() ? " (" + reason + ")" : "");
     }
 
 }

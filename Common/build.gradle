@@ -52,7 +52,7 @@ publishing {
 
 dependencies {
     api project(':API')
-    api 'fr.hyriode:hydrion-client:1.0.4'
+    api 'fr.hyriode:hydrion-client:1.0.5'
     implementation 'redis.clients:jedis:4.2.1'
 
 }

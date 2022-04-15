@@ -3,7 +3,6 @@ package fr.hyriode.api.redis;
 import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

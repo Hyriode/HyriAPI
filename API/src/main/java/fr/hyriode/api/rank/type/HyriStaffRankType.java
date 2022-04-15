@@ -23,7 +23,7 @@ public enum HyriStaffRankType implements IHyriRankType {
 
     HyriStaffRankType(int id, String defaultPrefix, HyriChatColor defaultColor) {
         this.id = id;
-        this.defaultPrefix = defaultColor.getName() + defaultPrefix;
+        this.defaultPrefix = defaultColor.toString() + defaultPrefix;
         this.defaultColor = defaultColor;
     }
 

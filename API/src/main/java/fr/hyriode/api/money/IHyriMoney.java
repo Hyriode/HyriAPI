@@ -1,5 +1,7 @@
 package fr.hyriode.api.money;
 
+import fr.hyriode.api.color.HyriChatColor;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -173,11 +175,11 @@ public interface IHyriMoney {
     String getName();
 
     /**
-     * Get money color char
+     * Get money color
      *
-     * @return - Color char
+     * @return A {@link HyriChatColor}
      */
-    char getColorChar();
+    HyriChatColor getColor();
 
     enum HyriMoneyAction {
         ADD,

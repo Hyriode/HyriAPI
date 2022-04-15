@@ -1,11 +1,11 @@
 package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.party.event.HyriPartyCreatedEvent;
 import fr.hyriode.api.party.HyriPartyInvitation;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.IHyriPartyManager;
+import fr.hyriode.api.party.event.HyriPartyCreatedEvent;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 

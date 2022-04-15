@@ -1,15 +1,18 @@
 package fr.hyriode.api.impl.common;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.impl.common.booster.HyriBoosterManager;
 import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
@@ -17,6 +20,7 @@ import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
 import fr.hyriode.api.impl.common.server.HyriServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
+import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
@@ -40,20 +44,20 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     protected final HyriRedisProcessor redisProcessor;
 
     protected final IHyriEventBus eventBus;
-
     protected final HyriPubSub pubSub;
 
     protected final HyggdrasilManager hyggdrasilManager;
     protected final HydrionManager hydrionManager;
 
     protected final HyriNetworkManager networkManager;
-
     protected final HyriServerManager serverManager;
 
     protected final IHyriPlayerSettingsManager playerSettingsManager;
 
-    protected final IHyriPartyManager partyManager;
+    protected final IHyriBoosterManager boosterManager;
+    protected final IHyriMoneyManager moneyManager;
 
+    protected final IHyriPartyManager partyManager;
     protected final IHyriFriendManager friendManager;
 
     protected final IHyriChatChannelManager chatChannelManager;
@@ -79,6 +83,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.networkManager = new HyriNetworkManager(this.hydrionManager);
         this.serverManager = new HyriServerManager(this);
         this.playerSettingsManager = new HyriPlayerSettingsManager();
+        this.boosterManager = new HyriBoosterManager(this.hydrionManager);
+        this.moneyManager = new HyriMoneyManager();
         this.partyManager = new HyriPartyManager();
         this.friendManager = new HyriFriendManager(this.hydrionManager);
         this.chatChannelManager = new HyriChatChannelManager();
@@ -162,6 +168,16 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public IHyriPlayerSettingsManager getPlayerSettingsManager() {
         return this.playerSettingsManager;
+    }
+
+    @Override
+    public IHyriBoosterManager getBoosterManager() {
+        return this.boosterManager;
+    }
+
+    @Override
+    public IHyriMoneyManager getMoneyManager() {
+        return this.moneyManager;
     }
 
     @Override

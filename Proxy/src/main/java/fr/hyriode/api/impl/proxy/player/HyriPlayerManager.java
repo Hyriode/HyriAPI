@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
-import fr.hyriode.api.impl.common.player.HyriCommonPlayerManager;
+import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,10 +14,20 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/02/2022 at 15:30
  */
-public class HyriPlayerManager extends HyriCommonPlayerManager {
+public class HyriPlayerManager extends HyriCPlayerManager {
 
     public HyriPlayerManager(HydrionManager hydrionManager) {
         super(hydrionManager);
+    }
+
+    @Override
+    public UUID getPlayerId(String name) {
+        final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(name);
+
+        if (player != null) {
+            return player.getUniqueId();
+        }
+        return super.getPlayerId(name);
     }
 
     @Override
