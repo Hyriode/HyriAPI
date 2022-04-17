@@ -27,11 +27,14 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
 
     protected final HydrionManager hydrionManager;
-    protected final PlayerModule playerModule;
+    protected PlayerModule playerModule;
 
     public HyriCPlayerManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.playerModule = this.hydrionManager.getClient().getPlayerModule();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.playerModule = this.hydrionManager.getClient().getPlayerModule();
+        }
     }
 
     @Override

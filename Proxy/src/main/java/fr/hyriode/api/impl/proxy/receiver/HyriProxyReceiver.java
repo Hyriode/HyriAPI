@@ -1,16 +1,20 @@
 package fr.hyriode.api.impl.proxy.receiver;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
+import fr.hyriode.api.proxy.IHyriProxy;
+import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacket;
-import fr.hyriode.hyggdrasil.api.protocol.packet.model.proxy.HyggProxyServerActionPacket;
-import fr.hyriode.hyggdrasil.api.protocol.packet.model.proxy.HyggStopProxyPacket;
 import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
 import fr.hyriode.hyggdrasil.api.protocol.request.HyggRequestHeader;
 import fr.hyriode.hyggdrasil.api.protocol.response.HyggResponse;
 import fr.hyriode.hyggdrasil.api.protocol.response.IHyggResponse;
+import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyServerActionPacket;
+import fr.hyriode.hyggdrasil.api.proxy.packet.HyggStopProxyPacket;
+import fr.hyriode.hyggdrasil.api.server.packet.HyggStopServerPacket;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -47,7 +51,15 @@ public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiv
             }
             return HyggResponse.Type.SUCCESS;
         } else if (packet instanceof HyggStopProxyPacket) {
-            return HyggResponse.Type.SUCCESS;
+            final String proxyName = ((HyggStopProxyPacket) packet).getProxyName();
+            final IHyriProxy proxy = HyriAPI.get().getProxy();
+
+            if (proxy.getName().equals(proxyName)) {
+                proxy.getStopHandler().run();
+
+                return HyggResponse.Type.SUCCESS;
+            }
+            return HyggResponse.Type.NONE;
         }
         return HyggResponse.Type.NONE;
     }

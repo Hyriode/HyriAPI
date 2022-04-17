@@ -1,5 +1,8 @@
 package fr.hyriode.api.rank;
 
+import fr.hyriode.api.color.HyriChatColor;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+
 import java.util.Date;
 
 /**
@@ -9,10 +12,15 @@ import java.util.Date;
  */
 public class HyriPlus {
 
+    /** The priority of the Hyri+ in queues */
+    public static final int PRIORITY = HyriPlayerRankType.EPIC.getPriority();
+
     /** The timestamp of when the Hyri+ has been bought */
     private final long purchaseDate;
     /** The timestamp of when the Hyri+ will expire */
     private final long expirationDate;
+    /** The color of the + symbol */
+    private HyriChatColor plusColor = HyriPlayerRankType.EPIC.getDefaultColor();
 
     /**
      * Constructor of {@link HyriPlus}
@@ -41,6 +49,24 @@ public class HyriPlus {
      */
     public Date getExpirationDate() {
         return new Date(this.expirationDate);
+    }
+
+    /**
+     * Get the color of the + symbol
+     *
+     * @return A {@link HyriChatColor}
+     */
+    public HyriChatColor getPlusColor() {
+        return this.plusColor;
+    }
+
+    /**
+     * Set the color of the + symbol
+     *
+     * @param plusColor A {@link HyriChatColor}
+     */
+    public void setPlusColor(HyriChatColor plusColor) {
+        this.plusColor = plusColor;
     }
 
     /**

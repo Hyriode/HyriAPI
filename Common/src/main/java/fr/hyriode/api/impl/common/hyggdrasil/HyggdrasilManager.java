@@ -13,11 +13,11 @@ import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggRedisCredentials;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
-import fr.hyriode.hyggdrasil.api.protocol.packet.model.proxy.HyggProxyInfoPacket;
-import fr.hyriode.hyggdrasil.api.protocol.packet.model.server.HyggServerInfoPacket;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
+import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyInfoPacket;
 import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
+import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +92,7 @@ public class HyggdrasilManager {
             } else if (type == HyggApplication.Type.SERVER) {
                 final IHyriServer server = HyriAPI.get().getServer();
 
-                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getStartedTime(), new HyggServerOptions())).exec();
+                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getStartedTime(), new HyggServerOptions(), server.getData())).exec();
             }
         }
     }

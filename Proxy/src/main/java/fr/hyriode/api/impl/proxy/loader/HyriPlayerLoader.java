@@ -19,11 +19,14 @@ import java.util.UUID;
 public class HyriPlayerLoader {
 
     private final HydrionManager hydrionManager;
-    private final PlayerModule playerModule;
+    private PlayerModule playerModule;
 
     public HyriPlayerLoader(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.playerModule = this.hydrionManager.getClient().getPlayerModule();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.playerModule = this.hydrionManager.getClient().getPlayerModule();
+        }
     }
 
     public void loadPlayerAccount(UUID uuid, String name) {
@@ -41,7 +44,9 @@ public class HyriPlayerLoader {
         account.setCurrentProxy(HyriAPI.get().getProxy().getName());
         account.update();
 
-        this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+        if (this.hydrionManager.isEnabled()) {
+            this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+        }
 
         playerManager.setPlayerId(name, uuid);
     }

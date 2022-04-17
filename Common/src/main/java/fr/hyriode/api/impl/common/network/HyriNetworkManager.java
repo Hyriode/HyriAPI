@@ -22,12 +22,15 @@ public class HyriNetworkManager implements IHyriNetworkManager {
     private final HyriNetworkEventBus eventBus;
 
     private final HydrionManager hydrionManager;
-    private final NetworkModule networkModule;
+    private NetworkModule networkModule;
 
     public HyriNetworkManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.networkModule = this.hydrionManager.getClient().getNetworkModule();
         this.eventBus = new HyriNetworkEventBus();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.networkModule = this.hydrionManager.getClient().getNetworkModule();
+        }
 
         if (this.getNetwork() == null) {
             this.setNetwork(new HyriNetwork());

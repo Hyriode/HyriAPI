@@ -17,13 +17,16 @@ import java.util.UUID;
 public class HyriFriendsLoader {
 
     private final HydrionManager hydrionManager;
-    private final FriendsModule friendsModule;
     private final IHyriFriendManager friendManager;
+    private FriendsModule friendsModule;
 
     public HyriFriendsLoader(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
         this.friendManager = HyriAPI.get().getFriendManager();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
+        }
     }
 
     public void loadFriends(UUID uuid) {

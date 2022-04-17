@@ -12,9 +12,9 @@ public interface IHyriNetwork {
     /**
      * Get the player count
      *
-     * @return The {@link HyriPlayerCount} object
+     * @return The {@link HyriNetworkCount} object
      */
-    HyriPlayerCount getPlayerCount();
+    HyriNetworkCount getPlayerCount();
 
     /**
      * Get the amount of available slots on the network

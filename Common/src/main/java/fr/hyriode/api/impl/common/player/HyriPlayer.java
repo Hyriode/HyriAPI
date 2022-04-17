@@ -342,4 +342,9 @@ public class HyriPlayer implements IHyriPlayer {
         return this.networkLeveling;
     }
 
+    @Override
+    public int getPriority() {
+        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
+    }
+
 }

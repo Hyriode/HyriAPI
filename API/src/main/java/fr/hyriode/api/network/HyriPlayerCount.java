@@ -6,27 +6,27 @@ import java.util.Map;
 /**
  * Project: HyriAPI
  * Created by AstFaster
- * on 13/04/2022 at 16:37
+ * on 13/04/2022 at 16:39
  */
 public class HyriPlayerCount {
 
-    /** The amount of players on the network */
+    /** The amount of players playing on the category */
     private final int players;
-    /** The count of players in each game */
-    private final Map<String, HyriGameCount> games;
+    /** The count of players in each type. It can be empty is the counter is not for a game */
+    private final Map<String, Integer> types;
 
     /**
      * Constructor of {@link HyriPlayerCount}
      *
-     * @param players A player amount
+     * @param players The initial amount of players
      */
     public HyriPlayerCount(int players) {
         this.players = players;
-        this.games = new HashMap<>();
+        this.types = new HashMap<>();
     }
 
     /**
-     * Get the amount of players playing on the network
+     * Get the amount of players playing the category
      *
      * @return A player amount
      */
@@ -35,32 +35,32 @@ public class HyriPlayerCount {
     }
 
     /**
-     * Set a game count
+     * Set the amount of players on a type
      *
-     * @param game The game
-     * @param count The count
+     * @param type The type of the server
+     * @param players The amount of players
      */
-    public void setGameCount(String game, HyriGameCount count) {
-        this.games.put(game, count);
+    public void setType(String type, int players) {
+        this.types.put(type, players);
     }
 
     /**
-     * Get a game count
+     * Get the amount of players on a type
      *
-     * @param game The game
-     * @return A {@link HyriGameCount} linked to the game
+     * @param type The server type
+     * @return The amount of players
      */
-    public HyriGameCount getGameCount(String game) {
-        return this.games.get(game);
+    public int getType(String type) {
+        return this.types.get(type);
     }
 
     /**
-     * Get the games counts
+     * Get the player amount of each type
      *
      * @return A map
      */
-    public Map<String, HyriGameCount> getGames() {
-        return this.games;
+    public Map<String, Integer> getTypes() {
+        return this.types;
     }
 
 }

@@ -33,7 +33,13 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             network.update();
         }
 
+        if (network.getMotd() == null) {
+            network.setMotd(plugin.getConfiguration().getMotd());
+            network.update();
+        }
+
         this.hyggdrasilManager.start();
+
         this.registerReceivers();
     }
 

@@ -1,6 +1,7 @@
 package fr.hyriode.api.server;
 
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 
 import java.util.Collection;
@@ -71,10 +72,10 @@ public interface IHyriServerManager {
     /**
      * Create a server with a given type
      *
-     * @param serverType The type of the server to create
+     * @param serverRequest The request to send to create the server
      * @param onCreated The {@link Consumer} to call when the server will be created
      */
-    void createServer(String serverType, Consumer<HyggServer> onCreated);
+    void createServer(HyggServerRequest serverRequest, Consumer<HyggServer> onCreated);
 
     /**
      * Remove a server by giving its name

@@ -6,6 +6,7 @@ import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequester;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 
@@ -107,8 +108,8 @@ public class HyriServerManager implements IHyriServerManager {
     }
 
     @Override
-    public void createServer(String serverType, Consumer<HyggServer> onCreated) {
-        this.runActionOnRequester(requester -> requester.createServer(serverType, onCreated));
+    public void createServer(HyggServerRequest serverRequest, Consumer<HyggServer> onCreated) {
+        this.runActionOnRequester(requester -> requester.createServer(serverRequest, onCreated));
     }
 
     @Override

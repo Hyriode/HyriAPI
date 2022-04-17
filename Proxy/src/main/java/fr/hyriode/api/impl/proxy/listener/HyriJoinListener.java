@@ -70,6 +70,8 @@ public class HyriJoinListener implements Listener {
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
             final IHyriMaintenance maintenance = network.getMaintenance();
 
+            event.setCancelled(true);
+
             if (maintenance.isActive()) {
                 player.disconnect(this.buildMessage("Une maintenance est actuellement en cours. Raison: " + maintenance.getReason()));
             } else if (network.getPlayerCount().getPlayers() >= network.getSlots()) {
@@ -82,6 +84,10 @@ public class HyriJoinListener implements Listener {
                     player.disconnect(this.buildMessage("Aucun lobby n'est actuellement démarré !"));
                 } else {
                     event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
+                    event.setCancelled(false);
+
+                    network.getPlayerCount().addPlayers(1);
+                    network.update();
 
                     this.hyggdrasilManager.sendData();
                 }
@@ -99,12 +105,20 @@ public class HyriJoinListener implements Listener {
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         final ProxiedPlayer player = event.getPlayer();
-        final UUID uuid = player.getUniqueId();
 
-        this.playerLoader.unloadPlayerAccount(uuid);
-        this.friendsLoader.unloadFriends(uuid);
+        if (player.isConnected()) {
+            System.out.println("Connected");
+            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+            final UUID uuid = player.getUniqueId();
 
-        this.hyggdrasilManager.sendData();
+            this.playerLoader.unloadPlayerAccount(uuid);
+            this.friendsLoader.unloadFriends(uuid);
+
+            network.getPlayerCount().removePlayers(1);
+            network.update();
+
+            this.hyggdrasilManager.sendData();
+        }
     }
 
 }

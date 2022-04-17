@@ -1,6 +1,7 @@
 package fr.hyriode.api.server;
 
 import fr.hyriode.api.application.IHyriApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 
 /**
  * Project: HyriAPI
@@ -22,6 +23,13 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
      * @return Server players
      */
     int getPlayers();
+
+    /**
+     * Get the data provided by Hyggdrasil
+     *
+     * @return A {@link HyggData} object
+     */
+    HyggData getData();
 
     /**
      * The enumeration of all the states available for a server

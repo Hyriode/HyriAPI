@@ -21,12 +21,9 @@ public class HyriProxyListener implements Listener {
 
     private final Favicon favicon;
 
-    private final HyriAPIConfiguration configuration;
-
     @SuppressWarnings("deprecation")
     public HyriProxyListener(HyriAPIConfiguration configuration) {
-        this.configuration = configuration;
-        this.favicon = Favicon.create(this.configuration.getServerIcon());
+        this.favicon = Favicon.create(configuration.getServerIcon());
     }
 
     @EventHandler
@@ -47,7 +44,7 @@ public class HyriProxyListener implements Listener {
         }
 
         ping.setFavicon(this.favicon);
-        ping.setDescriptionComponent(new TextComponent(network.getMotd()));
+        ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', network.getMotd()))));
 
         event.setResponse(ping);
     }

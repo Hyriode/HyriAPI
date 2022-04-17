@@ -27,11 +27,14 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     private static final Function<UUID, String> KEY_FORMATTER = uuid -> KEY + uuid.toString();
 
     private final HydrionManager hydrionManager;
-    private final BoostersModule boostersModule;
+    private BoostersModule boostersModule;
 
     public HyriBoosterManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.boostersModule = this.hydrionManager.getClient().getBoostersModule();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.boostersModule = this.hydrionManager.getClient().getBoostersModule();
+        }
     }
 
     @Override

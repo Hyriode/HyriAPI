@@ -38,7 +38,7 @@ allprojects {
     }
 
     dependencies {
-        api 'fr.hyriode:hyggdrasil-api:1.0.0'
+        api 'fr.hyriode:hyggdrasil-api:1.0.1'
     }
 
 }

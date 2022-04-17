@@ -201,4 +201,13 @@ public class HyriRank {
         return this.staffType != null;
     }
 
+    /**
+     * Get the priority in queues of the rank
+     *
+     * @return A priority
+     */
+    public int getPriority() {
+        return this.isStaff() ? this.staffType.getPriority() : this.playerType.getPriority();
+    }
+
 }

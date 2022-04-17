@@ -23,6 +23,10 @@ import redis.clients.jedis.Jedis;
 
 public abstract class HyriAPI {
 
+    public static void main(String[] args) {
+        System.out.println("Test");
+    }
+
     /** {@link Gson} instance with adapters */
     public static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(HyriPacket.class, new HyriPacket.Serializer())

@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.server.IHyriServer;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import org.bukkit.Bukkit;
 
@@ -15,16 +16,19 @@ public class HyriServer implements IHyriServer {
     private final String name;
     private final String type;
     private final long startedTime;
+    private final HyggData data;
 
     private State state;
+    private Runnable stopHandler;
 
     private final HyggdrasilManager hyggdrasilManager;
 
-    public HyriServer(HyggdrasilManager hyggdrasilManager, String name, long startedTime) {
+    public HyriServer(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
         this.hyggdrasilManager = hyggdrasilManager;
         this.name = name;
         this.type = HyggServer.getTypeFromName(name);
         this.startedTime = startedTime;
+        this.data = data;
         this.state = State.STARTING;
     }
 
@@ -56,8 +60,23 @@ public class HyriServer implements IHyriServer {
     }
 
     @Override
+    public Runnable getStopHandler() {
+        return this.stopHandler;
+    }
+
+    @Override
+    public void setStopHandler(Runnable stopHandler) {
+        this.stopHandler = stopHandler;
+    }
+
+    @Override
     public int getPlayers() {
         return Bukkit.getOnlinePlayers().size();
+    }
+
+    @Override
+    public HyggData getData() {
+        return this.data;
     }
 
 }

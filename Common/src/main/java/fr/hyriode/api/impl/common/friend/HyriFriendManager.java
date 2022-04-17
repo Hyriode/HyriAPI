@@ -25,11 +25,14 @@ public class HyriFriendManager implements IHyriFriendManager {
     private static final String REDIS_KEY = "friends:";
 
     private final HydrionManager hydrionManager;
-    private final FriendsModule friendsModule;
+    private FriendsModule friendsModule;
 
     public HyriFriendManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
-        this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
+
+        if (this.hydrionManager.isEnabled()) {
+            this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
+        }
     }
 
     @Override

@@ -412,6 +412,13 @@ public interface IHyriPlayer {
     IHyriLeveling getNetworkLeveling();
 
     /**
+     * Get the priority of the player in queues
+     *
+     * @return A number that represents a priority
+     */
+    int getPriority();
+
+    /**
      * Update the player account in database
      */
     default void update() {

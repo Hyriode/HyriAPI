@@ -15,6 +15,7 @@ public class HyriProxy implements IHyriProxy {
     private final long startedTime;
 
     private State state;
+    private Runnable stopHandler;
 
     private final HyggdrasilManager hyggdrasilManager;
 
@@ -45,6 +46,16 @@ public class HyriProxy implements IHyriProxy {
         this.state = state;
 
         this.hyggdrasilManager.sendData();
+    }
+
+    @Override
+    public Runnable getStopHandler() {
+        return this.stopHandler;
+    }
+
+    @Override
+    public void setStopHandler(Runnable stopHandler) {
+        this.stopHandler = stopHandler;
     }
 
     @Override

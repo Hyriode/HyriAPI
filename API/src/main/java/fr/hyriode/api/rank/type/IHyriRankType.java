@@ -17,6 +17,13 @@ public interface IHyriRankType {
     int getId();
 
     /**
+     * Get the priority of the rank in queues
+     *
+     * @return A priority
+     */
+    int getPriority();
+
+    /**
      * Get the default prefix of the rank type
      *
      * @return A prefix

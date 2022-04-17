@@ -33,6 +33,11 @@ public enum HyriStaffRankType implements IHyriRankType {
     }
 
     @Override
+    public int getPriority() {
+        return 1;
+    }
+
+    @Override
     public String getDefaultPrefix() {
         return this.defaultPrefix;
     }

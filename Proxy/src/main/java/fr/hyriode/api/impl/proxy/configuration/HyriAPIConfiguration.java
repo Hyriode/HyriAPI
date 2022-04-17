@@ -28,16 +28,18 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     private final HydrionConfiguration hydrionConfiguration;
     private final String serverIcon;
     private final int slots;
+    private final String motd;
 
     public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil,
                                 HyriRedisConfiguration redisConfiguration, HydrionConfiguration hydrionConfiguration,
-                                String serverIcon, int slots) {
+                                String serverIcon, int slots, String motd) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.redisConfiguration = redisConfiguration;
         this.hydrionConfiguration = hydrionConfiguration;
         this.serverIcon = serverIcon;
         this.slots = slots;
+        this.motd = motd;
     }
 
     @Override
@@ -68,6 +70,10 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         return this.slots;
     }
 
+    public String getMotd() {
+        return this.motd;
+    }
+
     public static class Loader {
 
         private static final String DEV_ENVIRONMENT_PATH = "devEnvironment";
@@ -76,6 +82,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         private static final String HYDRION_PATH = "hydrion";
         private static final String SERVER_ICON_PATH = "server-icon";
         private static final String SLOTS_PATH = "slots";
+        private static final String MOTD_PATH = "motd";
 
         private static final String REDIS_HOSTNAME = "hostname";
         private static final String REDIS_PORT = "port";
@@ -106,7 +113,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
                 return new HyriAPIConfiguration(configuration.getBoolean(DEV_ENVIRONMENT_PATH), configuration.getBoolean(HYGGDRASIL_PATH),
                         loadRedisConfiguration(configuration.getSection(REDIS_PATH)), loadHydrionConfiguration(configuration.getSection(HYDRION_PATH)),
-                        configuration.getString(SERVER_ICON_PATH), configuration.getInt(SLOTS_PATH));
+                        configuration.getString(SERVER_ICON_PATH), configuration.getInt(SLOTS_PATH), configuration.getString(MOTD_PATH));
             } catch (IOException e) {
                 e.printStackTrace();
             }

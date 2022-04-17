@@ -11,6 +11,7 @@ import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 
 import java.util.Arrays;
@@ -27,11 +28,8 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriPlayerManager playerManager;
 
-    private final HyriAPIPlugin plugin;
-
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
-        this.plugin = plugin;
         this.server = this.createServer();
         this.playerManager = new HyriPlayerManager(this.hydrionManager);
 
@@ -45,9 +43,9 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         if (this.hyggdrasilManager.withHyggdrasil()) {
             final HyggApplication application = this.hyggdrasilManager.getApplication();
 
-            return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+            return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime(), this.hyggdrasilManager.getEnvironment().getData());
         }
-        return new HyriServer(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis());
+        return new HyriServer(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis(), new HyggData());
     }
 
     private void registerReceivers() {
