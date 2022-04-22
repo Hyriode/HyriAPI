@@ -26,6 +26,7 @@ public class HyriChatChannelManager implements IHyriChatChannelManager {
     @Override
     public void registerChannel(IHyriChatChannelHandler handler) {
         this.handlers.put(handler.getChannel(), handler);
+        System.out.println("Registered channel " + handler.getChannel());
     }
 
     @Override

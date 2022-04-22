@@ -65,7 +65,11 @@ public class GlobalChatHandler implements IHyriChatChannelHandler {
                 continue;
             }
 
-            player.sendMessage(account.getNameWithRank(true) + ChatColor.WHITE + ": " + (account.getRank().isDefault() ? ChatColor.GRAY : ChatColor.WHITE) + message);
+            if (account.hasNickname()) {
+                player.sendMessage(account.getNameWithRank(true) + ChatColor.WHITE + ": " + (account.getNickname().getRank() == HyriPlayerRankType.PLAYER ? ChatColor.GRAY : ChatColor.WHITE) + message);
+            } else {
+                player.sendMessage(account.getNameWithRank() + ChatColor.WHITE + ": " + (account.getRank().isDefault() ? ChatColor.GRAY : ChatColor.WHITE) + message);
+            }
         }
     }
 
