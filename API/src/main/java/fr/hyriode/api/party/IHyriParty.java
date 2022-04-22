@@ -107,6 +107,7 @@ public interface IHyriParty {
      * Get the party's rank of a given player
      *
      * @param player The player {@link UUID}
+     * @return The {@link HyriPartyRank} of the player-
      */
     HyriPartyRank getRank(UUID player);
 

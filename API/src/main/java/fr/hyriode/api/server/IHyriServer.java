@@ -43,7 +43,7 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     void setSlots(int slots);
 
     /**
-     * Get the type of the game.<br<
+     * Get the type of the game.<br>
      * This getter will only work if the server is a game!
      *
      * @return A game type

@@ -80,6 +80,7 @@ public interface IHyriFriendManager {
      *
      * @param player The target of the request
      * @param sender The sender of the request
+     * @return <code>true</code> if the target has a request from the player
      */
     boolean hasRequest(UUID player, UUID sender);
 
