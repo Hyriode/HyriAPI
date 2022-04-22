@@ -15,6 +15,7 @@ public interface IHyriChatChannelManager {
 
     /**
      * Get the handler for a channel.
+     *
      * @param channel The channel to use.
      * @return The handlers for the channel.
      */
@@ -22,6 +23,7 @@ public interface IHyriChatChannelManager {
 
     /**
      * Register a channel.
+     *
      * @param handler The handler register to his channel.
      */
     void registerChannel(IHyriChatChannelHandler handler);
@@ -36,20 +38,10 @@ public interface IHyriChatChannelManager {
      * Send a message through a channel.
      * @param channel The channel to use.
      * @param message The message to send.
-     */
-    default void sendMessage(String channel, String message) {
-        this.sendMessage(channel, message, false);
-    }
-
-    /**
-     * Send a message through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
+     * @param sender The sender of the message.
      * @param force <code>true</code> to bypass checks.
      */
-    default void sendMessage(String channel, String message, boolean force) {
-        this.sendMessage(channel, message, null, force);
-    }
+    void sendMessage(String channel, String message, UUID sender, boolean force);
 
     /**
      * Send a message through a channel.
@@ -60,57 +52,6 @@ public interface IHyriChatChannelManager {
     default void sendMessage(String channel, String message, UUID sender) {
         this.sendMessage(channel, message, sender, false);
     }
-
-    /**
-     * Send a message through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
-     * @param sender The sender of the message.
-     * @param force <code>true</code> to bypass checks.
-     */
-    void sendMessage(String channel, String message, UUID sender, boolean force);
-
-    /**
-     * Send a message to a player through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
-     * @param player The player to send the message to.
-     */
-    default void sendMessageToPlayer(String channel, String message, UUID player) {
-        this.sendMessageToPlayer(channel, message, player, false);
-    }
-
-    /**
-     * Send a message to a player through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
-     * @param player The player to send the message to.
-     * @param force <code>true</code> to bypass checks.
-     */
-    default void sendMessageToPlayer(String channel, String message, UUID player, boolean force) {
-        this.sendMessageToPlayer(channel, message, player, null, force);
-    }
-
-    /**
-     * Send a message to a player through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
-     * @param player The player to send the message to.
-     * @param sender The sender of the message.
-     */
-    default void sendMessageToPlayer(String channel, String message, UUID player, UUID sender) {
-        this.sendMessageToPlayer(channel, message, player, sender, false);
-    }
-
-    /**
-     * Send a message to a player through a channel.
-     * @param channel The channel to use.
-     * @param message The message to send.
-     * @param player The player to send the message to.
-     * @param sender The sender of the message.
-     * @param force <code>true</code> to bypass checks.
-     */
-    void sendMessageToPlayer(String channel, String message, UUID player, UUID sender, boolean force);
 
     /**
      * <code>true</code> if the player can access to the channel.
@@ -124,9 +65,9 @@ public interface IHyriChatChannelManager {
         final HyriPlayerRankType playerRankType = handler.getRequiredPlayerRank();
         final HyriStaffRankType staffRankType = handler.getRequiredStaffRank();
 
-        boolean result = playerRankType != null && rank.isNecessary(playerRankType);
+        boolean result = playerRankType != null && rank.isSuperior(playerRankType);
 
-        if (staffRankType != null && rank.isNecessary(staffRankType)) {
+        if (staffRankType != null && rank.isSuperior(staffRankType)) {
             result = true;
         } else if (staffRankType != null){
             result = false;

@@ -4,14 +4,14 @@ import fr.hyriode.api.packet.HyriPacket;
 
 import java.util.UUID;
 
-public class ChatMessagePacket extends HyriPacket {
+public class ChatChannelMessagePacket extends HyriPacket {
 
     private final String channel;
     private final String message;
     private final UUID sender;
     private final boolean force;
 
-    public ChatMessagePacket(String channel, String message, UUID sender, boolean force) {
+    public ChatChannelMessagePacket(String channel, String message, UUID sender, boolean force) {
         this.channel = channel;
         this.message = message;
         this.sender = sender;

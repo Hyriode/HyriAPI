@@ -1,10 +1,15 @@
 package fr.hyriode.api.impl.common.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
 import fr.hyriode.api.server.IHyriServerManager;
+import fr.hyriode.api.server.join.IHyriJoinManager;
+import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
+import fr.hyriode.api.server.join.packet.HyriPlayerJoinPacket;
+import fr.hyriode.hyggdrasil.api.lobby.HyggLobbyAPI;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequester;
@@ -18,16 +23,16 @@ import java.util.function.Consumer;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriServerManager implements IHyriServerManager {
-
-    private static final String LOBBY_TYPE = "lobby";
+public class HyriCServerManager implements IHyriServerManager {
 
     private final Map<String, HyggServer> servers;
 
     private final HyriCommonImplementation implementation;
+    private final HyggdrasilManager hyggdrasilManager;
 
-    public HyriServerManager(HyriCommonImplementation implementation) {
+    public HyriCServerManager(HyriCommonImplementation implementation) {
         this.implementation = implementation;
+        this.hyggdrasilManager = this.implementation.getHyggdrasilManager();
         this.servers = new HashMap<>();
     }
 
@@ -37,6 +42,11 @@ public class HyriServerManager implements IHyriServerManager {
 
     public void removeServer(String serverName) {
         this.servers.remove(serverName);
+    }
+
+    @Override
+    public void broadcastMessage(String component) {
+        HyriAPI.get().getPubSub().send(HyriChannel.CHAT, new ComponentPacket(component));
     }
 
     @Override
@@ -68,17 +78,14 @@ public class HyriServerManager implements IHyriServerManager {
 
     @Override
     public HyggServer getLobby() {
-        HyggServer result = null;
-        for (HyggServer lobby : this.getLobbies()) {
-            if (lobby.getState() == HyggServerState.READY) {
-                if (result == null) {
-                    result = lobby;
-                } else if (lobby.getPlayers() < result.getPlayers()) {
-                    result = lobby;
-                }
+        if (this.hyggdrasilManager.withHyggdrasil()) {
+            final String lobbyName = this.hyggdrasilManager.getHyggdrasilAPI().getLobbyAPI().getBestLobby();
+
+            if (lobbyName != null) {
+                return this.getServer(lobbyName);
             }
         }
-        return result;
+        return null;
     }
 
     @Override
@@ -86,7 +93,7 @@ public class HyriServerManager implements IHyriServerManager {
         final List<HyggServer> lobbies = new ArrayList<>();
 
         for (HyggServer server : this.getServers()) {
-            if (server.getType().equals(LOBBY_TYPE)) {
+            if (server.getType().equals(HyggLobbyAPI.TYPE)) {
                 lobbies.add(server);
             }
         }
@@ -104,7 +111,21 @@ public class HyriServerManager implements IHyriServerManager {
 
     @Override
     public void sendPlayerToServer(UUID playerUUID, String serverName) {
-        HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new HyriSendPlayerPacket(playerUUID, serverName));
+        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerJoinPacket(serverName, playerUUID));
+    }
+
+    @Override
+    public void sendPartyToLobby(UUID partyId) {
+        final HyggServer lobby = this.getLobby();
+
+        if (lobby != null) {
+            this.sendPartyToServer(partyId, lobby.getName());
+        }
+    }
+
+    @Override
+    public void sendPartyToServer(UUID partyId, String serverName) {
+        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPartyJoinPacket(serverName, partyId));
     }
 
     @Override
@@ -125,6 +146,11 @@ public class HyriServerManager implements IHyriServerManager {
     @Override
     public void waitForPlayers(String serverName, int players, Consumer<HyggServer> callback) {
         this.runActionOnRequester(requester -> requester.waitForServerPlayers(serverName, players, callback));
+    }
+
+    @Override
+    public IHyriJoinManager getJoinManager() {
+        return null;
     }
 
     private void runActionOnRequester(Consumer<HyggServerRequester> action) {

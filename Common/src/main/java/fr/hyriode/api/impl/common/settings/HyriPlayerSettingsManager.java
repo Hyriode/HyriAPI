@@ -2,7 +2,8 @@ package fr.hyriode.api.impl.common.settings;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.settings.*;
+import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class HyriPlayerSettingsManager implements IHyriPlayerSettingsManager {
 
     @Override
     public IHyriPlayerSettings createPlayerSettings() {
-        return new HyriPlayerSettings(true, true, HyriPrivateMessagesLevel.ALL, HyriPlayersVisibilityLevel.ALL, true, true, true, HyriLanguage.EN, "global");
+        return new HyriPlayerSettings();
     }
 
     @Override

@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.server.player;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -40,6 +41,28 @@ public class HyriPlayerManager extends HyriCPlayerManager {
         if (player != null) {
             player.kickPlayer(reason);
         }
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String message) {
+        final Player player = Bukkit.getPlayer(uuid);
+
+        if (player != null) {
+            player.sendMessage(message);
+            return;
+        }
+        super.sendMessage(uuid, message);
+    }
+
+    @Override
+    public void sendComponent(UUID uuid, String component) {
+        final Player player = Bukkit.getPlayer(uuid);
+
+        if (player != null) {
+            player.spigot().sendMessage(ComponentSerializer.parse(component));
+            return;
+        }
+        super.sendComponent(uuid, component);
     }
 
     @Override

@@ -134,30 +134,23 @@ public interface IHyriParty {
     /**
      * Set the current server of the party
      *
-     * @param server - New server id
+     * @param server New server id
      */
     void setServer(String server);
 
     /**
-     * Send message to all members of the party
+     * Send a message to all the members of the party
      *
-     * @param channel - Channel to send
-     * @param message - Message to send
-     * @param sender - Sender of the message
+     * @param message The message to send
      */
-    default void sendMessage(String channel, String message, UUID sender) {
-        this.sendMessage(channel, message, sender, false);
-    }
+    void sendMessage(String message);
 
     /**
-     * Send message to all members of the party
+     * Send a message component to all the members of the party
      *
-     * @param channel - Channel to send
-     * @param message - Message to send
-     * @param sender - Sender of the message
-     * @param force - <code>true</code> to bypass checks
+     * @param component The component as json
      */
-    void sendMessage(String channel, String message, UUID sender, boolean force);
+    void sendComponent(String component);
 
     /**
      * Disband the party

@@ -37,6 +37,10 @@ public class HyriNetworkManager implements IHyriNetworkManager {
         }
     }
 
+    private void cacheNetwork(IHyriNetwork network) {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY, HyriAPI.GSON.toJson(network)));
+    }
+
     @Override
     public HyriNetworkEventBus getEventBus() {
         return this.eventBus;
@@ -73,12 +77,10 @@ public class HyriNetworkManager implements IHyriNetworkManager {
 
     @Override
     public void setNetwork(IHyriNetwork network) {
-        final String serialized = HyriAPI.GSON.toJson(network);
-
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY, serialized));
+        this.cacheNetwork(network);
 
         if (this.hydrionManager.isEnabled()) {
-            this.networkModule.setNetwork(serialized);
+            this.networkModule.setNetwork(HyriAPI.GSON.toJson(network));
         }
     }
 

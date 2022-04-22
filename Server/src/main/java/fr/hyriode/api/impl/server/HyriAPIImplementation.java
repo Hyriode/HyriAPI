@@ -2,7 +2,9 @@ package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.chat.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.server.chat.*;
+import fr.hyriode.api.impl.server.chat.GlobalChatHandler;
+import fr.hyriode.api.impl.server.chat.PartnerChatHandler;
+import fr.hyriode.api.impl.server.chat.StaffChatHandler;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
@@ -13,6 +15,8 @@ import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
+import fr.hyriode.hystia.api.IHystiaAPI;
+import fr.hyriode.hystia.spigot.HystiaImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,16 +30,26 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriServer server;
 
+    private IHystiaAPI hystiaAPI;
+
+    private final HyriServerManager serverManager;
+
     private final IHyriPlayerManager playerManager;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.server = this.createServer();
+        this.serverManager = new HyriServerManager(plugin, this);
         this.playerManager = new HyriPlayerManager(this.hydrionManager);
 
-        this.hyggdrasilManager.start();
-        this.registerReceivers();
+        if (this.hydrionManager.isEnabled()) {
+            this.hystiaAPI = new HystiaImpl(plugin, this.hydrionManager.getClient());
+        }
 
+        this.hyggdrasilManager.start();
+        this.queueManager.start();
+
+        this.registerReceivers();
         this.registerChatHandlers();
     }
 
@@ -59,9 +73,9 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private void registerChatHandlers() {
-        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler(), new PrivateChatHandler(), new PluginChatHandler());
+        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler());
 
-        handlers.forEach(handler -> this.getChatChannelManager().registerChannel(handler));
+        handlers.forEach(this.chatChannelManager::registerChannel);
     }
 
     @Override
@@ -70,8 +84,18 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     @Override
+    public IHystiaAPI getHystiaAPI() {
+        return this.hystiaAPI;
+    }
+
+    @Override
     public IHyriPlayerManager getPlayerManager() {
         return this.playerManager;
+    }
+
+    @Override
+    public HyriServerManager getServerManager() {
+        return this.serverManager;
     }
 
 }

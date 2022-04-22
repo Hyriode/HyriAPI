@@ -7,6 +7,7 @@ import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
@@ -14,12 +15,17 @@ import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.pubsub.IHyriPubSub;
+import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
+import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public abstract class HyriAPI {
 
@@ -131,6 +137,13 @@ public abstract class HyriAPI {
     public abstract IHyriPubSub getPubSub();
 
     /**
+     * Get the instance of Hystia API
+     *
+     * @return The {@link IHystiaAPI} instance
+     */
+    public abstract IHystiaAPI getHystiaAPI();
+
+    /**
      * Get the class that can be used to get or edit information of the network
      *
      * @return The {@link IHyriNetworkManager} instance
@@ -143,6 +156,20 @@ public abstract class HyriAPI {
      * @return {@link IHyriServerManager}
      */
     public abstract IHyriServerManager getServerManager();
+
+    /**
+     * Get the queue manager
+     *
+     * @return The {@link IHyriQueueManager} instance
+     */
+    public abstract IHyriQueueManager getQueueManager();
+
+    /**
+     * Get the game manager
+     *
+     * @return The {@link IHyriGameManager} instance
+     */
+    public abstract IHyriGameManager getGameManager();
 
     /**
      * Get the player manager

@@ -1,5 +1,7 @@
 package fr.hyriode.api.player;
 
+import fr.hyriode.api.player.nickname.IHyriNicknameManager;
+
 import java.util.UUID;
 
 /**
@@ -60,6 +62,14 @@ public interface IHyriPlayerManager {
     IHyriPlayer getPlayer(String name);
 
     /**
+     * Get a player with a given {@link UUID} from Hydrion
+     *
+     * @param uuid Player {@link UUID}
+     * @return A player instance
+     */
+    IHyriPlayer getPlayerFromHydrion(UUID uuid);
+
+    /**
      * Create a player with a given {@link UUID}
      *
      * @param online Set if the player is currently connected on the network
@@ -108,6 +118,14 @@ public interface IHyriPlayerManager {
     void sendMessage(UUID uuid, String message);
 
     /**
+     * Send a message component to a given
+     *
+     * @param uuid The unique id of the player
+     * @param component The serialized component
+     */
+    void sendComponent(UUID uuid, String component);
+
+    /**
      * Send a title to a player
      *
      * @param uuid The unique id of the player
@@ -120,11 +138,29 @@ public interface IHyriPlayerManager {
     void sendTitle(UUID uuid, String title, String subtitle, int fadeIn, int stay, int fadeOut);
 
     /**
+     * Send a title to all the players on the server
+     *
+     * @param title The title to send
+     * @param subtitle The subtitle to send
+     * @param fadeIn The time to take to show the screen
+     * @param stay The time to take to stay on the screen
+     * @param fadeOut The time to take to disappear from the screen
+     */
+    void sendTitleToAll(String title, String subtitle, int fadeIn, int stay, int fadeOut);
+
+    /**
      * Get a player ping with a given {@link UUID}
      *
      * @param uuid Player {@link UUID}
      * @return Player ping
      */
     int getPing(UUID uuid);
+
+    /**
+     * Get the nickname manager
+     *
+     * @return The {@link IHyriNicknameManager}
+     */
+    IHyriNicknameManager getNicknameManager();
 
 }

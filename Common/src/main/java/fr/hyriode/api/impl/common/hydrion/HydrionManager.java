@@ -26,7 +26,7 @@ public class HydrionManager {
 
     private void start() {
         if (this.enabled) {
-            HyriCommonImplementation.log("Starting Hyriode client...");
+            HyriCommonImplementation.log("Starting Hydrion client...");
 
             this.client = new HydrionClient(this.configuration.getUrl(), this.configuration.getAPIKey());
         }

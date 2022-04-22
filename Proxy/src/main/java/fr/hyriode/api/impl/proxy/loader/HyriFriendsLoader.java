@@ -30,7 +30,7 @@ public class HyriFriendsLoader {
     }
 
     public void loadFriends(UUID uuid) {
-        this.friendManager.updateFriends(this.friendManager.createHandler(uuid));
+        this.friendManager.saveFriends(this.friendManager.createHandler(uuid));
     }
 
     public void unloadFriends(UUID uuid) {
@@ -38,7 +38,6 @@ public class HyriFriendsLoader {
             final List<IHyriFriend> friends = this.friendManager.getFriends(uuid);
 
             this.friendManager.removeFriends(uuid);
-
             this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(friends));
         }
     }

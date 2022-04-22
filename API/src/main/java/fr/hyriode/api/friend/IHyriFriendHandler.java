@@ -42,16 +42,16 @@ public interface IHyriFriendHandler {
     /**
      * Add a friend to the player
      *
-     * @param friend The {@link IHyriFriend} to add
-     */
-    void addFriend(IHyriFriend friend);
-
-    /**
-     * Add a friend to the player
-     *
      * @param uuid The unique id of the friend to add
      */
     void addFriend(UUID uuid);
+
+    /**
+     * Remove a friend from the player but without checking for the other friend
+     *
+     * @param uuid The unique id of the friend to remove
+     */
+    void addFriend0(UUID uuid);
 
     /**
      * Remove a friend from the player
@@ -66,6 +66,13 @@ public interface IHyriFriendHandler {
      * @param uuid The unique id of the friend to remove
      */
     void removeFriend(UUID uuid);
+
+    /**
+     * Remove a friend from the player but without checking for the other friend
+     *
+     * @param uuid The unique id of the friend to remove
+     */
+    void removeFriend0(UUID uuid);
 
     /**
      * Check if a player is a friend of the player

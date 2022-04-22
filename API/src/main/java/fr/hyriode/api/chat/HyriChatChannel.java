@@ -1,16 +1,15 @@
 package fr.hyriode.api.chat;
 
-public enum HyriDefaultChatChannel {
+public enum HyriChatChannel {
 
-    PLUGIN,
-    PRIVATE,
     GLOBAL,
+    PARTY,
     STAFF,
     PARTNER;
 
     private final String channel;
 
-    HyriDefaultChatChannel() {
+    HyriChatChannel() {
         this.channel = name().toLowerCase();
     }
 
@@ -18,8 +17,8 @@ public enum HyriDefaultChatChannel {
         return this.channel;
     }
 
-    public static HyriDefaultChatChannel getByChannel(String channel) {
-        for (HyriDefaultChatChannel chat : HyriDefaultChatChannel.values()) {
+    public static HyriChatChannel getByChannel(String channel) {
+        for (HyriChatChannel chat : HyriChatChannel.values()) {
             if (chat.getChannel().equals(channel.toLowerCase())) {
                 return chat;
             }

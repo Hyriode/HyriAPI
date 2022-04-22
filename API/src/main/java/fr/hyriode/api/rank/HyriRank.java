@@ -3,6 +3,7 @@ package fr.hyriode.api.rank;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.api.rank.type.IHyriRankType;
 
 /**
  * Project: HyriAPI
@@ -12,14 +13,12 @@ import fr.hyriode.api.rank.type.HyriStaffRankType;
 public class HyriRank {
 
     /** The separator of prefix and player display name */
-    public static final String SEPARATOR = "・";
+    public static final String SEPARATOR = HyriChatColor.WHITE + "・";
 
     /** The prefix of the rank */
     private String prefix;
     /** The main color of the rank. This color will be used after the separator */
     private HyriChatColor mainColor;
-    /** Is the rank using a separator between rank's prefix and player's name */
-    private boolean withSeparator;
 
     /** The player type of the rank */
     private HyriPlayerRankType playerType;
@@ -31,14 +30,12 @@ public class HyriRank {
      *
      * @param prefix The prefix of the rank
      * @param mainColor The {@link HyriChatColor} of the rank
-     * @param withSeparator Is separator used
      * @param playerType The {@link HyriPlayerRankType}
      * @param staffType The {@link HyriStaffRankType}
      */
-    public HyriRank(String prefix, HyriChatColor mainColor, boolean withSeparator, HyriPlayerRankType playerType, HyriStaffRankType staffType) {
+    public HyriRank(String prefix, HyriChatColor mainColor, HyriPlayerRankType playerType, HyriStaffRankType staffType) {
         this.prefix = prefix;
         this.mainColor = mainColor;
-        this.withSeparator = withSeparator;
         this.playerType = playerType;
         this.staffType = staffType;
     }
@@ -50,7 +47,7 @@ public class HyriRank {
      * @param playerType The {@link HyriPlayerRankType}
      */
     public HyriRank(HyriPlayerRankType playerType) {
-        this(null, null, playerType.withSeparator(), playerType, null);
+        this(null, null, playerType, null);
     }
 
     /**
@@ -79,7 +76,7 @@ public class HyriRank {
      * @param playerType The {@link HyriPlayerRankType} to check with
      * @return <code>true</code> if the rank is superior or equal
      */
-    public boolean isNecessary(HyriPlayerRankType playerType) {
+    public boolean isSuperior(HyriPlayerRankType playerType) {
         return this.playerType.getId() >= playerType.getId();
     }
 
@@ -89,7 +86,7 @@ public class HyriRank {
      * @param staffType The {@link HyriStaffRankType} to check with
      * @return <code>true</code> if the rank is superior or equal
      */
-    public boolean isNecessary(HyriStaffRankType staffType) {
+    public boolean isSuperior(HyriStaffRankType staffType) {
         return this.staffType.getId() >= staffType.getId();
     }
 
@@ -109,6 +106,15 @@ public class HyriRank {
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    /**
+     * Check if this rank is using a custom prefix or not
+     *
+     * @return <code>true</code> if yes
+     */
+    public boolean hasCustomPrefix() {
+        return this.prefix != null;
     }
 
     /**
@@ -135,16 +141,16 @@ public class HyriRank {
      * @return <code>true</code> if yes
      */
     public boolean withSeparator() {
-        return this.withSeparator;
+        return this.getType().withSeparator();
     }
 
     /**
-     * Set if the rank is using a separator
+     * Get the main type of the rank
      *
-     * @param withSeparator New value
+     * @return A {@link IHyriRankType}
      */
-    public void setWithSeparator(boolean withSeparator) {
-        this.withSeparator = withSeparator;
+    public IHyriRankType getType() {
+        return this.isStaff() ? this.staffType : this.playerType;
     }
 
     /**
@@ -189,7 +195,7 @@ public class HyriRank {
      * @return <code>true</code> if yes
      */
     public boolean isDefault() {
-        return this.playerType == HyriPlayerRankType.PLAYER;
+        return this.playerType == HyriPlayerRankType.PLAYER && !this.isStaff();
     }
 
     /**
@@ -207,7 +213,16 @@ public class HyriRank {
      * @return A priority
      */
     public int getPriority() {
-        return this.isStaff() ? this.staffType.getPriority() : this.playerType.getPriority();
+        return this.getType().getPriority();
+    }
+
+    /**
+     * Get the priority in tab list of the rank
+     *
+     * @return A priority
+     */
+    public int getTabListPriority() {
+        return this.getType().getTabListPriority();
     }
 
 }

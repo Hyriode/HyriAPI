@@ -77,7 +77,12 @@ public class HyriNetworkCount {
      * @return A {@link HyriPlayerCount} linked to the game
      */
     public HyriPlayerCount getCategory(String category) {
-        return this.categories.get(category);
+        final HyriPlayerCount playerCount = this.categories.get(category);
+
+        if (playerCount != null) {
+            return playerCount;
+        }
+        return this.categories.put(category, new HyriPlayerCount(0));
     }
 
     /**

@@ -6,20 +6,20 @@ import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
 import fr.hyriode.api.proxy.IHyriProxy;
-import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacket;
 import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
 import fr.hyriode.hyggdrasil.api.protocol.request.HyggRequestHeader;
 import fr.hyriode.hyggdrasil.api.protocol.response.HyggResponse;
 import fr.hyriode.hyggdrasil.api.protocol.response.IHyggResponse;
+import fr.hyriode.hyggdrasil.api.proxy.packet.HyggEvacuatePacket;
 import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyServerActionPacket;
 import fr.hyriode.hyggdrasil.api.proxy.packet.HyggStopProxyPacket;
-import fr.hyriode.hyggdrasil.api.server.packet.HyggStopServerPacket;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -60,20 +60,41 @@ public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiv
                 return HyggResponse.Type.SUCCESS;
             }
             return HyggResponse.Type.NONE;
+        } else if (packet instanceof HyggEvacuatePacket) {
+            final HyggEvacuatePacket evacuatePacket = (HyggEvacuatePacket) packet;
+
+            this.evacuateServer(evacuatePacket.getFrom(), evacuatePacket.getTo());
         }
         return HyggResponse.Type.NONE;
+    }
+
+    private void evacuateServer(String fromName, String toName) {
+        final ServerInfo from = ProxyServer.getInstance().getServerInfo(fromName);
+
+        if (from == null) {
+            return;
+        }
+
+        for (ProxiedPlayer player : from.getPlayers()) {
+            this.connectPlayer(player.getUniqueId(), toName);
+        }
+    }
+
+    private void connectPlayer(UUID playerId, String server) {
+        final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
+        final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerId);
+
+        if (player != null && player.isConnected() && serverInfo != null) {
+            player.connect(serverInfo);
+        }
     }
 
     @Override
     public void receive(String channel, HyriPacket packet) {
         if (packet instanceof HyriSendPlayerPacket) {
             final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
-            final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(sendPacket.getServerName());
-            final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(sendPacket.getPlayerUUID());
 
-            if (player != null && player.isConnected() && serverInfo != null) {
-                player.connect(serverInfo);
-            }
+            this.connectPlayer(sendPacket.getPlayerUUID(), sendPacket.getServerName());
         }
     }
 

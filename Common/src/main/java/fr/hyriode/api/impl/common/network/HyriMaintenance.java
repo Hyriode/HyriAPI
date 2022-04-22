@@ -77,7 +77,7 @@ public class HyriMaintenance implements IHyriMaintenance {
     private boolean triggerEvent(HyriMaintenanceEvent.Action action) {
         final HyriCancellableEvent event = new HyriMaintenanceEvent(action);
 
-        HyriAPI.get().getNetworkManager().getEventBus().publish(event);
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(event);
 
         return !event.isCancelled();
     }

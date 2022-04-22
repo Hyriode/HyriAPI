@@ -1,14 +1,17 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
+import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.util.Skin;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +39,13 @@ public interface IHyriPlayer {
     void setOnline(boolean online);
 
     /**
+     * Get the prefix of the player
+     *
+     * @return A prefix
+     */
+    String getPrefix();
+
+    /**
      * Get default player name
      *
      * @return Default name
@@ -51,47 +61,54 @@ public interface IHyriPlayer {
     void setName(String name);
 
     /**
-     * Get the custom name of player
+     * Get the current nickname of the player.<br>
+     * It can be null if the player is not nicked
      *
-     * @return Custom name
+     * @return A {@link IHyriNickname}
      */
-    String getCustomName();
+    IHyriNickname getNickname();
 
     /**
-     * Set player's custom name
+     * Create a nickname for the player
      *
-     * @param customName Player's custom name
+     * @param name The name to use as a nickname
+     * @param skinOwner The owner of the skin that will be used
+     * @param skin The skin that will be usezd
+     * @return The created {@link IHyriNickname}
      */
-    void setCustomName(String customName);
+    IHyriNickname createNickname(String name, String skinOwner, Skin skin);
 
     /**
-     * Get current display name: name or custom name
+     * Set the current player nickname
      *
-     * @return Display name
+     * @param nickname The new {@link IHyriNickname}
      */
-    String getDisplayName();
+    void setNickname(IHyriNickname nickname);
+
+    /**
+     * Check if the player has a nickname
+     *
+     * @return <code>true</code> if yes
+     */
+    default boolean hasNickname() {
+        return this.getNickname() != null;
+    }
+
+    /**
+     * Get the player name with the rank prefix
+     *
+     * @param nickname <code>true</code> if the nickname is taken in account
+     * @return Player names with the rank prefix
+     */
+    String getNameWithRank(boolean nickname);
 
     /**
      * Get the player name with the rank prefix
      *
      * @return Player names with the rank prefix
      */
-    String getNameWithRank();
-
-    /**
-     * Set the player name with the rank prefix
-     *
-     * @param nameWithRank Player names with the rank prefix
-     */
-    void setNameWithRank(String nameWithRank);
-
-    /**
-     * Get if player has a custom name
-     *
-     * @return <code>true</code> if player has a custom name
-     */
-    default boolean hasCustomName() {
-        return this.getCustomName() != null;
+    default String getNameWithRank() {
+        return this.getNameWithRank(false);
     }
 
     /**
@@ -174,6 +191,20 @@ public interface IHyriPlayer {
      * @return The {@link HyriPlus} offer instance
      */
     HyriPlus getHyriPlus();
+
+    /**
+     * Get the color of the + that will be added after the prefix
+     *
+     * @return A {@link HyriChatColor}
+     */
+    HyriChatColor getPlusColor();
+
+    /**
+     * Set the color of the + that will be added after the prefix
+     *
+     * @param plusColor The new {@link HyriChatColor}
+     */
+    void setPlusColor(HyriChatColor plusColor);
 
     /**
      * Set Hyri+ offer
@@ -417,6 +448,13 @@ public interface IHyriPlayer {
      * @return A number that represents a priority
      */
     int getPriority();
+
+    /**
+     * Get the priority of the rank in the tab list
+     *
+     * @return A number that represents a priority
+     */
+    int getTabListPriority();
 
     /**
      * Update the player account in database

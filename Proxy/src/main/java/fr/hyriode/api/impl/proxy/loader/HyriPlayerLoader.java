@@ -6,6 +6,7 @@ import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.hydrion.client.module.PlayerModule;
 
 import java.util.Date;
@@ -29,10 +30,10 @@ public class HyriPlayerLoader {
         }
     }
 
-    public void loadPlayerAccount(UUID uuid, String name) {
+    public IHyriPlayer loadPlayerAccount(UUID uuid, String name) {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
-        IHyriPlayer account = playerManager.getPlayer(uuid);
+        IHyriPlayer account = playerManager.getPlayerFromHydrion(uuid);
 
         if (account == null) {
             account = playerManager.createPlayer(true, uuid, name);
@@ -49,6 +50,8 @@ public class HyriPlayerLoader {
         }
 
         playerManager.setPlayerId(name, uuid);
+
+        return account;
     }
 
     public void unloadPlayerAccount(UUID uuid) {
@@ -75,6 +78,15 @@ public class HyriPlayerLoader {
             account.setOnline(false);
             account.setCurrentProxy(null);
             account.setParty(null);
+            account.setLastPrivateMessagePlayer(null);
+
+            final IHyriNickname nickname = account.getNickname();
+
+            if (nickname != null) {
+                HyriAPI.get().getPlayerManager().getNicknameManager().removeUsedNickname(nickname.getName());
+
+                account.setNickname(null);
+            }
 
             if (this.hydrionManager.isEnabled()) {
                 HyriAPI.get().getPlayerManager().removePlayer(account.getUniqueId());

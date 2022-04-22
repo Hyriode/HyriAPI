@@ -37,6 +37,10 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         }
     }
 
+    private void cacheBooster(IHyriBooster booster) {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY_FORMATTER.apply(booster.getIdentifier()), HyriAPI.GSON.toJson(booster)));
+    }
+
     @Override
     public IHyriBooster enableBooster(String type, double amount, UUID purchaser, long purchaseDate, int duration) {
         final HyriBooster booster = new HyriBooster(type, amount, purchaser, purchaseDate);
@@ -86,6 +90,8 @@ public class HyriBoosterManager implements IHyriBoosterManager {
                         for (IHyriBooster booster : boosters) {
                             if (!booster.isActive()) {
                                 this.removeBooster(booster);
+                            } else {
+                                this.cacheBooster(booster);
                             }
                         }
 
@@ -126,7 +132,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
             return HyriAPI.GSON.fromJson(json, HyriBooster.class);
         }
         try {
-            return this.boostersModule.getBoosters().thenApply(response -> {
+            final IHyriBooster booster = this.boostersModule.getBoosters().thenApply(response -> {
                 final JsonElement content = response.getContent();
 
                 if (content != null) {
@@ -134,6 +140,12 @@ public class HyriBoosterManager implements IHyriBoosterManager {
                 }
                 return null;
             }).get();
+
+            if (booster != null) {
+                this.cacheBooster(booster);
+            }
+
+            return booster;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -142,13 +154,10 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     @Override
     public void addBooster(IHyriBooster booster) {
-        final UUID identifier = booster.getIdentifier();
-        final String json =  HyriAPI.GSON.toJson(booster);
-
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY_FORMATTER.apply(identifier), json));
+        this.cacheBooster(booster);
 
         if (this.hydrionManager.isEnabled()) {
-            this.boostersModule.addBooster(identifier, json);
+            this.boostersModule.addBooster(booster.getIdentifier(), HyriAPI.GSON.toJson(booster));
         }
 
         HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriBoosterEvent(booster, HyriBoosterEvent.Action.ENABLED));

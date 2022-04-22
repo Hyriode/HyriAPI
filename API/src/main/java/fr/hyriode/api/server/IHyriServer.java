@@ -2,6 +2,10 @@ package fr.hyriode.api.server;
 
 import fr.hyriode.api.application.IHyriApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
+import fr.hyriode.hystia.api.config.IConfig;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -22,7 +26,36 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
      *
      * @return Server players
      */
-    int getPlayers();
+    List<UUID> getPlayers();
+
+    /**
+     * Get the slots of the server
+     *
+     * @return An amount of maximum players
+     */
+    int getSlots();
+
+    /**
+     * Set the slots of the server
+     *
+     * @param slots New maximum amount of players
+     */
+    void setSlots(int slots);
+
+    /**
+     * Get the type of the game.<br<
+     * This getter will only work if the server is a game!
+     *
+     * @return A game type
+     */
+    String getGameType();
+
+    /**
+     * Get the map to use on the server
+     *
+     * @return A map name
+     */
+    String getMap();
 
     /**
      * Get the data provided by Hyggdrasil
@@ -32,22 +65,52 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     HyggData getData();
 
     /**
+     * Get the configuration of the server
+     *
+     * @param configClass The class of the config
+     * @param <T> The type of the config
+     * @return A {@link IConfig} object
+     */
+    <T extends IConfig> T getConfig(Class<T> configClass);
+
+    /**
      * The enumeration of all the states available for a server
      */
     enum State implements IHyriApplication.IState {
 
         /** Server is in creation */
-        CREATING,
+        CREATING(false),
         /** Server is starting (onEnable in plugin) */
-        STARTING,
+        STARTING(false),
         /** Server is ready to host players */
-        READY,
+        READY(true),
         /** Server is playing a game */
-        PLAYING,
+        PLAYING(true),
         /** Server is stopping (onDisable in plugin) */
-        SHUTDOWN,
+        SHUTDOWN(false),
         /** Server is idling (an error occurred or just freezing) */
-        IDLE
+        IDLE(false);
+
+        /** Boolean that defines if the server can be joined by players or not */
+        private final boolean accessible;
+
+        /**
+         * Constructor of {@link State}
+         *
+         * @param accessible The accessible state
+         */
+        State(boolean accessible) {
+            this.accessible = accessible;
+        }
+
+        /**
+         * Check if the server is accessible with this state
+         *
+         * @return <code>true</code>
+         */
+        public boolean isAccessible() {
+            return this.accessible;
+        }
 
     }
 

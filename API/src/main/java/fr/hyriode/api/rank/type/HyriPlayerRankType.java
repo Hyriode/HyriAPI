@@ -10,30 +10,39 @@ import fr.hyriode.api.color.HyriChatColor;
 public enum HyriPlayerRankType implements IHyriRankType {
 
     /** Default ranks */
-    PLAYER(0, 10, "", HyriChatColor.GRAY, false),
-    VIP(1, 9, "VIP", HyriChatColor.YELLOW),
-    VIP_PLUS(2, 8, "VIP+", HyriChatColor.GREEN),
-    EPIC(3, 7, "Epic", HyriChatColor.AQUA),
+    PLAYER(0, "player", 10, 12, "", HyriChatColor.GRAY, false),
+    VIP(1, "vip", 9, 11, "VIP", HyriChatColor.YELLOW),
+    VIP_PLUS(2, "vip+", 8, 10, "VIP+", HyriChatColor.GREEN),
+    EPIC(3, "epic", 7, 9, "Epic", HyriChatColor.AQUA),
 
     /** Content creator */
-    PARTNER(4, 5, "Partner", HyriChatColor.GOLD);
+    PARTNER(4, "partner", 5, 7, "Partner", HyriChatColor.GOLD);
 
     private final int id;
+    private final String name;
     private final int priority;
+    private final int tabListPriority;
     private final String defaultPrefix;
     private final HyriChatColor defaultColor;
     private final boolean separator;
 
-    HyriPlayerRankType(int id, int priority, String defaultPrefix, HyriChatColor defaultColor, boolean separator) {
+    HyriPlayerRankType(int id, String name, int priority, int tabListPriority, String defaultPrefix, HyriChatColor defaultColor, boolean separator) {
         this.id = id;
+        this.name = name;
         this.priority = priority;
+        this.tabListPriority = tabListPriority;
         this.defaultPrefix = defaultColor.toString() + defaultPrefix;
         this.defaultColor = defaultColor;
         this.separator = separator;
     }
 
-    HyriPlayerRankType(int id, int priority, String defaultPrefix, HyriChatColor defaultColor) {
-        this(id, priority, defaultPrefix, defaultColor, true);
+    HyriPlayerRankType(int id, String name, int priority, int tabListPriority, String defaultPrefix, HyriChatColor defaultColor) {
+        this(id, name, priority, tabListPriority, defaultPrefix, defaultColor, true);
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override
@@ -44,6 +53,11 @@ public enum HyriPlayerRankType implements IHyriRankType {
     @Override
     public int getPriority() {
         return this.priority;
+    }
+
+    @Override
+    public int getTabListPriority() {
+        return this.tabListPriority;
     }
 
     @Override

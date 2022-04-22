@@ -2,18 +2,23 @@ package fr.hyriode.api.impl.common.player;
 
 import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
 import fr.hyriode.api.impl.common.money.Hyris;
+import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
+import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
+import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.util.Skin;
 
 import java.util.*;
 
@@ -27,8 +32,7 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean online;
 
     private String name;
-    private String customName = null;
-    private String nameWithRank = null;
+    private HyriNickname nickname;
     private final UUID uuid;
 
     private long lastLoginDate;
@@ -37,6 +41,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     private HyriRank rank;
     private HyriPlus hyriPlus;
+    private HyriChatColor plusColor;
 
     private UUID lastPrivateMessage;
 
@@ -67,6 +72,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.lastLoginDate = this.firstLoginDate;
         this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
         this.hyriPlus = null;
+        this.plusColor = HyriChatColor.AQUA;
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
@@ -89,6 +95,18 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
+    public String getPrefix() {
+        final String prefix = this.rank.getPrefix();
+
+        if (this.rank.hasCustomPrefix()) {
+            return prefix;
+        } else if (this.hasHyriPlus()) {
+            return prefix + this.plusColor + "+";
+        }
+        return prefix;
+    }
+
+    @Override
     public String getName() {
         return this.name;
     }
@@ -99,28 +117,30 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public String getCustomName() {
-        return this.customName;
+    public IHyriNickname getNickname() {
+        return this.nickname;
     }
 
     @Override
-    public void setCustomName(String customName) {
-        this.customName = customName;
+    public IHyriNickname createNickname(String name, String skinOwner, Skin skin) {
+        return this.nickname = new HyriNickname(name, skinOwner, skin);
     }
 
     @Override
-    public String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : this.getName();
+    public void setNickname(IHyriNickname nickname) {
+        HyriAPI.get().getEventBus().publishAsync(new HyriNicknameUpdatedEvent(this, nickname));
+
+        this.nickname = (HyriNickname) nickname;
     }
 
     @Override
-    public String getNameWithRank() {
-        return this.nameWithRank;
-    }
+    public String getNameWithRank(boolean nickname) {
+        if (nickname && this.nickname != null) {
+            final HyriPlayerRankType rank = this.nickname.getRank();
 
-    @Override
-    public void setNameWithRank(String nameWithRank) {
-        this.nameWithRank = nameWithRank;
+            return rank.getDefaultPrefix() + (rank.withSeparator() ? HyriRank.SEPARATOR : "") + rank.getDefaultColor().toString() + this.nickname.getName();
+        }
+        return HyriChatColor.translateAlternateColorCodes('&', this.getPrefix() + (this.rank.getType().withSeparator() ? HyriRank.SEPARATOR : "") + this.rank.getMainColor().toString() + this.getName());
     }
 
     @Override
@@ -166,6 +186,16 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public HyriPlus getHyriPlus() {
         return this.hyriPlus;
+    }
+
+    @Override
+    public HyriChatColor getPlusColor() {
+        return this.plusColor;
+    }
+
+    @Override
+    public void setPlusColor(HyriChatColor plusColor) {
+        this.plusColor = plusColor;
     }
 
     @Override
@@ -344,7 +374,18 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public int getPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getPriority();
+        }
         return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
+    }
+
+    @Override
+    public int getTabListPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getTabListPriority();
+        }
+        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getTabListPriority();
     }
 
 }

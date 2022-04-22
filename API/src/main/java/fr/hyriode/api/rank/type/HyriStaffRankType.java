@@ -9,20 +9,24 @@ import fr.hyriode.api.color.HyriChatColor;
  */
 public enum HyriStaffRankType implements IHyriRankType {
 
-    HELPER(0, "Helper", HyriChatColor.DARK_PURPLE),
-    DESIGNER(1, "Designer", HyriChatColor.GREEN),
-    BUILDER(2, "Builder", HyriChatColor.GREEN),
-    MODERATOR(3, "Mod", HyriChatColor.DARK_AQUA),
-    DEVELOPER(4, "Dev", HyriChatColor.DARK_GREEN),
-    MANAGER(5, "Manager", HyriChatColor.BLUE),
-    ADMINISTRATOR(6, "Admin", HyriChatColor.RED);
+    HELPER(0, "helper", 6, "Helper", HyriChatColor.DARK_PURPLE),
+    DESIGNER(1, "designer", 5, "Designer", HyriChatColor.GREEN),
+    BUILDER(2, "builder", 4, "Builder", HyriChatColor.GREEN),
+    MODERATOR(3, "moderator", 3, "Mod", HyriChatColor.DARK_AQUA),
+    DEVELOPER(4, "developer", 2, "Dev", HyriChatColor.DARK_GREEN),
+    MANAGER(5, "manager", 1, "Manager", HyriChatColor.BLUE),
+    ADMINISTRATOR(6, "administrator", 0, "Admin", HyriChatColor.RED);
 
     private final int id;
+    private final String name;
+    private final int tabListPriority;
     private final String defaultPrefix;
     private final HyriChatColor defaultColor;
 
-    HyriStaffRankType(int id, String defaultPrefix, HyriChatColor defaultColor) {
+    HyriStaffRankType(int id, String name, int tabListPriority, String defaultPrefix, HyriChatColor defaultColor) {
         this.id = id;
+        this.name = name;
+        this.tabListPriority = tabListPriority;
         this.defaultPrefix = defaultColor.toString() + defaultPrefix;
         this.defaultColor = defaultColor;
     }
@@ -33,8 +37,18 @@ public enum HyriStaffRankType implements IHyriRankType {
     }
 
     @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
     public int getPriority() {
         return 1;
+    }
+
+    @Override
+    public int getTabListPriority() {
+        return this.tabListPriority;
     }
 
     @Override

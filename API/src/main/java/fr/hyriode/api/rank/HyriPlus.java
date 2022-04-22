@@ -13,7 +13,9 @@ import java.util.Date;
 public class HyriPlus {
 
     /** The priority of the Hyri+ in queues */
-    public static final int PRIORITY = HyriPlayerRankType.EPIC.getPriority();
+    public static final int PRIORITY = HyriPlayerRankType.EPIC.getPriority() + 1;
+    /** The priority of the Hyri+ in the tab list */
+    public static final int TAB_LIST_PRIORITY = HyriPlayerRankType.EPIC.getTabListPriority() + 1;
 
     /** The timestamp of when the Hyri+ has been bought */
     private final long purchaseDate;

@@ -174,14 +174,22 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public void sendMessage(String channel, String message, UUID sender, boolean force) {
-        for (UUID uuid : this.members.keySet()) {
-            HyriAPI.get().getChatChannelManager().sendMessageToPlayer(channel, message, uuid, sender, force);
+    public void sendMessage(String message) {
+        for (UUID member : this.members.keySet()) {
+            HyriAPI.get().getPlayerManager().sendMessage(member, message);
+        }
+    }
+
+    @Override
+    public void sendComponent(String component) {
+        for (UUID member : this.members.keySet()) {
+            HyriAPI.get().getPlayerManager().sendComponent(member, component);
         }
     }
 
     @Override
     public void disband(HyriPartyDisbandReason reason) {
+        HyriAPI.get().getQueueManager().removePartyFromQueue(this.id);
         HyriAPI.get().getPartyManager().removeParty(this.id);
 
         this.triggerEvent(new HyriPartyDisbandEvent(this, reason));

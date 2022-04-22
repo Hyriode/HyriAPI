@@ -92,26 +92,11 @@ public interface IHyriPlayerSettings {
     void setPrivateMessagesSoundEnabled(boolean privateMessagesSoundEnabled);
 
     /**
-     * Get if tag sound is enabled
-     *
-     * @return - <code>true</code> if enabled
-     */
-    boolean isTagSoundEnabled();
-
-    /**
-     * Set if tag sound is enabled
-     *
-     * @param tagSoundEnabled - <code>true</code> if enabled
-     */
-    void setTagSoundEnabled(boolean tagSoundEnabled);
-
-    /**
      * Get player language
      *
      * @return - {@link HyriLanguage}
      */
     HyriLanguage getLanguage();
-
 
     /**
      * Set player language
@@ -119,6 +104,20 @@ public interface IHyriPlayerSettings {
      * @param language - {@link HyriLanguage}
      */
     void setLanguage(HyriLanguage language);
+
+    /**
+     * Check if the player will be automatically added in a new queue after a game
+     *
+     * @return <code>true</code> if yes
+     */
+    boolean isAutoQueueEnabled();
+
+    /**
+     * Set if the player will be automatically added in a new queue after a game
+     *
+     * @param autoQueueEnabled New value
+     */
+    void setAutoQueueEnabled(boolean autoQueueEnabled);
 
     /**
      * Get the player chat channel

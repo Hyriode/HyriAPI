@@ -17,11 +17,25 @@ public interface IHyriRankType {
     int getId();
 
     /**
+     * Get the name of the type
+     *
+     * @return A name
+     */
+    String getName();
+
+    /**
      * Get the priority of the rank in queues
      *
      * @return A priority
      */
     int getPriority();
+
+    /**
+     * Get the priority in the tab list of the rank type
+     *
+     * @return A priority
+     */
+    int getTabListPriority();
 
     /**
      * Get the default prefix of the rank type
