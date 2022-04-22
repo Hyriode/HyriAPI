@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -15,7 +16,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Date;
 import java.util.UUID;
@@ -145,7 +149,7 @@ public class HyriJoinListener implements Listener {
             account.setCurrentServer(null);
 
             if (this.hydrionManager.isEnabled()) {
-                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(HyriAPI.get().getFriendManager().getFriends(uuid)));
+                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(HyriAPI.get().getFriendManager().getFriends(uuid))));
             }
 
             account.update();
