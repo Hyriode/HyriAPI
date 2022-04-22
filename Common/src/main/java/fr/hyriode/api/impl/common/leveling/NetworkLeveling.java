@@ -17,13 +17,15 @@ public class NetworkLeveling implements IHyriLeveling {
     private final String name;
     private double experience;
 
-    private final transient IHyriLeveling.Algorithm algorithm = new Algo();
-
-    private final transient UUID playerId;
+    private transient UUID playerId;
 
     public NetworkLeveling(UUID playerId) {
         this.playerId = playerId;
         this.name = "network";
+    }
+
+    public void setPlayerId(UUID playerId) {
+        this.playerId = playerId;
     }
 
     @Override
@@ -53,12 +55,12 @@ public class NetworkLeveling implements IHyriLeveling {
 
     @Override
     public int getLevel() {
-        return this.algorithm.experienceToLevel(this.experience);
+        return new Algo().experienceToLevel(this.experience);
     }
 
     @Override
     public Algorithm getAlgorithm() {
-        return this.algorithm;
+        return new Algo();
     }
 
     private void runAction(Runnable action) {

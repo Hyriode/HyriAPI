@@ -369,6 +369,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public IHyriLeveling getNetworkLeveling() {
+        this.networkLeveling.setPlayerId(this.uuid);
+
         return this.networkLeveling;
     }
 
