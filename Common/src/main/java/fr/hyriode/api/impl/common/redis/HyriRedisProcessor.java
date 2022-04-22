@@ -5,9 +5,9 @@ import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
 import redis.clients.jedis.Jedis;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -60,8 +60,8 @@ public class HyriRedisProcessor implements IHyriRedisProcessor {
     }
 
     @Override
-    public <R> Future<R> getAsync(Function<Jedis, R> action) {
-        return this.executorService.submit(() -> get(action));
+    public <R> CompletableFuture<R> getAsync(Function<Jedis, R> action) {
+        return CompletableFuture.supplyAsync(() -> get(action), this.executorService);
     }
 
 }

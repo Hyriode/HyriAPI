@@ -21,19 +21,16 @@ public class HyriProxyListener implements Listener {
 
     private final Favicon favicon;
 
-    private final HyriAPIConfiguration configuration;
-
     @SuppressWarnings("deprecation")
     public HyriProxyListener(HyriAPIConfiguration configuration) {
-        this.configuration = configuration;
-        this.favicon = Favicon.create(this.configuration.getServerIcon());
+        this.favicon = Favicon.create(configuration.getServerIcon());
     }
 
     @EventHandler
     public void onPing(ProxyPingEvent event) {
         final int protocolNumber = event.getConnection().getVersion();
-        final IHyriNetwork network = HyriAPI.get().getNetwork();
-        final int players = network.getPlayers();
+        final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+        final int players = network.getPlayerCount().getPlayers();
         final int slots = network.getSlots();
         final ServerPing ping = new ServerPing();
         final ServerPing.PlayerInfo[] playerInfo = new ServerPing.PlayerInfo[]{};
@@ -47,7 +44,7 @@ public class HyriProxyListener implements Listener {
         }
 
         ping.setFavicon(this.favicon);
-        ping.setDescriptionComponent(new TextComponent(network.getMotd()));
+        ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', network.getMotd()))));
 
         event.setResponse(ping);
     }

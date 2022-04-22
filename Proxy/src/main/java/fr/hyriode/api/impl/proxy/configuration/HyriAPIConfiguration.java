@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.proxy.configuration;
 
+import fr.hyriode.api.configuration.HydrionConfiguration;
 import fr.hyriode.api.configuration.HyriRedisConfiguration;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -23,15 +25,21 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     private final boolean devEnvironment;
     private final boolean hyggdrasil;
     private final HyriRedisConfiguration redisConfiguration;
+    private final HydrionConfiguration hydrionConfiguration;
     private final String serverIcon;
     private final int slots;
+    private final String motd;
 
-    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfiguration redisConfiguration, String serverIcon, int slots) {
+    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil,
+                                HyriRedisConfiguration redisConfiguration, HydrionConfiguration hydrionConfiguration,
+                                String serverIcon, int slots, String motd) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.redisConfiguration = redisConfiguration;
+        this.hydrionConfiguration = hydrionConfiguration;
         this.serverIcon = serverIcon;
         this.slots = slots;
+        this.motd = motd;
     }
 
     @Override
@@ -49,6 +57,11 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         return this.redisConfiguration;
     }
 
+    @Override
+    public HydrionConfiguration getHydrionConfiguration() {
+        return this.hydrionConfiguration;
+    }
+
     public String getServerIcon() {
         return this.serverIcon;
     }
@@ -57,17 +70,27 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         return this.slots;
     }
 
+    public String getMotd() {
+        return this.motd;
+    }
+
     public static class Loader {
 
         private static final String DEV_ENVIRONMENT_PATH = "devEnvironment";
         private static final String HYGGDRASIL_PATH = "hyggdrasil";
         private static final String REDIS_PATH = "redis";
+        private static final String HYDRION_PATH = "hydrion";
         private static final String SERVER_ICON_PATH = "server-icon";
         private static final String SLOTS_PATH = "slots";
+        private static final String MOTD_PATH = "motd";
 
         private static final String REDIS_HOSTNAME = "hostname";
         private static final String REDIS_PORT = "port";
         private static final String REDIS_PASSWORD = "password";
+
+        private static final String HYDRION_ENABLED = "enabled";
+        private static final String HYDRION_URL = "url";
+        private static final String HYDRION_API_KEY = "apiKey";
 
         public static HyriAPIConfiguration load(Plugin plugin) {
             try {
@@ -88,7 +111,9 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
                 final Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configurationFile);
 
-                return new HyriAPIConfiguration(configuration.getBoolean(DEV_ENVIRONMENT_PATH), configuration.getBoolean(HYGGDRASIL_PATH), loadRedisConfiguration(configuration.getSection(REDIS_PATH)), configuration.getString(SERVER_ICON_PATH), configuration.getInt(SLOTS_PATH));
+                return new HyriAPIConfiguration(configuration.getBoolean(DEV_ENVIRONMENT_PATH), configuration.getBoolean(HYGGDRASIL_PATH),
+                        loadRedisConfiguration(configuration.getSection(REDIS_PATH)), loadHydrionConfiguration(configuration.getSection(HYDRION_PATH)),
+                        configuration.getString(SERVER_ICON_PATH), configuration.getInt(SLOTS_PATH), configuration.getString(MOTD_PATH));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -101,6 +126,14 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
             final String password = section.getString(REDIS_PASSWORD);
 
             return new HyriRedisConfiguration(hostname, port, password);
+        }
+
+        private static HydrionConfiguration loadHydrionConfiguration(Configuration section) {
+            final boolean enabled = section.getBoolean(HYDRION_ENABLED);
+            final String url = section.getString(HYDRION_URL);
+            final UUID apiKey = UUID.fromString(section.getString(HYDRION_API_KEY));
+
+            return new HydrionConfiguration(enabled, url, apiKey);
         }
 
     }

@@ -6,6 +6,18 @@ apply plugin: 'maven-publish'
 
 archivesBaseName = 'HyriAPI-Common'
 
+repositories {
+    maven {
+        name = 'Hydrion_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/Hydrion/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
+}
+
 shadowJar {
     configurations = [project.configurations.runtimeClasspath]
 }
@@ -17,7 +29,7 @@ publishing {
 
             pom {
                 groupId = project.group
-                artifactId = 'api-common'
+                artifactId = 'hyriapi-common'
                 version = project.version
                 name = 'HyriAPI-Common'
                 description = 'Project with the common implementation of HyriAPI'
@@ -40,7 +52,7 @@ publishing {
 
 dependencies {
     api project(':API')
-    // https://mvnrepository.com/artifact/redis.clients/jedis
-    implementation 'redis.clients:jedis:4.1.1'
+    api 'fr.hyriode:hydrion-client:1.0.5'
+    implementation 'redis.clients:jedis:4.2.1'
 
 }

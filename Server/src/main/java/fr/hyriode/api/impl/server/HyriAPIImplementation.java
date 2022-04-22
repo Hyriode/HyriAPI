@@ -2,20 +2,21 @@ package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.chat.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.server.chat.*;
-import fr.hyriode.api.impl.server.money.HyriMoneyManager;
+import fr.hyriode.api.impl.server.chat.GlobalChatHandler;
+import fr.hyriode.api.impl.server.chat.PartnerChatHandler;
+import fr.hyriode.api.impl.server.chat.StaffChatHandler;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
-import fr.hyriode.api.impl.server.rank.HyriRankManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
-import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.rank.IHyriRankManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
+import fr.hyriode.hystia.api.IHystiaAPI;
+import fr.hyriode.hystia.spigot.HystiaImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,25 +30,26 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final IHyriServer server;
 
+    private IHystiaAPI hystiaAPI;
+
+    private final HyriServerManager serverManager;
+
     private final IHyriPlayerManager playerManager;
-
-    private final IHyriMoneyManager moneyManager;
-
-    private final IHyriRankManager rankManager;
-
-    private final HyriAPIPlugin plugin;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
-        this.plugin = plugin;
         this.server = this.createServer();
-        this.playerManager = new HyriPlayerManager();
-        this.moneyManager = new HyriMoneyManager();
-        this.rankManager = new HyriRankManager();
+        this.serverManager = new HyriServerManager(plugin, this);
+        this.playerManager = new HyriPlayerManager(this.hydrionManager);
+
+        if (this.hydrionManager.isEnabled()) {
+            this.hystiaAPI = new HystiaImpl(plugin, this.hydrionManager.getClient());
+        }
 
         this.hyggdrasilManager.start();
-        this.registerReceivers();
+        this.queueManager.start();
 
+        this.registerReceivers();
         this.registerChatHandlers();
     }
 
@@ -55,9 +57,9 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         if (this.hyggdrasilManager.withHyggdrasil()) {
             final HyggApplication application = this.hyggdrasilManager.getApplication();
 
-            return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime());
+            return new HyriServer(this.hyggdrasilManager, application.getName(), application.getStartedTime(), this.hyggdrasilManager.getEnvironment().getData());
         }
-        return new HyriServer(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis());
+        return new HyriServer(this.hyggdrasilManager, this.hyggdrasilManager.generateDevApplicationName(), System.currentTimeMillis(), new HyggData());
     }
 
     private void registerReceivers() {
@@ -71,9 +73,9 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private void registerChatHandlers() {
-        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler(), new PrivateChatHandler(), new PluginChatHandler());
+        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler());
 
-        handlers.forEach(handler -> this.getChatChannelManager().registerChannel(handler));
+        handlers.forEach(this.chatChannelManager::registerChannel);
     }
 
     @Override
@@ -82,18 +84,18 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     @Override
+    public IHystiaAPI getHystiaAPI() {
+        return this.hystiaAPI;
+    }
+
+    @Override
     public IHyriPlayerManager getPlayerManager() {
         return this.playerManager;
     }
 
     @Override
-    public IHyriMoneyManager getMoneyManager() {
-        return this.moneyManager;
-    }
-
-    @Override
-    public IHyriRankManager getRankManager() {
-        return this.rankManager;
+    public HyriServerManager getServerManager() {
+        return this.serverManager;
     }
 
 }

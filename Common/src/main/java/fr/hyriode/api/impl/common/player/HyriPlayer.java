@@ -1,17 +1,26 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
+import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
 import fr.hyriode.api.impl.common.money.Hyris;
+import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
+import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
+import fr.hyriode.api.player.HyriPlayerData;
+import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
+import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.util.Skin;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Project: HyriAPI
@@ -23,15 +32,16 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean online;
 
     private String name;
-    private String customName = null;
-    private String nameWithRank = null;
+    private HyriNickname nickname;
     private final UUID uuid;
 
     private long lastLoginDate;
     private final long firstLoginDate;
     private long playTime;
 
-    private String rank;
+    private HyriRank rank;
+    private HyriPlus hyriPlus;
+    private HyriChatColor plusColor;
 
     private UUID lastPrivateMessage;
 
@@ -49,19 +59,29 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean moderationMode;
     private boolean vanishMode;
 
+    private final Map<String, JsonElement> statistics;
+    private final Map<String, JsonElement> data;
+
+    private final NetworkLeveling networkLeveling;
+
     public HyriPlayer(boolean online, String name, UUID uuid) {
         this.online = online;
         this.name = name;
         this.uuid = uuid;
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
-        this.rank = EHyriRank.PLAYER.getName();
+        this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
+        this.hyriPlus = null;
+        this.plusColor = HyriChatColor.AQUA;
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
         this.settings = (HyriPlayerSettings) HyriAPI.get().getPlayerSettingsManager().createPlayerSettings();
-        this.moderationMode = this.getRank().getType().getId() >= EHyriRank.MODERATOR.getId();
+        this.moderationMode = false;
         this.vanishMode = false;
+        this.statistics = new HashMap<>();
+        this.data = new HashMap<>();
+        this.networkLeveling = new NetworkLeveling(this.uuid);
     }
 
     @Override
@@ -70,9 +90,20 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setOnline(boolean online) {
+    public void setOnline(boolean online) {
         this.online = online;
-        return this;
+    }
+
+    @Override
+    public String getPrefix() {
+        final String prefix = this.rank.getPrefix();
+
+        if (this.rank.hasCustomPrefix()) {
+            return prefix;
+        } else if (this.hasHyriPlus()) {
+            return prefix + this.plusColor + "+";
+        }
+        return prefix;
     }
 
     @Override
@@ -81,36 +112,35 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     @Override
-    public String getCustomName() {
-        return this.customName;
+    public IHyriNickname getNickname() {
+        return this.nickname;
     }
 
     @Override
-    public IHyriPlayer setCustomName(String customName) {
-        this.customName = customName;
-        return this;
+    public IHyriNickname createNickname(String name, String skinOwner, Skin skin) {
+        return this.nickname = new HyriNickname(name, skinOwner, skin);
     }
 
     @Override
-    public String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : this.getName();
+    public void setNickname(IHyriNickname nickname) {
+        HyriAPI.get().getEventBus().publishAsync(new HyriNicknameUpdatedEvent(this, nickname));
+
+        this.nickname = (HyriNickname) nickname;
     }
 
     @Override
-    public String getNameWithRank() {
-        return this.nameWithRank;
-    }
+    public String getNameWithRank(boolean nickname) {
+        if (nickname && this.nickname != null) {
+            final HyriPlayerRankType rank = this.nickname.getRank();
 
-    @Override
-    public IHyriPlayer setNameWithRank(String nameWithRank) {
-        this.nameWithRank = nameWithRank;
-        return this;
+            return rank.getDefaultPrefix() + (rank.withSeparator() ? HyriRank.SEPARATOR : "") + rank.getDefaultColor().toString() + this.nickname.getName();
+        }
+        return HyriChatColor.translateAlternateColorCodes('&', this.getPrefix() + (this.rank.getType().withSeparator() ? HyriRank.SEPARATOR : "") + this.rank.getMainColor().toString() + this.getName());
     }
 
     @Override
@@ -129,9 +159,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastLoginDate(Date lastLoginDate) {
+    public void setLastLoginDate(Date lastLoginDate) {
         this.lastLoginDate = lastLoginDate.getTime();
-        return this;
     }
 
     @Override
@@ -140,20 +169,47 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setPlayTime(long playTime) {
+    public void setPlayTime(long playTime) {
         this.playTime = playTime;
-        return this;
     }
 
     @Override
     public HyriRank getRank() {
-        return HyriAPI.get().getRankManager().getRank(this.rank);
+        return this.rank;
     }
 
     @Override
-    public IHyriPlayer setRank(HyriRank rank) {
-        this.rank = rank.getName();
-        return this;
+    public void setRank(HyriRank rank) {
+        this.rank = rank;
+    }
+
+    @Override
+    public HyriPlus getHyriPlus() {
+        return this.hyriPlus;
+    }
+
+    @Override
+    public HyriChatColor getPlusColor() {
+        return this.plusColor;
+    }
+
+    @Override
+    public void setPlusColor(HyriChatColor plusColor) {
+        this.plusColor = plusColor;
+    }
+
+    @Override
+    public void setHyriPlus(HyriPlus hyriPlus) {
+        this.hyriPlus = hyriPlus;
+    }
+
+    @Override
+    public boolean hasHyriPlus() {
+        if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
+            this.hyriPlus = null;
+            return false;
+        }
+        return this.hyriPlus != null;
     }
 
     @Override
@@ -162,9 +218,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastPrivateMessagePlayer(UUID player) {
+    public void setLastPrivateMessagePlayer(UUID player) {
         this.lastPrivateMessage = player;
-        return this;
     }
 
     @Override
@@ -178,9 +233,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setParty(UUID party) {
+    public void setParty(UUID party) {
         this.party = party;
-        return this;
     }
 
     @Override
@@ -194,9 +248,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setSettings(IHyriPlayerSettings settings) {
+    public void setSettings(IHyriPlayerSettings settings) {
         this.settings = (HyriPlayerSettings) settings;
-        return this;
     }
 
     @Override
@@ -205,9 +258,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setCurrentServer(String currentServer) {
+    public void setCurrentServer(String currentServer) {
         this.currentServer = currentServer;
-        return this;
     }
 
     @Override
@@ -216,9 +268,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setLastServer(String lastServer) {
+    public void setLastServer(String lastServer) {
         this.lastServer = lastServer;
-        return this;
     }
 
     @Override
@@ -227,14 +278,13 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setCurrentProxy(String currentProxy) {
+    public void setCurrentProxy(String currentProxy) {
         this.currentProxy = currentProxy;
-        return this;
     }
 
     @Override
     public IHyriFriendHandler getFriendHandler() {
-        return HyriAPI.get().getFriendManager().loadFriends(this.uuid);
+        return HyriAPI.get().getFriendManager().createHandler(this.uuid);
     }
 
     @Override
@@ -243,9 +293,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setInModerationMode(boolean inModerationMode) {
-        this.moderationMode = inModerationMode;
-        return this;
+    public void setInModerationMode(boolean moderationMode) {
+        this.moderationMode = moderationMode;
     }
 
     @Override
@@ -254,9 +303,89 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriPlayer setInVanishMode(boolean inVanishMode) {
-        this.vanishMode = inVanishMode;
-        return this;
+    public void setInVanishMode(boolean vanishMode) {
+        this.vanishMode = vanishMode;
+    }
+
+    @Override
+    public List<String> getStatistics() {
+        return new ArrayList<>(this.statistics.keySet());
+    }
+
+    @Override
+    public <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass) {
+        final JsonElement serialized = this.statistics.get(key);
+
+        if (serialized != null) {
+            return HyriAPI.GSON.fromJson(serialized, statisticsClass);
+        }
+        return null;
+    }
+
+    @Override
+    public void addStatistics(String key, HyriPlayerData statistics) {
+        this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
+    }
+
+    @Override
+    public void removeStatistics(String key) {
+        this.statistics.remove(key);
+    }
+
+    @Override
+    public boolean hasStatistics(String key) {
+        return this.statistics.containsKey(key);
+    }
+
+    @Override
+    public List<String> getData() {
+        return new ArrayList<>(this.data.keySet());
+    }
+
+    @Override
+    public <T extends HyriPlayerData> T getData(String key, Class<T> dataClass) {
+        final JsonElement serialized = this.data.get(key);
+
+        if (serialized != null) {
+            return HyriAPI.GSON.fromJson(serialized, dataClass);
+        }
+        return null;
+    }
+
+    @Override
+    public void addData(String key, HyriPlayerData data) {
+        this.data.put(key, HyriAPI.GSON.toJsonTree(data));
+    }
+
+    @Override
+    public void removeData(String key) {
+        this.data.remove(key);
+    }
+
+    @Override
+    public boolean hasData(String key) {
+        return this.data.containsKey(key);
+    }
+
+    @Override
+    public IHyriLeveling getNetworkLeveling() {
+        return this.networkLeveling;
+    }
+
+    @Override
+    public int getPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getPriority();
+        }
+        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
+    }
+
+    @Override
+    public int getTabListPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getTabListPriority();
+        }
+        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getTabListPriority();
     }
 
 }

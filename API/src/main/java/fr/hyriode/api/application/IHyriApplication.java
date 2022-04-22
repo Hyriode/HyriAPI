@@ -37,6 +37,20 @@ public interface IHyriApplication<T extends IHyriApplication.IState> {
     void setState(T state);
 
     /**
+     * Get the handler that will be triggered when the server will be stopped
+     *
+     * @return A {@link Runnable} to execute
+     */
+    Runnable getStopHandler();
+
+    /**
+     * Set the handler that will be triggered when the server will be stopped
+     *
+     * @param stopHandler The new {@link Runnable} to execute
+     */
+    void setStopHandler(Runnable stopHandler);
+
+    /**
      * The interface that represents a state of the application
      */
     interface IState {}

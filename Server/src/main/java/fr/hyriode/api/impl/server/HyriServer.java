@@ -1,9 +1,18 @@
 package fr.hyriode.api.impl.server;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.server.IHyriServer;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import fr.hyriode.hystia.api.config.IConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Project: HyriAPI
@@ -15,17 +24,28 @@ public class HyriServer implements IHyriServer {
     private final String name;
     private final String type;
     private final long startedTime;
+    private final HyggData data;
+    private int slots = -1;
+
+    private IConfig config;
+
+    private final String gameType;
+    private final String map;
 
     private State state;
+    private Runnable stopHandler;
 
     private final HyggdrasilManager hyggdrasilManager;
 
-    public HyriServer(HyggdrasilManager hyggdrasilManager, String name, long startedTime) {
+    public HyriServer(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
         this.hyggdrasilManager = hyggdrasilManager;
         this.name = name;
         this.type = HyggServer.getTypeFromName(name);
         this.startedTime = startedTime;
+        this.data = data;
         this.state = State.STARTING;
+        this.gameType = data.get(HyggServer.GAME_TYPE_KEY);
+        this.map = data.get(HyggServer.MAP_KEY);
     }
 
     @Override
@@ -56,8 +76,66 @@ public class HyriServer implements IHyriServer {
     }
 
     @Override
-    public int getPlayers() {
-        return Bukkit.getOnlinePlayers().size();
+    public Runnable getStopHandler() {
+        return this.stopHandler;
+    }
+
+    @Override
+    public void setStopHandler(Runnable stopHandler) {
+        this.stopHandler = stopHandler;
+    }
+
+    @Override
+    public List<UUID> getPlayers() {
+        final List<UUID> players = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            players.add(player.getUniqueId());
+        }
+        return players;
+    }
+
+    @Override
+    public int getSlots() {
+        return this.slots;
+    }
+
+    @Override
+    public void setSlots(int slots) {
+        this.slots = slots;
+    }
+
+    @Override
+    public String getGameType() {
+        return this.gameType;
+    }
+
+    @Override
+    public String getMap() {
+        return this.map;
+    }
+
+    @Override
+    public HyggData getData() {
+        return this.data;
+    }
+
+    @Override
+    public <T extends IConfig> T getConfig(Class<T> configClass) {
+        if (this.config != null) {
+            return configClass.cast(this.config);
+        }
+
+        try {
+            final T config = HyriAPI.get().getHystiaAPI().getConfigManager().getConfig(configClass, this.type, this.gameType, this.map).get();
+
+            this.config = config;
+
+            return config;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

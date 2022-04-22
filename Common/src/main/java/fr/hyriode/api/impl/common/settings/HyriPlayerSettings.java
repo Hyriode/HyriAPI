@@ -1,6 +1,9 @@
 package fr.hyriode.api.impl.common.settings;
 
-import fr.hyriode.api.settings.*;
+import fr.hyriode.api.settings.HyriLanguage;
+import fr.hyriode.api.settings.HyriPlayersVisibilityLevel;
+import fr.hyriode.api.settings.HyriPrivateMessagesLevel;
+import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 /**
  * Project: HyriAPI
@@ -15,20 +18,19 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     private HyriPlayersVisibilityLevel playersVisibilityLevel;
     private boolean globalChatMessagesEnabled;
     private boolean privateMessagesSoundEnabled;
-    private boolean tagSoundEnabled;
     private HyriLanguage language;
     private String chatChannel;
+    private boolean autoQueueEnabled;
 
-    public HyriPlayerSettings(boolean partyRequestsEnabled, boolean friendRequestsEnabled, HyriPrivateMessagesLevel privateMessagesLevel, HyriPlayersVisibilityLevel playersVisibilityLevel, boolean globalChatMessagesEnabled, boolean privateMessagesSoundEnabled, boolean tagSoundEnabled, HyriLanguage language, String chatChannel) {
-        this.partyRequestsEnabled = partyRequestsEnabled;
-        this.friendRequestsEnabled = friendRequestsEnabled;
-        this.privateMessagesLevel = privateMessagesLevel;
-        this.playersVisibilityLevel = playersVisibilityLevel;
-        this.globalChatMessagesEnabled = globalChatMessagesEnabled;
-        this.privateMessagesSoundEnabled = privateMessagesSoundEnabled;
-        this.tagSoundEnabled = tagSoundEnabled;
-        this.language = language;
-        this.chatChannel = chatChannel;
+    public HyriPlayerSettings() {
+        this.partyRequestsEnabled = true;
+        this.friendRequestsEnabled = true;
+        this.privateMessagesLevel = HyriPrivateMessagesLevel.ALL;
+        this.playersVisibilityLevel = HyriPlayersVisibilityLevel.ALL;
+        this.globalChatMessagesEnabled = true;
+        this.privateMessagesSoundEnabled = true;
+        this.language = HyriLanguage.FR;
+        this.chatChannel = "global";
     }
 
     @Override
@@ -92,16 +94,6 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public boolean isTagSoundEnabled() {
-        return this.tagSoundEnabled;
-    }
-
-    @Override
-    public void setTagSoundEnabled(boolean tagSoundEnabled) {
-        this.tagSoundEnabled = tagSoundEnabled;
-    }
-
-    @Override
     public HyriLanguage getLanguage() {
         return this.language;
     }
@@ -109,6 +101,16 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     @Override
     public void setLanguage(HyriLanguage language) {
         this.language = language;
+    }
+
+    @Override
+    public boolean isAutoQueueEnabled() {
+        return this.autoQueueEnabled;
+    }
+
+    @Override
+    public void setAutoQueueEnabled(boolean autoQueueEnabled) {
+        this.autoQueueEnabled = autoQueueEnabled;
     }
 
     @Override

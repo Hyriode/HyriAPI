@@ -2,3 +2,4 @@ main: fr.hyriode.api.impl.server.HyriAPIPlugin
 name: HyriAPI
 version: @version@
 author: AstFaster
+load: STARTUP

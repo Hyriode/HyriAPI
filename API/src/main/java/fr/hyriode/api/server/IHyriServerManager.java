@@ -1,6 +1,8 @@
 package fr.hyriode.api.server;
 
+import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 
 import java.util.Collection;
@@ -14,6 +16,13 @@ import java.util.function.Consumer;
  * on 18/07/2021 at 20:17
  */
 public interface IHyriServerManager {
+
+    /**
+     * Broadcast a message on all servers
+     *
+     * @param component The message to broadcast (it's a text component)
+     */
+    void broadcastMessage(String component);
 
     /**
      * Get the collection of all servers currently running
@@ -69,12 +78,27 @@ public interface IHyriServerManager {
     void sendPlayerToServer(UUID playerUUID, String serverName);
 
     /**
+     * Send a party to a lobby
+     *
+     * @param partyId The {@link UUID} of the party
+     */
+    void sendPartyToLobby(UUID partyId);
+
+    /**
+     * Send a party to a given server
+     *
+     * @param partyId The {@link UUID} of the party
+     * @param serverName A {@link String} which represents the name of a server
+     */
+    void sendPartyToServer(UUID partyId, String serverName);
+
+    /**
      * Create a server with a given type
      *
-     * @param serverType The type of the server to create
+     * @param serverRequest The request to send to create the server
      * @param onCreated The {@link Consumer} to call when the server will be created
      */
-    void createServer(String serverType, Consumer<HyggServer> onCreated);
+    void createServer(HyggServerRequest serverRequest, Consumer<HyggServer> onCreated);
 
     /**
      * Remove a server by giving its name
@@ -101,5 +125,12 @@ public interface IHyriServerManager {
      * @param callback The callback to fire when the server has the good state
      */
     void waitForPlayers(String serverName, int players, Consumer<HyggServer> callback);
+
+    /**
+     * Get the join manager instance
+     *
+     * @return the {@link IHyriJoinManager} instance
+     */
+    IHyriJoinManager getJoinManager();
 
 }

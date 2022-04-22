@@ -2,26 +2,36 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
-import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.pubsub.IHyriPubSub;
-import fr.hyriode.api.rank.IHyriRankManager;
+import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
+import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public abstract class HyriAPI {
+
+    public static void main(String[] args) {
+        System.out.println("Test");
+    }
 
     /** {@link Gson} instance with adapters */
     public static final Gson GSON = new GsonBuilder()
@@ -127,11 +137,18 @@ public abstract class HyriAPI {
     public abstract IHyriPubSub getPubSub();
 
     /**
+     * Get the instance of Hystia API
+     *
+     * @return The {@link IHystiaAPI} instance
+     */
+    public abstract IHystiaAPI getHystiaAPI();
+
+    /**
      * Get the class that can be used to get or edit information of the network
      *
-     * @return The {@link IHyriNetwork} instance
+     * @return The {@link IHyriNetworkManager} instance
      */
-    public abstract IHyriNetwork getNetwork();
+    public abstract IHyriNetworkManager getNetworkManager();
 
     /**
      * Get the server manager
@@ -139,6 +156,20 @@ public abstract class HyriAPI {
      * @return {@link IHyriServerManager}
      */
     public abstract IHyriServerManager getServerManager();
+
+    /**
+     * Get the queue manager
+     *
+     * @return The {@link IHyriQueueManager} instance
+     */
+    public abstract IHyriQueueManager getQueueManager();
+
+    /**
+     * Get the game manager
+     *
+     * @return The {@link IHyriGameManager} instance
+     */
+    public abstract IHyriGameManager getGameManager();
 
     /**
      * Get the player manager
@@ -153,6 +184,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPlayerSettingsManager}
      */
     public abstract IHyriPlayerSettingsManager getPlayerSettingsManager();
+
+    /**
+     * Get the booster manager
+     *
+     * @return The {@link IHyriBoosterManager} instance
+     */
+    public abstract IHyriBoosterManager getBoosterManager();
 
     /**
      * Get the money manager
@@ -174,13 +212,6 @@ public abstract class HyriAPI {
      * @return The {@link IHyriFriendManager} instance
      */
     public abstract IHyriFriendManager getFriendManager();
-
-    /**
-     * Get the rank manager
-     *
-     * @return {@link IHyriRankManager}
-     */
-    public abstract IHyriRankManager getRankManager();
 
     /**
      * Get the chat manager

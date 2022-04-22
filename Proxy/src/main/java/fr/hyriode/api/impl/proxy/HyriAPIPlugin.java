@@ -4,6 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
+import fr.hyriode.api.proxy.IHyriProxy;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,6 +31,8 @@ public class HyriAPIPlugin extends Plugin  {
         this.api = new HyriAPIImplementation(this);
 
         this.registerListeners();
+
+        HyriAPI.get().getProxy().setState(IHyriProxy.State.READY);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class HyriAPIPlugin extends Plugin  {
         final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
 
         register.accept(new HyriProxyListener(this.configuration));
-        register.accept(new HyriJoinListener(this.api, this.api.getHyggdrasilManager()));
+        register.accept(new HyriJoinListener(this.api));
     }
 
     public HyriAPIConfiguration getConfiguration() {

@@ -49,32 +49,53 @@ public class HyriFriendHandler implements IHyriFriendHandler {
     }
 
     @Override
-    public void addFriend(IHyriFriend friend) {
-        if (!this.areFriends(friend.getUniqueId())) {
-            this.friends.add(friend);
+    public void addFriend(UUID friend) {
+        if (!this.areFriends(friend)) {
+            this.addFriend0(friend);
+
+            HyriAPI.get().getFriendManager().createHandlerAsync(friend).whenComplete((friendHandler, throwable) -> {
+                friendHandler.addFriend0(this.owner);
+
+                HyriAPI.get().getFriendManager().updateFriends(friendHandler);
+            });
 
             this.update();
         }
     }
 
     @Override
-    public void addFriend(UUID uuid) {
-        this.addFriend(new HyriFriend(uuid));
+    public void addFriend0(UUID uuid) {
+        this.friends.add(new HyriFriend(uuid));
     }
 
     @Override
     public void removeFriend(IHyriFriend friend) {
         this.friends.remove(friend);
 
+        HyriAPI.get().getFriendManager().createHandlerAsync(friend.getUniqueId()).whenComplete((friendHandler, throwable) -> {
+            friendHandler.removeFriend0(this.owner);
+
+            HyriAPI.get().getFriendManager().updateFriends(friendHandler);
+        });
+
         this.update();
     }
 
     @Override
     public void removeFriend(UUID uuid) {
-        if (this.areFriends(uuid)) {
-            this.friends.remove(this.getFriend(uuid));
+        final IHyriFriend friend = this.getFriend(uuid);
 
-            this.update();
+        if (friend != null) {
+            this.removeFriend(friend);
+        }
+    }
+
+    @Override
+    public void removeFriend0(UUID uuid) {
+        final IHyriFriend friend = this.getFriend(uuid);
+
+        if (friend != null) {
+            this.friends.remove(friend);
         }
     }
 
@@ -85,7 +106,7 @@ public class HyriFriendHandler implements IHyriFriendHandler {
 
     @Override
     public void update() {
-        HyriAPI.get().getFriendManager().updateFriends(this);
+        HyriAPI.get().getFriendManager().saveFriends(this);
     }
 
 }

@@ -1,7 +1,6 @@
 package fr.hyriode.api.network;
 
-import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.network.event.HyriNetworkEventBus;
+import fr.hyriode.api.HyriAPI;
 
 /**
  * Project: HyriAPI
@@ -11,19 +10,11 @@ import fr.hyriode.api.network.event.HyriNetworkEventBus;
 public interface IHyriNetwork {
 
     /**
-     * Get the event bus used for the network.<br>
-     * This event bus triggered events all over the network and events will be sent as packets.
+     * Get the player count
      *
-     * @return A {@link IHyriEventBus} instance
+     * @return The {@link HyriNetworkCount} object
      */
-    HyriNetworkEventBus getEventBus();
-
-    /**
-     * Get the amount of players that are currently connected on the network
-     *
-     * @return A player counter
-     */
-    int getPlayers();
+    HyriNetworkCount getPlayerCount();
 
     /**
      * Get the amount of available slots on the network
@@ -60,5 +51,12 @@ public interface IHyriNetwork {
      * @return The {@link IHyriMaintenance} instance
      */
     IHyriMaintenance getMaintenance();
+
+    /**
+     * Update the network
+     */
+    default void update() {
+        HyriAPI.get().getNetworkManager().setNetwork(this);
+    }
 
 }

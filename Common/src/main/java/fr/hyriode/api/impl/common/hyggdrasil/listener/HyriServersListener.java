@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.common.hyggdrasil.listener;
 
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.server.HyriServerManager;
+import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;
@@ -15,7 +15,7 @@ import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
 public class HyriServersListener {
 
     private final HyggEventBus eventBus;
-    private final HyriServerManager serverManager;
+    private final HyriCServerManager serverManager;
 
     public HyriServersListener(HyriCommonImplementation implementation) {
         this.eventBus = implementation.getHyggdrasilManager().getHyggdrasilAPI().getEventBus();

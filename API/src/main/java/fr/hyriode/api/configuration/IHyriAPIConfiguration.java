@@ -28,4 +28,11 @@ public interface IHyriAPIConfiguration {
      */
     HyriRedisConfiguration getRedisConfiguration();
 
+    /**
+     * Get the configuration for Hydrion
+     *
+     * @return The {@link HydrionConfiguration} object
+     */
+    HydrionConfiguration getHydrionConfiguration();
+
 }

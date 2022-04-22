@@ -1,13 +1,20 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
+import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.rank.EHyriRank;
+import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.util.Skin;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,9 +35,15 @@ public interface IHyriPlayer {
      * Set if the player is connected or not
      *
      * @param online New online state
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setOnline(boolean online);
+    void setOnline(boolean online);
+
+    /**
+     * Get the prefix of the player
+     *
+     * @return A prefix
+     */
+    String getPrefix();
 
     /**
      * Get default player name
@@ -44,54 +57,58 @@ public interface IHyriPlayer {
      * Warning: Use this method ONLY to change the real player name
      *
      * @param name Player's name
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setName(String name);
+    void setName(String name);
 
     /**
-     * Get the custom name of player
+     * Get the current nickname of the player.<br>
+     * It can be null if the player is not nicked
      *
-     * @return Custom name
+     * @return A {@link IHyriNickname}
      */
-    String getCustomName();
+    IHyriNickname getNickname();
 
     /**
-     * Set player's custom name
+     * Create a nickname for the player
      *
-     * @param customName Player's custom name
-     * @return This {@link IHyriPlayer} instance
+     * @param name The name to use as a nickname
+     * @param skinOwner The owner of the skin that will be used
+     * @param skin The skin that will be usezd
+     * @return The created {@link IHyriNickname}
      */
-    IHyriPlayer setCustomName(String customName);
+    IHyriNickname createNickname(String name, String skinOwner, Skin skin);
 
     /**
-     * Get current display name: name or custom name
+     * Set the current player nickname
      *
-     * @return Display name
+     * @param nickname The new {@link IHyriNickname}
      */
-    String getDisplayName();
+    void setNickname(IHyriNickname nickname);
+
+    /**
+     * Check if the player has a nickname
+     *
+     * @return <code>true</code> if yes
+     */
+    default boolean hasNickname() {
+        return this.getNickname() != null;
+    }
+
+    /**
+     * Get the player name with the rank prefix
+     *
+     * @param nickname <code>true</code> if the nickname is taken in account
+     * @return Player names with the rank prefix
+     */
+    String getNameWithRank(boolean nickname);
 
     /**
      * Get the player name with the rank prefix
      *
      * @return Player names with the rank prefix
      */
-    String getNameWithRank();
-
-    /**
-     * Set the player name with the rank prefix
-     *
-     * @param nameWithRank Player names with the rank prefix
-     * @return This {@link IHyriPlayer} instance
-     */
-    IHyriPlayer setNameWithRank(String nameWithRank);
-
-    /**
-     * Get if player has a custom name
-     *
-     * @return <code>true</code> if player has a custom name
-     */
-    default boolean hasCustomName() {
-        return this.getCustomName() != null;
+    default String getNameWithRank() {
+        return this.getNameWithRank(false);
     }
 
     /**
@@ -119,9 +136,8 @@ public interface IHyriPlayer {
      * Set the last login {@link Date} of the player
      *
      * @param date The new {@link Date}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastLoginDate(Date date);
+    void setLastLoginDate(Date date);
 
     /**
      * Get player play time on the network
@@ -134,9 +150,8 @@ public interface IHyriPlayer {
      * Set player play time on the network
      *
      * @param time New player play time
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setPlayTime(long time);
+    void setPlayTime(long time);
 
     /**
      * Get player rank
@@ -149,19 +164,61 @@ public interface IHyriPlayer {
      * Set player rank
      *
      * @param rank {@link HyriRank}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setRank(HyriRank rank);
+    void setRank(HyriRank rank);
 
     /**
-     * Set player rank
+     * Set the player rank of the player
      *
-     * @param rank Rank type
-     * @return This {@link IHyriPlayer} instance
+     * @param playerRankType A {@link HyriPlayerRankType}
      */
-    default IHyriPlayer setRank(EHyriRank rank) {
-        return this.setRank(rank.get());
+    default void setPlayerRank(HyriPlayerRankType playerRankType) {
+        this.getRank().setPlayerType(playerRankType);
     }
+
+    /**
+     * Set the staff rank of the player
+     *
+     * @param staffRankType A {@link HyriStaffRankType}
+     */
+    default void setStaffRank(HyriStaffRankType staffRankType) {
+        this.getRank().setStaffType(staffRankType);
+    }
+
+    /**
+     * Get Hyri+ offer
+     *
+     * @return The {@link HyriPlus} offer instance
+     */
+    HyriPlus getHyriPlus();
+
+    /**
+     * Get the color of the + that will be added after the prefix
+     *
+     * @return A {@link HyriChatColor}
+     */
+    HyriChatColor getPlusColor();
+
+    /**
+     * Set the color of the + that will be added after the prefix
+     *
+     * @param plusColor The new {@link HyriChatColor}
+     */
+    void setPlusColor(HyriChatColor plusColor);
+
+    /**
+     * Set Hyri+ offer
+     *
+     * @param hyriPlus New {@link HyriPlus} offer instance
+     */
+    void setHyriPlus(HyriPlus hyriPlus);
+
+    /**
+     * Check if the player has Hyri+ offer
+     *
+     * @return <code>true</code> if the player has Hyri+
+     */
+    boolean hasHyriPlus();
 
     /**
      * Get the {@link UUID} of the last player which this player talks with in private chat
@@ -174,9 +231,8 @@ public interface IHyriPlayer {
      * Set the {@link UUID} of the last player which this player talks with in private chat
      *
      * @param player {@link UUID}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastPrivateMessagePlayer(UUID player);
+    void setLastPrivateMessagePlayer(UUID player);
 
     /**
      * Get player Hyris money
@@ -196,9 +252,8 @@ public interface IHyriPlayer {
      * Set the party {@link UUID} of the player
      *
      * @param party Party {@link UUID}
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setParty(UUID party);
+    void setParty(UUID party);
 
     /**
      * Check if the player is in a member of a party
@@ -218,9 +273,8 @@ public interface IHyriPlayer {
      * Set the settings of the player
      *
      * @param settings New settings
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setSettings(IHyriPlayerSettings settings);
+    void setSettings(IHyriPlayerSettings settings);
 
     /**
      * Get the name of the current server where the player is.<br>
@@ -234,9 +288,8 @@ public interface IHyriPlayer {
      * Set the current server where the player is connected
      *
      * @param currentServer The name of the server
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setCurrentServer(String currentServer);
+    void setCurrentServer(String currentServer);
 
     /**
      * Get the last server where the player was.<br>
@@ -250,9 +303,8 @@ public interface IHyriPlayer {
      * Set the last server where the player was connected
      *
      * @param lastServer The name of the server
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setLastServer(String lastServer);
+    void setLastServer(String lastServer);
 
     /**
      * Get the name of the proxy that manages the player
@@ -265,9 +317,8 @@ public interface IHyriPlayer {
      * Set the current proxy that manages the player
      *
      * @param currentProxy A proxy name
-     * @return This {@link IHyriPlayer} instance
      */
-    IHyriPlayer setCurrentProxy(String currentProxy);
+    void setCurrentProxy(String currentProxy);
 
     /**
      * Get the handler of player's friends
@@ -286,10 +337,9 @@ public interface IHyriPlayer {
     /**
      * Set if the player is in moderation mode
      *
-     * @param inModerationMode <code>true</code> if the player is in the moderation mode
-     * @return This {@link IHyriPlayer} instance
+     * @param moderationMode <code>true</code> if the player is in the moderation mode
      */
-    IHyriPlayer setInModerationMode(boolean inModerationMode);
+    void setInModerationMode(boolean moderationMode);
 
     /**
      * Get if the player is in vanish mode
@@ -301,10 +351,110 @@ public interface IHyriPlayer {
     /**
      * Set if the player is in vanish mode
      *
-     * @param inVanishMode <code>true</code> if the player is in the vanish mode
-     * @return This {@link IHyriPlayer} instance
+     * @param vanishMode <code>true</code> if the player is in the vanish mode
      */
-    IHyriPlayer setInVanishMode(boolean inVanishMode);
+    void setInVanishMode(boolean vanishMode);
+
+    /**
+     * Get all the statistics key linked to the player account
+     *
+     * @return A list of key
+     */
+    List<String> getStatistics();
+
+    /**
+     * Get statistics from its key
+     *
+     * @param key The key of the statistics
+     * @param statisticsClass The class used to deserialize statistics
+     * @param <T> The type of {@link HyriPlayerData} to return
+     * @return A {@link HyriPlayerData} object
+     */
+    <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass);
+
+    /**
+     * Add a statistics in player account
+     *
+     * @param key The key of the statistics
+     * @param statistics The statistics to add
+     */
+    void addStatistics(String key, HyriPlayerData statistics);
+
+    /**
+     * Remove a statistics from player account
+     *
+     * @param key The key of the statistics to get
+     */
+    void removeStatistics(String key);
+
+    /**
+     * Check if the player has a statistics
+     *
+     * @param key The key of the statistics
+     * @return <code>true</code> if the player has the statistics
+     */
+    boolean hasStatistics(String key);
+
+    /**
+     * Get all the data key linked to the player account
+     *
+     * @return A list of key
+     */
+    List<String> getData();
+
+    /**
+     * Get data from its key
+     *
+     * @param key The key of the data
+     * @param dataClass The class used to deserialize data
+     * @param <T> The type of {@link HyriPlayerData} to return
+     * @return A {@link HyriPlayerData} object
+     */
+    <T extends HyriPlayerData> T getData(String key, Class<T> dataClass);
+
+    /**
+     * Add a data in player account
+     *
+     * @param key The key of the data
+     * @param data The data to add
+     */
+    void addData(String key, HyriPlayerData data);
+
+    /**
+     * Remove a data from player account
+     *
+     * @param key The key of the data to get
+     */
+    void removeData(String key);
+
+    /**
+     * Check if the player has a data
+     *
+     * @param key The key of the data
+     * @return <code>true</code> if the player has the data
+     */
+    boolean hasData(String key);
+
+    /**
+     * Get the player leveling on the network
+     *
+     * @return A {@link IHyriLeveling} instance
+     */
+    IHyriLeveling getNetworkLeveling();
+
+    /**
+     * Get the priority of the player in queues
+     *
+     * @return A number that represents a priority
+     */
+    int getPriority();
+
+    /**
+     * Get the priority of the rank in the tab list
+     *
+     * @return A number that represents a priority
+     */
+    int getTabListPriority();
 
     /**
      * Update the player account in database

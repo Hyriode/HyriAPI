@@ -9,9 +9,9 @@ public class HyriChannel {
 
     /** The channel used to send packets to proxies */
     public static final String PROXIES = "proxies";
-
-    /**
-     * The channel used to send message packets to the server
-     */
+    /** The channel used to send message packets to the server */
     public static final String CHAT = "chat";
+    /** The channel used to send join requests */
+    public static final String JOIN = "join";
+
 }

@@ -1,0 +1,92 @@
+package fr.hyriode.api.leveling;
+
+/**
+ * Project: HyriAPI
+ * Created by AstFaster
+ * on 15/04/2022 at 12:34
+ */
+public interface IHyriLeveling {
+
+    /**
+     * Get the name of the leveling system
+     *
+     * @return A name
+     */
+    String getName();
+
+    /**
+     * Get the amount of experience
+     *
+     * @return The experience
+     */
+    double getExperience();
+
+    /**
+     * Set the amount of experience
+     *
+     * @param experience New experience amount
+     */
+    void setExperience(double experience);
+
+    /**
+     * Add a given amount of experience
+     *
+     * @param experience The amount to add
+     */
+    void addExperience(double experience);
+
+    /**
+     * Remove a given amount of experience
+     *
+     * @param experience The amount to remove
+     */
+    void removeExperience(double experience);
+
+    /**
+     * Get the experience as a level
+     *
+     * @return The level based on the experience
+     */
+    int getLevel();
+
+    /**
+     * Check if the current level is above another one
+     *
+     * @param level The level to check
+     * @return <code>true</code> if the current level is above
+     */
+    default boolean hasLevel(int level) {
+        return this.getLevel() >= level;
+    }
+
+    /**
+     * Get the algorithm of the leveling system used to do calculations, etc.
+     *
+     * @return A {@link Algorithm} instance
+     */
+    Algorithm getAlgorithm();
+
+    /**
+     * The interface that represents a leveling algorithm
+     */
+    interface Algorithm {
+
+        /**
+         * Transform the experience to level
+         *
+         * @param experience The amount of experience to transform
+         * @return A level
+         */
+        int experienceToLevel(double experience);
+
+        /**
+         * Transform a level to an amount of experience
+         *
+         * @param level The level to transform
+         * @return An amount of experience
+         */
+        double levelToExperience(int level);
+
+    }
+
+}

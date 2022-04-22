@@ -38,7 +38,7 @@ public class HyriMaintenanceEvent extends HyriCancellableEvent {
      * @return The {@link IHyriMaintenance} instance
      */
     public IHyriMaintenance getMaintenance() {
-        return HyriAPI.get().getNetwork().getMaintenance();
+        return HyriAPI.get().getNetworkManager().getNetwork().getMaintenance();
     }
 
     /**
