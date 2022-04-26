@@ -1,6 +1,8 @@
 package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriendHandler;
+import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
@@ -11,7 +13,9 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.FriendsModule;
 import fr.hyriode.hydrion.client.module.PlayerModule;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,6 +35,8 @@ import java.util.UUID;
  */
 public class HyriJoinListener implements Listener {
 
+    private final IHyriFriendManager friendManager;
+
     private final HyggdrasilManager hyggdrasilManager;
     private final HydrionManager hydrionManager;
 
@@ -43,6 +49,7 @@ public class HyriJoinListener implements Listener {
         this.hyggdrasilManager = hyggdrasilManager;
         this.hydrionManager = hydrionManager;
         this.joinManager = joinManager;
+        this.friendManager = HyriAPI.get().getFriendManager();
 
         if (this.hydrionManager.isEnabled()) {
             final HydrionClient client = this.hydrionManager.getClient();
@@ -81,11 +88,14 @@ public class HyriJoinListener implements Listener {
         if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
             account.setName(player.getName());
             account.setLastLoginDate(new Date(System.currentTimeMillis()));
-            account.setOnline(true);
 
             playerManager.setPlayerId(account.getName(), uuid);
+
+            this.friendManager.saveFriends(this.friendManager.createHandler(uuid));
         }
 
+        account.setLastServer(account.getCurrentServer());
+        account.setOnline(true);
         account.setCurrentServer(HyriAPI.get().getServer().getName());
 
         if (this.hydrionManager.isEnabled()) {
@@ -95,7 +105,7 @@ public class HyriJoinListener implements Listener {
                 final HyriRank rank = hydrionPlayer.getRank();
 
                 if (rank.isSuperior(account.getRank().getPlayerType())) {
-                    account.setRank(hydrionPlayer.getRank());
+                    account.setRank(rank);
                 }
 
                 account.setHyriPlus(hydrionPlayer.getHyriPlus());
@@ -107,6 +117,8 @@ public class HyriJoinListener implements Listener {
         account.update();
 
         this.joinManager.onJoin(player);
+
+        HyriAPI.get().getServer().addPlayer(player.getUniqueId());
 
         this.hyggdrasilManager.sendData();
     }
@@ -143,19 +155,18 @@ public class HyriJoinListener implements Listener {
 
                     account.setNickname(null);
                 }
-            }
 
-            account.setLastServer(HyriAPI.get().getServer().getName());
-            account.setCurrentServer(null);
+                account.update();
+            }
 
             if (this.hydrionManager.isEnabled()) {
                 this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(HyriAPI.get().getFriendManager().getFriends(uuid))));
             }
-
-            account.update();
         }
 
         this.joinManager.onLogout(player);
+
+        HyriAPI.get().getServer().removePlayer(uuid);
 
         this.hyggdrasilManager.sendData();
     }

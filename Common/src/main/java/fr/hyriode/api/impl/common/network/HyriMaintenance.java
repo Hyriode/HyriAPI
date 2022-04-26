@@ -21,15 +21,13 @@ public class HyriMaintenance implements IHyriMaintenance {
     @Override
     public boolean enable(UUID trigger, String reason) {
         if (!this.active) {
-            if (this.triggerEvent(HyriMaintenanceEvent.Action.ENABLED)) {
-                this.active = true;
-                this.trigger = trigger;
-                this.reason = reason;
+            this.active = true;
+            this.trigger = trigger;
+            this.reason = reason;
 
-                return true;
-            }
+            this.triggerEvent(HyriMaintenanceEvent.Action.ENABLED);
 
-            this.disable();
+            return true;
         }
         return false;
     }
@@ -37,15 +35,13 @@ public class HyriMaintenance implements IHyriMaintenance {
     @Override
     public boolean disable() {
         if (this.active) {
-            if (this.triggerEvent(HyriMaintenanceEvent.Action.DISABLED)) {
-                this.active = false;
-                this.trigger = null;
-                this.reason = null;
+            this.active = false;
+            this.trigger = null;
+            this.reason = null;
 
-                return true;
-            }
+            this.triggerEvent(HyriMaintenanceEvent.Action.DISABLED);
 
-            this.enable(this.trigger, this.reason);
+            return true;
         }
         return false;
     }
@@ -68,18 +64,14 @@ public class HyriMaintenance implements IHyriMaintenance {
     @Override
     public void setReason(String reason) {
         if (this.active) {
-            if (this.triggerEvent(HyriMaintenanceEvent.Action.REASON_CHANGED)) {
-                this.reason = reason;
-            }
+            this.reason = reason;
+
+            this.triggerEvent(HyriMaintenanceEvent.Action.REASON_CHANGED);
         }
     }
 
-    private boolean triggerEvent(HyriMaintenanceEvent.Action action) {
-        final HyriCancellableEvent event = new HyriMaintenanceEvent(action);
-
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(event);
-
-        return !event.isCancelled();
+    private void triggerEvent(HyriMaintenanceEvent.Action action) {
+        HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriMaintenanceEvent(action));
     }
 
 }

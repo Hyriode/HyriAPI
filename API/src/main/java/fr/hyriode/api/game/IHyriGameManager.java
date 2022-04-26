@@ -13,11 +13,7 @@ public interface IHyriGameManager {
 
     IHyriGameInfo getGameInfo(String name);
 
-    void saveGameInfo(IHyriGameInfo game, boolean newGameInfo);
-
-    default void saveGameInfo(IHyriGameInfo game) {
-        this.saveGameInfo(game, false);
-    }
+    void saveGameInfo(IHyriGameInfo game);
 
     void deleteGameInfo(String gameName);
 

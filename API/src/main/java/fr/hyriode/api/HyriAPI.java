@@ -24,14 +24,7 @@ import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public abstract class HyriAPI {
-
-    public static void main(String[] args) {
-        System.out.println("Test");
-    }
 
     /** {@link Gson} instance with adapters */
     public static final Gson GSON = new GsonBuilder()

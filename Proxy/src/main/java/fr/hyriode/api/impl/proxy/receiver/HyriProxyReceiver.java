@@ -26,7 +26,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 16/02/2022 at 22:13
  */
-public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiver {
+public class HyriProxyReceiver implements IHyggPacketReceiver {
 
     @Override
     public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
@@ -76,25 +76,17 @@ public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiv
         }
 
         for (ProxiedPlayer player : from.getPlayers()) {
-            this.connectPlayer(player.getUniqueId(), toName);
+            connectPlayer(player.getUniqueId(), toName);
         }
     }
 
-    private void connectPlayer(UUID playerId, String server) {
+    public static void connectPlayer(UUID playerId, String server) {
         final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerId);
 
         if (player != null && player.isConnected() && serverInfo != null) {
+            System.out.println("Connecting player " + playerId + " to " + server);
             player.connect(serverInfo);
-        }
-    }
-
-    @Override
-    public void receive(String channel, HyriPacket packet) {
-        if (packet instanceof HyriSendPlayerPacket) {
-            final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
-
-            this.connectPlayer(sendPacket.getPlayerUUID(), sendPacket.getServerName());
         }
     }
 

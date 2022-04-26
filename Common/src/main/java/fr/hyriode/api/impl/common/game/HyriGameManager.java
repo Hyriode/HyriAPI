@@ -5,8 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameManager;
-import fr.hyriode.api.game.event.HyriGameInfoRegisteredEvent;
-import fr.hyriode.api.game.event.HyriGameInfoUnregisteredEvent;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.hydrion.client.module.ResourcesModule;
 import fr.hyriode.hystia.api.IHystiaAPI;
@@ -65,7 +63,7 @@ public class HyriGameManager implements IHyriGameManager {
 
         if (this.hydrionManager.isEnabled()) {
             try {
-                return this.resourcesModule.getGame(name)
+                final IHyriGameInfo gameInfo = this.resourcesModule.getGame(name)
                         .thenApply(response -> {
                             final JsonElement content = response.getContent();
 
@@ -74,6 +72,10 @@ public class HyriGameManager implements IHyriGameManager {
                             }
                             return null;
                         }).get();
+
+                HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY_FORMATTER.apply(name), HyriAPI.GSON.toJson(gameInfo)));
+
+                return gameInfo;
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -82,7 +84,7 @@ public class HyriGameManager implements IHyriGameManager {
     }
 
     @Override
-    public void saveGameInfo(IHyriGameInfo game, boolean newGameInfo) {
+    public void saveGameInfo(IHyriGameInfo game) {
         final String gameName = game.getName();
         final String serialized = HyriAPI.GSON.toJson(game);
 
@@ -90,10 +92,6 @@ public class HyriGameManager implements IHyriGameManager {
 
         if (this.hydrionManager.isEnabled()) {
             this.resourcesModule.addGame(gameName, serialized);
-        }
-
-        if (newGameInfo) {
-            HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriGameInfoRegisteredEvent(game));
         }
     }
 
@@ -104,8 +102,6 @@ public class HyriGameManager implements IHyriGameManager {
         if (this.hydrionManager.isEnabled()) {
             this.resourcesModule.removeGame(gameName);
         }
-
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriGameInfoUnregisteredEvent(gameName));
     }
 
     @Override

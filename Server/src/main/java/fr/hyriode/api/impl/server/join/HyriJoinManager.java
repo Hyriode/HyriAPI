@@ -108,6 +108,7 @@ public class HyriJoinManager implements IHyriJoinManager {
         }
 
         if (connect) {
+            System.out.println("Connecting " + playerId);
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
         }
         return null;
@@ -141,11 +142,10 @@ public class HyriJoinManager implements IHyriJoinManager {
 
     @Override
     public void addExpectedPlayer(UUID playerId) {
+        this.expectedModerators.remove(playerId);
         this.expectedPlayers.add(playerId);
 
         Bukkit.getScheduler().runTaskLater(this.plugin, () -> this.removeExpectedPlayer(playerId), 20 * 5L);
-
-        HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
     }
 
     @Override
@@ -170,11 +170,10 @@ public class HyriJoinManager implements IHyriJoinManager {
 
     @Override
     public void addExpectedModerator(UUID playerId) {
+        this.expectedModerators.remove(playerId);
         this.expectedModerators.add(playerId);
 
         Bukkit.getScheduler().runTaskLater(this.plugin, () -> this.removeExpectedModerator(playerId), 20 * 5L);
-
-        HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
     }
 
     @Override

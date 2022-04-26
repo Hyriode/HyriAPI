@@ -4,6 +4,8 @@ import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.player.IHyriPlayer;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -12,9 +14,9 @@ import fr.hyriode.api.player.IHyriPlayer;
 public abstract class HyriLevelingEvent extends HyriEvent {
 
     /** The player that owns the leveling */
-    private final IHyriPlayer player;
+    private final UUID player;
     /** The leveling object */
-    private final IHyriLeveling leveling;
+    private final String leveling;
 
     /**
      * Constructor of {@link HyriLevelingEvent}
@@ -22,7 +24,7 @@ public abstract class HyriLevelingEvent extends HyriEvent {
      * @param player The player
      * @param leveling The leveling
      */
-    public HyriLevelingEvent(IHyriPlayer player, IHyriLeveling leveling) {
+    public HyriLevelingEvent(UUID player, String leveling) {
         this.player = player;
         this.leveling = leveling;
     }
@@ -32,16 +34,11 @@ public abstract class HyriLevelingEvent extends HyriEvent {
      *
      * @return A {@link IHyriPlayer}
      */
-    public IHyriPlayer getPlayer() {
+    public UUID getPlayer() {
         return this.player;
     }
 
-    /**
-     * Get the leveling that triggered the event
-     *
-     * @return The {@link IHyriPlayer} object
-     */
-    public IHyriLeveling getLeveling() {
+    public String getLeveling() {
         return this.leveling;
     }
 

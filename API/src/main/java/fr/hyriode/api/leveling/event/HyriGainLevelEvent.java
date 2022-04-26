@@ -3,6 +3,8 @@ package fr.hyriode.api.leveling.event;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.player.IHyriPlayer;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -23,7 +25,7 @@ public class HyriGainLevelEvent extends HyriLevelingEvent {
      * @param oldLevel The old level of the player
      * @param newLevel The new level of the player
      */
-    public HyriGainLevelEvent(IHyriPlayer player, IHyriLeveling leveling, int oldLevel, int newLevel) {
+    public HyriGainLevelEvent(UUID player, String leveling, int oldLevel, int newLevel) {
         super(player, leveling);
         this.oldLevel = oldLevel;
         this.newLevel = newLevel;

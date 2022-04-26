@@ -11,9 +11,9 @@ import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
@@ -72,7 +72,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.lastLoginDate = this.firstLoginDate;
         this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
         this.hyriPlus = null;
-        this.plusColor = HyriChatColor.AQUA;
+        this.plusColor = HyriChatColor.LIGHT_PURPLE;
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
@@ -99,6 +99,8 @@ public class HyriPlayer implements IHyriPlayer {
         final String prefix = this.rank.getPrefix();
 
         if (this.rank.hasCustomPrefix()) {
+            return prefix;
+        } else if (this.rank.isStaff()) {
             return prefix;
         } else if (this.hasHyriPlus()) {
             return prefix + this.plusColor + "+";
@@ -205,6 +207,10 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasHyriPlus() {
+        if (this.rank.isStaff() || this.rank.getPlayerType() == HyriPlayerRankType.PARTNER) {
+            return true;
+        }
+
         if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
             this.hyriPlus = null;
             return false;
