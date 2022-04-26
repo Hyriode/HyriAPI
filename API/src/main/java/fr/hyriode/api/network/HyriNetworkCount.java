@@ -17,7 +17,6 @@ public class HyriNetworkCount {
 
     /**
      * Constructor of {@link HyriNetworkCount}
-     *
      */
     public HyriNetworkCount() {
         this.categories = new HashMap<>();
@@ -50,7 +49,6 @@ public class HyriNetworkCount {
         this.players += players;
     }
 
-
     /**
      * Remove a given amount of players
      *
@@ -82,7 +80,10 @@ public class HyriNetworkCount {
         if (playerCount != null) {
             return playerCount;
         }
-        return this.categories.put(category, new HyriPlayerCount(0));
+
+        this.categories.put(category, new HyriPlayerCount(0));
+
+        return this.getCategory(category);
     }
 
     /**

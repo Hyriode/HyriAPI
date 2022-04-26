@@ -37,8 +37,6 @@ public class HyriAPIPlugin extends JavaPlugin {
         this.registerListeners();
 
         this.loadMap();
-
-        HyriAPI.get().getServer().setState(IHyriServer.State.READY);
     }
 
     private void loadMap() {
@@ -55,19 +53,31 @@ public class HyriAPIPlugin extends JavaPlugin {
                     try {
                         final List<String> maps = gameType == null ? worldManager.getWorlds(serverType).get() : worldManager.getWorlds(serverType, gameType).get();
 
-                        Collections.shuffle(maps);
+                        if (maps != null && maps.size() > 0) {
+                            Collections.shuffle(maps);
 
-                        mapName = maps.get(0);
+                            for (String map : maps) {
+                                System.out.println(map);
+                            }
+
+                            mapName = maps.get(0);
+                        }
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
                 }
 
                 if (mapName != null) {
+                    this.api.getServer().setMap(mapName);
+
                     if (gameType != null) {
-                        worldManager.loadWorld(new File("./world/"), serverType, gameType, mapName);
+                        System.out.println("Loaded '" + mapName + "' map for the server (" + serverType + "#" + gameType + ").");
+
+                        worldManager.loadWorld(new File("world"), serverType, gameType, mapName);
                     } else {
-                        worldManager.loadWorld(new File("./world/"), serverType, mapName);
+                        worldManager.loadWorld(new File("world"), serverType, mapName);
+
+                        System.out.println("Loaded '" + mapName + "' map for the server (" + serverType + ").");
                     }
                 }
             }

@@ -4,6 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.join.IHyriJoinManager;
@@ -14,6 +15,7 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequester;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -68,7 +70,7 @@ public class HyriCServerManager implements IHyriServerManager {
 
     @Override
     public HyggServer getServer(String name) {
-        for (HyggServer server : this.getServers()) {
+        for (HyggServer server : this.servers.values()) {
             if (server.getName().equals(name)) {
                 return server;
             }
@@ -90,14 +92,7 @@ public class HyriCServerManager implements IHyriServerManager {
 
     @Override
     public List<HyggServer> getLobbies() {
-        final List<HyggServer> lobbies = new ArrayList<>();
-
-        for (HyggServer server : this.getServers()) {
-            if (server.getType().equals(HyggLobbyAPI.TYPE)) {
-                lobbies.add(server);
-            }
-        }
-        return lobbies;
+        return new ArrayList<>(this.getServers(HyggLobbyAPI.TYPE));
     }
 
     @Override

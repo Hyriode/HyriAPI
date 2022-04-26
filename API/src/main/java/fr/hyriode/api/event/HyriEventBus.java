@@ -3,10 +3,7 @@ package fr.hyriode.api.event;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -19,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class HyriEventBus implements IHyriEventBus {
 
-    protected final Map<Class<? extends HyriEvent>, Queue<Object>> eventHandlers = new ConcurrentHashMap<>();
+    protected final Map<Class<? extends HyriEvent>, Queue<HyriEventContext>> contexts = new ConcurrentHashMap<>();
 
     protected final String name;
 
@@ -32,52 +29,39 @@ public class HyriEventBus implements IHyriEventBus {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (this.isMethodValid(method)) {
                 final Class<? extends HyriEvent> eventClass = method.getParameterTypes()[0].asSubclass(HyriEvent.class);
-                Queue<Object> objects = this.eventHandlers.get(eventClass);
 
-                if (objects == null) {
-                    objects = new ConcurrentLinkedQueue<>();
+                Queue<HyriEventContext> contexts = this.contexts.get(eventClass);
+
+                if (contexts == null) {
+                    contexts = new ConcurrentLinkedQueue<>();
                 }
 
-                objects.add(object);
+                contexts.add(new HyriEventContext(method.getAnnotation(HyriEventHandler.class).priority(), object, method));
 
-                this.eventHandlers.put(eventClass, objects);
+                this.contexts.put(eventClass, contexts);
             }
         }
     }
 
     @Override
     public void unregister(Object object) {
-        for (Map.Entry<Class<? extends HyriEvent>, Queue<Object>> entry : this.eventHandlers.entrySet()) {
-            final Queue<Object> objects = entry.getValue();
+        for (Map.Entry<Class<? extends HyriEvent>, Queue<HyriEventContext>> entry : this.contexts.entrySet()) {
+            final Queue<HyriEventContext> contexts = entry.getValue();
 
-            objects.remove(object);
+            contexts.removeIf(context -> context.getObject().equals(object));
 
-            this.eventHandlers.put(entry.getKey(), objects);
+            this.contexts.put(entry.getKey(), contexts);
         }
     }
 
     @Override
     public void publish(HyriEvent event) {
         try {
-            final Queue<Object> objects = this.eventHandlers.get(event.getClass());
+            final Queue<HyriEventContext> contexts = this.contexts.get(event.getClass());
 
-            if (objects != null) {
-                final Map<HyriEventPriority, Map.Entry<Object, Method>> methods = new HashMap<>();
-
-                for (Object object : objects) {
-                    final Class<?> objectClass = object.getClass();
-
-                    for (Method method : objectClass.getDeclaredMethods()) {
-                        if (this.isMethodValid(method)) {
-                            methods.put(method.getAnnotation(HyriEventHandler.class).priority(), new AbstractMap.SimpleEntry<>(object, method));
-                        }
-                    }
-                }
-
-                for (Map.Entry<HyriEventPriority, Map.Entry<Object, Method>> sorted : methods.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
-                    final Map.Entry<Object, Method> entry = sorted.getValue();
-
-                    entry.getValue().invoke(entry.getKey(), event);
+            if (contexts != null) {
+                for (HyriEventContext context : contexts.stream().sorted(Comparator.comparingInt(object -> object.getPriority().getWeight())).collect(Collectors.toList())) {
+                    context.run(event);
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {

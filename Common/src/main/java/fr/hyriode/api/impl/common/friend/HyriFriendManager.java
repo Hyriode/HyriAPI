@@ -57,7 +57,7 @@ public class HyriFriendManager implements IHyriFriendManager {
                 e.printStackTrace();
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     private List<IHyriFriend> getFriendsFromRedis(UUID playerId) {
@@ -78,7 +78,7 @@ public class HyriFriendManager implements IHyriFriendManager {
             final JsonElement content = response.getContent();
 
             if (!content.isJsonNull()) {
-                final HyriFriends friends = HyriAPI.GSON.fromJson(content.toString(), HyriFriends.class);
+                final HyriFriends friends = HyriAPI.GSON.fromJson(content.getAsJsonObject().get("friends").toString(), HyriFriends.class);
 
                 return friends.getFriends();
             }
@@ -88,7 +88,12 @@ public class HyriFriendManager implements IHyriFriendManager {
 
     @Override
     public IHyriFriendHandler createHandler(UUID playerId) {
-        return new HyriFriendHandler(playerId, this.getFriends(playerId));
+        List<IHyriFriend> friends = this.getFriends(playerId);
+
+        if (friends == null) {
+            friends = new ArrayList<>();
+        }
+        return new HyriFriendHandler(playerId, friends);
     }
 
     @Override
@@ -98,7 +103,11 @@ public class HyriFriendManager implements IHyriFriendManager {
         if (friends != null) {
             return CompletableFuture.completedFuture(new HyriFriendHandler(playerId, friends));
         }
-        return this.getFriendsFromHydrion(playerId).thenApply(list -> new HyriFriendHandler(playerId, list));
+
+        if (this.hydrionManager.isEnabled()) {
+            return this.getFriendsFromHydrion(playerId).thenApply(list -> new HyriFriendHandler(playerId, list));
+        }
+        return null;
     }
 
     @Override
@@ -108,9 +117,11 @@ public class HyriFriendManager implements IHyriFriendManager {
             final String key = REDIS_KEY + playerId.toString();
             final List<IHyriFriend> oldFriends = this.getFriends(playerId);
 
-            for (IHyriFriend oldFriend : oldFriends) {
-                if (!friendHandler.areFriends(oldFriend.getUniqueId())) {
-                    jedis.srem(key, HyriAPI.GSON.toJson(oldFriend));
+            if (oldFriends != null) {
+                for (IHyriFriend oldFriend : oldFriends) {
+                    if (!friendHandler.areFriends(oldFriend.getUniqueId())) {
+                        jedis.srem(key, HyriAPI.GSON.toJson(oldFriend));
+                    }
                 }
             }
 
@@ -124,9 +135,9 @@ public class HyriFriendManager implements IHyriFriendManager {
     public void updateFriends(IHyriFriendHandler friendHandler) {
         final UUID playerId = friendHandler.getOwner();
 
-        if (this.isInCache(playerId)) {
+        if (this.isInCache(playerId) || HyriAPI.get().getConfiguration().isDevEnvironment()) {
             this.saveFriends(friendHandler);
-        } else {
+        } else if (this.hydrionManager.isEnabled()) {
             this.friendsModule.setFriends(playerId, HyriAPI.GSON.toJson(new HyriFriends(friendHandler.getFriends())));
         }
     }

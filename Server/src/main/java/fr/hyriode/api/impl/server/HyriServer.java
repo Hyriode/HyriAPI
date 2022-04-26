@@ -30,12 +30,15 @@ public class HyriServer implements IHyriServer {
     private IConfig config;
 
     private final String gameType;
-    private final String map;
+    private String map;
 
     private State state;
     private Runnable stopHandler;
 
     private final HyggdrasilManager hyggdrasilManager;
+
+    private final List<UUID> players;
+    private final List<UUID> playersPlaying;
 
     public HyriServer(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
         this.hyggdrasilManager = hyggdrasilManager;
@@ -46,6 +49,8 @@ public class HyriServer implements IHyriServer {
         this.state = State.STARTING;
         this.gameType = data.get(HyggServer.GAME_TYPE_KEY);
         this.map = data.get(HyggServer.MAP_KEY);
+        this.players = new ArrayList<>();
+        this.playersPlaying = new ArrayList<>();
     }
 
     @Override
@@ -87,12 +92,32 @@ public class HyriServer implements IHyriServer {
 
     @Override
     public List<UUID> getPlayers() {
-        final List<UUID> players = new ArrayList<>();
+        return this.players;
+    }
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            players.add(player.getUniqueId());
-        }
-        return players;
+    @Override
+    public void addPlayer(UUID player) {
+        this.players.add(player);
+    }
+
+    @Override
+    public void removePlayer(UUID player) {
+        this.players.remove(player);
+    }
+
+    @Override
+    public List<UUID> getPlayersPlaying() {
+        return this.playersPlaying;
+    }
+
+    @Override
+    public void addPlayerPlaying(UUID player) {
+        this.playersPlaying.add(player);
+    }
+
+    @Override
+    public void removePlayerPlaying(UUID player) {
+        this.playersPlaying.remove(player);
     }
 
     @Override
@@ -113,6 +138,10 @@ public class HyriServer implements IHyriServer {
     @Override
     public String getMap() {
         return this.map;
+    }
+
+    public void setMap(String map) {
+        this.map = map;
     }
 
     @Override

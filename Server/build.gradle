@@ -14,7 +14,7 @@ shadowJar {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'fr.hyriode:hystia-spigot:1.0.3'
+    shadow 'fr.hyriode:hystia-spigot:1.0.4'
     shadow project(':Common')
 }
 

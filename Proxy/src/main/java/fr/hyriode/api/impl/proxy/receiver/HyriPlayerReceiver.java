@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
+import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -30,6 +31,10 @@ public class HyriPlayerReceiver implements IHyriPacketReceiver {
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                 HyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
             }
+        } else if (packet instanceof HyriSendPlayerPacket) {
+            final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
+
+            HyriProxyReceiver.connectPlayer(sendPacket.getPlayerUUID(), sendPacket.getServerName());
         }
     }
 

@@ -44,7 +44,10 @@ public class HyriProxyListener implements Listener {
         }
 
         ping.setFavicon(this.favicon);
-        ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', network.getMotd()))));
+
+        if (network.getMotd() != null) {
+            ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', network.getMotd()))));
+        }
 
         event.setResponse(ping);
     }

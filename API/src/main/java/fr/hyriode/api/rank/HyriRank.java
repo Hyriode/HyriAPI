@@ -57,7 +57,7 @@ public class HyriRank {
      * @return <code>true</code> if the rank has the type
      */
     public boolean is(HyriPlayerRankType playerType) {
-        return this.playerType.getId() == playerType.getId();
+        return this.getPlayerType().getId() == playerType.getId();
     }
 
     /**
@@ -77,7 +77,7 @@ public class HyriRank {
      * @return <code>true</code> if the rank is superior or equal
      */
     public boolean isSuperior(HyriPlayerRankType playerType) {
-        return this.playerType.getId() >= playerType.getId();
+        return this.getPlayerType().getId() >= playerType.getId();
     }
 
     /**
@@ -159,6 +159,9 @@ public class HyriRank {
      * @return A {@link HyriPlayerRankType}
      */
     public HyriPlayerRankType getPlayerType() {
+        if (this.isStaff()) {
+            return HyriPlayerRankType.PARTNER;
+        }
         return this.playerType;
     }
 

@@ -1,6 +1,7 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.player.nickname.IHyriNicknameManager;
+import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 
 import java.util.UUID;
 
@@ -162,5 +163,12 @@ public interface IHyriPlayerManager {
      * @return The {@link IHyriNicknameManager}
      */
     IHyriNicknameManager getNicknameManager();
+
+    /**
+     * Get the whitelist manager instance
+     *
+     * @return The {@link IHyriWhitelistManager} instance
+     */
+    IHyriWhitelistManager getWhitelistManager();
 
 }

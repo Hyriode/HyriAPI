@@ -12,7 +12,7 @@ import java.util.UUID;
 public class Hyris extends HyriMoney {
 
     public Hyris(UUID playerUUID) {
-        super(playerUUID, "Hyris", HyriChatColor.GOLD);
+        super(playerUUID, "Hyris", HyriChatColor.LIGHT_PURPLE);
     }
 
 }

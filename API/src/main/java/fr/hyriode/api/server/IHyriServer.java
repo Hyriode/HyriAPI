@@ -29,6 +29,41 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     List<UUID> getPlayers();
 
     /**
+     * Add a player
+     *
+     * @param player The player to add
+     */
+    void addPlayer(UUID player);
+
+    /**
+     * Remove a player
+     *
+     * @param player The player to remove
+     */
+    void removePlayer(UUID player);
+
+    /**
+     * Get server players playing
+     *
+     * @return Server players
+     */
+    List<UUID> getPlayersPlaying();
+
+    /**
+     * Add a player playing
+     *
+     * @param player The player to add
+     */
+    void addPlayerPlaying(UUID player);
+
+    /**
+     * Remove a player playing
+     *
+     * @param player The player to remove
+     */
+    void removePlayerPlaying(UUID player);
+
+    /**
      * Get the slots of the server
      *
      * @return An amount of maximum players

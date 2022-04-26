@@ -73,7 +73,7 @@ public class NetworkLeveling implements IHyriLeveling {
         if (newLevel > oldLevel) {
             final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(this.playerId);
 
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriGainLevelEvent(account, this, oldLevel, newLevel));
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriGainLevelEvent(account.getUniqueId(), this.name, oldLevel, newLevel));
         }
     }
 

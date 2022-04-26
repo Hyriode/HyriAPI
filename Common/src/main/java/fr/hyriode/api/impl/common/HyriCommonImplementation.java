@@ -28,9 +28,12 @@ import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
+import fr.hyriode.hydrion.client.HydrionClient;
+import fr.hyriode.hydrion.client.response.HydrionResponse;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -9,6 +9,7 @@ import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.nickname.HyriNicknameManager;
 import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
+import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -17,6 +18,7 @@ import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import fr.hyriode.hydrion.client.module.PlayerModule;
 
 import java.util.UUID;
@@ -34,6 +36,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
 
     private final IHyriNicknameManager nicknameManager;
+    private final IHyriWhitelistManager whitelistManager;
 
     protected final HydrionManager hydrionManager;
     protected PlayerModule playerModule;
@@ -41,6 +44,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     public HyriCPlayerManager(HydrionManager hydrionManager) {
         this.hydrionManager = hydrionManager;
         this.nicknameManager = new HyriNicknameManager();
+        this.whitelistManager = new HyriWhitelistManager();
 
         if (this.hydrionManager.isEnabled()) {
             this.playerModule = this.hydrionManager.getClient().getPlayerModule();
@@ -83,10 +87,16 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
-        final IHyriPlayer player = HyriAPI.get().getRedisProcessor().get(jedis -> this.deserialize(jedis.get(PLAYERS_KEY.apply(uuid))));
+        final IHyriPlayer player = HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String json = jedis.get(PLAYERS_KEY.apply(uuid));
+
+            if (json != null) {
+                return this.deserialize(json);
+            }
+            return null;
+        });
 
         return player != null ? player : this.getPlayerFromHydrion(uuid);
-
     }
 
     @Override
@@ -140,7 +150,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
-    public void sendPlayer(IHyriPlayer player) {
+    public synchronized void sendPlayer(IHyriPlayer player) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
     }
 
@@ -181,6 +191,11 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     @Override
     public IHyriNicknameManager getNicknameManager() {
         return this.nicknameManager;
+    }
+
+    @Override
+    public IHyriWhitelistManager getWhitelistManager() {
+        return this.whitelistManager;
     }
 
 }

@@ -20,6 +20,7 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class HyriJoinListener implements Listener {
             final String name = connection.getName();
             final IHyriPlayer account = this.playerLoader.loadPlayerAccount(uuid, name);
 
-            if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff()) {
+            if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(name)) {
                 this.friendsLoader.loadFriends(uuid);
             }
         } catch (Exception e) {
@@ -66,14 +67,15 @@ public class HyriJoinListener implements Listener {
         final ProxiedPlayer player = event.getPlayer();
 
         if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
+            final UUID playerId = player.getUniqueId();
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId());
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
             final IHyriMaintenance maintenance = network.getMaintenance();
 
             event.setCancelled(true);
 
-            if (account.getRank().isStaff()) {
-                this.connectToLobby(player, network, event);
+            if (account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {
+                this.connectToLobby(player, event);
                 return;
             }
 
@@ -83,12 +85,12 @@ public class HyriJoinListener implements Listener {
                 player.disconnect(MessageUtil.createMaintenanceMessage(maintenance));
                 player.disconnect(MessageUtil.SERVER_FULL_MESSAGE);
             } else {
-                this.connectToLobby(player, network, event);
+                this.connectToLobby(player, event);
             }
         }
     }
 
-    private void connectToLobby(ProxiedPlayer player, IHyriNetwork network, ServerConnectEvent event) {
+    private void connectToLobby(ProxiedPlayer player, ServerConnectEvent event) {
         final IHyriServerManager serverManager = HyriAPI.get().getServerManager();
         final HyggServer lobby = serverManager.getLobby();
 
@@ -97,6 +99,12 @@ public class HyriJoinListener implements Listener {
         } else {
             event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
             event.setCancelled(false);
+
+            HyriAPI.get().getProxy().addPlayer();
+
+            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+
+            System.out.println("Add player");
 
             network.getPlayerCount().addPlayers(1);
             network.update();
@@ -108,16 +116,20 @@ public class HyriJoinListener implements Listener {
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         final ProxiedPlayer player = event.getPlayer();
+        final UUID uuid = player.getUniqueId();
+        final boolean result = this.playerLoader.unloadPlayerAccount(uuid);
 
-        if (player.isConnected()) {
-            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
-            final UUID uuid = player.getUniqueId();
-
-            this.playerLoader.unloadPlayerAccount(uuid);
+        if (result) {
             this.friendsLoader.unloadFriends(uuid);
+
+            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+
+            System.out.println("Removing player");
 
             network.getPlayerCount().removePlayers(1);
             network.update();
+
+            HyriAPI.get().getProxy().removePlayer();
 
             this.hyggdrasilManager.sendData();
         }

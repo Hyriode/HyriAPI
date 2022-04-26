@@ -33,8 +33,6 @@ public class HyriQueueManager implements IHyriQueueManager {
     public HyriQueueManager(HyggdrasilManager hyggdrasilManager) {
         this.hyggdrasilManager = hyggdrasilManager;
         this.handlers = new ArrayList<>();
-
-
     }
 
     public void start() {
@@ -70,7 +68,7 @@ public class HyriQueueManager implements IHyriQueueManager {
                 this.addPartyInQueue(party, game, gameType);
             }
         } else {
-            HyriAPI.get().getQueueManager().addPlayerInQueue(playerId, game, gameType);
+            this.addPlayerInQueue(playerId, game, gameType);
         }
     }
 
@@ -129,7 +127,7 @@ public class HyriQueueManager implements IHyriQueueManager {
 
     @Override
     public void removePartyFromQueue(UUID partyId) {
-        this.sendQueuePacket(new HyggQueueRemoveGroupPacket(partyId.toString()), content -> {
+        this.sendQueuePacket(new HyggQueueRemoveGroupPacket(partyId), content -> {
             if (content instanceof HyggQueueRemovePacket.Response.Content) {
                 final HyggQueueRemovePacket.Response response = ((HyggQueueRemovePacket.Response.Content) content).getType();
 
@@ -163,7 +161,7 @@ public class HyriQueueManager implements IHyriQueueManager {
             players.add(new HyggQueuePlayer(member, playerManager.getPlayer(member).getPriority()));
         }
 
-        return new HyggQueueGroup(party.getId().toString(), queueLeader, players);
+        return new HyggQueueGroup(party.getId(), queueLeader, players);
     }
 
     private void sendQueuePacket(HyggPacket packet, Consumer<HyggResponseContent> contentConsumer) {

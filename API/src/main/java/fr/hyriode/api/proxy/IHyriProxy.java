@@ -1,6 +1,7 @@
 package fr.hyriode.api.proxy;
 
 import fr.hyriode.api.application.IHyriApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 
 /**
  * Project: HyriAPI
@@ -15,6 +16,23 @@ public interface IHyriProxy extends IHyriApplication<IHyriProxy.State> {
      * @return Server players
      */
     int getPlayers();
+
+    /**
+     * Add a player
+     */
+    void addPlayer();
+
+    /**
+     * Remove a player
+     */
+    void removePlayer();
+
+    /**
+     * Get the proxy data
+     *
+     * @return A {@link HyggData}
+     */
+    HyggData getData();
 
     /**
      * The enumeration of all the states available for a proxy

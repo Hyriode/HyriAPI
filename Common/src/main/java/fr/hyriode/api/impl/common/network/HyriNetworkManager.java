@@ -32,12 +32,10 @@ public class HyriNetworkManager implements IHyriNetworkManager {
             this.networkModule = this.hydrionManager.getClient().getNetworkModule();
         }
 
-        if (this.getNetwork() == null) {
-            this.setNetwork(new HyriNetwork());
-        }
+        this.cacheNetwork(this.getNetwork());
     }
 
-    private void cacheNetwork(IHyriNetwork network) {
+    public void cacheNetwork(IHyriNetwork network) {
         HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY, HyriAPI.GSON.toJson(network)));
     }
 

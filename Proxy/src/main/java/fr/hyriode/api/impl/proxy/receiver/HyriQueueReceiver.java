@@ -6,9 +6,9 @@ import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
 import fr.hyriode.hyggdrasil.api.protocol.request.HyggRequestHeader;
 import fr.hyriode.hyggdrasil.api.protocol.response.HyggResponse;
 import fr.hyriode.hyggdrasil.api.protocol.response.IHyggResponse;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueTransferPacket;
-
-import java.util.UUID;
+import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueTransferGroupPacket;
+import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueTransferPlayerPacket;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * Project: HyriAPI
@@ -19,13 +19,21 @@ public class HyriQueueReceiver implements IHyggPacketReceiver {
 
     @Override
     public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
-        if (packet instanceof HyggQueueTransferPacket) {
-            final HyggQueueTransferPacket transferPacket = (HyggQueueTransferPacket) packet;
-            final UUID playerId = transferPacket.getPlayerId();
+        if (packet instanceof HyggQueueTransferGroupPacket) {
+            final HyggQueueTransferGroupPacket transferPacket = (HyggQueueTransferGroupPacket) packet;
 
-            HyriAPI.get().getServerManager().sendPartyToServer(playerId, transferPacket.getServerName());
+            HyriAPI.get().getServerManager().sendPartyToServer(transferPacket.getGroupId(), transferPacket.getServerName());
+
+            return HyggResponse.Type.SUCCESS;
+        } else if (packet instanceof HyggQueueTransferPlayerPacket) {
+            final HyggQueueTransferPlayerPacket transferPacket = (HyggQueueTransferPlayerPacket) packet;
+
+            HyriAPI.get().getServerManager().sendPlayerToServer(transferPacket.getPlayerId(), transferPacket.getServerName());
+
+            return HyggResponse.Type.SUCCESS;
         }
         return HyggResponse.Type.NONE;
     }
+
 }
 

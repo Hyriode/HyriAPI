@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.pubsub;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.pubsub.IHyriPubSub;
@@ -72,6 +73,8 @@ public class HyriPubSub implements IHyriPubSub {
 
     @Override
     public void subscribe(String channel, IHyriPacketReceiver receiver) {
+        HyriCommonImplementation.log("Subscribing '" + receiver.getClass().getSimpleName() + "' on " + channel);
+
         this.subscriber.registerReceiver(CHANNEL_PREFIX + channel, receiver);
     }
 

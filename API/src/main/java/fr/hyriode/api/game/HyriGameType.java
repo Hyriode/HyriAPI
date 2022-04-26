@@ -7,10 +7,16 @@ package fr.hyriode.api.game;
  */
 public class HyriGameType {
 
+    private final int id;
     private final String displayName;
 
-    public HyriGameType(String displayName) {
+    public HyriGameType(int id, String displayName) {
+        this.id = id;
         this.displayName = displayName;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getDisplayName() {
