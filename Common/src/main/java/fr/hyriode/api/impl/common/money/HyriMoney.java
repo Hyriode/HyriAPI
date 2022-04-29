@@ -15,16 +15,10 @@ import java.util.UUID;
 public abstract class HyriMoney implements IHyriMoney {
 
     protected long amount;
-
-    private final HyriChatColor color;
-    private final String name;
-
     private final UUID playerUUID;
 
-    public HyriMoney(UUID playerUUID, String name, HyriChatColor color) {
+    public HyriMoney(UUID playerUUID) {
         this.playerUUID = playerUUID;
-        this.name = name;
-        this.color = color;
     }
 
     @Override
@@ -120,16 +114,6 @@ public abstract class HyriMoney implements IHyriMoney {
     @Override
     public void setAmount(long amount) {
         this.amount = amount;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public HyriChatColor getColor() {
-        return this.color;
     }
 
 }

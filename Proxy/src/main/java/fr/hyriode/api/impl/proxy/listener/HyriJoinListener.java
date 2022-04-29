@@ -3,8 +3,7 @@ package fr.hyriode.api.impl.proxy.listener;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
-import fr.hyriode.api.impl.proxy.loader.HyriFriendsLoader;
-import fr.hyriode.api.impl.proxy.loader.HyriPlayerLoader;
+import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
@@ -20,10 +19,11 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Project: HyriAPI
@@ -32,15 +32,16 @@ import java.util.UUID;
  */
 public class HyriJoinListener implements Listener {
 
+    private final Queue<UUID> loginPlayers;
+
     private final HyriPlayerLoader playerLoader;
-    private final HyriFriendsLoader friendsLoader;
 
     private final HyggdrasilManager hyggdrasilManager;
 
     public HyriJoinListener(HyriCommonImplementation api) {
         this.hyggdrasilManager = api.getHyggdrasilManager();
         this.playerLoader = new HyriPlayerLoader(api.getHydrionManager());
-        this.friendsLoader = new HyriFriendsLoader(api.getHydrionManager());
+        this.loginPlayers = new ConcurrentLinkedQueue<>();
     }
 
     @EventHandler
@@ -52,7 +53,7 @@ public class HyriJoinListener implements Listener {
             final IHyriPlayer account = this.playerLoader.loadPlayerAccount(uuid, name);
 
             if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(name)) {
-                this.friendsLoader.loadFriends(uuid);
+                HyriAPI.get().getFriendManager().saveFriends(HyriAPI.get().getFriendManager().createHandler(uuid));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,7 +105,7 @@ public class HyriJoinListener implements Listener {
 
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
 
-            System.out.println("Add player");
+            this.loginPlayers.add(player.getUniqueId());
 
             network.getPlayerCount().addPlayers(1);
             network.update();
@@ -117,21 +118,22 @@ public class HyriJoinListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent event) {
         final ProxiedPlayer player = event.getPlayer();
         final UUID uuid = player.getUniqueId();
-        final boolean result = this.playerLoader.unloadPlayerAccount(uuid);
 
-        if (result) {
-            this.friendsLoader.unloadFriends(uuid);
+        if (this.loginPlayers.contains(uuid)) {
+            final boolean result = this.playerLoader.unloadPlayerAccount(uuid);
 
-            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+            if (result) {
+                final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
 
-            System.out.println("Removing player");
+                network.getPlayerCount().removePlayers(1);
+                network.update();
 
-            network.getPlayerCount().removePlayers(1);
-            network.update();
+                HyriAPI.get().getProxy().removePlayer();
 
-            HyriAPI.get().getProxy().removePlayer();
+                this.hyggdrasilManager.sendData();
 
-            this.hyggdrasilManager.sendData();
+                this.loginPlayers.remove(uuid);
+            }
         }
     }
 

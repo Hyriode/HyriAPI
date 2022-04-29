@@ -81,12 +81,14 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     }
 
     public void stop() {
-        HyriCommonImplementation.log("Stopping Redis connection...");
+        if (this.running) {
+            HyriCommonImplementation.log("Stopping Redis connection...");
 
-        this.running = false;
+            this.running = false;
 
-        this.jedisPool.close();
-        this.jedisPool.destroy();
+            this.jedisPool.close();
+            this.jedisPool.destroy();
+        }
     }
 
     @Override
@@ -102,6 +104,11 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     @Override
     public boolean isConnected() {
         return this.connected;
+    }
+
+    @Override
+    public HyriRedisConnection clone() {
+        return new HyriRedisConnection(this.hostname, this.port, this.password);
     }
 
 }

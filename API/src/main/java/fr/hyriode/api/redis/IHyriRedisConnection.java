@@ -31,4 +31,11 @@ public interface IHyriRedisConnection {
      */
     boolean isConnected();
 
+    /**
+     * Close the current instance of {@link IHyriRedisConnection}
+     *
+     * @return A new {@link IHyriRedisConnection} with the same data as the previous one
+     */
+    IHyriRedisConnection clone();
+
 }

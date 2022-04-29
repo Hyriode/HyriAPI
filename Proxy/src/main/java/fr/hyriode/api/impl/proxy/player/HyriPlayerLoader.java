@@ -1,6 +1,8 @@
-package fr.hyriode.api.impl.proxy.loader;
+package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
@@ -111,9 +113,13 @@ public class HyriPlayerLoader {
             account.setCurrentProxy(null);
 
             if (this.hydrionManager.isEnabled()) {
-                HyriAPI.get().getPlayerManager().removePlayer(uuid);
+                final IHyriFriendManager friendManager = HyriAPI.get().getFriendManager();
 
+                this.hydrionManager.getClient().getFriendsModule().setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(friendManager.getFriends(uuid))));
                 this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+
+                friendManager.removeFriends(uuid);
+                HyriAPI.get().getPlayerManager().removePlayer(uuid);
             } else {
                 account.update();
             }

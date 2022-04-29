@@ -12,6 +12,7 @@ import fr.hyriode.hystia.api.world.IWorldManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
@@ -97,11 +98,15 @@ public class HyriGameManager implements IHyriGameManager {
 
     @Override
     public void deleteGameInfo(String gameName) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY_FORMATTER.apply(gameName)));
+        this.deleteGameInfoFromRedis(gameName);
 
         if (this.hydrionManager.isEnabled()) {
             this.resourcesModule.removeGame(gameName);
         }
+    }
+
+    public void deleteGameInfoFromRedis(String gameName) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY_FORMATTER.apply(gameName)));
     }
 
     @Override
@@ -131,14 +136,14 @@ public class HyriGameManager implements IHyriGameManager {
                     final JsonElement content = response.getContent();
 
                     if (!content.isJsonNull()) {
-                        final List<IHyriGameInfo> all = HyriAPI.GSON.fromJson(content.getAsJsonArray(), new TypeToken<List<HyriGameInfo>>(){}.getType());
+                        final Map<String, IHyriGameInfo> all = HyriAPI.GSON.fromJson(content, new TypeToken<Map<String, HyriGameInfo>>(){}.getType());
 
                         HyriAPI.get().getRedisProcessor().process(jedis -> {
-                            for (IHyriGameInfo info : all) {
+                            for (IHyriGameInfo info : all.values()) {
                                 jedis.set(KEY_FORMATTER.apply(info.getName()), HyriAPI.GSON.toJson(info));
                             }
                         });
-                        return all;
+                        return new ArrayList<>(all.values());
                     }
                     return new ArrayList<IHyriGameInfo>();
                 }).get();
