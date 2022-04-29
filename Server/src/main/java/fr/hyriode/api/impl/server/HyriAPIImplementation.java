@@ -10,9 +10,11 @@ import fr.hyriode.api.impl.server.chat.StaffChatHandler;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
+import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.server.IHyriServer;
+import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.response.HydrionResponse;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -79,7 +81,8 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             processor.registerReceiver(HyggChannel.SERVERS, new HyriServerReceiver());
         }
 
-        this.getPubSub().subscribe(HyriChannel.CHAT, new HyriChatReceiver());
+        this.pubSub.subscribe(HyriChannel.CHAT, new HyriChatReceiver());
+        this.pubSub.subscribe(HyriSoundPacket.CHANNEL, new HyriSoundReceiver());
     }
 
     private void registerChatHandlers() {

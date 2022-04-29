@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
@@ -13,9 +12,7 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.FriendsModule;
 import fr.hyriode.hydrion.client.module.PlayerModule;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -140,7 +137,7 @@ public class HyriJoinListener implements Listener {
     private void onLeave(Player player) {
         final UUID uuid = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = playerManager.getPlayer(player.getUniqueId());
+        final IHyriPlayer account = playerManager.getPlayerFromRedis(player.getUniqueId());
 
         if (account != null) {
             if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
@@ -160,7 +157,7 @@ public class HyriJoinListener implements Listener {
             }
 
             if (this.hydrionManager.isEnabled()) {
-                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(HyriAPI.get().getFriendManager().getFriends(uuid))));
+                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(this.friendManager.getFriends(uuid))));
             }
         }
 

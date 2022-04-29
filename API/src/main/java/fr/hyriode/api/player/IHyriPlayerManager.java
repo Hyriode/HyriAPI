@@ -63,6 +63,14 @@ public interface IHyriPlayerManager {
     IHyriPlayer getPlayer(String name);
 
     /**
+     * Get a player from Redis with a given {@link UUID}
+     *
+     * @param uuid Player {@link UUID}
+     * @return A player instance
+     */
+    IHyriPlayer getPlayerFromRedis(UUID uuid);
+
+    /**
      * Get a player with a given {@link UUID} from Hydrion
      *
      * @param uuid Player {@link UUID}

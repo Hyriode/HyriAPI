@@ -1,9 +1,11 @@
 package fr.hyriode.api.impl.common.friend;
 
 import fr.hyriode.api.friend.IHyriFriend;
+import fr.hyriode.api.friend.IHyriFriendHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -20,6 +22,10 @@ public class HyriFriends {
         for (IHyriFriend friend : friends) {
             this.friends.add((HyriFriend) friend);
         }
+    }
+
+    public HyriFriends(IHyriFriendHandler friendHandler) {
+        this(friendHandler.getFriends());
     }
 
     public List<IHyriFriend> getFriends() {

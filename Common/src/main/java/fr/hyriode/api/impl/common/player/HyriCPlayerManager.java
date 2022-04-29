@@ -87,7 +87,14 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
-        final IHyriPlayer player = HyriAPI.get().getRedisProcessor().get(jedis -> {
+        final IHyriPlayer player = this.getPlayerFromRedis(uuid);
+
+        return player != null ? player : this.getPlayerFromHydrion(uuid);
+    }
+
+    @Override
+    public IHyriPlayer getPlayerFromRedis(UUID uuid) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final String json = jedis.get(PLAYERS_KEY.apply(uuid));
 
             if (json != null) {
@@ -95,8 +102,6 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
             }
             return null;
         });
-
-        return player != null ? player : this.getPlayerFromHydrion(uuid);
     }
 
     @Override

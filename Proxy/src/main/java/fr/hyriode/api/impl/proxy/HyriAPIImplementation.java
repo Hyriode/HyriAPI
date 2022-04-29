@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.HyriChatReceiver;
@@ -55,9 +56,17 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             network.setMotd(plugin.getConfiguration().getMotd());
             network.getMaintenance().enable(UUID.randomUUID(), null);
             network.getPlayerCount().setPlayers(0);
+
+            for (IHyriGameInfo gameInfo : this.gameManager.getGamesInfo()) {
+                if (gameInfo != null) {
+                    this.gameManager.deleteGameInfoFromRedis(gameInfo.getName());
+                }
+            }
+
+            this.gameManager.getGamesInfo();
         }
 
-        HyriAPI.get().getNetworkManager().setNetwork(network);
+        this.networkManager.setNetwork(network);
 
         this.registerReceivers();
     }

@@ -2,10 +2,12 @@ package fr.hyriode.api.impl.common.pubsub;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.pubsub.IHyriPubSub;
+import fr.hyriode.api.redis.IHyriRedisConnection;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
@@ -33,7 +35,10 @@ public class HyriPubSub implements IHyriPubSub {
     private final Sender sender;
     private final HyriPubSubSubscriber subscriber;
 
+    private final IHyriRedisConnection redisConnection;
+
     public HyriPubSub() {
+        this.redisConnection = HyriAPI.get().getRedisConnection().clone();
         this.sender = new Sender();
         this.subscriber = new HyriPubSubSubscriber();
 
@@ -50,7 +55,7 @@ public class HyriPubSub implements IHyriPubSub {
 
         this.subscriberThread = new Thread(() -> {
             while (this.running) {
-                try (final Jedis jedis = HyriAPI.get().getRedisResource()) {
+                try (final Jedis jedis = this.redisConnection.getResource()) {
                     jedis.psubscribe(this.subscriber, CHANNEL_PREFIX + "*");
                 }
             }
@@ -88,7 +93,7 @@ public class HyriPubSub implements IHyriPubSub {
         this.send(channel, packet, null);
     }
 
-    private static class Sender implements Runnable {
+    private class Sender implements Runnable {
 
         private final LinkedBlockingQueue<HyriPubSubMessage> messages = new LinkedBlockingQueue<>();
 
@@ -136,7 +141,7 @@ public class HyriPubSub implements IHyriPubSub {
 
         private void check() {
             try {
-                this.jedis = HyriAPI.get().getRedisResource();
+                this.jedis = redisConnection.getResource();
             } catch (Exception e) {
                 HyriCommonImplementation.log(Level.SEVERE, "[" + this.getClass().getSimpleName() + "] Couldn't connect to Redis server. Error: " + e.getMessage() + ". Recheck in 5 seconds.");
 
