@@ -1,8 +1,10 @@
 package fr.hyriode.api.party;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.queue.IHyriQueue;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,6 +59,14 @@ public interface IHyriParty {
     Map<UUID, HyriPartyRank> getMembers();
 
     /**
+     * Get all the members of the party with a given rank
+     *
+     * @param rank The rank of the members to find
+     * @return A list of members
+     */
+    List<UUID> getMembers(HyriPartyRank rank);
+
+    /**
      * Invite a given player in the party
      *
      * @param sender The {@link UUID} of the invitation's sender
@@ -94,6 +104,14 @@ public interface IHyriParty {
      * @param uuid Member {@link UUID}
      */
     void removeMember(UUID uuid);
+
+    /**
+     * Kick a player from the party
+     *
+     * @param uuid The player to kick
+     * @param kicker The player that kicked the member from the party
+     */
+    void kickMember(UUID uuid, UUID kicker);
 
     /**
      * Get if the party contains a member with the given {@link UUID}
@@ -140,11 +158,26 @@ public interface IHyriParty {
     void setServer(String server);
 
     /**
+     * Check if the party chat is enabled for party members
+     *
+     * @return <code>true</code> if yes
+     */
+    boolean isChatEnabled();
+
+    /**
+     * Set if the party chat is enabled or not
+     *
+     * @param chatEnabled New value for enabling the chat or not
+     */
+    void setChatEnabled(boolean chatEnabled);
+
+    /**
      * Send a message to all the members of the party
      *
+     * @param sender The sender of the message
      * @param message The message to send
      */
-    void sendMessage(String message);
+    void sendMessage(UUID sender, String message);
 
     /**
      * Send a message component to all the members of the party
@@ -159,6 +192,39 @@ public interface IHyriParty {
      * @param reason The reason of why the party need to be disbanded
      */
     void disband(HyriPartyDisbandReason reason);
+
+    /**
+     * Warp a party on a given server
+     *
+     * @param server The server where the party will be sent
+     */
+    void warp(String server);
+
+    /**
+     * Get the current queue of the party.<br>
+     * It can return <code>null</code> if the party is not in a queue
+     *
+     * @return A {@link IHyriQueue} object
+     */
+    IHyriQueue getQueue();
+
+    /**
+     * Check if the party is in a queue
+     *
+     * @return <code>true</code> if yes
+     */
+    default boolean hasQueue() {
+        return this.getQueue() != null;
+    }
+
+    /**
+     * Set the queue of the party
+     *
+     * @param game The game
+     * @param gameType The game type
+     * @param map The map used for the game
+     */
+    void setQueue(String game, String gameType, String map);
 
     /**
      * Update a player in Redis

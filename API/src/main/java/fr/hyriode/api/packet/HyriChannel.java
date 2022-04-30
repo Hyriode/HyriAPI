@@ -13,5 +13,7 @@ public class HyriChannel {
     public static final String CHAT = "chat";
     /** The channel used to send join requests */
     public static final String JOIN = "join";
+    /** The channel used to send information to the servers */
+    public static final String SERVERS = "servers";
 
 }

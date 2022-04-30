@@ -15,8 +15,6 @@ public class HyriNetworkEventBus extends HyriEventBus implements IHyriPacketRece
 
     private static final String CHANNEL = "events";
 
-    private boolean publishingOnDefault = true;
-
     public HyriNetworkEventBus() {
         super("network");
 
@@ -34,13 +32,6 @@ public class HyriNetworkEventBus extends HyriEventBus implements IHyriPacketRece
     }
 
     private void publish0(HyriEvent event, boolean async) {
-        if (this.publishingOnDefault) {
-            if (async) {
-                HyriAPI.get().getEventBus().publishAsync(event);
-            } else {
-                HyriAPI.get().getEventBus().publish(event);
-            }
-        }
         HyriAPI.get().getPubSub().send(CHANNEL, new HyriNetworkEventPacket(event.getClass(), event, async));
     }
 
@@ -56,24 +47,6 @@ public class HyriNetworkEventBus extends HyriEventBus implements IHyriPacketRece
                 super.publish(event);
             }
         }
-    }
-
-    /**
-     * Check if the event bus is also publishing events on default event bus
-     *
-     * @return <code>true</code> if yes
-     */
-    public boolean isPublishingOnDefault() {
-        return this.publishingOnDefault;
-    }
-
-    /**
-     * Set if the network event bus publishes events on default event bus
-     *
-     * @param publishingOnDefault New value
-     */
-    public void setPublishingOnDefault(boolean publishingOnDefault) {
-        this.publishingOnDefault = publishingOnDefault;
     }
 
 }

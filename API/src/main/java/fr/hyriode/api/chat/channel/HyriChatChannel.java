@@ -1,4 +1,4 @@
-package fr.hyriode.api.chat;
+package fr.hyriode.api.chat.channel;
 
 public enum HyriChatChannel {
 
@@ -10,7 +10,7 @@ public enum HyriChatChannel {
     private final String channel;
 
     HyriChatChannel() {
-        this.channel = name().toLowerCase();
+        this.channel = this.name().toLowerCase();
     }
 
     public String getChannel() {

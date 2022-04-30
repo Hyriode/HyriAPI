@@ -58,7 +58,7 @@ public class HyriQueueManager implements IHyriQueueManager {
     }
 
     @Override
-    public void addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType) {
+    public boolean addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType) {
         final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
 
         if (account.hasParty()) {
@@ -66,10 +66,13 @@ public class HyriQueueManager implements IHyriQueueManager {
 
             if (party.isLeader(playerId)) {
                 this.addPartyInQueue(party, game, gameType);
+                return true;
             }
+            return false;
         } else {
             this.addPlayerInQueue(playerId, game, gameType);
         }
+        return true;
     }
 
     @Override

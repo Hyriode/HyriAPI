@@ -1,4 +1,4 @@
-package fr.hyriode.api.chat;
+package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -54,6 +54,25 @@ public interface IHyriChatChannelManager {
     }
 
     /**
+     * Send a given text component on a channel
+     *
+     * @param channel The channel to use
+     * @param component The component to send
+     * @param force <code>true</code> to bypass checks
+     */
+    void sendComponent(String channel, String component, boolean force);
+
+    /**
+     * Send a given text component on a channel
+     *
+     * @param channel The channel to use
+     * @param component The component to send
+     */
+    default void sendComponent(String channel, String component) {
+        this.sendComponent(channel, component, false);
+    }
+
+    /**
      * <code>true</code> if the player can access to the channel.
      * @param channel The channel to use.
      * @param player The player to check.
@@ -64,6 +83,10 @@ public interface IHyriChatChannelManager {
         final IHyriChatChannelHandler handler = HyriAPI.get().getChatChannelManager().getHandler(channel);
         final HyriPlayerRankType playerRankType = handler.getRequiredPlayerRank();
         final HyriStaffRankType staffRankType = handler.getRequiredStaffRank();
+
+        if (playerRankType == null && staffRankType == null) {
+            return true;
+        }
 
         boolean result = playerRankType != null && rank.isSuperior(playerRankType);
 

@@ -1,4 +1,4 @@
-package fr.hyriode.api.chat;
+package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
@@ -37,8 +37,8 @@ public interface IHyriChatChannelHandler {
     boolean isAcrossNetwork();
 
     /**
-     * Triggered when a message is sent to the channel.
-     * /!\ The sender should be the sender UUID, or a plugin name if the message is sent by the console or a plugin !
+     * Triggered when a message is received on the channel.<br>
+     * /!\ The sender should be the sender UUID, or a plugin name if the message is sent by the console or a plugin!
      *
      * @param channel The channel name.
      * @param message The message.
@@ -46,5 +46,14 @@ public interface IHyriChatChannelHandler {
      * @param force <code>true</code> to bypass checks.
      */
     void onMessage(String channel, String message, UUID sender, boolean force);
+
+    /**
+     * Triggered when a component is received on the channel.<br>
+     *
+     * @param channel The channel name
+     * @param component The received component
+     * @param force <code>true</code> to bypass checks
+     */
+    void onComponent(String channel, String component, boolean force);
 
 }
