@@ -25,7 +25,7 @@ import java.util.logging.Level;
  */
 public class HyriPubSub implements IHyriPubSub {
 
-    private static final String CHANNEL_PREFIX = "Hyriode@";
+    private static final String CHANNEL_PREFIX = "hyriode@";
 
     private Thread senderThread;
     private Thread subscriberThread;

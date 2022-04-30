@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +57,15 @@ public class HyriEventBus implements IHyriEventBus {
 
     @Override
     public void publish(HyriEvent event) {
+        this.publish0(event);
+    }
+
+    @Override
+    public void publishAsync(HyriEvent event) {
+        CompletableFuture.runAsync(() -> this.publish0(event));
+    }
+
+    private void publish0(HyriEvent event) {
         try {
             final Queue<HyriEventContext> contexts = this.contexts.get(event.getClass());
 
@@ -67,11 +77,6 @@ public class HyriEventBus implements IHyriEventBus {
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void publishAsync(HyriEvent event) {
-        CompletableFuture.runAsync(() -> this.publish(event));
     }
 
     private boolean isMethodValid(Method method) {

@@ -105,6 +105,16 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
+    public IHyriPlayer getPlayerFromRedis(String name) {
+        final UUID playerId = this.getPlayerId(name, false);
+
+        if (playerId != null) {
+            return this.getPlayerFromRedis(playerId);
+        }
+        return null;
+    }
+
+    @Override
     public IHyriPlayer getPlayerFromHydrion(UUID uuid) {
         if (this.hydrionManager.isEnabled()) {
             try {

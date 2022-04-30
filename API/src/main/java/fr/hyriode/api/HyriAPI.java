@@ -3,7 +3,7 @@ package fr.hyriode.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.hyriode.api.booster.IHyriBoosterManager;
-import fr.hyriode.api.chat.IHyriChatChannelManager;
+import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;

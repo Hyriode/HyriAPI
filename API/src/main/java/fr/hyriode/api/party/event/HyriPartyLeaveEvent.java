@@ -28,7 +28,7 @@ public class HyriPartyLeaveEvent extends HyriPartyMemberEvent {
      * @return <code>true</code> if the player is the party leader
      */
     public boolean isLeader() {
-        return this.party.getLeader() == this.member;
+        return this.getParty().getLeader() == this.member;
     }
 
 }

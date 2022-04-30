@@ -108,7 +108,6 @@ public class HyriJoinManager implements IHyriJoinManager {
         }
 
         if (connect) {
-            System.out.println("Connecting " + playerId);
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
         }
         return null;
@@ -134,6 +133,10 @@ public class HyriJoinManager implements IHyriJoinManager {
         final String serverName = HyriAPI.get().getServer().getName();
 
         for (UUID playerId : party.getMembers().keySet()) {
+            if (HyriAPI.get().getPlayerManager().getPlayer(playerId).getCurrentServer().equals(serverName)) {
+                continue;
+            }
+
             this.addExpectedPlayer(playerId);
 
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, serverName);

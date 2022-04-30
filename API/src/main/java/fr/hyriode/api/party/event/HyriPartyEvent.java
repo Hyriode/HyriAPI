@@ -1,7 +1,10 @@
 package fr.hyriode.api.party.event;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.party.IHyriParty;
+
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -11,7 +14,7 @@ import fr.hyriode.api.party.IHyriParty;
 public abstract class HyriPartyEvent extends HyriEvent {
 
     /** The party that triggered the event */
-    protected final IHyriParty party;
+    protected final UUID party;
 
     /**
      * Constructor of {@link HyriPartyEvent}
@@ -19,7 +22,7 @@ public abstract class HyriPartyEvent extends HyriEvent {
      * @param party The {@link IHyriParty} object
      */
     public HyriPartyEvent(IHyriParty party) {
-        this.party = party;
+        this.party = party.getId();
     }
 
     /**
@@ -28,7 +31,7 @@ public abstract class HyriPartyEvent extends HyriEvent {
      * @return The {@link IHyriParty} object
      */
     public IHyriParty getParty() {
-        return this.party;
+        return HyriAPI.get().getPartyManager().getParty(this.party);
     }
 
 }

@@ -3,10 +3,13 @@ package fr.hyriode.api.impl.proxy.listener;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.player.packet.HyriPlayerLeavePacket;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.packet.HyriChannel;
+import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
@@ -132,9 +135,14 @@ public class HyriJoinListener implements Listener {
 
                 this.hyggdrasilManager.sendData();
 
+                HyriAPI.get().getPubSub().send(HyriChannel.SERVERS, new HyriPlayerLeavePacket(uuid));
+
                 this.loginPlayers.remove(uuid);
             }
+            return;
         }
+
+        HyriAPI.get().getPlayerManager().removePlayer(uuid);
     }
 
 }

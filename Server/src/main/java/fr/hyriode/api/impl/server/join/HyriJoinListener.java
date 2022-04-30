@@ -5,6 +5,11 @@ import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.player.packet.HyriPlayerLeavePacket;
+import fr.hyriode.api.packet.HyriChannel;
+import fr.hyriode.api.packet.HyriPacket;
+import fr.hyriode.api.packet.IHyriPacketReceiver;
+import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
@@ -12,6 +17,7 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.FriendsModule;
 import fr.hyriode.hydrion.client.module.PlayerModule;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,14 +29,18 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Date;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Project: HyriAPI
  * Created by Corentin
  * on 17/02/2022 at 18:36
  */
-public class HyriJoinListener implements Listener {
+public class HyriJoinListener implements Listener, IHyriPacketReceiver {
+
+    private final Queue<UUID> disconnectedFromProxy;
 
     private final IHyriFriendManager friendManager;
 
@@ -47,6 +57,7 @@ public class HyriJoinListener implements Listener {
         this.hydrionManager = hydrionManager;
         this.joinManager = joinManager;
         this.friendManager = HyriAPI.get().getFriendManager();
+        this.disconnectedFromProxy = new ConcurrentLinkedQueue<>();
 
         if (this.hydrionManager.isEnabled()) {
             final HydrionClient client = this.hydrionManager.getClient();
@@ -54,6 +65,8 @@ public class HyriJoinListener implements Listener {
             this.playerModule = client.getPlayerModule();
             this.friendsModule = client.getFriendsModule();
         }
+
+        HyriAPI.get().getPubSub().subscribe(HyriChannel.SERVERS, this);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -111,6 +124,12 @@ public class HyriJoinListener implements Listener {
             this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
         }
 
+        final IHyriParty party = HyriAPI.get().getPartyManager().getParty(account.getParty());
+
+        if (party != null) {
+            party.setServer(account.getCurrentServer());
+        }
+
         account.update();
 
         this.joinManager.onJoin(player);
@@ -166,6 +185,23 @@ public class HyriJoinListener implements Listener {
         HyriAPI.get().getServer().removePlayer(uuid);
 
         this.hyggdrasilManager.sendData();
+
+        if (this.disconnectedFromProxy.remove(uuid)) {
+            playerManager.removePlayer(uuid);
+        }
+    }
+
+    @Override
+    public void receive(String channel, HyriPacket packet) {
+        if (packet instanceof HyriPlayerLeavePacket) {
+            final HyriPlayerLeavePacket leavePacket = (HyriPlayerLeavePacket) packet;
+            final UUID playerId = leavePacket.getPlayer();
+            final Player player = Bukkit.getPlayer(playerId);
+
+            if (player != null) {
+                this.disconnectedFromProxy.add(playerId);
+            }
+        }
     }
 
 }

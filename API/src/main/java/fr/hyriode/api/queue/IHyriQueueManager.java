@@ -15,7 +15,7 @@ public interface IHyriQueueManager {
 
     void removeHandler(IHyriQueueHandler handler);
 
-    void addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType);
+    boolean addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType);
 
     void addPlayerInQueue(UUID playerId, String game, String gameType);
 

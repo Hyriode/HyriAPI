@@ -1,11 +1,12 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.chat.IHyriChatChannelHandler;
+import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.network.HyriNetwork;
 import fr.hyriode.api.impl.server.chat.GlobalChatHandler;
 import fr.hyriode.api.impl.server.chat.PartnerChatHandler;
+import fr.hyriode.api.impl.server.chat.PartyChatHandler;
 import fr.hyriode.api.impl.server.chat.StaffChatHandler;
 import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
@@ -13,10 +14,7 @@ import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.sound.HyriSoundPacket;
-import fr.hyriode.hydrion.client.HydrionClient;
-import fr.hyriode.hydrion.client.response.HydrionResponse;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
@@ -26,8 +24,6 @@ import fr.hyriode.hystia.spigot.HystiaImpl;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.BiConsumer;
 
 /**
  * Project: HyriAPI
@@ -86,7 +82,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private void registerChatHandlers() {
-        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler());
+        final List<IHyriChatChannelHandler> handlers = Arrays.asList(new PartnerChatHandler(), new StaffChatHandler(), new GlobalChatHandler(), new PartyChatHandler());
 
         handlers.forEach(this.chatChannelManager::registerChannel);
     }

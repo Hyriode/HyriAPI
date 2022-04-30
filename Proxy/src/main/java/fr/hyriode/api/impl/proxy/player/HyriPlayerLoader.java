@@ -54,6 +54,7 @@ public class HyriPlayerLoader {
         account.setName(name);
         account.setLastLoginDate(new Date(System.currentTimeMillis()));
         account.setCurrentProxy(HyriAPI.get().getProxy().getName());
+
         account.update();
 
         if (this.hydrionManager.isEnabled()) {
@@ -97,6 +98,8 @@ public class HyriPlayerLoader {
                 account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
                 account.setCurrentServer(null);
                 account.setLastServer(null);
+                account.setInVanishMode(false);
+                account.setInModerationMode(false);
 
                 final IHyriNickname nickname = account.getNickname();
 
@@ -111,6 +114,7 @@ public class HyriPlayerLoader {
 
             account.setOnline(false);
             account.setCurrentProxy(null);
+            account.update();
 
             if (this.hydrionManager.isEnabled()) {
                 final IHyriFriendManager friendManager = HyriAPI.get().getFriendManager();
@@ -119,10 +123,8 @@ public class HyriPlayerLoader {
                 this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
 
                 friendManager.removeFriends(uuid);
-                HyriAPI.get().getPlayerManager().removePlayer(uuid);
-            } else {
-                account.update();
             }
+
             return result;
         }
         return false;

@@ -1,9 +1,9 @@
 package fr.hyriode.api.impl.server.chat;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.chat.HyriChatChannel;
-import fr.hyriode.api.chat.IHyriChatChannelHandler;
-import fr.hyriode.api.chat.IHyriChatChannelManager;
+import fr.hyriode.api.chat.channel.HyriChatChannel;
+import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
+import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
@@ -11,13 +11,19 @@ import fr.hyriode.api.rank.type.HyriStaffRankType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class PartnerChatHandler implements IHyriChatChannelHandler {
+public class PartnerChatHandler extends CommonChatHandler {
+
+    public PartnerChatHandler() {
+        super(ChatColor.GOLD + "Partner » ");
+    }
 
     @Override
     public String getChannel() {
@@ -42,12 +48,12 @@ public class PartnerChatHandler implements IHyriChatChannelHandler {
     @Override
     public void onMessage(String channel, String message, UUID sender, boolean force) {
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            if (!IHyriChatChannelManager.canPlayerAccessChannel(channel, HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId()))) {
+            if (!IHyriChatChannelManager.canPlayerAccessChannel(channel, HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId())) && !force) {
                 continue;
             }
 
             final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(sender);
-            final ComponentBuilder builder = new ComponentBuilder(ChatColor.GOLD + "Partner » ")
+            final ComponentBuilder builder = new ComponentBuilder(this.prefix)
                     .append(account.getNameWithRank());
 
             if (account.getRank().isStaff()) {

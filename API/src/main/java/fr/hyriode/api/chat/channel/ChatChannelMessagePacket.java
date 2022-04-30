@@ -1,4 +1,4 @@
-package fr.hyriode.api.chat.packet;
+package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.packet.HyriPacket;
 

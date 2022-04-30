@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.settings;
 
+import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.settings.HyriLanguage;
 import fr.hyriode.api.settings.HyriPlayersVisibilityLevel;
 import fr.hyriode.api.settings.HyriPrivateMessagesLevel;
@@ -30,7 +31,8 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
         this.globalChatMessagesEnabled = true;
         this.privateMessagesSoundEnabled = true;
         this.language = HyriLanguage.FR;
-        this.chatChannel = "global";
+        this.chatChannel = HyriChatChannel.GLOBAL.getChannel();
+        this.autoQueueEnabled = true;
     }
 
     @Override
