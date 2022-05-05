@@ -2,9 +2,11 @@ package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.money.IHyriMoneyCallback;
+import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.player.IHyriPlayer;
+
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -14,44 +16,52 @@ import fr.hyriode.api.player.IHyriPlayer;
 public class HyriMoneyManager implements IHyriMoneyManager {
 
     @Override
-    public void creditMoney(IHyriPlayer player, IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, boolean sendMessage, String reason, IHyriMoneyCallback callback) {
-        if (action.equals(IHyriMoney.HyriMoneyAction.ADD)) {
+    public void creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
+        final IHyriPlayer player = IHyriPlayer.get(playerId);
+        final IHyriMoneyAction.Type type = action.getType();
+        final long initial = action.getAmount();
+        final long amount = type == IHyriMoneyAction.Type.ADD ? (action.isMultiplier() ? money.multiply(initial, player) : initial) : initial;
+
+        if (amount <= 0) {
+            return;
+        }
+
+        if (type == IHyriMoneyAction.Type.ADD) {
             money.setAmount(money.getAmount() + amount);
-        } else if (action.equals(IHyriMoney.HyriMoneyAction.REMOVE)) {
+        } else if (type == IHyriMoneyAction.Type.REMOVE) {
             final long newAmount = money.getAmount() - amount;
 
             if (newAmount >= 0) {
                 money.setAmount(newAmount);
             } else {
-                throw new IllegalArgumentException("Cannot set player money under 0!");
+                money.setAmount(0);
             }
-        } else {
-            throw new IllegalArgumentException("Money action is not valid!");
         }
 
-        if (sendMessage) {
-            final String message = this.getMoneyMessage(action, money, amount, reason);
+        if (action.isMessage()) {
+            final String message = this.getMoneyMessage(player, action, amount, money);
 
-            HyriAPI.get().getPlayerManager().sendMessage(player.getUniqueId(), message);
+            HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
         }
 
-        if (callback != null) {
-            callback.call(action, reason, money.getAmount(), amount);
-        }
-
-        HyriAPI.get().getPlayerManager().sendPlayer(player);
+        player.update();
     }
 
     @Override
-    public String getMoneyMessage(IHyriMoney.HyriMoneyAction action, IHyriMoney money, long amount, String reason) {
+    public String getMoneyMessage(IHyriPlayer player, IHyriMoneyAction action, long finalAmount, IHyriMoney money) {
+        final IHyriMoneyAction.Type type = action.getType();
+        final String reason = action.getReason();
+
         String sign = "";
-        if (action.equals(IHyriMoney.HyriMoneyAction.ADD)) {
+        if (type == IHyriMoneyAction.Type.ADD) {
             sign = "+";
-        } else if (action.equals(IHyriMoney.HyriMoneyAction.REMOVE)) {
+        } else if (type == IHyriMoneyAction.Type.REMOVE) {
             sign = "-";
         }
 
-        return money.getColor() + sign + amount + " " + money.getName() + (reason != null && !reason.isEmpty() ? " (" + reason + ")" : "");
+        final int multiplier = (int) money.getMultiplier(player) * 100;
+
+        return money.getColor() + sign + finalAmount + " " + money.getName() + (action.isMultiplier() ? "+" + multiplier + "%" : "") + (reason != null && !reason.isEmpty() ? " (" + reason + ")" : "");
     }
 
 }

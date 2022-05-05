@@ -6,6 +6,7 @@ import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hystia.api.config.IConfig;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -147,6 +148,11 @@ public class HyriServer implements IHyriServer {
     @Override
     public HyggData getData() {
         return this.data;
+    }
+
+    @Override
+    public double getTPS() {
+        return MinecraftServer.getServer().recentTps[0];
     }
 
     @Override

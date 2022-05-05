@@ -13,14 +13,7 @@ public class HyriNetworkCount {
     /** The amount of players on the network */
     private int players;
     /** The count of players in each game */
-    private final Map<String, HyriPlayerCount> categories;
-
-    /**
-     * Constructor of {@link HyriNetworkCount}
-     */
-    public HyriNetworkCount() {
-        this.categories = new HashMap<>();
-    }
+    private final Map<String, HyriPlayerCount> categories = new HashMap<>();
 
     /**
      * Get the amount of players playing on the network
@@ -75,15 +68,17 @@ public class HyriNetworkCount {
      * @return A {@link HyriPlayerCount} linked to the game
      */
     public HyriPlayerCount getCategory(String category) {
-        final HyriPlayerCount playerCount = this.categories.get(category);
+        HyriPlayerCount playerCount = this.categories.get(category);
 
         if (playerCount != null) {
             return playerCount;
         }
 
-        this.categories.put(category, new HyriPlayerCount(0));
+        playerCount = new HyriPlayerCount();
 
-        return this.getCategory(category);
+        this.categories.put(category, playerCount);
+
+        return playerCount;
     }
 
     /**
@@ -93,6 +88,14 @@ public class HyriNetworkCount {
      */
     public Map<String, HyriPlayerCount> getCategories() {
         return this.categories;
+    }
+
+    /**
+     * Reset the player count
+     */
+    public void reset() {
+        this.players = 0;
+        this.categories.clear();
     }
 
 }

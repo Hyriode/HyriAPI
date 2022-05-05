@@ -22,6 +22,7 @@ import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import fr.hyriode.hydrion.client.module.PlayerModule;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
@@ -34,6 +35,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     private static final Function<UUID, String> PLAYERS_KEY = uuid -> "players:" + uuid.toString();
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
+    private static final Function<UUID, String> PREFIX_KEY = uuid -> "players-prefix:" + uuid.toString();
 
     private final IHyriNicknameManager nicknameManager;
     private final IHyriWhitelistManager whitelistManager;
@@ -89,7 +91,12 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     public IHyriPlayer getPlayer(UUID uuid) {
         final IHyriPlayer player = this.getPlayerFromRedis(uuid);
 
-        return player != null ? player : this.getPlayerFromHydrion(uuid);
+        try {
+            return player != null ? player : this.getPlayerFromHydrion(uuid).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -115,22 +122,25 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
-    public IHyriPlayer getPlayerFromHydrion(UUID uuid) {
+    public CompletableFuture<IHyriPlayer> getPlayerFromHydrion(UUID uuid) {
         if (this.hydrionManager.isEnabled()) {
-            try {
-                return this.playerModule.getPlayer(uuid).thenApply(response -> {
-                    final JsonElement content = response.getContent();
+            return this.playerModule.getPlayer(uuid).thenApply(response -> {
+                final JsonElement content = response.getContent();
 
-                    if (!content.isJsonNull()) {
-                        return this.deserialize(content.toString());
-                    }
-                    return null;
-                }).get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+                if (!content.isJsonNull()) {
+                    return this.deserialize(content.toString());
+                }
+                return null;
+            });
         }
         return null;
+    }
+
+    @Override
+    public void sendPlayerToHydrion(IHyriPlayer player) {
+        if (this.hydrionManager.isEnabled()) {
+            this.playerModule.setPlayer(player.getUniqueId(), HyriAPI.GSON.toJson(player));
+        }
     }
 
     @Override
@@ -165,7 +175,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
-    public synchronized void sendPlayer(IHyriPlayer player) {
+    public void sendPlayer(IHyriPlayer player) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
     }
 
@@ -201,6 +211,26 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     private HyriPlayer deserialize(String json) {
         return HyriAPI.GSON.fromJson(json, HyriPlayer.class);
+    }
+
+    @Override
+    public String getCachedPrefix(UUID playerId) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(PREFIX_KEY.apply(playerId)));
+    }
+
+    @Override
+    public String getPrefix(UUID playerId) {
+        final String cachedPrefix = this.getCachedPrefix(playerId);
+
+        if (cachedPrefix != null) {
+            return cachedPrefix;
+        }
+        return this.getPlayer(playerId).getPrefix();
+    }
+
+    @Override
+    public void savePrefix(UUID playerId, String prefix) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PREFIX_KEY.apply(playerId), prefix));
     }
 
     @Override

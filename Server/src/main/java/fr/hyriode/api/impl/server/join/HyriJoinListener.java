@@ -14,6 +14,7 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.FriendsModule;
 import fr.hyriode.hydrion.client.module.PlayerModule;
@@ -32,6 +33,8 @@ import java.util.Date;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Project: HyriAPI
@@ -49,7 +52,6 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
 
     private final HyriJoinManager joinManager;
 
-    private PlayerModule playerModule;
     private FriendsModule friendsModule;
 
     public HyriJoinListener(HyggdrasilManager hyggdrasilManager, HydrionManager hydrionManager, HyriJoinManager joinManager) {
@@ -60,10 +62,7 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
         this.disconnectedFromProxy = new ConcurrentLinkedQueue<>();
 
         if (this.hydrionManager.isEnabled()) {
-            final HydrionClient client = this.hydrionManager.getClient();
-
-            this.playerModule = client.getPlayerModule();
-            this.friendsModule = client.getFriendsModule();
+            this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
         }
 
         HyriAPI.get().getPubSub().subscribe(HyriChannel.SERVERS, this);
@@ -104,33 +103,25 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
             this.friendManager.saveFriends(this.friendManager.createHandler(uuid));
         }
 
+        if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
+            player.setOp(true);
+        }
+
         account.setLastServer(account.getCurrentServer());
         account.setOnline(true);
         account.setCurrentServer(HyriAPI.get().getServer().getName());
 
         if (this.hydrionManager.isEnabled()) {
-            final IHyriPlayer hydrionPlayer = playerManager.getPlayerFromHydrion(uuid);
-
-            if (hydrionPlayer != null) {
-                final HyriRank rank = hydrionPlayer.getRank();
-
-                if (rank.isSuperior(account.getRank().getPlayerType())) {
-                    account.setRank(rank);
-                }
-
-                account.setHyriPlus(hydrionPlayer.getHyriPlus());
-            }
-
-            this.playerModule.setPlayer(uuid, HyriAPI.GSON.toJson(account));
+            this.updateAccountFromHydrion(account, IHyriPlayer::update);
         }
+
+        playerManager.savePrefix(uuid, account.getPrefix());
 
         final IHyriParty party = HyriAPI.get().getPartyManager().getParty(account.getParty());
 
         if (party != null) {
             party.setServer(account.getCurrentServer());
         }
-
-        account.update();
 
         this.joinManager.onJoin(player);
 
@@ -151,6 +142,26 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
         event.setLeaveMessage("");
 
         this.onLeave(event.getPlayer());
+    }
+
+    private void updateAccountFromHydrion(IHyriPlayer account, Consumer<IHyriPlayer> accountConsumer) {
+        final UUID uuid = account.getUniqueId();
+
+        HyriAPI.get().getPlayerManager().getPlayerFromHydrion(uuid).whenComplete((hydrionPlayer, throwable) -> {
+            if (hydrionPlayer != null) {
+                final HyriRank rank = hydrionPlayer.getRank();
+
+                if (rank.isSuperior(account.getRank().getPlayerType())) {
+                    account.setRank(rank);
+                }
+
+                account.setHyriPlus(hydrionPlayer.getHyriPlus());
+            }
+
+            accountConsumer.accept(account);
+
+            HyriAPI.get().getPlayerManager().sendPlayerToHydrion(account);
+        });
     }
 
     private void onLeave(Player player) {
@@ -178,6 +189,14 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
             if (this.hydrionManager.isEnabled()) {
                 this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(this.friendManager.getFriends(uuid))));
             }
+
+            if (this.disconnectedFromProxy.remove(uuid)) {
+                this.updateAccountFromHydrion(account, newAccount -> {
+                    playerManager.removePlayer(uuid);
+
+                    HyriAPI.get().getFriendManager().removeFriends(uuid);
+                });
+            }
         }
 
         this.joinManager.onLogout(player);
@@ -185,10 +204,6 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
         HyriAPI.get().getServer().removePlayer(uuid);
 
         this.hyggdrasilManager.sendData();
-
-        if (this.disconnectedFromProxy.remove(uuid)) {
-            playerManager.removePlayer(uuid);
-        }
     }
 
     @Override

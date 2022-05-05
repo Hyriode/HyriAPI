@@ -2,7 +2,7 @@ package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.money.IHyriMoneyCallback;
+import fr.hyriode.api.money.IHyriMoneyAction;
 
 import java.util.UUID;
 
@@ -21,83 +21,13 @@ public abstract class HyriMoney implements IHyriMoney {
     }
 
     @Override
-    public void add(long amount, String reason, boolean sendMessage, IHyriMoneyCallback callback) {
-        HyriAPI.get().getMoneyManager().creditMoney(HyriAPI.get().getPlayerManager().getPlayer(this.playerUUID), HyriMoneyAction.ADD, this, amount, sendMessage, reason, callback);
+    public IHyriMoneyAction add(long amount) {
+        return new HyriMoneyAction(IHyriMoneyAction.Type.ADD, this.playerUUID, amount, this);
     }
 
     @Override
-    public void add(long amount, String reason, IHyriMoneyCallback callback) {
-        this.add(amount, reason, true, callback);
-    }
-
-    @Override
-    public void add(long amount, String reason, boolean sendMessage) {
-        this.add(amount, reason, sendMessage, null);
-    }
-
-    @Override
-    public void add(long amount, String reason) {
-        this.add(amount, reason, true);
-    }
-
-    @Override
-    public void add(long amount, boolean sendMessage, IHyriMoneyCallback callback) {
-        this.add(amount, null, sendMessage, callback);
-    }
-
-    @Override
-    public void add(long amount, IHyriMoneyCallback callback) {
-        this.add(amount, true, callback);
-    }
-
-    @Override
-    public void add(long amount, boolean sendMessage) {
-        this.add(amount, null, sendMessage, null);
-    }
-
-    @Override
-    public void add(long amount) {
-        this.add(amount, true);
-    }
-
-    @Override
-    public void remove(long amount, String reason, boolean sendMessage, IHyriMoneyCallback callback) {
-        HyriAPI.get().getMoneyManager().creditMoney(HyriAPI.get().getPlayerManager().getPlayer(this.playerUUID), HyriMoneyAction.REMOVE, this, amount, sendMessage, reason, callback);
-    }
-
-    @Override
-    public void remove(long amount, String reason, IHyriMoneyCallback callback) {
-        this.remove(amount, reason, true, callback);
-    }
-
-    @Override
-    public void remove(long amount, String reason, boolean sendMessage) {
-        this.remove(amount, reason, sendMessage, null);
-    }
-
-    @Override
-    public void remove(long amount, String reason) {
-        this.remove(amount, reason, true);
-    }
-
-    @Override
-    public void remove(long amount, boolean sendMessage, IHyriMoneyCallback callback) {
-        this.remove(amount, null, sendMessage, callback);
-    }
-
-    @Override
-    public void remove(long amount, IHyriMoneyCallback callback) {
-        this.remove(amount, true, callback);
-    }
-
-    @Override
-    public void remove(long amount, boolean sendMessage) {
-        this.remove(amount, null, sendMessage, null);
-    }
-
-    @Override
-    public void remove(long amount) {
-        this.remove(amount, true);
+    public IHyriMoneyAction remove(long amount) {
+        return new HyriMoneyAction(IHyriMoneyAction.Type.REMOVE, this.playerUUID, amount, this);
     }
 
     @Override

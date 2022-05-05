@@ -109,6 +109,7 @@ public class HyriJoinManager implements IHyriJoinManager {
 
         if (connect) {
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
+            HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
         }
         return null;
     }
@@ -126,6 +127,11 @@ public class HyriJoinManager implements IHyriJoinManager {
             response = handler.requestPartyJoin(partyId, response);
 
             if (!response.isAllowed()) {
+                for (UUID member : party.getMembers().keySet()) {
+                    final String message = handler.createResponseMessage(member, response);
+
+                    HyriAPI.get().getPlayerManager().sendMessage(member, message);
+                }
                 return;
             }
         }
@@ -141,6 +147,8 @@ public class HyriJoinManager implements IHyriJoinManager {
 
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, serverName);
         }
+
+        HyriAPI.get().getQueueManager().removePartyFromQueue(partyId);
     }
 
     @Override
@@ -148,7 +156,7 @@ public class HyriJoinManager implements IHyriJoinManager {
         this.expectedModerators.remove(playerId);
         this.expectedPlayers.add(playerId);
 
-        Bukkit.getScheduler().runTaskLater(this.plugin, () -> this.removeExpectedPlayer(playerId), 20 * 5L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> this.removeExpectedPlayer(playerId), 20 * 5L);
     }
 
     @Override
@@ -176,7 +184,7 @@ public class HyriJoinManager implements IHyriJoinManager {
         this.expectedModerators.remove(playerId);
         this.expectedModerators.add(playerId);
 
-        Bukkit.getScheduler().runTaskLater(this.plugin, () -> this.removeExpectedModerator(playerId), 20 * 5L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> this.removeExpectedModerator(playerId), 20 * 5L);
     }
 
     @Override

@@ -208,6 +208,7 @@ public abstract class HyriAPI {
 
     /**
      * Get the chat manager
+     *
      * @return {@link IHyriChatChannelManager}
      */
     public abstract IHyriChatChannelManager getChatChannelManager();

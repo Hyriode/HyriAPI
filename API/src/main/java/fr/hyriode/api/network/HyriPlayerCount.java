@@ -10,20 +10,8 @@ import java.util.Map;
  */
 public class HyriPlayerCount {
 
-    /** The amount of players playing on the category */
-    private final int players;
     /** The count of players in each type. It can be empty is the counter is not for a game */
-    private final Map<String, Integer> types;
-
-    /**
-     * Constructor of {@link HyriPlayerCount}
-     *
-     * @param players The initial amount of players
-     */
-    public HyriPlayerCount(int players) {
-        this.players = players;
-        this.types = new HashMap<>();
-    }
+    private final Map<String, Integer> types = new HashMap<>();
 
     /**
      * Get the amount of players playing the category
@@ -31,7 +19,12 @@ public class HyriPlayerCount {
      * @return A player amount
      */
     public int getPlayers() {
-        return this.players;
+        int players = 0;
+
+        for (int amount : this.types.values()) {
+            players += amount;
+        }
+        return players;
     }
 
     /**
@@ -51,7 +44,10 @@ public class HyriPlayerCount {
      * @return The amount of players
      */
     public int getType(String type) {
-        return this.types.get(type);
+        if (this.types.containsKey(type)) {
+            return this.types.get(type);
+        }
+        return 0;
     }
 
     /**
