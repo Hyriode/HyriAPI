@@ -57,11 +57,6 @@ public class NetworkLeveling implements IHyriLeveling {
     }
 
     @Override
-    public void addExperience(double experience) {
-
-    }
-
-    @Override
     public void removeExperience(double experience) {
         this.runAction(() -> this.experience -= experience);
     }
