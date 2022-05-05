@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.proxy.receiver;
 
+import fr.hyriode.api.chat.packet.BroadcastPacket;
 import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.chat.packet.PlayerComponentPacket;
 import fr.hyriode.api.chat.packet.PlayerMessagePacket;

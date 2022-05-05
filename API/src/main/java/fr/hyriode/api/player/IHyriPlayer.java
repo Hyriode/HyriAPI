@@ -53,6 +53,14 @@ public interface IHyriPlayer {
     String getName();
 
     /**
+     * Get the display name of the player.<br>
+     * By default, it will be its name but if he has a nickname it will return his nickname
+     *
+     * @return A name
+     */
+    String getDisplayName();
+
+    /**
      * Set player's name<br>
      * Warning: Use this method ONLY to change the real player name
      *
@@ -461,6 +469,16 @@ public interface IHyriPlayer {
      */
     default void update() {
         HyriAPI.get().getPlayerManager().sendPlayer(this);
+    }
+
+    /**
+     * Get the account of a given player
+     *
+     * @param playerId The unique id of the player
+     * @return A {@link IHyriPlayer} object
+     */
+    static IHyriPlayer get(UUID playerId) {
+        return HyriAPI.get().getPlayerManager().getPlayer(playerId);
     }
 
 }

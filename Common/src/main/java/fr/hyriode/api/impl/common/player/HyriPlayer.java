@@ -102,8 +102,8 @@ public class HyriPlayer implements IHyriPlayer {
             return prefix;
         } else if (this.rank.isStaff()) {
             return prefix;
-        } else if (this.hasHyriPlus()) {
-            return prefix + this.plusColor + "+";
+        } else if (this.hasHyriPlus() && this.rank.getPlayerType() == HyriPlayerRankType.EPIC) {
+            return prefix + this.plusColor.toString() + "+";
         }
         return prefix;
     }
@@ -116,6 +116,11 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return this.hasNickname() ? this.nickname.getName() : this.name;
     }
 
     @Override
@@ -183,6 +188,8 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setRank(HyriRank rank) {
         this.rank = rank;
+
+        HyriAPI.get().getPlayerManager().savePrefix(this.uuid, rank.getPrefix());
     }
 
     @Override

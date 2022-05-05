@@ -24,6 +24,8 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,7 +37,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class HyriJoinListener implements Listener {
 
-    private final Queue<UUID> loginPlayers;
+    private final List<UUID> loginPlayers;
 
     private final HyriPlayerLoader playerLoader;
 
@@ -44,7 +46,7 @@ public class HyriJoinListener implements Listener {
     public HyriJoinListener(HyriCommonImplementation api) {
         this.hyggdrasilManager = api.getHyggdrasilManager();
         this.playerLoader = new HyriPlayerLoader(api.getHydrionManager());
-        this.loginPlayers = new ConcurrentLinkedQueue<>();
+        this.loginPlayers = new ArrayList<>();
     }
 
     @EventHandler

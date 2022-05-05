@@ -100,6 +100,13 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     HyggData getData();
 
     /**
+     * Get the average tps of the server
+     *
+     * @return The ticks per second of the server
+     */
+    double getTPS();
+
+    /**
      * Get the configuration of the server
      *
      * @param configClass The class of the config

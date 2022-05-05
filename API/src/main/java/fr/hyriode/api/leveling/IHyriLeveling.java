@@ -1,5 +1,7 @@
 package fr.hyriode.api.leveling;
 
+import fr.hyriode.api.player.IHyriPlayer;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -65,6 +67,17 @@ public interface IHyriLeveling {
      * @return A {@link Algorithm} instance
      */
     Algorithm getAlgorithm();
+
+    /**
+     * Multiply an amount of experience for a given player
+     *
+     * @param currentExperience The experience to multiply
+     * @param account The account of the player
+     * @return The new multiplied experience
+     */
+    default long multiply(long currentExperience, IHyriPlayer account) {
+        return currentExperience;
+    }
 
     /**
      * The interface that represents a leveling algorithm

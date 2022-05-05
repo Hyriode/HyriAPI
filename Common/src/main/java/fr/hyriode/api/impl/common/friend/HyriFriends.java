@@ -19,6 +19,10 @@ public class HyriFriends {
     public HyriFriends(List<IHyriFriend> friends) {
         this.friends = new ArrayList<>();
 
+        if (friends == null) {
+            return;
+        }
+
         for (IHyriFriend friend : friends) {
             this.friends.add((HyriFriend) friend);
         }

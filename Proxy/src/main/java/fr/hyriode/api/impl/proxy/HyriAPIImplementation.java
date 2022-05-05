@@ -55,7 +55,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             network.setSlots(plugin.getConfiguration().getSlots());
             network.setMotd(plugin.getConfiguration().getMotd());
             network.getMaintenance().enable(UUID.randomUUID(), null);
-            network.getPlayerCount().setPlayers(0);
+            network.getPlayerCount().reset();
 
             for (IHyriGameInfo gameInfo : this.gameManager.getGamesInfo()) {
                 if (gameInfo != null) {

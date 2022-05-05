@@ -67,7 +67,10 @@ public class HyriRank {
      * @return <code>true</code> if the rank has the type
      */
     public boolean is(HyriStaffRankType staffType) {
-        return this.staffType.getId() == staffType.getId();
+        if (this.staffType != null) {
+            return this.staffType.getId() == staffType.getId();
+        }
+        return false;
     }
 
     /**
@@ -87,7 +90,10 @@ public class HyriRank {
      * @return <code>true</code> if the rank is superior or equal
      */
     public boolean isSuperior(HyriStaffRankType staffType) {
-        return this.staffType.getId() >= staffType.getId();
+        if (this.staffType != null) {
+            return this.staffType.getId() >= staffType.getId();
+        }
+       return false;
     }
 
     /**

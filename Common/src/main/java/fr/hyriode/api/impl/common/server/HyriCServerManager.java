@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.chat.packet.BroadcastPacket;
 import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
@@ -47,8 +48,8 @@ public class HyriCServerManager implements IHyriServerManager {
     }
 
     @Override
-    public void broadcastMessage(String component) {
-        HyriAPI.get().getPubSub().send(HyriChannel.CHAT, new ComponentPacket(component));
+    public void broadcastMessage(UUID sender, String component) {
+        HyriAPI.get().getPubSub().send(HyriChannel.CHAT, new BroadcastPacket(component, sender));
     }
 
     @Override

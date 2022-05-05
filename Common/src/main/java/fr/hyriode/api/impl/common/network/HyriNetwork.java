@@ -2,13 +2,9 @@ package fr.hyriode.api.impl.common.network;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.network.HyriNetworkCount;
+import fr.hyriode.api.network.HyriPlayerCount;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
-import fr.hyriode.hydrion.client.HydrionClient;
-import fr.hyriode.hydrion.client.response.HydrionResponse;
-
-import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * Project: HyriAPI

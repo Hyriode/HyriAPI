@@ -62,7 +62,7 @@ public class HyriQueueManager implements IHyriQueueManager {
         final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
 
         if (account.hasParty()) {
-            final IHyriParty party = HyriAPI.get().getPartyManager().getParty(playerId);
+            final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(playerId);
 
             if (party.isLeader(playerId)) {
                 this.addPartyInQueue(party, game, gameType);

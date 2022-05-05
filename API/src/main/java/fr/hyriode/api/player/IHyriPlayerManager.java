@@ -4,6 +4,7 @@ import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Project: HyriAPI
@@ -84,7 +85,7 @@ public interface IHyriPlayerManager {
      * @param uuid Player {@link UUID}
      * @return A player instance
      */
-    IHyriPlayer getPlayerFromHydrion(UUID uuid);
+    CompletableFuture<IHyriPlayer> getPlayerFromHydrion(UUID uuid);
 
     /**
      * Create a player with a given {@link UUID}
@@ -95,6 +96,13 @@ public interface IHyriPlayerManager {
      * @return The created player
      */
     IHyriPlayer createPlayer(boolean online, UUID uuid, String name);
+
+    /**
+     * Send a player to Hydrion
+     *
+     * @param player The player to store in Hydrion
+     */
+    void sendPlayerToHydrion(IHyriPlayer player);
 
     /**
      * Send a player in Redis cache
@@ -172,6 +180,30 @@ public interface IHyriPlayerManager {
      * @return Player ping
      */
     int getPing(UUID uuid);
+
+    /**
+     * Get the prefix of a player from cache
+     *
+     * @param playerId The unique id of the player
+     * @return His cached prefix
+     */
+    String getCachedPrefix(UUID playerId);
+
+    /**
+     * Get the prefix of a player (it will first check in cache before getting it from his account)
+     *
+     * @param playerId The unique id of the player
+     * @return His prefix
+     */
+    String getPrefix(UUID playerId);
+
+    /**
+     * Save the prefix of a player in cache
+     *
+     * @param playerId The unique id of the player
+     * @param prefix The prefix to save
+     */
+    void savePrefix(UUID playerId, String prefix);
 
     /**
      * Get the nickname manager

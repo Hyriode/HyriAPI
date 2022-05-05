@@ -20,9 +20,10 @@ public interface IHyriServerManager {
     /**
      * Broadcast a message on all servers
      *
+     * @param sender The message to broadcast (it's a text component)
      * @param component The message to broadcast (it's a text component)
      */
-    void broadcastMessage(String component);
+    void broadcastMessage(UUID sender, String component);
 
     /**
      * Get the collection of all servers currently running
