@@ -57,6 +57,12 @@ public class HyriJoinListener implements Listener {
             final String name = connection.getName();
             final IHyriPlayer account = this.playerLoader.loadPlayerAccount(uuid, name);
 
+            if (account.isOnline() && HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid) != null) {
+                event.setCancelled(true);
+                event.setCancelReason(MessageUtil.ALREADY_ONLINE);
+                return;
+            }
+
             if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(name)) {
                 HyriAPI.get().getFriendManager().saveFriends(HyriAPI.get().getFriendManager().createHandler(uuid));
             }
@@ -64,7 +70,7 @@ public class HyriJoinListener implements Listener {
             e.printStackTrace();
 
             event.setCancelled(true);
-            event.setCancelReason(TextComponent.fromLegacyText(ChatColor.RED + "An error occurred while loading your profile!"));
+            event.setCancelReason(MessageUtil.PROFILE_ERROR);
         }
     }
 

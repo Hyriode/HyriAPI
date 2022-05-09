@@ -25,6 +25,12 @@ public class MessageUtil {
     public static final BaseComponent[] NO_LOBBY_MESSAGE = createKickMessage(new ComponentBuilder("Aucun lobby n'est actuellement démarré !").color(ChatColor.RED)
             .create(), true);
 
+    public static final BaseComponent[] PROFILE_ERROR = createKickMessage(new ComponentBuilder("Impossible de charger votre profil !").color(ChatColor.RED)
+            .create(), true);
+
+    public static final BaseComponent[] ALREADY_ONLINE = createKickMessage(new ComponentBuilder("Vous êtes déjà connecté sur le serveur !").color(ChatColor.RED)
+            .create(), true);
+
     private static final String HYPHENS = "----------------------";
 
     public static BaseComponent[] createKickMessage(BaseComponent[] message, boolean emptyLineBetweenSupport) {

@@ -90,7 +90,12 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
         final Player player = event.getPlayer();
         final UUID uuid = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = playerManager.getPlayer(uuid);
+        final IHyriPlayer account = playerManager.getPlayerFromRedis(uuid);
+
+        if (account == null) {
+            player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
+            return;
+        }
 
         event.setJoinMessage("");
 
