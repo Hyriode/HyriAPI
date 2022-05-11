@@ -4,32 +4,29 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.player.packet.HyriPlayerLeavePacket;
+import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
+import fr.hyriode.api.impl.proxy.player.HyriOnlinePlayersTask;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Project: HyriAPI
@@ -41,12 +38,14 @@ public class HyriJoinListener implements Listener {
     private final List<UUID> loginPlayers;
 
     private final HyriPlayerLoader playerLoader;
+    private final HyriOnlinePlayersTask onlineTask;
 
     private final HyggdrasilManager hyggdrasilManager;
 
-    public HyriJoinListener(HyriCommonImplementation api) {
-        this.hyggdrasilManager = api.getHyggdrasilManager();
-        this.playerLoader = new HyriPlayerLoader(api.getHydrionManager());
+    public HyriJoinListener(HyriAPIPlugin plugin) {
+        this.hyggdrasilManager = plugin.getAPI().getHyggdrasilManager();
+        this.playerLoader = plugin.getPlayerLoader();
+        this.onlineTask = plugin.getOnlinePlayersTask();
         this.loginPlayers = new ArrayList<>();
     }
 
@@ -61,6 +60,8 @@ public class HyriJoinListener implements Listener {
             if (account != null && account.isOnline() && HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid) != null) {
                 event.setCancelled(true);
                 event.setCancelReason(MessageUtil.ALREADY_ONLINE);
+
+                this.onlineTask.addPlayerToCheck(uuid);
                 return;
             }
 
