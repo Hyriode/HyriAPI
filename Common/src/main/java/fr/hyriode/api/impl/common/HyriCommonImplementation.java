@@ -16,6 +16,7 @@ import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
+import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
 import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
@@ -55,6 +56,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final HyriNetworkManager networkManager;
     protected final HyriCServerManager serverManager;
+    protected final HyriProxyManager proxyManager;
     protected final HyriQueueManager queueManager;
     protected final HyriGameManager gameManager;
 
@@ -88,6 +90,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.hydrionManager = new HydrionManager();
         this.networkManager = new HyriNetworkManager(this.hydrionManager);
         this.serverManager = new HyriCServerManager(this);
+        this.proxyManager = new HyriProxyManager(this);
         this.queueManager = new HyriQueueManager(this.hyggdrasilManager);
         this.gameManager = new HyriGameManager(this.hydrionManager);
         this.playerSettingsManager = new HyriPlayerSettingsManager();
@@ -176,6 +179,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public HyriCServerManager getServerManager() {
         return this.serverManager;
+    }
+
+    @Override
+    public HyriProxyManager getProxyManager() {
+        return this.proxyManager;
     }
 
     @Override

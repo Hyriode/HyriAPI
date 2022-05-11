@@ -36,6 +36,9 @@ public class HyriNetworkEventPacket extends HyriPacket {
      * @return A {@link Class}
      */
     public Class<?> getEventClass() {
+        if (this.eventClass == null) {
+            return null;
+        }
         try {
             return Class.forName(this.eventClass);
         } catch (ClassNotFoundException e) {

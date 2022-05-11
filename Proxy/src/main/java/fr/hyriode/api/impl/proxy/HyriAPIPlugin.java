@@ -1,9 +1,13 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
+import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
+import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
+import fr.hyriode.api.impl.proxy.player.HyriOnlinePlayersTask;
 import fr.hyriode.api.proxy.IHyriProxy;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -22,13 +26,24 @@ import java.util.logging.Level;
 public class HyriAPIPlugin extends Plugin  {
 
     private HyriAPIConfiguration configuration;
-
     private HyriAPIImplementation api;
+
+    private HyriPlayerLoader playerLoader;
+    private HyriOnlinePlayersTask onlinePlayersTask;
+
+    private ClientSupportManager clientSupportManager;
 
     @Override
     public void onEnable() {
         this.configuration = HyriAPIConfiguration.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
+
+        this.playerLoader = new HyriPlayerLoader(this.api.getHydrionManager());
+        this.onlinePlayersTask = new HyriOnlinePlayersTask();
+        this.onlinePlayersTask.start(this);
+
+        this.clientSupportManager = new ClientSupportManager();
+        this.clientSupportManager.registerSupport(new AZLauncherSupport(this));
 
         this.registerListeners();
 
@@ -64,7 +79,7 @@ public class HyriAPIPlugin extends Plugin  {
         final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
 
         register.accept(new HyriProxyListener(this.configuration));
-        register.accept(new HyriJoinListener(this.api));
+        register.accept(new HyriJoinListener(this));
     }
 
     public HyriAPIConfiguration getConfiguration() {
@@ -73,6 +88,18 @@ public class HyriAPIPlugin extends Plugin  {
 
     public HyriAPIImplementation getAPI() {
         return this.api;
+    }
+
+    public HyriPlayerLoader getPlayerLoader() {
+        return this.playerLoader;
+    }
+
+    public HyriOnlinePlayersTask getOnlinePlayersTask() {
+        return this.onlinePlayersTask;
+    }
+
+    public ClientSupportManager getClientSupportManager() {
+        return this.clientSupportManager;
     }
 
 }

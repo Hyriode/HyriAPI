@@ -27,6 +27,7 @@ public class HyriServer implements IHyriServer {
     private final long startedTime;
     private final HyggData data;
     private int slots = -1;
+    private boolean accessible;
 
     private IConfig config;
 
@@ -78,7 +79,7 @@ public class HyriServer implements IHyriServer {
     public void setState(State state) {
         this.state = state;
 
-        this.hyggdrasilManager.sendData();
+        this.setAccessible(this.state.isAccessible());
     }
 
     @Override
@@ -143,11 +144,25 @@ public class HyriServer implements IHyriServer {
 
     public void setMap(String map) {
         this.map = map;
+
+        this.hyggdrasilManager.sendData();
     }
 
     @Override
     public HyggData getData() {
         return this.data;
+    }
+
+    @Override
+    public void setAccessible(boolean accessible) {
+        this.accessible = accessible;
+
+        this.hyggdrasilManager.sendData();
+    }
+
+    @Override
+    public boolean isAccessible() {
+        return this.accessible;
     }
 
     @Override

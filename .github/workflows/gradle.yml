@@ -35,11 +35,10 @@ jobs:
           TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: HyriAPI
           path: |
-            API/build/libs/
-            Common/build/libs/
             Server/build/libs/
             Proxy/build/libs/
+          retention-days: 7

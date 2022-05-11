@@ -189,7 +189,7 @@ public class HyriPlayer implements IHyriPlayer {
     public void setRank(HyriRank rank) {
         this.rank = rank;
 
-        HyriAPI.get().getPlayerManager().savePrefix(this.uuid, rank.getPrefix());
+        HyriAPI.get().getPlayerManager().savePrefix(this.uuid, this.getNameWithRank());
     }
 
     @Override

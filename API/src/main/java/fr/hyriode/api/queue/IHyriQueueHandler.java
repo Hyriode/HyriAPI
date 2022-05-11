@@ -3,7 +3,7 @@ package fr.hyriode.api.queue;
 import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueAddPacket;
 import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueInfoPacket;
 import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueRemovePacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueUpdateGroupPacket;
+import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueUpdateGroupPacket;
 
 /**
  * Project: HyriAPI

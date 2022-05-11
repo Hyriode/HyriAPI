@@ -14,6 +14,7 @@ import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.proxy.IHyriProxy;
+import fr.hyriode.api.proxy.IHyriProxyManager;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
@@ -149,6 +150,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriServerManager}
      */
     public abstract IHyriServerManager getServerManager();
+
+    /**
+     * Get the proxy manager instance
+     *
+     * @return The {@link IHyriProxyManager} instance
+     */
+    public abstract IHyriProxyManager getProxyManager();
 
     /**
      * Get the queue manager

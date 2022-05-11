@@ -1,8 +1,6 @@
 package fr.hyriode.api.impl.common.network;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.network.HyriNetworkCount;
-import fr.hyriode.api.network.HyriPlayerCount;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
 

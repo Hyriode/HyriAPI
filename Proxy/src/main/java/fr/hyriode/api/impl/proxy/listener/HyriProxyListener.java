@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
-import fr.hyriode.api.impl.proxy.util.SupportedProtocol;
 import fr.hyriode.api.network.IHyriNetwork;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.Favicon;

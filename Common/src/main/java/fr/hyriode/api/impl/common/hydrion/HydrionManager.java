@@ -5,6 +5,10 @@ import fr.hyriode.api.configuration.HydrionConfiguration;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.hydrion.client.HydrionClient;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -26,9 +30,11 @@ public class HydrionManager {
 
     private void start() {
         if (this.enabled) {
+            final String url = this.configuration.getUrl();
+
             HyriCommonImplementation.log("Starting Hydrion client...");
 
-            this.client = new HydrionClient(this.configuration.getUrl(), this.configuration.getAPIKey());
+            this.client = new HydrionClient(url, this.configuration.getAPIKey());
         }
     }
 

@@ -6,9 +6,8 @@ import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
 import fr.hyriode.hyggdrasil.api.protocol.request.HyggRequestHeader;
 import fr.hyriode.hyggdrasil.api.protocol.response.HyggResponse;
 import fr.hyriode.hyggdrasil.api.protocol.response.IHyggResponse;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueTransferGroupPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueTransferPlayerPacket;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueTransferGroupPacket;
+import fr.hyriode.hyggdrasil.api.queue.packet.player.HyggQueueTransferPlayerPacket;
 
 /**
  * Project: HyriAPI

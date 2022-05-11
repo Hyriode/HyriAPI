@@ -92,7 +92,10 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
         final IHyriPlayer player = this.getPlayerFromRedis(uuid);
 
         try {
-            return player != null ? player : this.getPlayerFromHydrion(uuid).get();
+            if (player == null && this.hydrionManager.isEnabled()) {
+                return this.getPlayerFromHydrion(uuid).get();
+            }
+            return player;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

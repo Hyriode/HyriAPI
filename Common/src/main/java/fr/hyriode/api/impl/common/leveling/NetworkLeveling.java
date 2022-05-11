@@ -48,8 +48,12 @@ public class NetworkLeveling implements IHyriLeveling {
     }
 
     @Override
-    public void addExperience(double experience) {
-        this.runAction(() -> this.experience += experience);
+    public void addExperience(double experience, boolean multipliers) {
+        this.runAction(() -> {
+            final IHyriPlayer player = IHyriPlayer.get(this.playerId);
+
+            this.experience += multipliers ? this.multiply(experience, player) : experience;
+        });
     }
 
     @Override
@@ -87,13 +91,13 @@ public class NetworkLeveling implements IHyriLeveling {
     }
 
     @Override
-    public long multiply(long currentExperience, IHyriPlayer account) {
+    public double multiply(double experience, IHyriPlayer account) {
         final Multiplier multiplier = Multiplier.getByPlayer(account);
 
         if (multiplier != null) {
-            return (long) (currentExperience * multiplier.getAmount());
+            return (long) (experience * multiplier.getAmount());
         }
-        return currentExperience;
+        return experience;
     }
 
     public enum Multiplier {

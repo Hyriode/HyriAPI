@@ -33,15 +33,8 @@ public class HyriPlayerLoader {
         this.hydrionManager = hydrionManager;
     }
 
-    public IHyriPlayer loadPlayerAccount(UUID uuid, String name) {
+    public IHyriPlayer loadPlayerAccount(IHyriPlayer account, UUID uuid, String name) {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-
-        IHyriPlayer account = null;
-        try {
-            account = playerManager.getPlayerFromHydrion(uuid).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
 
         if (account == null) {
             account = playerManager.createPlayer(false, uuid, name);
