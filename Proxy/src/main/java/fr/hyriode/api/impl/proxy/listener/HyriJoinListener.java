@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Project: HyriAPI
@@ -55,13 +56,15 @@ public class HyriJoinListener implements Listener {
             final PendingConnection connection = event.getConnection();
             final UUID uuid = connection.getUniqueId();
             final String name = connection.getName();
-            final IHyriPlayer account = this.playerLoader.loadPlayerAccount(uuid, name);
+            IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(uuid);
 
-            if (account.isOnline() && HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid) != null) {
+            if (account != null && account.isOnline() && HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid) != null) {
                 event.setCancelled(true);
                 event.setCancelReason(MessageUtil.ALREADY_ONLINE);
                 return;
             }
+
+            account = this.playerLoader.loadPlayerAccount(account, uuid, name);
 
             if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(name)) {
                 HyriAPI.get().getFriendManager().saveFriends(HyriAPI.get().getFriendManager().createHandler(uuid));

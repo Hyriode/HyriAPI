@@ -100,6 +100,20 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     HyggData getData();
 
     /**
+     * Set if the server is accessible to normal players
+     *
+     * @param accessible New value for server's accessibility
+     */
+    void setAccessible(boolean accessible);
+
+    /**
+     * Check if the server is accessible to normal players
+     *
+     * @return <code>true</code> if the server is accessible
+     */
+    boolean isAccessible();
+
+    /**
      * Get the average tps of the server
      *
      * @return The ticks per second of the server
@@ -127,7 +141,7 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
         /** Server is ready to host players */
         READY(true),
         /** Server is playing a game */
-        PLAYING(true),
+        PLAYING(false),
         /** Server is stopping (onDisable in plugin) */
         SHUTDOWN(false),
         /** Server is idling (an error occurred or just freezing) */

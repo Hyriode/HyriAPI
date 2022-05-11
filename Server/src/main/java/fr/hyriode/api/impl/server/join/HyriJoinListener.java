@@ -13,6 +13,7 @@ import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.hydrion.client.HydrionClient;
@@ -24,10 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 import java.util.Date;
 import java.util.Queue;
@@ -159,6 +157,8 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
                 if (rank.isSuperior(account.getRank().getPlayerType())) {
                     account.setRank(rank);
                 }
+
+                final HyriPlus hyriPlus = hydrionPlayer.getHyriPlus();
 
                 account.setHyriPlus(hydrionPlayer.getHyriPlus());
             }

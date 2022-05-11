@@ -1,6 +1,8 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
+import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
@@ -22,13 +24,17 @@ import java.util.logging.Level;
 public class HyriAPIPlugin extends Plugin  {
 
     private HyriAPIConfiguration configuration;
-
     private HyriAPIImplementation api;
+
+    private ClientSupportManager clientSupportManager;
 
     @Override
     public void onEnable() {
         this.configuration = HyriAPIConfiguration.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
+        this.clientSupportManager = new ClientSupportManager();
+
+        this.clientSupportManager.registerSupport(new AZLauncherSupport(this));
 
         this.registerListeners();
 
@@ -73,6 +79,10 @@ public class HyriAPIPlugin extends Plugin  {
 
     public HyriAPIImplementation getAPI() {
         return this.api;
+    }
+
+    public ClientSupportManager getClientSupportManager() {
+        return this.clientSupportManager;
     }
 
 }

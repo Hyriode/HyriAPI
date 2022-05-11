@@ -92,7 +92,7 @@ public class HyggdrasilManager {
             } else if (type == HyggApplication.Type.SERVER) {
                 final IHyriServer server = HyriAPI.get().getServer();
 
-                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getPlayersPlaying(), server.getStartedTime(), new HyggServerOptions(), server.getData(), server.getSlots())).exec();
+                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getPlayersPlaying(), server.getStartedTime(), new HyggServerOptions(), server.getData(), server.getSlots(), server.isAccessible())).exec();
             }
         }
     }

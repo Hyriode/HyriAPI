@@ -32,7 +32,13 @@ public class HyriNetworkManager implements IHyriNetworkManager {
             this.networkModule = this.hydrionManager.getClient().getNetworkModule();
         }
 
-        this.cacheNetwork(this.getNetwork());
+        IHyriNetwork network = this.getNetwork();
+
+        if (network == null) {
+            network = new HyriNetwork();
+        }
+
+        this.setNetwork(network);
     }
 
     public void cacheNetwork(IHyriNetwork network) {
