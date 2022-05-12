@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
 import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
 import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
+import fr.hyriode.api.impl.proxy.listener.HyriNetworkListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
 import fr.hyriode.api.impl.proxy.player.HyriOnlinePlayersTask;
@@ -80,6 +81,8 @@ public class HyriAPIPlugin extends Plugin  {
 
         register.accept(new HyriProxyListener(this.configuration));
         register.accept(new HyriJoinListener(this));
+
+        HyriAPI.get().getEventBus().register(new HyriNetworkListener());
     }
 
     public HyriAPIConfiguration getConfiguration() {

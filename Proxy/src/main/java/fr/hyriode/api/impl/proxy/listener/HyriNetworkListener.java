@@ -1,4 +1,4 @@
-package fr.hyriode.api.impl.proxy.network;
+package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.HyriEventHandler;
