@@ -1,12 +1,11 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.player.packet.HyriPlayerLeavePacket;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
-import fr.hyriode.api.impl.proxy.player.HyriOnlinePlayersTask;
+import fr.hyriode.api.impl.proxy.task.HyriOnlinePlayersTask;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
@@ -21,7 +20,6 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
@@ -116,8 +114,6 @@ public class HyriJoinListener implements Listener {
             event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
             event.setCancelled(false);
 
-            HyriAPI.get().getProxy().addPlayer();
-
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
 
             this.loginPlayers.add(player.getUniqueId());
@@ -142,8 +138,6 @@ public class HyriJoinListener implements Listener {
 
                 network.getPlayerCount().removePlayers(1);
                 network.update();
-
-                HyriAPI.get().getProxy().removePlayer();
 
                 this.hyggdrasilManager.sendData();
 

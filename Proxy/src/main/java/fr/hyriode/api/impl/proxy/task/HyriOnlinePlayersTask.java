@@ -1,4 +1,4 @@
-package fr.hyriode.api.impl.proxy.player;
+package fr.hyriode.api.impl.proxy.task;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
@@ -16,7 +16,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Project: HyriAPI
  * Created by AstFaster
- * on 11/05/2022 at 17:45
+ * on 11/05/2022 at 17:45<br>
+ *
+ * This task checks if a player is really online or not. Sometimes when a player is disconnected from an error, his account is not set as 'offline'.<br>
+ * So to fix this issue, when a player is disconnected at the login from 'Already connected on this server' error, he will be added in this task and the task will check if the player is on a server.
  */
 public class HyriOnlinePlayersTask implements Runnable {
 

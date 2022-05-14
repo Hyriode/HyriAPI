@@ -160,7 +160,9 @@ public class HyriJoinListener implements Listener, IHyriPacketReceiver {
 
                 final HyriPlus hyriPlus = hydrionPlayer.getHyriPlus();
 
-                account.setHyriPlus(hydrionPlayer.getHyriPlus());
+                if (hyriPlus.getExpirationDate().getTime() > account.getHyriPlus().getExpirationDate().getTime()) {
+                    account.setHyriPlus(hyriPlus);
+                }
             }
 
             accountConsumer.accept(account);

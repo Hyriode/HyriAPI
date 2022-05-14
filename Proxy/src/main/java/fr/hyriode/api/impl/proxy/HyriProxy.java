@@ -22,15 +22,12 @@ public class HyriProxy implements IHyriProxy {
 
     private final HyggData data;
 
-    private int players;
-
     public HyriProxy(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
         this.hyggdrasilManager = hyggdrasilManager;
         this.name = name;
         this.startedTime = startedTime;
         this.state = State.STARTING;
         this.data = data;
-        this.players = ProxyServer.getInstance().getOnlineCount();
     }
 
     @Override
@@ -67,17 +64,7 @@ public class HyriProxy implements IHyriProxy {
 
     @Override
     public int getPlayers() {
-        return this.players;
-    }
-
-    @Override
-    public void addPlayer() {
-        this.players++;
-    }
-
-    @Override
-    public void removePlayer() {
-        this.players--;
+        return ProxyServer.getInstance().getOnlineCount();
     }
 
     @Override

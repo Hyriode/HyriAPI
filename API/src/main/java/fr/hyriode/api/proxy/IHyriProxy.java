@@ -18,16 +18,6 @@ public interface IHyriProxy extends IHyriApplication<IHyriProxy.State> {
     int getPlayers();
 
     /**
-     * Add a player
-     */
-    void addPlayer();
-
-    /**
-     * Remove a player
-     */
-    void removePlayer();
-
-    /**
      * Get the proxy data
      *
      * @return A {@link HyggData}

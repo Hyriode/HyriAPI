@@ -73,7 +73,7 @@ public class GlobalChatHandler extends CommonChatHandler {
             if (account.hasNickname()) {
                 player.sendMessage(account.getNameWithRank(true) + ChatColor.WHITE + ": " + (account.getNickname().getRank() == HyriPlayerRankType.PLAYER ? ChatColor.GRAY : ChatColor.WHITE) + message);
             } else {
-                player.sendMessage(account.getNameWithRank() + ChatColor.WHITE + ": " + (account.getRank().isDefault() ? ChatColor.GRAY : ChatColor.WHITE) + message);
+                player.sendMessage(account.getNameWithRank() + (account.getRank().isDefault() ? ChatColor.GRAY : ChatColor.WHITE) + ": " + message);
             }
         }
     }
