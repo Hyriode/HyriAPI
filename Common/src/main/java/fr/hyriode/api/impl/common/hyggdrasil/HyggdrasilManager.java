@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.hyggdrasil;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriProxiesListener;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriServersListener;
 import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -33,7 +34,6 @@ public class HyggdrasilManager {
 
     private HyggdrasilAPI hyggdrasilAPI;
     private HyggEnvironment environment;
-    private HyriRedisConnection redisConnection;
 
     private final Logger logger;
     private final HyriCommonImplementation implementation;
@@ -57,24 +57,14 @@ public class HyggdrasilManager {
         if (this.withHyggdrasil()) {
             HyriCommonImplementation.log("Starting Hyggdrasil manager...");
 
-            final HyggRedisCredentials credentials = this.environment.getRedisCredentials();
+            this.hyggdrasilAPI = new HyggdrasilAPI.Builder()
+                    .withLogger(this.logger)
+                    .withJedisPool(HyriAPI.get().getRedisConnection().clone().getPool())
+                    .withEnvironment(this.environment)
+                    .build();
+            this.hyggdrasilAPI.start();
 
-            this.redisConnection = new HyriRedisConnection(credentials.getHostname(), credentials.getPort(), credentials.getPassword());
-
-            if (this.redisConnection.isConnected()) {
-                this.hyggdrasilAPI = new HyggdrasilAPI.Builder()
-                        .withLogger(this.logger)
-                        .withJedisPool(this.redisConnection.getPool())
-                        .withEnvironment(this.environment)
-                        .build();
-                this.hyggdrasilAPI.start();
-
-                this.hyggdrasilAPI.getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
-            } else {
-                HyriCommonImplementation.log(Level.SEVERE, "Couldn't load Hyggdrasil API!");
-                System.exit(-1);
-                return;
-            }
+            this.hyggdrasilAPI.getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
 
             this.registerListeners();
         }
@@ -99,16 +89,9 @@ public class HyggdrasilManager {
 
     private void registerListeners() {
         new HyriServersListener(this.implementation).register();
+        new HyriProxiesListener(this.implementation).register();
 
         this.hyggdrasilAPI.getEventBus().subscribe(HyggStartedEvent.class, event -> this.sendData());
-    }
-
-    public void stop() {
-        if (this.withHyggdrasil()) {
-            HyriCommonImplementation.log("Stopping Hyggdrasil manager...");
-
-            this.redisConnection.stop();
-        }
     }
 
     public String generateDevApplicationName() {

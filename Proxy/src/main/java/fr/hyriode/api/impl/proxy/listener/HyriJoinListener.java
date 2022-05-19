@@ -93,7 +93,9 @@ public class HyriJoinListener implements Listener {
                 return;
             }
 
-            if (maintenance.isActive()) {
+            if (!HyriAPI.get().getConfiguration().isProduction()) {
+                player.disconnect(MessageUtil.NO_PERMISSION);
+            } else if (maintenance.isActive()) {
                 player.disconnect(MessageUtil.createMaintenanceMessage(maintenance));
             } else if (network.getPlayerCount().getPlayers() >= network.getSlots() && account.getRank().isDefault()) {
                 player.disconnect(MessageUtil.createMaintenanceMessage(maintenance));

@@ -29,6 +29,14 @@ public class HyriProxyManager implements IHyriProxyManager {
         this.proxies = new HashMap<>();
     }
 
+    public void addProxy(HyggProxy proxy) {
+        this.proxies.put(proxy.getName(), proxy);
+    }
+
+    public void removeProxy(HyggProxy proxy) {
+        this.proxies.remove(proxy.getName());
+    }
+
     @Override
     public Collection<HyggProxy> getProxies() {
         return this.proxies.values();

@@ -15,7 +15,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/11/2021 at 15:12
  */
-public class HyriAPIConfiguration implements IHyriAPIConfiguration {
+public class HyriAPIConfig implements IHyriAPIConfiguration {
 
     private final boolean devEnvironment;
     private final boolean production;
@@ -23,7 +23,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     private final HyriRedisConfig redisConfiguration;
     private final HydrionConfig hydrionConfig;
 
-    public HyriAPIConfiguration(boolean devEnvironment, boolean production, boolean hyggdrasil, HyriRedisConfig redisConfiguration, HydrionConfig hydrionConfig) {
+    public HyriAPIConfig(boolean devEnvironment, boolean production, boolean hyggdrasil, HyriRedisConfig redisConfiguration, HydrionConfig hydrionConfig) {
         this.devEnvironment = devEnvironment;
         this.production = production;
         this.hyggdrasil = hyggdrasil;
@@ -59,7 +59,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     public static class Loader {
 
         private static final String DEV_ENVIRONMENT_PATH = "devEnvironment";
-        private static final 
+        private static final String PRODUCTION_PATH = "production";
         private static final String HYGGDRASIL_PATH = "hyggdrasil";
         private static final String REDIS_PATH = "redis";
         private static final String HYDRION_PATH = "hydrion";
@@ -77,7 +77,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
             create(plugin);
 
-            return new HyriAPIConfiguration(config.getBoolean(DEV_ENVIRONMENT_PATH), production, config.getBoolean(HYGGDRASIL_PATH),
+            return new HyriAPIConfig(config.getBoolean(DEV_ENVIRONMENT_PATH), config.getBoolean(PRODUCTION_PATH), config.getBoolean(HYGGDRASIL_PATH),
                     loadRedisConfiguration(config.getConfigurationSection(REDIS_PATH)), loadHydrionConfiguration(config.getConfigurationSection(HYDRION_PATH)));
         }
 
@@ -103,6 +103,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
                 config.set(DEV_ENVIRONMENT_PATH, true);
                 config.set(HYGGDRASIL_PATH, true);
+                config.set(PRODUCTION_PATH, false);
 
                 createRedisConfiguration(config.createSection(REDIS_PATH));
                 createHydrionConfiguration(config.createSection(HYDRION_PATH));

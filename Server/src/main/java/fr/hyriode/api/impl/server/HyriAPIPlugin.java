@@ -2,7 +2,7 @@ package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
-import fr.hyriode.api.impl.server.configuration.HyriAPIConfiguration;
+import fr.hyriode.api.impl.server.configuration.HyriAPIConfig;
 import fr.hyriode.api.impl.server.join.HyriJoinListener;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hystia.api.world.IWorldManager;
@@ -31,7 +31,7 @@ public class HyriAPIPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.configuration = HyriAPIConfiguration.Loader.load(this);
+        this.configuration = HyriAPIConfig.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
 
         this.registerListeners();

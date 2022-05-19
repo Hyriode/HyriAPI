@@ -7,13 +7,13 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/04/2022 at 11:56
  */
-public class HydrionConfiguration {
+public class HydrionConfig {
 
     private final boolean enabled;
     private final String url;
     private final UUID apiKey;
 
-    public HydrionConfiguration(boolean enabled, String url, UUID apiKey) {
+    public HydrionConfig(boolean enabled, String url, UUID apiKey) {
         this.enabled = enabled;
         this.url = url;
         this.apiKey = apiKey;

@@ -85,25 +85,25 @@ public class HyriJoinManager implements IHyriJoinManager {
     }
 
     String requestPlayerJoin(UUID playerId, boolean connect) {
-        HyriJoinResponse response = HyriJoinResponse.ALLOW;
-
-        for (IHyriJoinHandler handler : this.handlers.values()) {
-            response = handler.requestJoin(playerId, response);
-
-            if (!response.isAllowed()) {
-                final String message = handler.createResponseMessage(playerId, response);
-
-                HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
-
-                return message;
-            }
-        }
-
         final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
 
         if (account.isInModerationMode()) {
             this.addExpectedModerator(playerId);
         } else {
+            HyriJoinResponse response = HyriJoinResponse.ALLOW;
+
+            for (IHyriJoinHandler handler : this.handlers.values()) {
+                response = handler.requestJoin(playerId, response);
+
+                if (!response.isAllowed()) {
+                    final String message = handler.createResponseMessage(playerId, response);
+
+                    HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
+
+                    return message;
+                }
+            }
+
             this.addExpectedPlayer(playerId);
         }
 

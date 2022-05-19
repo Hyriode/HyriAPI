@@ -115,11 +115,15 @@ public class HyriServer implements IHyriServer {
     @Override
     public void addPlayerPlaying(UUID player) {
         this.playersPlaying.add(player);
+
+        this.hyggdrasilManager.sendData();
     }
 
     @Override
     public void removePlayerPlaying(UUID player) {
         this.playersPlaying.remove(player);
+
+        this.hyggdrasilManager.sendData();
     }
 
     @Override

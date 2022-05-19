@@ -20,7 +20,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/11/2021 at 15:12
  */
-public class HyriAPIConfiguration implements IHyriAPIConfiguration {
+public class HyriAPIConfig implements IHyriAPIConfiguration {
 
     private final boolean devEnvironment;
     private final boolean hyggdrasil;
@@ -31,7 +31,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     private final int slots;
     private final String motd;
 
-    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil, boolean production, HyriRedisConfig redisConfiguration, HydrionConfig hydrionConfig, String serverIcon, int slots, String motd) {
+    public HyriAPIConfig(boolean devEnvironment, boolean hyggdrasil, boolean production, HyriRedisConfig redisConfiguration, HydrionConfig hydrionConfig, String serverIcon, int slots, String motd) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.production = production;
@@ -98,7 +98,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
         private static final String HYDRION_URL = "url";
         private static final String HYDRION_API_KEY = "apiKey";
 
-        public static HyriAPIConfiguration load(Plugin plugin) {
+        public static HyriAPIConfig load(Plugin plugin) {
             try {
                 final File dataFolder = plugin.getDataFolder();
                 final File configurationFile = new File(dataFolder, "config.yml");
@@ -117,7 +117,7 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
                 final Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configurationFile);
 
-                return new HyriAPIConfiguration(config.getBoolean(DEV_ENVIRONMENT_PATH), config.getBoolean(HYGGDRASIL_PATH),
+                return new HyriAPIConfig(config.getBoolean(DEV_ENVIRONMENT_PATH), config.getBoolean(HYGGDRASIL_PATH),
                         config.getBoolean(PRODUCTION), loadRedisConfiguration(config.getSection(REDIS_PATH)), loadHydrionConfiguration(config.getSection(HYDRION_PATH)),
                         config.getString(SERVER_ICON_PATH), config.getInt(SLOTS_PATH), config.getString(MOTD_PATH));
             } catch (IOException e) {

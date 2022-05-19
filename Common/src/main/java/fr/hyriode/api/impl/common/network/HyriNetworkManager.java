@@ -58,7 +58,7 @@ public class HyriNetworkManager implements IHyriNetworkManager {
             return network;
         }
 
-        if (this.hydrionManager.isEnabled()) {
+        if (this.hydrionManager.isEnabled() && HyriAPI.get().getConfiguration().isProduction()) {
             try {
                 return this.networkModule.getNetwork().thenApply(response -> {
                     final JsonElement content = response.getContent();
@@ -83,7 +83,7 @@ public class HyriNetworkManager implements IHyriNetworkManager {
     public void setNetwork(IHyriNetwork network) {
         this.cacheNetwork(network);
 
-        if (this.hydrionManager.isEnabled()) {
+        if (this.hydrionManager.isEnabled() && HyriAPI.get().getConfiguration().isProduction()) {
             this.networkModule.setNetwork(HyriAPI.GSON.toJson(network));
         }
     }

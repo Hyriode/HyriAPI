@@ -59,9 +59,19 @@ public class HyriMoneyManager implements IHyriMoneyManager {
             sign = "-";
         }
 
+        final boolean isMultiplier = action.isMultiplier();
         final int multiplier = (int) money.getMultiplier(player) * 100;
+        String content = isMultiplier || reason != null ? " (%s)" : null;
 
-        return money.getColor() + sign + finalAmount + " " + money.getName() + (action.isMultiplier() ? "+" + multiplier + "%" : "") + (reason != null && !reason.isEmpty() ? " (" + reason + ")" : "");
+        if (isMultiplier && reason != null) {
+            content = content.replace("%s", "+" + multiplier + "% ┃ " + reason);
+        } else if (isMultiplier) {
+            content = content.replace("%s", "+" + multiplier + "%");
+        } else if (reason != null) {
+            content = content.replace("%s", reason);
+        }
+
+        return money.getColor() + sign + finalAmount + " " + money.getName() + content;
     }
 
 }

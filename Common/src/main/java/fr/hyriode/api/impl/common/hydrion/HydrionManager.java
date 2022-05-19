@@ -1,13 +1,9 @@
 package fr.hyriode.api.impl.common.hydrion;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.configuration.HydrionConfiguration;
+import fr.hyriode.api.configuration.HydrionConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.hydrion.client.HydrionClient;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Project: HyriAPI
@@ -18,11 +14,11 @@ public class HydrionManager {
 
     private HydrionClient client;
 
-    private final HydrionConfiguration configuration;
+    private final HydrionConfig configuration;
     private final boolean enabled;
 
     public HydrionManager() {
-        this.configuration = HyriAPI.get().getConfiguration().getHydrionConfiguration();
+        this.configuration = HyriAPI.get().getConfiguration().getHydrionConfig();
         this.enabled = this.configuration.isEnabled();
 
         this.start();
@@ -46,7 +42,7 @@ public class HydrionManager {
         return this.client;
     }
 
-    public HydrionConfiguration getConfiguration() {
+    public HydrionConfig getConfiguration() {
         return this.configuration;
     }
 

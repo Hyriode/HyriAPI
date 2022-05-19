@@ -2,12 +2,19 @@ package fr.hyriode.api.impl.proxy.task;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.network.HyriNetworkCount;
+import fr.hyriode.api.network.HyriPlayerCount;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,15 +43,44 @@ public class HyriCounterSyncTask implements Runnable {
 
     @Override
     public void run() {
-        int players = 0;
+        int totalPlayers = 0;
         for (HyggProxy proxy : HyriAPI.get().getProxyManager().getProxies()) {
-            players += proxy.getPlayers();
+            totalPlayers += proxy.getPlayers();
         }
 
         final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
+        final Map<String, List<HyggServer>> servers = new HashMap<>();
 
-        network.getPlayerCount().setPlayers(players);
+        for (HyggServer server : HyriAPI.get().getServerManager().getServers()) {
+            final String serverType = server.getType();
+            final List<HyggServer> currentServers = servers.getOrDefault(serverType, new ArrayList<>());
+
+            servers.put(serverType, currentServers);
+        }
+
+        final HyriNetworkCount playerCount = network.getPlayerCount();
+        for (Map.Entry<String, List<HyggServer>> entry : servers.entrySet()) {
+            this.updateServersCounter(playerCount.getCategory(entry.getKey()), entry.getValue());
+        }
+
+        playerCount.setPlayers(totalPlayers);
         network.update();
+    }
+
+    private void updateServersCounter(HyriPlayerCount playerCount, List<HyggServer> servers) {
+        final Map<String, Integer> types = new HashMap<>();
+
+        for (HyggServer server : servers) {
+            final String gameType = server.getGameType();
+
+            if (gameType != null) {
+                types.put(gameType, types.getOrDefault(gameType, 0));
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : types.entrySet()) {
+            playerCount.setType(entry.getKey(), entry.getValue());
+        }
     }
 
 }

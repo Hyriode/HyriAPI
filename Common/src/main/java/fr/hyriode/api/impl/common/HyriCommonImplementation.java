@@ -16,7 +16,6 @@ import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
-import fr.hyriode.api.impl.common.player.HyriPlayer;
 import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
@@ -26,19 +25,13 @@ import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.party.IHyriPartyManager;
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.queue.IHyriQueueManager;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
-import fr.hyriode.hydrion.client.HydrionClient;
-import fr.hyriode.hydrion.client.response.HydrionResponse;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,11 +82,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
         log("Registered " + this.getClass().getName() + " as an implementation of " + NAME + ".");
 
-        this.redisConnection = new HyriRedisConnection(this.configuration.getRedisConfiguration());
+        this.hyggdrasilManager = new HyggdrasilManager(logger, this);
+        this.redisConnection = new HyriRedisConnection(this);
         this.redisProcessor = new HyriRedisProcessor();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.hyggdrasilManager = new HyggdrasilManager(logger, this);
         this.hydrionManager = new HydrionManager();
         this.networkManager = new HyriNetworkManager(this.hydrionManager);
         this.serverManager = new HyriCServerManager(this);
@@ -121,7 +114,6 @@ public abstract class HyriCommonImplementation extends HyriAPI {
             this.pubSub.stop();
             this.redisProcessor.stop();
             this.redisConnection.stop();
-            this.hyggdrasilManager.stop();
         }
     }
 

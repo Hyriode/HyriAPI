@@ -194,6 +194,11 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public HyriPlus getHyriPlus() {
+        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
+            final long currentTime = System.currentTimeMillis();
+
+            return new HyriPlus(currentTime, currentTime + 2629800000L);
+        }
         return this.hyriPlus;
     }
 
@@ -214,7 +219,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasHyriPlus() {
-        if (this.rank.isStaff() || this.rank.getPlayerType() == HyriPlayerRankType.PARTNER) {
+        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
             return true;
         }
 

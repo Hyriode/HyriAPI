@@ -15,7 +15,7 @@ public class HyriMoneyAction implements IHyriMoneyAction {
 
     private long amount;
     private String reason;
-    private boolean multiplier;
+    private boolean multiplier = true;
     private boolean message;
 
     private final Type type;

@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfiguration;
+import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfig;
 import fr.hyriode.api.network.IHyriNetwork;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.Favicon;
@@ -21,7 +21,7 @@ public class HyriProxyListener implements Listener {
     private final Favicon favicon;
 
     @SuppressWarnings("deprecation")
-    public HyriProxyListener(HyriAPIConfiguration configuration) {
+    public HyriProxyListener(HyriAPIConfig configuration) {
         this.favicon = Favicon.create(configuration.getServerIcon());
     }
 

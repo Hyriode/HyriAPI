@@ -15,6 +15,13 @@ public interface IHyriAPIConfiguration {
     boolean isDevEnvironment();
 
     /**
+     * Check if HyriAPI is used in production or not
+     *
+     * @return <code>true</code> if yes
+     */
+    boolean isProduction();
+
+    /**
      * Check if HyriAPI is currently using Hyggdrasil
      *
      * @return <code>true</code> if it's using Hyggdrasil
@@ -24,15 +31,15 @@ public interface IHyriAPIConfiguration {
     /**
      * Get the Redis configuration for Redis
      *
-     * @return The {@link HyriRedisConfiguration} object
+     * @return The {@link HyriRedisConfig} object
      */
-    HyriRedisConfiguration getRedisConfiguration();
+    HyriRedisConfig getRedisConfig();
 
     /**
      * Get the configuration for Hydrion
      *
-     * @return The {@link HydrionConfiguration} object
+     * @return The {@link HydrionConfig} object
      */
-    HydrionConfiguration getHydrionConfiguration();
+    HydrionConfig getHydrionConfig();
 
 }
