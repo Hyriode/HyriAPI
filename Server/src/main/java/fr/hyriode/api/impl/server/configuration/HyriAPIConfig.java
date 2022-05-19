@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.server.configuration;
 
-import fr.hyriode.api.configuration.HydrionConfiguration;
-import fr.hyriode.api.configuration.HyriRedisConfiguration;
+import fr.hyriode.api.configuration.HydrionConfig;
+import fr.hyriode.api.configuration.HyriRedisConfig;
 import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,15 +18,17 @@ import java.util.UUID;
 public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
     private final boolean devEnvironment;
+    private final boolean production;
     private final boolean hyggdrasil;
-    private final HyriRedisConfiguration redisConfiguration;
-    private final HydrionConfiguration hydrionConfiguration;
+    private final HyriRedisConfig redisConfiguration;
+    private final HydrionConfig hydrionConfig;
 
-    public HyriAPIConfiguration(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfiguration redisConfiguration, HydrionConfiguration hydrionConfiguration) {
+    public HyriAPIConfiguration(boolean devEnvironment, boolean production, boolean hyggdrasil, HyriRedisConfig redisConfiguration, HydrionConfig hydrionConfig) {
         this.devEnvironment = devEnvironment;
+        this.production = production;
         this.hyggdrasil = hyggdrasil;
         this.redisConfiguration = redisConfiguration;
-        this.hydrionConfiguration = hydrionConfiguration;
+        this.hydrionConfig = hydrionConfig;
     }
 
     @Override
@@ -35,23 +37,29 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
     }
 
     @Override
+    public boolean isProduction() {
+        return this.production;
+    }
+
+    @Override
     public boolean withHyggdrasil() {
         return this.hyggdrasil;
     }
 
     @Override
-    public HyriRedisConfiguration getRedisConfiguration() {
+    public HyriRedisConfig getRedisConfig() {
         return this.redisConfiguration;
     }
 
     @Override
-    public HydrionConfiguration getHydrionConfiguration() {
-        return this.hydrionConfiguration;
+    public HydrionConfig getHydrionConfig() {
+        return this.hydrionConfig;
     }
 
     public static class Loader {
 
         private static final String DEV_ENVIRONMENT_PATH = "devEnvironment";
+        private static final 
         private static final String HYGGDRASIL_PATH = "hyggdrasil";
         private static final String REDIS_PATH = "redis";
         private static final String HYDRION_PATH = "hydrion";
@@ -69,24 +77,24 @@ public class HyriAPIConfiguration implements IHyriAPIConfiguration {
 
             create(plugin);
 
-            return new HyriAPIConfiguration(config.getBoolean(DEV_ENVIRONMENT_PATH), config.getBoolean(HYGGDRASIL_PATH),
+            return new HyriAPIConfiguration(config.getBoolean(DEV_ENVIRONMENT_PATH), production, config.getBoolean(HYGGDRASIL_PATH),
                     loadRedisConfiguration(config.getConfigurationSection(REDIS_PATH)), loadHydrionConfiguration(config.getConfigurationSection(HYDRION_PATH)));
         }
 
-        private static HyriRedisConfiguration loadRedisConfiguration(ConfigurationSection section) {
+        private static HyriRedisConfig loadRedisConfiguration(ConfigurationSection section) {
             final String hostname = section.getString(REDIS_HOSTNAME);
             final int port = section.getInt(REDIS_PORT);
             final String password = section.getString(REDIS_PASSWORD);
 
-            return new HyriRedisConfiguration(hostname, port, password);
+            return new HyriRedisConfig(hostname, port, password);
         }
 
-        private static HydrionConfiguration loadHydrionConfiguration(ConfigurationSection section) {
+        private static HydrionConfig loadHydrionConfiguration(ConfigurationSection section) {
             final boolean enabled = section.getBoolean(HYDRION_ENABLED);
             final String url = section.getString(HYDRION_URL);
             final UUID apiKey = UUID.fromString(section.getString(HYDRION_API_KEY));
 
-            return new HydrionConfiguration(enabled, url, apiKey);
+            return new HydrionConfig(enabled, url, apiKey);
         }
 
         private static void create(JavaPlugin plugin) {
