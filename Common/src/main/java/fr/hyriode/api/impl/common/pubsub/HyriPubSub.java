@@ -6,6 +6,9 @@ import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
+import fr.hyriode.api.packet.event.HyriPacketEvent;
+import fr.hyriode.api.packet.event.HyriPacketReceiveEvent;
+import fr.hyriode.api.packet.event.HyriPacketSendEvent;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import redis.clients.jedis.Jedis;
@@ -85,7 +88,15 @@ public class HyriPubSub implements IHyriPubSub {
 
     @Override
     public void send(String channel, HyriPacket packet, Runnable callback) {
-        this.sender.send(new HyriPubSubMessage(CHANNEL_PREFIX + channel, HyriAPI.GSON.toJson(packet), callback));
+        final HyriPacketEvent event = new HyriPacketSendEvent(packet, channel);
+
+        HyriAPI.get().getEventBus().publish(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
+        this.sender.send(new HyriPubSubMessage(CHANNEL_PREFIX + event.getChannel(), HyriAPI.GSON.toJson(event.getPacket()), callback));
     }
 
     @Override
@@ -172,10 +183,23 @@ public class HyriPubSub implements IHyriPubSub {
         @Override
         public void onPMessage(String pattern, String channel, String message) {
             final HyriPacket packet = HyriAPI.GSON.fromJson(message, HyriPacket.class);
-            final Set<IHyriPacketReceiver> receivers = this.receivers.get(channel);
+
+            if (packet == null) {
+                return;
+            }
+
+            final HyriPacketEvent event = new HyriPacketReceiveEvent(packet, channel);
+
+            HyriAPI.get().getEventBus().publish(event);
+
+            if (event.isCancelled() || event.getPacket() == null || event.getChannel() == null) {
+                return;
+            }
+
+            final Set<IHyriPacketReceiver> receivers = this.receivers.get(event.getChannel());
 
             if (receivers != null) {
-                receivers.forEach(receiver -> receiver.receive(channel, packet));
+                receivers.forEach(receiver -> receiver.receive(event.getChannel(), event.getPacket()));
             }
         }
 
