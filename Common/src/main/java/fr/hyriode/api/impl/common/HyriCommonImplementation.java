@@ -162,6 +162,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         return this.pubSub;
     }
 
+    @Override
     public HyggdrasilManager getHyggdrasilManager() {
         return this.hyggdrasilManager;
     }

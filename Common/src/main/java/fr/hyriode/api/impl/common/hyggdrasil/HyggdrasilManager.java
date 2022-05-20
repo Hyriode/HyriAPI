@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.hyggdrasil;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriProxiesListener;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriServersListener;
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  * Created by AstFaster
  * on 16/02/2022 at 18:16
  */
-public class HyggdrasilManager {
+public class HyggdrasilManager implements IHyggdrasilManager {
 
     private HyggdrasilAPI hyggdrasilAPI;
     private HyggEnvironment environment;
@@ -98,18 +99,22 @@ public class HyggdrasilManager {
         return "dev-" + UUID.randomUUID().toString().substring(0, 5);
     }
 
+    @Override
     public boolean withHyggdrasil() {
         return this.implementation.getConfiguration().withHyggdrasil();
     }
 
+    @Override
     public HyggdrasilAPI getHyggdrasilAPI() {
         return this.hyggdrasilAPI;
     }
 
+    @Override
     public HyggEnvironment getEnvironment() {
         return this.environment;
     }
 
+    @Override
     public HyggApplication getApplication() {
         return this.environment.getApplication();
     }

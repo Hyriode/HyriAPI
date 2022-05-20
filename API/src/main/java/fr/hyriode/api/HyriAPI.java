@@ -8,6 +8,7 @@ import fr.hyriode.api.configuration.IHyriAPIConfiguration;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
+import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
@@ -129,6 +130,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPubSub}
      */
     public abstract IHyriPubSub getPubSub();
+
+    /**
+     * Get the Hyggdrasil manager instance
+     *
+     * @return The {@link IHyggdrasilManager} instance
+     */
+    public abstract IHyggdrasilManager getHyggdrasilManager();
 
     /**
      * Get the instance of Hystia API
