@@ -3,8 +3,6 @@ package fr.hyriode.api.impl.common.whitelist;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 
-import java.util.UUID;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster

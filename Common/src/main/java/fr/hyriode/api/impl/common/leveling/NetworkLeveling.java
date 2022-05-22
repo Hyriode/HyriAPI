@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.common.leveling;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.leveling.event.HyriGainLevelEvent;
 import fr.hyriode.api.leveling.event.HyriGainXPEvent;

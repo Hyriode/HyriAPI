@@ -2,8 +2,8 @@ package fr.hyriode.api.impl.server.receiver;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.ChatChannelComponentPacket;
-import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.chat.channel.ChatChannelMessagePacket;
+import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.chat.packet.BroadcastPacket;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;

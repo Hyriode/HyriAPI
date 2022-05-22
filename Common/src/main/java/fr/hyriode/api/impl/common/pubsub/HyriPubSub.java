@@ -2,8 +2,6 @@ package fr.hyriode.api.impl.common.pubsub;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
-import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.event.HyriPacketEvent;

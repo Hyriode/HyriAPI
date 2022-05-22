@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.server.chat;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.nickname.IHyriNickname;
@@ -11,8 +10,6 @@ import fr.hyriode.api.rank.type.HyriStaffRankType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

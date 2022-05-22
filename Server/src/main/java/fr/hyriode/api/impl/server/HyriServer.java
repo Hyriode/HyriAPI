@@ -1,14 +1,13 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hystia.api.config.IConfig;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +78,8 @@ public class HyriServer implements IHyriServer {
     public void setState(State state) {
         this.state = state;
 
+        HyriCommonImplementation.log("Changing state to " + this.state.name());
+
         this.setAccessible(this.state.isAccessible());
     }
 
@@ -148,6 +149,7 @@ public class HyriServer implements IHyriServer {
 
     public void setMap(String map) {
         this.map = map;
+        this.data.add(HyggServer.MAP_KEY, map);
 
         this.hyggdrasilManager.sendData();
     }

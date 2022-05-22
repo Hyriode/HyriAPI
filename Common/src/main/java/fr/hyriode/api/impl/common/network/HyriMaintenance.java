@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.common.network;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.event.HyriCancellableEvent;
 import fr.hyriode.api.event.model.HyriMaintenanceEvent;
 import fr.hyriode.api.network.IHyriMaintenance;
 

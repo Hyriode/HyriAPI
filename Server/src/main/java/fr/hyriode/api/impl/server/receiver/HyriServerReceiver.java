@@ -23,8 +23,11 @@ public class HyriServerReceiver implements IHyggPacketReceiver {
             final IHyriServer server = HyriAPI.get().getServer();
 
             if (server.getName().equals(serverName)) {
-                server.getStopHandler().run();
+                final Runnable stopHandler = server.getStopHandler();
 
+                if (stopHandler != null)  {
+                    stopHandler.run();
+                }
                 return HyggResponse.Type.SUCCESS;
             }
             return HyggResponse.Type.NONE;

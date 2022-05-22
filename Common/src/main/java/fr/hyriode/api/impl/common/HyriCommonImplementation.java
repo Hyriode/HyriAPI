@@ -82,15 +82,18 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
         log("Registered " + this.getClass().getName() + " as an implementation of " + NAME + ".");
 
-        this.hyggdrasilManager = new HyggdrasilManager(logger, this);
+        this.hyggdrasilManager = new HyggdrasilManager(logger, () -> this);
         this.redisConnection = new HyriRedisConnection(this);
+        this.proxyManager = new HyriProxyManager(this);
+        this.serverManager = new HyriCServerManager(this);
+        this.hyggdrasilManager.start();
+        this.proxyManager.start();
+        this.serverManager.start();
         this.redisProcessor = new HyriRedisProcessor();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
         this.hydrionManager = new HydrionManager();
         this.networkManager = new HyriNetworkManager(this.hydrionManager);
-        this.serverManager = new HyriCServerManager(this);
-        this.proxyManager = new HyriProxyManager(this);
         this.queueManager = new HyriQueueManager(this.hyggdrasilManager);
         this.gameManager = new HyriGameManager(this.hydrionManager);
         this.playerSettingsManager = new HyriPlayerSettingsManager();

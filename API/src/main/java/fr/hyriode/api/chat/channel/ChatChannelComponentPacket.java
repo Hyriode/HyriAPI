@@ -2,8 +2,6 @@ package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.packet.HyriPacket;
 
-import java.util.UUID;
-
 public class ChatChannelComponentPacket extends HyriPacket {
 
     private final String channel;

@@ -54,7 +54,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             this.networkManager.cacheNetwork(new HyriNetwork());
         }
 
-        this.hyggdrasilManager.start();
         this.queueManager.start();
 
         this.registerReceivers();

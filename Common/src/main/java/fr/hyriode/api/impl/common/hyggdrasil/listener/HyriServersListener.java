@@ -7,6 +7,8 @@ import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
 
+import java.util.function.Supplier;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -15,17 +17,17 @@ import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
 public class HyriServersListener {
 
     private final HyggEventBus eventBus;
-    private final HyriCServerManager serverManager;
+    private final Supplier<HyriCServerManager> serverManager;
 
     public HyriServersListener(HyriCommonImplementation implementation) {
         this.eventBus = implementation.getHyggdrasilManager().getHyggdrasilAPI().getEventBus();
-        this.serverManager = implementation.getServerManager();
+        this.serverManager = implementation::getServerManager;
     }
 
     public void register() {
-        this.eventBus.subscribe(HyggServerStartedEvent.class, event -> this.serverManager.addServer(event.getServer()));
-        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> this.serverManager.addServer(event.getServer()));
-        this.eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.serverManager.removeServer(event.getServer().getName()));
+        this.eventBus.subscribe(HyggServerStartedEvent.class, event -> this.serverManager.get().addServer(event.getServer()));
+        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> this.serverManager.get().addServer(event.getServer()));
+        this.eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.serverManager.get().removeServer(event.getServer().getName()));
     }
 
 }

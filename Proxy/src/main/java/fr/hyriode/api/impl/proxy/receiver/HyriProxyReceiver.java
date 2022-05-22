@@ -4,7 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
-import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
+import fr.hyriode.api.packet.model.HyriEvacuateServerPacket;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacket;
 import fr.hyriode.hyggdrasil.api.protocol.receiver.IHyggPacketReceiver;
@@ -26,7 +26,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 16/02/2022 at 22:13
  */
-public class HyriProxyReceiver implements IHyggPacketReceiver {
+public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiver {
 
     @Override
     public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
@@ -55,8 +55,11 @@ public class HyriProxyReceiver implements IHyggPacketReceiver {
             final IHyriProxy proxy = HyriAPI.get().getProxy();
 
             if (proxy.getName().equals(proxyName)) {
-                proxy.getStopHandler().run();
+                final Runnable stopHandler = proxy.getStopHandler();
 
+                if (stopHandler != null) {
+                    stopHandler.run();
+                }
                 return HyggResponse.Type.SUCCESS;
             }
             return HyggResponse.Type.NONE;
@@ -66,6 +69,15 @@ public class HyriProxyReceiver implements IHyggPacketReceiver {
             this.evacuateServer(evacuatePacket.getFrom(), evacuatePacket.getTo());
         }
         return HyggResponse.Type.NONE;
+    }
+
+    @Override
+    public void receive(String channel, HyriPacket packet) {
+        if (packet instanceof HyriEvacuateServerPacket) {
+            final HyriEvacuateServerPacket evacuationPacket = (HyriEvacuateServerPacket) packet;
+
+            this.evacuateServer(evacuationPacket.getFrom(), evacuationPacket.getDestination());
+        }
     }
 
     private void evacuateServer(String fromName, String toName) {
@@ -85,7 +97,6 @@ public class HyriProxyReceiver implements IHyggPacketReceiver {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerId);
 
         if (player != null && player.isConnected() && serverInfo != null) {
-            System.out.println("Connecting player " + playerId + " to " + server);
             player.connect(serverInfo);
         }
     }

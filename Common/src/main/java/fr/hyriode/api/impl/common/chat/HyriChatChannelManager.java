@@ -2,9 +2,9 @@ package fr.hyriode.api.impl.common.chat;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.ChatChannelComponentPacket;
+import fr.hyriode.api.chat.channel.ChatChannelMessagePacket;
 import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
-import fr.hyriode.api.chat.channel.ChatChannelMessagePacket;
 import fr.hyriode.api.packet.HyriChannel;
 
 import java.util.HashMap;

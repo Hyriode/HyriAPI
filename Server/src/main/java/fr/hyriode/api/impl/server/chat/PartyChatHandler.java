@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.server.chat;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -15,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class PartyChatHandler extends CommonChatHandler {

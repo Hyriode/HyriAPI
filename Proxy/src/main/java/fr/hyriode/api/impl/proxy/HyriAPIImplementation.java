@@ -18,8 +18,6 @@ import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 
-import java.util.UUID;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -38,8 +36,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.proxy = this.createProxy();
         this.playerManager = new HyriPlayerManager(this.hydrionManager);
         this.serverManager = new HyriServerManager(this);
-
-        this.hyggdrasilManager.start();
 
         final IHyriNetwork network = this.networkManager.getNetwork();
 
@@ -80,16 +76,19 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private void registerReceivers() {
+        final HyriProxyReceiver proxyReceiver = new HyriProxyReceiver();
+
         if (this.hyggdrasilManager.withHyggdrasil()) {
             final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
-            processor.registerReceiver(HyggChannel.PROXIES, new HyriProxyReceiver());
+            processor.registerReceiver(HyggChannel.PROXIES, proxyReceiver);
             processor.registerReceiver(HyggChannel.QUEUE, new HyriQueueReceiver());
         }
 
         final IHyriPubSub pubSub = HyriAPI.get().getPubSub();
 
         pubSub.subscribe(HyriChannel.PROXIES, new HyriPlayerReceiver());
+        pubSub.subscribe(HyriChannel.PROXIES, proxyReceiver);
         pubSub.subscribe(HyriChannel.CHAT, new HyriChatReceiver());
     }
 

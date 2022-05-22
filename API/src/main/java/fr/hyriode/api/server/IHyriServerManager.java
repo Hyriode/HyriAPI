@@ -94,6 +94,14 @@ public interface IHyriServerManager {
     void sendPartyToServer(UUID partyId, String serverName);
 
     /**
+     * Evacuate all players that are on a given server to another server
+     *
+     * @param from The server to evacuate
+     * @param destination The destination server
+     */
+    void evacuateServer(String from, String destination);
+
+    /**
      * Create a server with a given type
      *
      * @param serverRequest The request to send to create the server

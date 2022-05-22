@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.proxy;
 
+import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
@@ -48,6 +49,8 @@ public class HyriProxy implements IHyriProxy {
     @Override
     public void setState(State state) {
         this.state = state;
+
+        HyriCommonImplementation.log("Changing state to " + this.state.name());
 
         this.hyggdrasilManager.sendData();
     }

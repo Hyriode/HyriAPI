@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.common.money;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 

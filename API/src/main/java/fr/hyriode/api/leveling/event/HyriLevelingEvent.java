@@ -1,7 +1,6 @@
 package fr.hyriode.api.leveling.event;
 
 import fr.hyriode.api.event.HyriEvent;
-import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.UUID;

@@ -5,7 +5,6 @@ import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriProxiesListener;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriServersListener;
-import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
@@ -13,7 +12,6 @@ import fr.hyriode.hyggdrasil.api.event.model.HyggStartedEvent;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggRedisCredentials;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
 import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyInfoPacket;
@@ -23,7 +21,7 @@ import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 /**
@@ -37,9 +35,9 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     private HyggEnvironment environment;
 
     private final Logger logger;
-    private final HyriCommonImplementation implementation;
+    private final Supplier<HyriCommonImplementation> implementation;
 
-    public HyggdrasilManager(Logger logger, HyriCommonImplementation implementation) {
+    public HyggdrasilManager(Logger logger, Supplier<HyriCommonImplementation> implementation) {
         this.logger = logger;
         this.implementation = implementation;
 
@@ -89,8 +87,8 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     }
 
     private void registerListeners() {
-        new HyriServersListener(this.implementation).register();
-        new HyriProxiesListener(this.implementation).register();
+        new HyriServersListener(this.implementation.get()).register();
+        new HyriProxiesListener(this.implementation.get()).register();
 
         this.hyggdrasilAPI.getEventBus().subscribe(HyggStartedEvent.class, event -> this.sendData());
     }
@@ -101,7 +99,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
 
     @Override
     public boolean withHyggdrasil() {
-        return this.implementation.getConfiguration().withHyggdrasil();
+        return this.implementation.get().getConfiguration().withHyggdrasil();
     }
 
     @Override

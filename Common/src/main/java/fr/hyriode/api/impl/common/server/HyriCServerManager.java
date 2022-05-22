@@ -2,11 +2,10 @@ package fr.hyriode.api.impl.common.server;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.packet.BroadcastPacket;
-import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
-import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.packet.HyriChannel;
+import fr.hyriode.api.packet.model.HyriEvacuateServerPacket;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
@@ -16,7 +15,6 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequester;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
-import redis.clients.jedis.Jedis;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -37,6 +35,10 @@ public class HyriCServerManager implements IHyriServerManager {
         this.implementation = implementation;
         this.hyggdrasilManager = this.implementation.getHyggdrasilManager();
         this.servers = new HashMap<>();
+    }
+
+    public void start() {
+        this.runActionOnRequester(requester -> requester.fetchServers(null, servers -> servers.forEach(server -> this.servers.put(server.getName(), server))));
     }
 
     public void addServer(HyggServer server) {
@@ -122,6 +124,11 @@ public class HyriCServerManager implements IHyriServerManager {
     @Override
     public void sendPartyToServer(UUID partyId, String serverName) {
         HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPartyJoinPacket(serverName, partyId));
+    }
+
+    @Override
+    public void evacuateServer(String from, String destination) {
+        HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new HyriEvacuateServerPacket(from, destination));
     }
 
     @Override

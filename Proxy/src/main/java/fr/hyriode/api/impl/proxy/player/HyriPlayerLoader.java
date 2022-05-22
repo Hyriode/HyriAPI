@@ -1,24 +1,15 @@
 package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriendManager;
-import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
-import fr.hyriode.hydrion.client.module.PlayerModule;
-import fr.hyriode.hydrion.client.response.HydrionResponse;
 
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * Project: HyriAPI
