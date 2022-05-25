@@ -35,15 +35,6 @@ public class HyriPlayerManager extends HyriCPlayerManager {
     }
 
     @Override
-    public void kickPlayer(UUID uuid, String reason) {
-        final Player player = Bukkit.getPlayer(uuid);
-
-        if (player != null) {
-            player.kickPlayer(reason);
-        }
-    }
-
-    @Override
     public void sendMessage(UUID uuid, String message) {
         final Player player = Bukkit.getPlayer(uuid);
 

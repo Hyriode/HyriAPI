@@ -122,9 +122,9 @@ public interface IHyriPlayerManager {
      * Kick a player from network with a given reason
      *
      * @param uuid Player {@link UUID}
-     * @param reason Reason to display to player
+     * @param component The serialized text component to show to the player
      */
-    void kickPlayer(UUID uuid, String reason);
+    void kickPlayer(UUID uuid, String component);
 
     /**
      * Connect a player to a given server

@@ -7,6 +7,7 @@ import fr.hyriode.api.chat.packet.PlayerMessagePacket;
 import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.nickname.HyriNicknameManager;
+import fr.hyriode.api.impl.common.player.packet.HyriPlayerKickPacket;
 import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
@@ -185,6 +186,11 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     @Override
     public void removePlayer(UUID uuid) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid)));
+    }
+
+    @Override
+    public void kickPlayer(UUID uuid, String component) {
+        HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new HyriPlayerKickPacket(uuid, component));
     }
 
     @Override

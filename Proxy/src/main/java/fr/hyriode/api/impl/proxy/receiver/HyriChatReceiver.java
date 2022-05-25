@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.proxy.receiver;
 import fr.hyriode.api.chat.packet.ComponentPacket;
 import fr.hyriode.api.chat.packet.PlayerComponentPacket;
 import fr.hyriode.api.chat.packet.PlayerMessagePacket;
+import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import net.md_5.bungee.api.ProxyServer;
@@ -25,10 +26,10 @@ public class HyriChatReceiver implements IHyriPacketReceiver {
             final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(componentPacket.getPlayer());
 
             if (player != null) {
-                player.sendMessage(deserializeComponent(componentPacket.getComponent()));
+                player.sendMessage(MessageUtil.deserializeComponent(componentPacket.getComponent()));
             }
         } else if (packet instanceof ComponentPacket) {
-            final TextComponent component = deserializeComponent(((ComponentPacket) packet).getComponent());
+            final TextComponent component = MessageUtil.deserializeComponent(((ComponentPacket) packet).getComponent());
 
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                 player.sendMessage(component);
@@ -41,10 +42,6 @@ public class HyriChatReceiver implements IHyriPacketReceiver {
                 player.sendMessage(TextComponent.fromLegacyText(message.getMessage()));
             }
         }
-    }
-
-    public static TextComponent deserializeComponent(String json) {
-        return new TextComponent(ComponentSerializer.parse(json));
     }
 
 }

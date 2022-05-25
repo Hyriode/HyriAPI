@@ -5,6 +5,8 @@ import fr.hyriode.api.network.IHyriMaintenance;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 /**
  * Project: HyriAPI
@@ -55,6 +57,10 @@ public class MessageUtil {
         final String reason = maintenance.getReason();
 
         return createKickMessage(new ComponentBuilder("Une maintenance est actuellement en cours." + (reason != null ? reason : "")).color(ChatColor.RED).create(), true);
+    }
+
+    public static TextComponent deserializeComponent(String json) {
+        return new TextComponent(ComponentSerializer.parse(json));
     }
 
 }
