@@ -1,6 +1,7 @@
 package fr.hyriode.api.server;
 
 import fr.hyriode.api.server.join.IHyriJoinManager;
+import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
@@ -141,5 +142,12 @@ public interface IHyriServerManager {
      * @return the {@link IHyriJoinManager} instance
      */
     IHyriJoinManager getJoinManager();
+
+    /**
+     * Get the reconnection handler instance
+     *
+     * @return The {@link IHyriReconnectionHandler} instance
+     */
+    IHyriReconnectionHandler getReconnectionHandler();
 
 }

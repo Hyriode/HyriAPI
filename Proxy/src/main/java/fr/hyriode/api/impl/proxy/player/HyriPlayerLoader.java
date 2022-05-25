@@ -49,57 +49,53 @@ public class HyriPlayerLoader {
         return account;
     }
 
-    public boolean unloadPlayerAccount(UUID uuid) {
-        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(uuid);
+    public void unloadPlayerAccount(UUID uuid) {
+        final IHyriPlayer account = IHyriPlayer.get(uuid);
+        final IHyriPlayerManager pm = HyriAPI.get().getPlayerManager();
 
         if (account != null) {
-            boolean result = false;
+            final UUID partyId = account.getParty();
 
-            if (account.isOnline()) {
-                final UUID partyId = account.getParty();
+            if (partyId != null) {
+                final IHyriParty party = HyriAPI.get().getPartyManager().getParty(partyId);
 
-                if (partyId != null) {
-                    final IHyriParty party = HyriAPI.get().getPartyManager().getParty(partyId);
+                if (party != null) {
+                    final UUID playerId = account.getUniqueId();
 
-                    if (party != null) {
-                        final UUID playerId = account.getUniqueId();
-
-                        if (party.isLeader(playerId)) {
-                            party.disband(HyriPartyDisbandReason.LEADER_LEAVE);
-                        } else {
-                            party.removeMember(account.getUniqueId());
-                        }
+                    if (party.isLeader(playerId)) {
+                        party.disband(HyriPartyDisbandReason.LEADER_LEAVE);
+                    } else {
+                        party.removeMember(account.getUniqueId());
                     }
                 }
-
-                HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
-
-                account.setParty(null);
-                account.setLastPrivateMessagePlayer(null);
-                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
-                account.setCurrentServer(null);
-                account.setLastServer(null);
-                account.setInVanishMode(false);
-                account.setInModerationMode(false);
-
-                final IHyriNickname nickname = account.getNickname();
-
-                if (nickname != null) {
-                    HyriAPI.get().getPlayerManager().getNicknameManager().removeUsedNickname(nickname.getName());
-
-                    account.setNickname(null);
-                }
-
-                result = true;
             }
 
+            HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
+
+            account.setParty(null);
+            account.setLastPrivateMessagePlayer(null);
+            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+            account.setCurrentServer(null);
+            account.setLastServer(null);
+            account.setInVanishMode(false);
+            account.setInModerationMode(false);
             account.setOnline(false);
             account.setCurrentProxy(null);
-            account.update();
 
-            return result;
+            final IHyriNickname nickname = account.getNickname();
+
+            if (nickname != null) {
+                pm.getNicknameManager().removeUsedNickname(nickname.getName());
+
+                account.setNickname(null);
+            }
+
+
+            HyriAPI.get().getFriendManager().removeFriends(uuid);
+
+            pm.sendPlayerToHydrion(account);
+            pm.removePlayer(uuid);
         }
-        return false;
     }
 
 }

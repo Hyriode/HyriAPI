@@ -48,7 +48,7 @@ public class HyriJoinManager implements IHyriJoinManager {
         }
 
         if (!this.expectedPlayers.contains(playerId)) {
-            final String message = this.requestPlayerJoin(playerId, false);
+            final String message = this.requestPlayerJoin(playerId, false, false);
 
             if (message != null) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, message);
@@ -84,7 +84,7 @@ public class HyriJoinManager implements IHyriJoinManager {
         }
     }
 
-    String requestPlayerJoin(UUID playerId, boolean connect) {
+    String requestPlayerJoin(UUID playerId, boolean connect, boolean reconnect) {
         final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
 
         if (account.isInModerationMode()) {
@@ -93,7 +93,7 @@ public class HyriJoinManager implements IHyriJoinManager {
             HyriJoinResponse response = HyriJoinResponse.ALLOW;
 
             for (IHyriJoinHandler handler : this.handlers.values()) {
-                response = handler.requestJoin(playerId, response);
+                response = reconnect ? handler.requestReconnect(playerId, response) : handler.requestJoin(playerId, response);
 
                 if (!response.isAllowed()) {
                     final String message = handler.createResponseMessage(playerId, response);

@@ -3,8 +3,10 @@ package fr.hyriode.api.impl.server.join;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
+import fr.hyriode.api.server.join.packet.HyriJoinPacket;
 import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
 import fr.hyriode.api.server.join.packet.HyriPlayerJoinPacket;
+import fr.hyriode.api.server.join.packet.HyriPlayerReconnectPacket;
 
 /**
  * Project: HyriAPI
@@ -21,17 +23,15 @@ public class HyriJoinReceiver implements IHyriPacketReceiver {
 
     @Override
     public void receive(String channel, HyriPacket packet) {
-        if (packet instanceof HyriPlayerJoinPacket) {
-            final HyriPlayerJoinPacket joinPacket = (HyriPlayerJoinPacket) packet;
-
-            if (joinPacket.getTargetServer().equals(HyriAPI.get().getServer().getName())) {
-                this.joinManager.requestPlayerJoin(joinPacket.getPlayerId(), true);
+        if (packet instanceof HyriJoinPacket) {
+            if (!((HyriJoinPacket) packet).getTargetServer().equals(HyriAPI.get().getServer().getName())) {
+                return;
             }
-        } else if (packet instanceof HyriPartyJoinPacket) {
-            final HyriPartyJoinPacket joinPacket = (HyriPartyJoinPacket) packet;
 
-            if (joinPacket.getTargetServer().equals(HyriAPI.get().getServer().getName())) {
-                this.joinManager.requestPartyJoin(joinPacket.getPartyId());
+           if (packet instanceof HyriPlayerJoinPacket) {
+                this.joinManager.requestPlayerJoin(((HyriPlayerJoinPacket) packet).getPlayerId(), true, packet instanceof HyriPlayerReconnectPacket);
+            } else if (packet instanceof HyriPartyJoinPacket) {
+                this.joinManager.requestPartyJoin(((HyriPartyJoinPacket) packet).getPartyId());
             }
         }
     }

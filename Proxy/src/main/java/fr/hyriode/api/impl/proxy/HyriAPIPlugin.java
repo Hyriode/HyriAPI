@@ -90,7 +90,7 @@ public class HyriAPIPlugin extends Plugin  {
         register.accept(new HyriProxyListener(this.configuration));
         register.accept(new HyriJoinListener(this));
 
-        HyriAPI.get().getEventBus().register(new HyriNetworkListener());
+        HyriAPI.get().getNetworkManager().getEventBus().register(new HyriNetworkListener());
     }
 
     public HyriAPIConfig getConfiguration() {

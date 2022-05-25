@@ -4,12 +4,14 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.packet.BroadcastPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.server.reconnection.HyriReconnectionHandler;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriEvacuateServerPacket;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
 import fr.hyriode.api.server.join.packet.HyriPlayerJoinPacket;
+import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.lobby.HyggLobbyAPI;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
@@ -28,12 +30,15 @@ public class HyriCServerManager implements IHyriServerManager {
 
     private final Map<String, HyggServer> servers;
 
+    private final IHyriReconnectionHandler reconnectionHandler;
+
     private final HyriCommonImplementation implementation;
     private final HyggdrasilManager hyggdrasilManager;
 
     public HyriCServerManager(HyriCommonImplementation implementation) {
         this.implementation = implementation;
         this.hyggdrasilManager = this.implementation.getHyggdrasilManager();
+        this.reconnectionHandler = new HyriReconnectionHandler();
         this.servers = new HashMap<>();
     }
 
@@ -153,7 +158,12 @@ public class HyriCServerManager implements IHyriServerManager {
 
     @Override
     public IHyriJoinManager getJoinManager() {
-        return null;
+        throw new IllegalStateException("Not implemented yet!");
+    }
+
+    @Override
+    public IHyriReconnectionHandler getReconnectionHandler() {
+        return this.reconnectionHandler;
     }
 
     private void runActionOnRequester(Consumer<HyggServerRequester> action) {
