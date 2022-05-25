@@ -12,7 +12,7 @@ public interface IHyriReconnectionHandler {
 
     IHyriReconnectionData get(UUID playerId);
 
-    void set(IHyriReconnectionData data);
+    void set(UUID playerId, String serverName, long ttl);
 
     void remove(UUID playerId);
 

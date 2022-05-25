@@ -33,8 +33,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class HyriJoinListener implements Listener {
 
-    private final Queue<UUID> disconnectedFromProxy;
-
     private final IHyriFriendManager friendManager;
 
     private final HyggdrasilManager hyggdrasilManager;
@@ -49,7 +47,6 @@ public class HyriJoinListener implements Listener {
         this.hydrionManager = hydrionManager;
         this.joinManager = joinManager;
         this.friendManager = HyriAPI.get().getFriendManager();
-        this.disconnectedFromProxy = new ConcurrentLinkedQueue<>();
 
         if (this.hydrionManager.isEnabled()) {
             this.friendsModule = this.hydrionManager.getClient().getFriendsModule();

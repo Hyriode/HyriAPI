@@ -14,6 +14,7 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.join.packet.HyriPlayerReconnectPacket;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
@@ -38,7 +39,7 @@ import java.util.*;
 public class HyriJoinListener implements Listener {
 
     private final List<UUID> loginPlayers;
-    private final Map<UUID, IHyriReconnectionData> reconnections;
+    private final List<UUID> reconnections;
 
     private final HyriPlayerLoader playerLoader;
     private final HyriOnlinePlayersTask onlineTask;
@@ -50,7 +51,7 @@ public class HyriJoinListener implements Listener {
         this.playerLoader = plugin.getPlayerLoader();
         this.onlineTask = plugin.getOnlinePlayersTask();
         this.loginPlayers = new ArrayList<>();
-        this.reconnections = new HashMap<>();
+        this.reconnections = new ArrayList<>();
     }
 
     @EventHandler
@@ -94,7 +95,7 @@ public class HyriJoinListener implements Listener {
 
             event.setCancelled(true);
 
-            if (account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {
+            if (account.getRank().isSuperior(HyriStaffRankType.DESIGNER) || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {
                 this.connectToLobby(player, event);
                 return;
             }
@@ -151,8 +152,12 @@ public class HyriJoinListener implements Listener {
 
         account.update();
 
+        if (!this.reconnections.remove(playerId)) {
+            return;
+        }
+
         // Reconnection part (if the player was in a game and reconnected)
-        final IHyriReconnectionData reconnectionData = this.reconnections.remove(playerId);
+        final IHyriReconnectionData reconnectionData = HyriAPI.get().getServerManager().getReconnectionHandler().get(playerId);
 
         if (reconnectionData != null) {
             reconnectionData.reconnect();
@@ -190,7 +195,7 @@ public class HyriJoinListener implements Listener {
             final IHyriReconnectionData reconnectionData = serverManager.getReconnectionHandler().get(playerId);
 
             if (reconnectionData != null) {
-                this.reconnections.put(playerId, reconnectionData);
+                this.reconnections.add(playerId);
             }
 
             event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));

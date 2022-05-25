@@ -21,12 +21,15 @@ public class HyriReconnectionHandler implements IHyriReconnectionHandler {
     @Override
     public void reconnectPlayer(IHyriReconnectionData reconnectionData) {
         final HyggServer server = HyriAPI.get().getServerManager().getServer(reconnectionData.getServerName());
+        final UUID playerId = reconnectionData.getPlayerId();
 
         if (server == null) {
             return;
         }
 
-        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerReconnectPacket(server.getName(), reconnectionData.getPlayerId()));
+        this.remove(playerId);
+
+        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerReconnectPacket(server.getName(), playerId));
     }
 
     @Override
@@ -43,12 +46,12 @@ public class HyriReconnectionHandler implements IHyriReconnectionHandler {
     }
 
     @Override
-    public void set(IHyriReconnectionData data) {
-        final String key = KEY.apply(data.getPlayerId());
+    public void set(UUID playerId, String serverName, long ttl) {
+        final String key = KEY.apply(playerId);
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.set(key, data.getServerName());
-            jedis.expire(key, data.getTTL());
+            jedis.set(key, serverName);
+            jedis.expire(key, ttl);
         });
     }
 
