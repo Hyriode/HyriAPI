@@ -1,8 +1,10 @@
 package fr.hyriode.api.impl.proxy.receiver;
 
+import fr.hyriode.api.impl.common.player.packet.HyriPlayerKickPacket;
 import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
+import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
@@ -35,6 +37,13 @@ public class HyriPlayerReceiver implements IHyriPacketReceiver {
             final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
 
             HyriProxyReceiver.connectPlayer(sendPacket.getPlayerUUID(), sendPacket.getServerName());
+        } else if (packet instanceof HyriPlayerKickPacket) {
+            final HyriPlayerKickPacket kickPacket = (HyriPlayerKickPacket) packet;
+            final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(kickPacket.getPlayerId());
+
+            if (player != null) {
+                player.disconnect(MessageUtil.deserializeComponent(kickPacket.getComponent()));
+            }
         }
     }
 

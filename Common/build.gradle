@@ -54,6 +54,6 @@ dependencies {
     api project(':API')
     api 'fr.hyriode:hydrion-client:1.0.7'
     shadow 'fr.hyriode:hystia-spigot:1.0.5'
-    implementation 'redis.clients:jedis:4.2.2'
+    implementation 'redis.clients:jedis:4.2.3'
 
 }

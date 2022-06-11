@@ -96,7 +96,7 @@ public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiv
         final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerId);
 
-        if (player != null && player.isConnected() && serverInfo != null) {
+        if (player != null && serverInfo != null) {
             player.connect(serverInfo);
         }
     }

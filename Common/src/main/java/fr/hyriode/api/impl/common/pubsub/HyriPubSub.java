@@ -58,6 +58,8 @@ public class HyriPubSub implements IHyriPubSub {
             while (this.running) {
                 try (final Jedis jedis = this.redisConnection.getResource()) {
                     jedis.psubscribe(this.subscriber, CHANNEL_PREFIX + "*");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });

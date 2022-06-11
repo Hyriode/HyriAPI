@@ -18,9 +18,11 @@ import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.transaction.HyriTransaction;
 import fr.hyriode.api.util.Skin;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Project: HyriAPI
@@ -41,7 +43,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     private HyriRank rank;
     private HyriPlus hyriPlus;
-    private HyriChatColor plusColor;
+    private HyriChatColor plusColor = HyriChatColor.LIGHT_PURPLE;
 
     private UUID lastPrivateMessage;
 
@@ -62,6 +64,8 @@ public class HyriPlayer implements IHyriPlayer {
     private final Map<String, JsonElement> statistics;
     private final Map<String, JsonElement> data;
 
+    private final Map<String, List<JsonElement>> transactions;
+
     private final NetworkLeveling networkLeveling;
 
     public HyriPlayer(boolean online, String name, UUID uuid) {
@@ -72,7 +76,6 @@ public class HyriPlayer implements IHyriPlayer {
         this.lastLoginDate = this.firstLoginDate;
         this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
         this.hyriPlus = null;
-        this.plusColor = HyriChatColor.LIGHT_PURPLE;
         this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
         this.party = null;
@@ -81,6 +84,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.vanishMode = false;
         this.statistics = new HashMap<>();
         this.data = new HashMap<>();
+        this.transactions = new HashMap<>();
         this.networkLeveling = new NetworkLeveling(this.uuid);
     }
 
@@ -406,6 +410,75 @@ public class HyriPlayer implements IHyriPlayer {
             return this.rank.getTabListPriority();
         }
         return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getTabListPriority();
+    }
+
+    @Override
+    public <T extends HyriTransaction> T getTransaction(String type, String name, Class<T> transactionClass) {
+        for (T transaction : this.getTransactions(type, transactionClass)) {
+            if (transaction.getName().equals(name)) {
+                return transaction;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public <T extends HyriTransaction> List<T> getTransactions(String type, Class<T> transactionsClass) {
+        final List<JsonElement> elements = this.transactions.get(type);
+
+        if (elements == null) {
+            return null;
+        }
+
+        final List<T> transactions = new ArrayList<>();
+
+        for (JsonElement element : elements) {
+            transactions.add(HyriAPI.GSON.fromJson(element, transactionsClass));
+        }
+        return transactions;
+    }
+
+    @Override
+    public void addTransaction(String type, HyriTransaction transaction) {
+        final List<JsonElement> elements = this.transactions.getOrDefault(type, new ArrayList<>());
+
+        elements.add(HyriAPI.GSON.toJsonTree(transaction));
+
+        this.transactions.put(type, elements);
+    }
+
+    @Override
+    public <T extends HyriTransaction> void removeTransaction(String type, String name, Class<T> transactionClass) {
+        final List<T> transactions = this.getTransactions(type, transactionClass);
+
+        if (transactions == null) {
+            return;
+        }
+
+        transactions.removeIf(transaction -> transaction.getName().equals(name));
+
+        final List<JsonElement> elements = new ArrayList<>();
+
+        for (T transaction : transactions) {
+            elements.add(HyriAPI.GSON.toJsonTree(transaction));
+        }
+
+        this.transactions.put(type, elements);
+    }
+
+    @Override
+    public boolean hasTransaction(String type, String name, Class<? extends HyriTransaction> transactionClass) {
+        for (HyriTransaction transaction : this.getTransactions(type, transactionClass)) {
+            if (transaction.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<String> getTransactionsTypes() {
+        return new ArrayList<>(this.transactions.keySet());
     }
 
 }

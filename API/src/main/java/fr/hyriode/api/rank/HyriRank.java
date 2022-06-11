@@ -172,6 +172,15 @@ public class HyriRank {
     }
 
     /**
+     * Get the real player type without checking whether the player is staff or not
+     *
+     * @return A {@link HyriPlayerRankType}
+     */
+    public HyriPlayerRankType getRealPlayerType() {
+        return this.playerType;
+    }
+
+    /**
      * Set the player type of the rank
      *
      * @param playerType New {@link HyriPlayerRankType}

@@ -14,6 +14,7 @@ public interface IHyriMoneyManager {
     /**
      * Make action on money when add/remove/set
      *
+     * @param playerId The unique id of the player
      * @param action The action that will be done on the money
      * @param money The {@link IHyriMoney} that will be affected
      */

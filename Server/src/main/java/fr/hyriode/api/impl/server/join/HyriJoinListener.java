@@ -133,26 +133,20 @@ public class HyriJoinListener implements Listener {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayerFromRedis(player.getUniqueId());
 
-        if (account != null) {
-            if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
-                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
-                account.setOnline(false);
-                account.setLastPrivateMessagePlayer(null);
+        if (account != null && HyriAPI.get().getConfiguration().isDevEnvironment()) {
+            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+            account.setOnline(false);
+            account.setLastPrivateMessagePlayer(null);
 
-                final IHyriNickname nickname = account.getNickname();
+            final IHyriNickname nickname = account.getNickname();
 
-                if (nickname != null) {
-                    playerManager.getNicknameManager().removeUsedNickname(nickname.getName());
+            if (nickname != null) {
+                playerManager.getNicknameManager().removeUsedNickname(nickname.getName());
 
-                    account.setNickname(null);
-                }
-
-                account.update();
+                account.setNickname(null);
             }
 
-            if (this.hydrionManager.isEnabled()) {
-                this.friendsModule.setFriends(uuid, HyriAPI.GSON.toJson(new HyriFriends(this.friendManager.getFriends(uuid))));
-            }
+            account.update();
         }
 
         this.joinManager.onLogout(player);

@@ -42,7 +42,7 @@ public class HyriNetworkManager implements IHyriNetworkManager {
     }
 
     public void cacheNetwork(IHyriNetwork network) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY, HyriAPI.GSON.toJson(network)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY, HyriAPI.GSON.toJson(network)));
     }
 
     @Override

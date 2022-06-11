@@ -1,6 +1,9 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriend;
+import fr.hyriode.api.impl.common.friend.HyriFriends;
+import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
@@ -22,10 +25,7 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -45,9 +45,11 @@ public class HyriJoinListener implements Listener {
     private final HyriOnlinePlayersTask onlineTask;
 
     private final HyggdrasilManager hyggdrasilManager;
+    private final HydrionManager hydrionManager;
 
     public HyriJoinListener(HyriAPIPlugin plugin) {
         this.hyggdrasilManager = plugin.getAPI().getHyggdrasilManager();
+        this.hydrionManager = plugin.getAPI().getHydrionManager();
         this.playerLoader = plugin.getPlayerLoader();
         this.onlineTask = plugin.getOnlinePlayersTask();
         this.loginPlayers = new ArrayList<>();
@@ -162,6 +164,15 @@ public class HyriJoinListener implements Listener {
         if (reconnectionData != null) {
             reconnectionData.reconnect();
         }
+    }
+
+    @EventHandler
+    public void onServerDisconnect(ServerDisconnectEvent event) {
+        final ProxiedPlayer player = event.getPlayer();
+        final UUID playerId = player.getUniqueId();
+        final List<IHyriFriend> friends = HyriAPI.get().getFriendManager().getFriends(playerId);
+
+        this.hydrionManager.getClient().getFriendsModule().setFriends(player.getUniqueId(), HyriAPI.GSON.toJson(new HyriFriends(friends)));
     }
 
     @EventHandler

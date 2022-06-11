@@ -31,12 +31,7 @@ public class HyriEventBus implements IHyriEventBus {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (this.isMethodValid(method)) {
                 final Class<? extends HyriEvent> eventClass = method.getParameterTypes()[0].asSubclass(HyriEvent.class);
-
-                Queue<HyriEventContext> contexts = this.contexts.get(eventClass);
-
-                if (contexts == null) {
-                    contexts = new ConcurrentLinkedQueue<>();
-                }
+                final Queue<HyriEventContext> contexts = this.contexts.getOrDefault(eventClass, new ConcurrentLinkedQueue<>());
 
                 contexts.add(new HyriEventContext(method.getAnnotation(HyriEventHandler.class).priority(), object, method));
 

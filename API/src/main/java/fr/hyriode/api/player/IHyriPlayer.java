@@ -11,10 +11,12 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.transaction.HyriTransaction;
 import fr.hyriode.api.util.Skin;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -463,6 +465,62 @@ public interface IHyriPlayer {
      * @return A number that represents a priority
      */
     int getTabListPriority();
+
+    /**
+     * Get a transaction by its type and name
+     *
+     * @param type The type of the transaction to get
+     * @param name The name of the transaction
+     * @param transactionClass The class of the transaction to return
+     * @return A {@link HyriTransaction}; or <code>null</code> if the transaction doesn't exist
+     * @param <T> The type of the transaction
+     */
+    <T extends HyriTransaction> T getTransaction(String type, String name, Class<T> transactionClass);
+
+    /**
+     * Get all the transactions of a same type
+     *
+     * @param type The type of the transactions to get
+     * @param transactionsClass The class of the transactions
+     * @return A list of {@link HyriTransaction} (might be empty if no transaction can be found with the given type)
+     * @param <T> The type of the transactions to return
+     */
+    <T extends HyriTransaction> List<T> getTransactions(String type, Class<T> transactionsClass);
+
+    /**
+     * Add a transaction to the player
+     *
+     * @param type The type of the transaction
+     * @param transaction The transaction to add
+     */
+    void addTransaction(String type, HyriTransaction transaction);
+
+    /**
+     * Remove a transaction from the player
+     *
+     * @param type The type of the transaction
+     * @param name The name of the transaction
+     * @param transactionClass The class of the transaction
+     * @param <T> The type of the transaction
+     */
+    <T extends HyriTransaction> void removeTransaction(String type, String name, Class<T> transactionClass);
+
+    /**
+     * Check if a transaction with the given name exists
+     *
+     * @param type The type of the transaction
+     * @param name The name of the transaction
+     * @param transactionClass The class of the transaction
+     * @return <code>true</code> if a transaction exists with this name
+     */
+    boolean hasTransaction(String type, String name, Class<? extends HyriTransaction> transactionClass);
+
+    /**
+     * Get all the existing transactions types
+     *
+     * @return A list of type
+     */
+    List<String> getTransactionsTypes();
 
     /**
      * Update the player account in database
