@@ -39,11 +39,29 @@ public interface IHyriLeaderboard {
     List<UUID> getLeaders();
 
     /**
+     * Get the leader of the leaderboard in a custom range
+     *
+     * @param start The start of the range
+     * @param stop The stop of the range
+     * @return A list of {@link UUID}
+     */
+    List<UUID> getLeaders(long start, long stop);
+
+    /**
      * Get all the scores registered in the leaderboard
      *
      * @return A map of score related to their owner
      */
     Map<UUID, Integer> getScores();
+
+    /**
+     * Get all scores in a custom range
+     *
+     * @param start The start of the range
+     * @param stop The stop of the range
+     * @return A map of score related to their owner
+     */
+    Map<UUID, Integer> getScores(long start, long stop);
 
     /**
      * Get a score by its identifier

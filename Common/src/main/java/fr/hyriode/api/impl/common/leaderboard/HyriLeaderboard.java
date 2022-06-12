@@ -43,10 +43,15 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public List<UUID> getLeaders() {
+        return this.getLeaders(0, -1);
+    }
+
+    @Override
+    public List<UUID> getLeaders(long start, long stop) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final List<UUID> leaders = new ArrayList<>();
 
-            for (String member : jedis.zrange(this.key, 0, -1)) {
+            for (String member : jedis.zrange(this.key, start, stop)) {
                 leaders.add(UUID.fromString(member));
             }
             return leaders;
@@ -55,9 +60,14 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public Map<UUID, Integer> getScores() {
+        return this.getScores(0, -1);
+    }
+
+    @Override
+    public Map<UUID, Integer> getScores(long start, long stop) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final Map<UUID, Integer> scores = new HashMap<>();
-            final List<Tuple> tuples = jedis.zrangeWithScores(this.key, 0, -1);
+            final List<Tuple> tuples = jedis.zrangeWithScores(this.key, start, stop);
 
             for (Tuple tuple : tuples) {
                 scores.put(UUID.fromString(tuple.getElement()), (int) tuple.getScore());
