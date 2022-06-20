@@ -21,7 +21,7 @@ public class HyriLeaderboardManager implements IHyriLeaderboardManager {
 
     @Override
     public void removeLeaderboard(String type, String name, HyriLeaderboardScope scope) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zremrangeByScore(this.createKey(type, name, scope), 0, -1));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zremrangeByScore(this.createKey(type, name, scope), 0, Double.MAX_VALUE));
     }
 
     @Override
@@ -29,9 +29,7 @@ public class HyriLeaderboardManager implements IHyriLeaderboardManager {
         final Map<HyriLeaderboardScope, IHyriLeaderboard> leaderboards = new HashMap<>();
 
         for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
-            if (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.exists(this.createKey(type, name, scope)))) {
-                leaderboards.put(scope, this.getLeaderboard(type, name, scope));
-            }
+            leaderboards.put(scope, this.getLeaderboard(type, name, scope));
         }
         return leaderboards;
     }

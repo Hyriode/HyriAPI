@@ -36,21 +36,13 @@ public class HyriJoinListener implements Listener {
     private final IHyriFriendManager friendManager;
 
     private final HyggdrasilManager hyggdrasilManager;
-    private final HydrionManager hydrionManager;
 
     private final HyriJoinManager joinManager;
 
-    private FriendsModule friendsModule;
-
-    public HyriJoinListener(HyggdrasilManager hyggdrasilManager, HydrionManager hydrionManager, HyriJoinManager joinManager) {
+    public HyriJoinListener(HyggdrasilManager hyggdrasilManager, HyriJoinManager joinManager) {
         this.hyggdrasilManager = hyggdrasilManager;
-        this.hydrionManager = hydrionManager;
         this.joinManager = joinManager;
         this.friendManager = HyriAPI.get().getFriendManager();
-
-        if (this.hydrionManager.isEnabled()) {
-            this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
-        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -73,9 +65,9 @@ public class HyriJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final UUID uuid = player.getUniqueId();
+        final UUID playerId = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = playerManager.getPlayerFromRedis(uuid);
+        final IHyriPlayer account = playerManager.getPlayerFromRedis(playerId);
 
         if (account == null) {
             player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
@@ -90,17 +82,19 @@ public class HyriJoinListener implements Listener {
             account.setName(player.getName());
             account.setLastLoginDate(new Date(System.currentTimeMillis()));
 
-            playerManager.setPlayerId(account.getName(), uuid);
+            playerManager.setPlayerId(account.getName(), playerId);
 
-            this.friendManager.saveFriends(this.friendManager.createHandler(uuid));
+            this.friendManager.saveFriends(this.friendManager.createHandler(playerId));
 
             account.setLastServer(account.getCurrentServer());
             account.setOnline(true);
             account.setCurrentServer(HyriAPI.get().getServer().getName());
 
-            if (party != null && party.isLeader(uuid)) {
+            if (party != null && party.isLeader(playerId)) {
                 party.setServer(account.getCurrentServer());
             }
+
+            playerManager.savePrefix(playerId, account.getNameWithRank());
         }
 
         if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {

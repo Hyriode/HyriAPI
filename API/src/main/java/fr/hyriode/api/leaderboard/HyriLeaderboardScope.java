@@ -11,7 +11,9 @@ public enum HyriLeaderboardScope {
     /** A leaderboard resetting each month and counting monthly scores  */
     MONTHLY("monthly"),
     /** A leaderboard resetting each week and counting weekly scores */
-    WEEKLY("weekly");
+    WEEKLY("weekly"),
+    /** A leaderboard resetting each day and counting daily scores */
+    DAILY("daily");
 
     /** The id of the scope */
     private final String id;

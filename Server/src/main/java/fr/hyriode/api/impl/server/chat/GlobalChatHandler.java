@@ -52,17 +52,6 @@ public class GlobalChatHandler extends CommonChatHandler {
             return;
         }
 
-        if (!force && account.isInVanishMode()) {
-            Bukkit.getPlayer(sender).spigot().sendMessage(new ComponentBuilder("")
-                    .append(ChatColor.YELLOW + "⚠" + ChatColor.RED + " You are about to send a message in global chat,\n")
-                    .event((ClickEvent) null).event((HoverEvent) null)
-                    .append(ChatColor.RED + "but you are vanished. Do you want to send it anyway? ").bold(false)
-                    .append(ChatColor.GREEN + " [Send] ").bold(true)
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/forcemsg " + this.getChannel() + " " + message))
-                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to send the message").create())).create());
-            return;
-        }
-
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId()).getSettings().isGlobalChatMessagesEnabled() && !force) {
                 continue;

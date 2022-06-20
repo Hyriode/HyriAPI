@@ -48,20 +48,28 @@ public interface IHyriLeaderboard {
     List<UUID> getLeaders(long start, long stop);
 
     /**
+     * Get the position of a given identifier
+     *
+     * @param id The identifier
+     * @return The position of the identifier
+     */
+    long getPosition(UUID id);
+
+    /**
      * Get all the scores registered in the leaderboard
      *
-     * @return A map of score related to their owner
+     * @return A list of score related to their owner
      */
-    Map<UUID, Integer> getScores();
+    List<HyriLeaderboardScore> getScores();
 
     /**
      * Get all scores in a custom range
      *
      * @param start The start of the range
      * @param stop The stop of the range
-     * @return A map of score related to their owner
+     * @return A list of score related to their owner
      */
-    Map<UUID, Integer> getScores(long start, long stop);
+    List<HyriLeaderboardScore> getScores(long start, long stop);
 
     /**
      * Get a score by its identifier
@@ -77,7 +85,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score
      */
-    void setScore(UUID id, int score);
+    void setScore(UUID id, long score);
 
     /**
      * Increment an existing score
@@ -85,7 +93,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score to add
      */
-    void incrementScore(UUID id, int score);
+    void incrementScore(UUID id, long score);
 
     /**
      * Remove a score

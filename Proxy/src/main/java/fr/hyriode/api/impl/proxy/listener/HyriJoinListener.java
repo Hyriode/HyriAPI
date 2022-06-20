@@ -129,7 +129,7 @@ public class HyriJoinListener implements Listener {
             party.setServer(account.getCurrentServer());
         }
 
-        pm.savePrefix(playerId, account.getPrefix());
+        pm.savePrefix(playerId, account.getNameWithRank());
         pm.getPlayerFromHydrion(playerId).whenComplete((hydrionPlayer, throwable) -> {
             if (hydrionPlayer != null) {
                 final HyriRank rank = hydrionPlayer.getRank();

@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.leaderboard;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.leaderboard.HyriLeaderboardScope;
+import fr.hyriode.api.leaderboard.HyriLeaderboardScore;
 import fr.hyriode.api.leaderboard.IHyriLeaderboard;
 import redis.clients.jedis.resps.Tuple;
 
@@ -59,41 +60,52 @@ public class HyriLeaderboard implements IHyriLeaderboard {
     }
 
     @Override
-    public Map<UUID, Integer> getScores() {
+    public long getPosition(UUID id) {
+        try {
+            return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zrevrank(this.key, id.toString()));
+        } catch (NullPointerException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public List<HyriLeaderboardScore> getScores() {
         return this.getScores(0, -1);
     }
 
     @Override
-    public Map<UUID, Integer> getScores(long start, long stop) {
+    public List<HyriLeaderboardScore> getScores(long start, long stop) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final Map<UUID, Integer> scores = new HashMap<>();
+            final List<HyriLeaderboardScore> scores = new ArrayList<>();
             final List<Tuple> tuples = jedis.zrangeWithScores(this.key, start, stop);
 
             for (Tuple tuple : tuples) {
-                scores.put(UUID.fromString(tuple.getElement()), (int) tuple.getScore());
+                scores.add(new HyriLeaderboardScore(UUID.fromString(tuple.getElement()), (long) tuple.getScore()));
             }
+
+            Collections.reverse(scores);
+
             return scores;
         });
     }
 
     @Override
     public int getScore(UUID id) {
-        return (int) (double) (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.key, id.toString())));
+        try {
+            return (int) (double) (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.key, id.toString())));
+        } catch (NullPointerException e) {
+            return 0;
+        }
     }
 
     @Override
-    public void setScore(UUID id, int score) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            final String idStr = id.toString();
-
-            jedis.zrem(this.key, idStr);
-            jedis.zadd(this.key, score, idStr);
-        });
-    }
-
-    @Override
-    public void incrementScore(UUID id, int score) {
+    public void setScore(UUID id, long score) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zadd(this.key, score, id.toString()));
+    }
+
+    @Override
+    public void incrementScore(UUID id, long score) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zincrby(this.key, score, id.toString()));
     }
 
     @Override
