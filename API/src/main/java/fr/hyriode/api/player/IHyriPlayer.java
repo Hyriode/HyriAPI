@@ -11,7 +11,8 @@ import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.transaction.HyriTransaction;
+import fr.hyriode.api.transaction.IHyriTransaction;
+import fr.hyriode.api.transaction.IHyriTransactionContent;
 import fr.hyriode.api.util.Skin;
 
 import java.util.Date;
@@ -467,53 +468,56 @@ public interface IHyriPlayer {
     int getTabListPriority();
 
     /**
-     * Get a transaction by its type and name
+     * Add a transaction to the player account
+     *
+     * @param type The type of transaction to add
+     * @param name The name of the transaction to add
+     * @param content The content of the transaction
+     * @return <code>true</code> if the transaction has been added and doesn't already exist
+     */
+    boolean addTransaction(String type, String name, IHyriTransactionContent content);
+
+    /**
+     * Remove a transaction by giving its type and name
+     *
+     * @param type The type of the transaction to remove
+     * @param name The name of the transaction to remove
+     * @return <code>true</code> if the transaction existed and has been removed
+     */
+    boolean removeTransaction(String type, String name);
+
+    /**
+     * Get a transaction by giving its type and name
      *
      * @param type The type of the transaction to get
-     * @param name The name of the transaction
-     * @param transactionClass The class of the transaction to return
-     * @return A {@link HyriTransaction}; or <code>null</code> if the transaction doesn't exist
-     * @param <T> The type of the transaction
+     * @param name The name of the transaction to get
+     * @return The {@linkplain  IHyriTransaction found transaction}; or <code>null</code> if the transaction doesn't exist
      */
-    <T extends HyriTransaction> T getTransaction(String type, String name, Class<T> transactionClass);
+    IHyriTransaction getTransaction(String type, String name);
 
     /**
-     * Get all the transactions of a same type
+     * Check if the player has done a transaction
+     *
+     * @param type The type of the transaction to check
+     * @param name The name of the transaction to check
+     * @return <code>true</code> if the player has done the transaction
+     */
+    boolean hasTransaction(String type, String name);
+
+    /**
+     * Get all the transactions of a given type
      *
      * @param type The type of the transactions to get
-     * @param transactionsClass The class of the transactions
-     * @return A list of {@link HyriTransaction} (might be empty if no transaction can be found with the given type)
-     * @param <T> The type of the transactions to return
+     * @return A list of {@linkplain IHyriTransaction transaction}
      */
-    <T extends HyriTransaction> List<T> getTransactions(String type, Class<T> transactionsClass);
+    List<? extends IHyriTransaction> getTransactions(String type);
 
     /**
-     * Add a transaction to the player
+     * Get all the transactions the player has done
      *
-     * @param type The type of the transaction
-     * @param transaction The transaction to add
+     * @return A map linking lists of {@linkplain IHyriTransaction transactions} to their type
      */
-    void addTransaction(String type, HyriTransaction transaction);
-
-    /**
-     * Remove a transaction from the player
-     *
-     * @param type The type of the transaction
-     * @param name The name of the transaction
-     * @param transactionClass The class of the transaction
-     * @param <T> The type of the transaction
-     */
-    <T extends HyriTransaction> void removeTransaction(String type, String name, Class<T> transactionClass);
-
-    /**
-     * Check if a transaction with the given name exists
-     *
-     * @param type The type of the transaction
-     * @param name The name of the transaction
-     * @param transactionClass The class of the transaction
-     * @return <code>true</code> if a transaction exists with this name
-     */
-    boolean hasTransaction(String type, String name, Class<? extends HyriTransaction> transactionClass);
+    Map<String, ? extends List<? extends IHyriTransaction>> getTransactions();
 
     /**
      * Get all the existing transactions types

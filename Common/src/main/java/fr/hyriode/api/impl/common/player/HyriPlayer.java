@@ -8,6 +8,7 @@ import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
+import fr.hyriode.api.impl.common.transaction.HyriTransaction;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
@@ -18,11 +19,11 @@ import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.transaction.HyriTransaction;
+import fr.hyriode.api.transaction.IHyriTransaction;
+import fr.hyriode.api.transaction.IHyriTransactionContent;
 import fr.hyriode.api.util.Skin;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Project: HyriAPI
@@ -64,7 +65,7 @@ public class HyriPlayer implements IHyriPlayer {
     private final Map<String, JsonElement> statistics;
     private final Map<String, JsonElement> data;
 
-    private final Map<String, List<JsonElement>> transactions;
+    private final Map<String, List<HyriTransaction>> transactions;
 
     private final NetworkLeveling networkLeveling;
 
@@ -413,9 +414,51 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public <T extends HyriTransaction> T getTransaction(String type, String name, Class<T> transactionClass) {
-        for (T transaction : this.getTransactions(type, transactionClass)) {
-            if (transaction.getName().equals(name)) {
+    public boolean addTransaction(String type, String name, IHyriTransactionContent content) {
+        if (this.hasTransaction(type, name)) {
+            return false;
+        }
+
+        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
+
+        transactions.add(new HyriTransaction(name, System.currentTimeMillis(), content));
+
+        this.transactions.put(type, transactions);
+
+        return true;
+    }
+
+    @Override
+    public boolean removeTransaction(String type, String name) {
+        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
+
+        if (transactions == null) {
+            return false;
+        }
+
+        final HyriTransaction transaction = this.getTransaction(type, name);
+
+        if (transaction == null) {
+            return false;
+        }
+
+        transactions.remove(transaction);
+
+        this.transactions.put(type, transactions);
+
+        return true;
+    }
+
+    @Override
+    public HyriTransaction getTransaction(String type, String name) {
+        final List<HyriTransaction> transactions = this.transactions.get(type);
+
+        if (transactions == null) {
+            return null;
+        }
+
+        for (final HyriTransaction transaction : transactions) {
+            if (transaction.name().equals(name)) {
                 return transaction;
             }
         }
@@ -423,57 +466,29 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public <T extends HyriTransaction> List<T> getTransactions(String type, Class<T> transactionsClass) {
-        final List<JsonElement> elements = this.transactions.get(type);
-
-        if (elements == null) {
-            return null;
-        }
-
-        final List<T> transactions = new ArrayList<>();
-
-        for (JsonElement element : elements) {
-            transactions.add(HyriAPI.GSON.fromJson(element, transactionsClass));
-        }
-        return transactions;
-    }
-
-    @Override
-    public void addTransaction(String type, HyriTransaction transaction) {
-        final List<JsonElement> elements = this.transactions.getOrDefault(type, new ArrayList<>());
-
-        elements.add(HyriAPI.GSON.toJsonTree(transaction));
-
-        this.transactions.put(type, elements);
-    }
-
-    @Override
-    public <T extends HyriTransaction> void removeTransaction(String type, String name, Class<T> transactionClass) {
-        final List<T> transactions = this.getTransactions(type, transactionClass);
+    public boolean hasTransaction(String type, String name) {
+        final List<HyriTransaction> transactions = this.transactions.get(type);
 
         if (transactions == null) {
-            return;
+            return false;
         }
 
-        transactions.removeIf(transaction -> transaction.getName().equals(name));
-
-        final List<JsonElement> elements = new ArrayList<>();
-
-        for (T transaction : transactions) {
-            elements.add(HyriAPI.GSON.toJsonTree(transaction));
-        }
-
-        this.transactions.put(type, elements);
-    }
-
-    @Override
-    public boolean hasTransaction(String type, String name, Class<? extends HyriTransaction> transactionClass) {
-        for (HyriTransaction transaction : this.getTransactions(type, transactionClass)) {
-            if (transaction.getName().equals(name)) {
+        for (final HyriTransaction transaction : transactions) {
+            if (transaction.name().equals(name)) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public List<? extends IHyriTransaction> getTransactions(String type) {
+        return this.transactions.get(type);
+    }
+
+    @Override
+    public Map<String, ? extends List<? extends IHyriTransaction>> getTransactions() {
+        return this.transactions;
     }
 
     @Override
