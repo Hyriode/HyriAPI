@@ -1,7 +1,6 @@
 package fr.hyriode.api.party;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.queue.IHyriQueue;
 
 import java.util.Date;
 import java.util.List;
@@ -199,32 +198,6 @@ public interface IHyriParty {
      * @param server The server where the party will be sent
      */
     void warp(String server);
-
-    /**
-     * Get the current queue of the party.<br>
-     * It can return <code>null</code> if the party is not in a queue
-     *
-     * @return A {@link IHyriQueue} object
-     */
-    IHyriQueue getQueue();
-
-    /**
-     * Check if the party is in a queue
-     *
-     * @return <code>true</code> if yes
-     */
-    default boolean hasQueue() {
-        return this.getQueue() != null;
-    }
-
-    /**
-     * Set the queue of the party
-     *
-     * @param game The game
-     * @param gameType The game type
-     * @param map The map used for the game
-     */
-    void setQueue(String game, String gameType, String map);
 
     /**
      * Update a player in Redis

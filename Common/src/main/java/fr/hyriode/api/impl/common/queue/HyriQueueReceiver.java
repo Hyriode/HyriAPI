@@ -24,6 +24,8 @@ public class HyriQueueReceiver implements IHyggPacketReceiver {
     public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
         if (packet instanceof HyggQueueInfoPacket) {
             this.queueManager.onQueueInfo((HyggQueueInfoPacket) packet);
+
+            return HyggResponse.Type.SUCCESS;
         }
         return HyggResponse.Type.NONE;
     }

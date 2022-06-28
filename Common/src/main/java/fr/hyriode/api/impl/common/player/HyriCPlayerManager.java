@@ -229,12 +229,17 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
 
     @Override
     public String getPrefix(UUID playerId) {
-        final String cachedPrefix = this.getCachedPrefix(playerId);
+        String prefix = this.getCachedPrefix(playerId);
 
-        if (cachedPrefix != null) {
-            return cachedPrefix;
+        if (prefix != null) {
+            return prefix;
         }
-        return this.getPlayer(playerId).getPrefix();
+
+        prefix = this.getPlayer(playerId).getPrefix();
+
+        this.savePrefix(playerId, prefix);
+
+        return prefix;
     }
 
     @Override

@@ -5,10 +5,11 @@ package fr.hyriode.api.settings;
  * Created by AstFaster
  * on 23/07/2021 at 12:04
  */
-public enum HyriPrivateMessagesLevel {
+public enum HyriSettingsLevel {
 
     ALL,
+    PARTY,
     FRIENDS,
-    NONE;
+    NONE
 
 }

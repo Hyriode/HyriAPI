@@ -1,7 +1,6 @@
 package fr.hyriode.api.leaderboard;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,59 +24,66 @@ public interface IHyriLeaderboard {
     String getName();
 
     /**
-     * Get the scope of the leaderboard
-     *
-     * @return A {@link HyriLeaderboardScope}
-     */
-    HyriLeaderboardScope getScope();
-
-    /**
      * Get the leaders of the leaderboard (0: first, 1: second, etc)
      *
+     * @param scope The scope to use
      * @return A list of {@link UUID}
      */
-    List<UUID> getLeaders();
+    List<UUID> getLeaders(HyriLeaderboardScope scope);
 
     /**
      * Get the leader of the leaderboard in a custom range
      *
+     * @param scope The scope to use
      * @param start The start of the range
      * @param stop The stop of the range
      * @return A list of {@link UUID}
      */
-    List<UUID> getLeaders(long start, long stop);
+    List<UUID> getLeaders(HyriLeaderboardScope scope, long start, long stop);
 
     /**
      * Get the position of a given identifier
      *
+     * @param scope The scope to use
      * @param id The identifier
      * @return The position of the identifier
      */
-    long getPosition(UUID id);
+    long getPosition(HyriLeaderboardScope scope, UUID id);
 
     /**
      * Get all the scores registered in the leaderboard
      *
      * @return A list of score related to their owner
      */
-    List<HyriLeaderboardScore> getScores();
+    List<HyriLeaderboardScore> getScores(HyriLeaderboardScope scope);
 
     /**
      * Get all scores in a custom range
      *
+     * @param scope The scope to use
      * @param start The start of the range
      * @param stop The stop of the range
      * @return A list of score related to their owner
      */
-    List<HyriLeaderboardScore> getScores(long start, long stop);
+    List<HyriLeaderboardScore> getScores(HyriLeaderboardScope scope, long start, long stop);
 
     /**
      * Get a score by its identifier
      *
+     * @param scope The scope to use
      * @param id The identifier of the score
      * @return The score
      */
-    int getScore(UUID id);
+    int getScore(HyriLeaderboardScope scope, UUID id);
+
+    /**
+     * Set the score related to an identifier
+     *
+     * @param scope The scope to use
+     * @param id The identifier
+     * @param score The score
+     */
+    void setScore(HyriLeaderboardScope scope, UUID id, long score);
 
     /**
      * Set the score related to an identifier
@@ -85,7 +91,20 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score
      */
-    void setScore(UUID id, long score);
+    default void setScore(UUID id, long score) {
+        for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
+            this.setScore(scope, id, score);
+        }
+    }
+
+    /**
+     * Increment an existing score
+     *
+     * @param scope The scope to use
+     * @param id The identifier
+     * @param score The score to add
+     */
+    void incrementScore(HyriLeaderboardScope scope, UUID id, long score);
 
     /**
      * Increment an existing score
@@ -93,13 +112,34 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score to add
      */
-    void incrementScore(UUID id, long score);
+    default void incrementScore(UUID id, long score) {
+        for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
+            this.incrementScore(scope, id, score);
+        }
+    }
 
     /**
      * Remove a score
      *
+     * @param scope The scope to use
      * @param id The identifier of the score
      */
-    void removeScore(UUID id);
+    void removeScore(HyriLeaderboardScope scope, UUID id);
+
+    /**
+     * Clear all the scores of a given scope
+     *
+     * @param scope The scope to use
+     */
+    void clear(HyriLeaderboardScope scope);
+
+    /**
+     * Clear all the scores of the scoreboard
+     */
+    default void clear() {
+        for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
+            this.clear(scope);
+        }
+    }
 
 }

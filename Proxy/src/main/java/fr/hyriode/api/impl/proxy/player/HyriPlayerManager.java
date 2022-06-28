@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
-import fr.hyriode.api.impl.proxy.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;

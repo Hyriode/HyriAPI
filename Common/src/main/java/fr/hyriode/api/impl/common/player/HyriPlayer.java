@@ -62,10 +62,10 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean moderationMode;
     private boolean vanishMode;
 
-    private final Map<String, JsonElement> statistics;
-    private final Map<String, JsonElement> data;
+    private final Map<String, JsonElement> statistics = new HashMap<>();
+    private final Map<String, JsonElement> data = new HashMap<>();
 
-    private final Map<String, List<HyriTransaction>> transactions;
+    private final Map<String, List<HyriTransaction>> transactions = new HashMap<>();
 
     private final NetworkLeveling networkLeveling;
 
@@ -83,9 +83,6 @@ public class HyriPlayer implements IHyriPlayer {
         this.settings = new HyriPlayerSettings();
         this.moderationMode = false;
         this.vanishMode = false;
-        this.statistics = new HashMap<>();
-        this.data = new HashMap<>();
-        this.transactions = new HashMap<>();
         this.networkLeveling = new NetworkLeveling(this.uuid);
     }
 

@@ -28,6 +28,9 @@ public class HyriServerReceiver implements IHyggPacketReceiver {
                 if (stopHandler != null)  {
                     stopHandler.run();
                 }
+
+                server.setState(IHyriServer.State.SHUTDOWN);
+
                 return HyggResponse.Type.SUCCESS;
             }
             return HyggResponse.Type.NONE;

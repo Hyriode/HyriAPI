@@ -8,100 +8,114 @@ package fr.hyriode.api.settings;
 public interface IHyriPlayerSettings {
 
     /**
-     * Get if party requests are enabled
-     *
-     * @return - <code>true</code> if enabled
-     */
-    boolean isPartyRequestsEnabled();
-
-    /**
-     * Set party requests enabled
-     *
-     * @param partyRequestsEnabled - <code>true</code> if enabled
-     */
-    void setPartyRequestsEnabled(boolean partyRequestsEnabled);
-
-    /**
      * Get if friend requests are enabled
      *
-     * @return - <code>true</code> if enabled
+     * @return <code>true</code> if enabled
      */
     boolean isFriendRequestsEnabled();
 
     /**
      * Set friend requests enabled
      *
-     * @param friendRequestsEnabled - <code>true</code> if enabled
+     * @param value <code>true</code> if enabled
      */
-    void setFriendRequestsEnabled(boolean friendRequestsEnabled);
+    void setFriendRequestsEnabled(boolean value);
+
+    /**
+     * Check if notifications when a friend logged-in is enabled
+     *
+     * @return <code>true</code> if yes
+     */
+    boolean isFriendConnectionNotificationEnabled();
+
+    /**
+     * Set if notifications when a friend logged-in is enabled
+     *
+     * @param value <code>true</code> if enabled
+     */
+    void setFriendConnectionNotificationEnabled(boolean value);
+
+    /**
+     * Get the party requests level
+     *
+     * @return A {@linkplain HyriSettingsLevel level}
+     */
+    HyriSettingsLevel getPartyRequestsLevel();
+
+    /**
+     * Set the party requests level
+     *
+     * @param level A {@linkplain HyriSettingsLevel level}
+     */
+    void setPartyRequestsLevel(HyriSettingsLevel level);
 
     /**
      * Get private messages level
      *
-     * @return - {@link HyriPrivateMessagesLevel}
+     * @return {@link HyriSettingsLevel}
      */
-    HyriPrivateMessagesLevel getPrivateMessagesLevel();
+    HyriSettingsLevel getPrivateMessagesLevel();
 
     /**
      * Set private messages level
      *
-     * @param privateMessagesLevel - {@link HyriPrivateMessagesLevel}
+     * @param level {@link HyriSettingsLevel}
      */
-    void setPrivateMessagesLevel(HyriPrivateMessagesLevel privateMessagesLevel);
+    void setPrivateMessagesLevel(HyriSettingsLevel level);
+
+    /**
+     * Get the private messages sound level
+     *
+     * @return A {@linkplain HyriSettingsLevel level}
+     */
+    HyriSettingsLevel getPrivateMessagesSoundLevel();
+
+    /**
+     * Set the private messages sound level
+     *
+     * @param level A {@linkplain HyriSettingsLevel level}
+     */
+    void setPrivateMessagesSoundLevel(HyriSettingsLevel level);
 
     /**
      * Get players visibility level
      *
-     * @return - {@link HyriPlayersVisibilityLevel}
+     * @return {@link HyriSettingsLevel}
      */
-    HyriPlayersVisibilityLevel getPlayersVisibilityLevel();
+    HyriSettingsLevel getPlayersVisibilityLevel();
 
     /**
      * Set players visibility level
      *
-     * @param playersVisibilityLevel - {@link HyriPlayersVisibilityLevel}
+     * @param level {@link HyriSettingsLevel}
      */
-    void setPlayersVisibilityLevel(HyriPlayersVisibilityLevel playersVisibilityLevel);
+    void setPlayersVisibilityLevel(HyriSettingsLevel level);
 
     /**
-     * Get if messages in global chat are enabled
+     * Get the global chat messages visibility level
      *
-     * @return - <code>true</code> if enabled
+     * @return A {@linkplain HyriSettingsLevel level}
      */
-    boolean isGlobalChatMessagesEnabled();
+    HyriSettingsLevel getGlobalChatLevel();
 
     /**
-     * Set if messages in global chat are enabled
+     * Set the global chat messages visibility level
      *
-     * @param globalChatMessagesEnabled - <code>true</code> if enabled
+     * @param level A {@linkplain HyriSettingsLevel level}
      */
-    void setGlobalChatMessagesEnabled(boolean globalChatMessagesEnabled);
-
-    /**
-     * Get if private messages sound is enabled
-     *
-     * @return - <code>true</code> if enabled
-     */
-    boolean isPrivateMessagesSoundEnabled();
-
-    /**
-     * Set if private messages sound is enabled
-     *
-     * @param privateMessagesSoundEnabled - <code>true</code> if enabled
-     */
-    void setPrivateMessagesSoundEnabled(boolean privateMessagesSoundEnabled);
+    void setGlobalChatLevel(HyriSettingsLevel level);
 
     /**
      * Get player language
      *
-     * @return - {@link HyriLanguage}
+     * @return {@link HyriLanguage}
      */
     HyriLanguage getLanguage();
 
     /**
      * Set player language
      *
-     * @param language - {@link HyriLanguage}
+     * @param language {@link HyriLanguage}
      */
     void setLanguage(HyriLanguage language);
 
@@ -122,14 +136,14 @@ public interface IHyriPlayerSettings {
     /**
      * Get the player chat channel
      *
-     * @return - The player chat channel
+     * @return The player chat channel
      */
     String getChatChannel();
 
     /**
      * Set the player chat channel
      *
-     * @param chatChannel - String
+     * @param chatChannel String
      */
     void setChatChannel(String chatChannel);
 

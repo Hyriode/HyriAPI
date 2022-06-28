@@ -2,15 +2,14 @@ package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendManager;
-import fr.hyriode.api.impl.common.friend.HyriFriends;
-import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
+import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
-import fr.hyriode.hydrion.client.module.FriendsModule;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,9 +21,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Date;
-import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Project: HyriAPI
@@ -106,6 +103,8 @@ public class HyriJoinListener implements Listener {
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
 
         this.hyggdrasilManager.sendData();
+
+        HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerJoinNetworkEvent(playerId));
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -123,7 +122,7 @@ public class HyriJoinListener implements Listener {
     }
 
     private void onLeave(Player player) {
-        final UUID uuid = player.getUniqueId();
+        final UUID playerId = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = playerManager.getPlayerFromRedis(player.getUniqueId());
 
@@ -145,9 +144,11 @@ public class HyriJoinListener implements Listener {
 
         this.joinManager.onLogout(player);
 
-        HyriAPI.get().getServer().removePlayer(uuid);
+        HyriAPI.get().getServer().removePlayer(playerId);
 
         this.hyggdrasilManager.sendData();
+
+        HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerQuitNetworkEvent(playerId));
     }
 
 }

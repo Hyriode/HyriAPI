@@ -2,13 +2,11 @@ package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.impl.common.queue.HyriQueue;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.event.*;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.queue.IHyriQueue;
 
 import java.util.*;
 
@@ -27,7 +25,6 @@ public class HyriParty implements IHyriParty {
     private final long creationDate;
 
     private String server;
-    private HyriQueue queue;
 
     private boolean privateParty;
     private boolean chatEnabled;
@@ -284,16 +281,6 @@ public class HyriParty implements IHyriParty {
         HyriAPI.get().getServerManager().sendPartyToServer(this.id, server);
 
         this.triggerEvent(new HyriPartyWarpEvent(this, server));
-    }
-
-    @Override
-    public IHyriQueue getQueue() {
-        return this.queue;
-    }
-
-    @Override
-    public void setQueue(String game, String gameType, String map) {
-        this.queue = new HyriQueue(game, gameType, map);
     }
 
     private void updateQueue() {

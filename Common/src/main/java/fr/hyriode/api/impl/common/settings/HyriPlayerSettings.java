@@ -2,8 +2,7 @@ package fr.hyriode.api.impl.common.settings;
 
 import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.settings.HyriLanguage;
-import fr.hyriode.api.settings.HyriPlayersVisibilityLevel;
-import fr.hyriode.api.settings.HyriPrivateMessagesLevel;
+import fr.hyriode.api.settings.HyriSettingsLevel;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 /**
@@ -13,37 +12,16 @@ import fr.hyriode.api.settings.IHyriPlayerSettings;
  */
 public class HyriPlayerSettings implements IHyriPlayerSettings {
 
-    private boolean partyRequestsEnabled;
-    private boolean friendRequestsEnabled;
-    private HyriPrivateMessagesLevel privateMessagesLevel;
-    private HyriPlayersVisibilityLevel playersVisibilityLevel;
-    private boolean globalChatMessagesEnabled;
-    private boolean privateMessagesSoundEnabled;
-    private HyriLanguage language;
-    private String chatChannel;
-    private boolean autoQueueEnabled;
-
-    public HyriPlayerSettings() {
-        this.partyRequestsEnabled = true;
-        this.friendRequestsEnabled = true;
-        this.privateMessagesLevel = HyriPrivateMessagesLevel.ALL;
-        this.playersVisibilityLevel = HyriPlayersVisibilityLevel.ALL;
-        this.globalChatMessagesEnabled = true;
-        this.privateMessagesSoundEnabled = true;
-        this.language = HyriLanguage.FR;
-        this.chatChannel = HyriChatChannel.GLOBAL.getChannel();
-        this.autoQueueEnabled = true;
-    }
-
-    @Override
-    public boolean isPartyRequestsEnabled() {
-        return this.partyRequestsEnabled;
-    }
-
-    @Override
-    public void setPartyRequestsEnabled(boolean partyRequestsEnabled) {
-        this.partyRequestsEnabled = partyRequestsEnabled;
-    }
+    private boolean friendRequestsEnabled = true;
+    private boolean friendConnectionNotificationEnabled = true;
+    private HyriSettingsLevel partyRequestsLevel = HyriSettingsLevel.ALL;
+    private HyriSettingsLevel privateMessagesLevel = HyriSettingsLevel.ALL;
+    private HyriSettingsLevel privateMessagesSoundLevel = HyriSettingsLevel.ALL;
+    private HyriSettingsLevel playersVisibilityLevel = HyriSettingsLevel.ALL;
+    private HyriSettingsLevel globalChatLevel = HyriSettingsLevel.ALL;
+    private HyriLanguage language = HyriLanguage.FR;
+    private boolean autoQueueEnabled = true;
+    private String chatChannel = HyriChatChannel.GLOBAL.getChannel();
 
     @Override
     public boolean isFriendRequestsEnabled() {
@@ -56,43 +34,63 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public HyriPrivateMessagesLevel getPrivateMessagesLevel() {
+    public boolean isFriendConnectionNotificationEnabled() {
+        return this.friendConnectionNotificationEnabled;
+    }
+
+    @Override
+    public void setFriendConnectionNotificationEnabled(boolean friendConnectionNotificationEnabled) {
+        this.friendConnectionNotificationEnabled = friendConnectionNotificationEnabled;
+    }
+
+    @Override
+    public HyriSettingsLevel getPartyRequestsLevel() {
+        return this.partyRequestsLevel;
+    }
+
+    @Override
+    public void setPartyRequestsLevel(HyriSettingsLevel partyRequestsLevel) {
+        this.partyRequestsLevel = partyRequestsLevel;
+    }
+
+    @Override
+    public HyriSettingsLevel getPrivateMessagesLevel() {
         return this.privateMessagesLevel;
     }
 
     @Override
-    public void setPrivateMessagesLevel(HyriPrivateMessagesLevel privateMessagesLevel) {
+    public void setPrivateMessagesLevel(HyriSettingsLevel privateMessagesLevel) {
         this.privateMessagesLevel = privateMessagesLevel;
     }
 
     @Override
-    public HyriPlayersVisibilityLevel getPlayersVisibilityLevel() {
+    public HyriSettingsLevel getPrivateMessagesSoundLevel() {
+        return this.privateMessagesSoundLevel;
+    }
+
+    @Override
+    public void setPrivateMessagesSoundLevel(HyriSettingsLevel privateMessagesSoundLevel) {
+        this.privateMessagesSoundLevel = privateMessagesSoundLevel;
+    }
+
+    @Override
+    public HyriSettingsLevel getPlayersVisibilityLevel() {
         return this.playersVisibilityLevel;
     }
 
     @Override
-    public void setPlayersVisibilityLevel(HyriPlayersVisibilityLevel playersVisibilityLevel) {
+    public void setPlayersVisibilityLevel(HyriSettingsLevel playersVisibilityLevel) {
         this.playersVisibilityLevel = playersVisibilityLevel;
     }
 
     @Override
-    public boolean isGlobalChatMessagesEnabled() {
-        return this.globalChatMessagesEnabled;
+    public HyriSettingsLevel getGlobalChatLevel() {
+        return this.globalChatLevel;
     }
 
     @Override
-    public void setGlobalChatMessagesEnabled(boolean globalChatMessagesEnabled) {
-        this.globalChatMessagesEnabled = globalChatMessagesEnabled;
-    }
-
-    @Override
-    public boolean isPrivateMessagesSoundEnabled() {
-        return this.privateMessagesSoundEnabled;
-    }
-
-    @Override
-    public void setPrivateMessagesSoundEnabled(boolean privateMessagesSoundEnabled) {
-        this.privateMessagesSoundEnabled = privateMessagesSoundEnabled;
+    public void setGlobalChatLevel(HyriSettingsLevel globalChatLevel) {
+        this.globalChatLevel = globalChatLevel;
     }
 
     @Override

@@ -11,15 +11,15 @@ import fr.hyriode.api.impl.proxy.task.HyriOnlinePlayersTask;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
-import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
+import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.IHyriServerManager;
-import fr.hyriode.api.server.join.packet.HyriPlayerReconnectPacket;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
@@ -29,7 +29,9 @@ import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -178,10 +180,10 @@ public class HyriJoinListener implements Listener {
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         final ProxiedPlayer player = event.getPlayer();
-        final UUID uuid = player.getUniqueId();
+        final UUID playerId = player.getUniqueId();
 
-        if (this.loginPlayers.contains(uuid)) {
-            this.playerLoader.unloadPlayerAccount(uuid);
+        if (this.loginPlayers.contains(playerId)) {
+            this.playerLoader.unloadPlayerAccount(playerId);
 
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
 
@@ -190,7 +192,9 @@ public class HyriJoinListener implements Listener {
 
             this.hyggdrasilManager.sendData();
 
-            this.loginPlayers.remove(uuid);
+            this.loginPlayers.remove(playerId);
+
+            HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerQuitNetworkEvent(playerId));
         }
     }
 
@@ -220,6 +224,8 @@ public class HyriJoinListener implements Listener {
             network.update();
 
             this.hyggdrasilManager.sendData();
+
+            HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerJoinNetworkEvent(playerId));
         }
     }
 

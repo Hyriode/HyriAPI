@@ -13,7 +13,7 @@ import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.game.HyriGameManager;
 import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
-import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardManager;
+import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
@@ -24,7 +24,6 @@ import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
-import fr.hyriode.api.leaderboard.IHyriLeaderboardManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -106,7 +105,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.partyManager = new HyriPartyManager();
         this.friendManager = new HyriFriendManager(this.hydrionManager);
         this.chatChannelManager = new HyriChatChannelManager();
-        this.leaderboardManager = new HyriLeaderboardManager();
+        this.leaderboardManager = new HyriLeaderboardProvider();
     }
 
     public static void log(Level level, String message) {
