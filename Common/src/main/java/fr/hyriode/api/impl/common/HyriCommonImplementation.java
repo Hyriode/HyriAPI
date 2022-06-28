@@ -24,6 +24,7 @@ import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
+import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -71,7 +72,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final IHyriChatChannelManager chatChannelManager;
 
-    protected final IHyriLeaderboardManager leaderboardManager;
+    protected final IHyriLeaderboardProvider leaderboardProvider;
 
     private static BiConsumer<Level, String> logging;
 
@@ -105,7 +106,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.partyManager = new HyriPartyManager();
         this.friendManager = new HyriFriendManager(this.hydrionManager);
         this.chatChannelManager = new HyriChatChannelManager();
-        this.leaderboardManager = new HyriLeaderboardProvider();
+        this.leaderboardProvider = new HyriLeaderboardProvider();
     }
 
     public static void log(Level level, String message) {
@@ -234,8 +235,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriLeaderboardManager getLeaderboardManager() {
-        return this.leaderboardManager;
+    public IHyriLeaderboardProvider getLeaderboardProvider() {
+        return this.leaderboardProvider;
     }
 
 }
