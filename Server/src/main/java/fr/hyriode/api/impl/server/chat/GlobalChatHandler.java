@@ -5,6 +5,7 @@ import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.api.settings.HyriSettingsLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -50,7 +51,12 @@ public class GlobalChatHandler extends CommonChatHandler {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId()).getSettings().isGlobalChatMessagesEnabled() && !force) {
+            final UUID playerId = player.getUniqueId();
+            final HyriSettingsLevel level = IHyriPlayer.get(playerId).getSettings().getGlobalChatLevel();
+
+            if (level == HyriSettingsLevel.NONE && !force) {
+                continue;
+            } else if (level == HyriSettingsLevel.FRIENDS && !HyriAPI.get().getFriendManager().createHandler(playerId).areFriends(account.getUniqueId()) && !force) {
                 continue;
             }
 
