@@ -74,7 +74,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier of the score
      * @return The score
      */
-    int getScore(HyriLeaderboardScope scope, UUID id);
+    long getScore(HyriLeaderboardScope scope, UUID id);
 
     /**
      * Set the score related to an identifier

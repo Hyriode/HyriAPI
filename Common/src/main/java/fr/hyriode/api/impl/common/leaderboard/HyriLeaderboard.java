@@ -87,9 +87,9 @@ public class HyriLeaderboard implements IHyriLeaderboard {
     }
 
     @Override
-    public int getScore(HyriLeaderboardScope scope, UUID id) {
+    public long getScore(HyriLeaderboardScope scope, UUID id) {
         try {
-            return (int) (double) (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.getKey(scope), id.toString())));
+            return (long) (double) (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.getKey(scope), id.toString())));
         } catch (NullPointerException e) {
             return 0;
         }
