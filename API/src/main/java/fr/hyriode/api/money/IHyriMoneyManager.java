@@ -17,8 +17,9 @@ public interface IHyriMoneyManager {
      * @param playerId The unique id of the player
      * @param action The action that will be done on the money
      * @param money The {@link IHyriMoney} that will be affected
+     * @return The added/removed money
      */
-    void creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money);
+    long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money);
 
     /**
      * Get a message to send to player when a reason is given

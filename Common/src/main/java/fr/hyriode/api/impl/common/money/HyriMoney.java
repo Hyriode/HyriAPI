@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.common.money;
 
-import com.google.gson.annotations.Expose;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 
@@ -14,10 +13,13 @@ import java.util.UUID;
 public abstract class HyriMoney implements IHyriMoney {
 
     protected long amount;
-    @Expose(serialize = false, deserialize = false)
-    private final UUID playerUUID;
+    protected transient UUID playerUUID;
 
     public HyriMoney(UUID playerUUID) {
+        this.playerUUID = playerUUID;
+    }
+
+    public void setPlayerUUID(UUID playerUUID) {
         this.playerUUID = playerUUID;
     }
 

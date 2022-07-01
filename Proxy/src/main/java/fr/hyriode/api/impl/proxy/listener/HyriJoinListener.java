@@ -183,6 +183,8 @@ public class HyriJoinListener implements Listener {
         final UUID playerId = player.getUniqueId();
 
         if (this.loginPlayers.contains(playerId)) {
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
+
             this.playerLoader.unloadPlayerAccount(playerId);
 
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
@@ -193,8 +195,6 @@ public class HyriJoinListener implements Listener {
             this.hyggdrasilManager.sendData();
 
             this.loginPlayers.remove(playerId);
-
-            HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerQuitNetworkEvent(playerId));
         }
     }
 
@@ -225,7 +225,7 @@ public class HyriJoinListener implements Listener {
 
             this.hyggdrasilManager.sendData();
 
-            HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerJoinNetworkEvent(playerId));
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
     }
 

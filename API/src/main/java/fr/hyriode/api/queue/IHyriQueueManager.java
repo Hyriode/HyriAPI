@@ -96,4 +96,20 @@ public interface IHyriQueueManager {
      */
     void updatePartyInQueue(IHyriParty party);
 
+    /**
+     * Get in which queue a party is in
+     *
+     * @param partyId The identifier of the party
+     * @return The {@linkplain IHyriQueue queue} or <code>null</code> if the party is not in a queue
+     */
+    IHyriQueue getPartyQueue(UUID partyId);
+
+    /**
+     * Get in which queue a player is in
+     *
+     * @param playerId The identifier of the player
+     * @return The {@linkplain IHyriQueue queue} or <code>null</code> if the player is not in a queue
+     */
+    IHyriQueue getPlayerQueue(UUID playerId);
+
 }

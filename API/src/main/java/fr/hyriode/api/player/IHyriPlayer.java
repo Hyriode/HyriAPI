@@ -204,20 +204,6 @@ public interface IHyriPlayer {
     HyriPlus getHyriPlus();
 
     /**
-     * Get the color of the + that will be added after the prefix
-     *
-     * @return A {@link HyriChatColor}
-     */
-    HyriChatColor getPlusColor();
-
-    /**
-     * Set the color of the + that will be added after the prefix
-     *
-     * @param plusColor The new {@link HyriChatColor}
-     */
-    void setPlusColor(HyriChatColor plusColor);
-
-    /**
      * Set Hyri+ offer
      *
      * @param hyriPlus New {@link HyriPlus} offer instance

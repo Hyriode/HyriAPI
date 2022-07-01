@@ -16,14 +16,14 @@ import java.util.UUID;
 public class HyriMoneyManager implements IHyriMoneyManager {
 
     @Override
-    public void creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
+    public long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
         final IHyriPlayer player = IHyriPlayer.get(playerId);
         final IHyriMoneyAction.Type type = action.getType();
         final long initial = action.getAmount();
-        final long amount = type == IHyriMoneyAction.Type.ADD ? (action.isMultiplier() ? money.multiply(initial, player) : initial) : initial;
+        final long amount = type == IHyriMoneyAction.Type.ADD ? (action.isMultiplier() ? money.applyMultiplier(initial) : initial) : initial;
 
         if (amount <= 0) {
-            return;
+            return amount;
         }
 
         if (type == IHyriMoneyAction.Type.ADD) {
@@ -45,6 +45,8 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         }
 
         player.update();
+
+        return amount;
     }
 
     @Override

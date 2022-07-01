@@ -79,8 +79,8 @@ public class HyriMoneyAction implements IHyriMoneyAction {
     }
 
     @Override
-    public void exec() {
-        HyriAPI.get().getMoneyManager().creditMoney(this.player, this, this.money);
+    public long exec() {
+        return HyriAPI.get().getMoneyManager().creditMoney(this.player, this, this.money);
     }
 
 }

@@ -28,8 +28,8 @@ public class Hyris extends HyriMoney {
     }
 
     @Override
-    public long multiply(long currentAmount, IHyriPlayer account) {
-        return (int) (currentAmount * this.getMultiplier(account));
+    public long applyMultiplier(long currentAmount) {
+        return (int) (currentAmount * this.getMultiplier(IHyriPlayer.get(this.playerUUID)));
     }
 
     @Override

@@ -71,7 +71,11 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
         }
 
         try {
-            return this.hydrionManager.getClient().getUUIDModule().getUUID(name).get();
+            final UUID uuid = this.hydrionManager.getClient().getUUIDModule().getUUID(name).get();
+
+            this.setPlayerId(name, uuid);
+
+            return uuid;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -235,7 +239,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
             return prefix;
         }
 
-        prefix = this.getPlayer(playerId).getPrefix();
+        prefix = this.getPlayer(playerId).getNameWithRank();
 
         this.savePrefix(playerId, prefix);
 

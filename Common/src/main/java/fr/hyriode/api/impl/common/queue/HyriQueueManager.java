@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.queue.IHyriQueue;
 import fr.hyriode.api.queue.IHyriQueueHandler;
 import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Project: HyriAPI
@@ -32,6 +34,9 @@ import java.util.function.Consumer;
  * on 19/04/2022 at 11:18
  */
 public class HyriQueueManager implements IHyriQueueManager {
+
+    private static final Function<UUID, String> PARTIES_KEY = id -> "queue:party:" + id.toString();
+    private static final Function<UUID, String> PLAYERS_KEY = id -> "queue:player:" + id.toString();
 
     private final List<IHyriQueueHandler> handlers;
 
@@ -94,6 +99,12 @@ public class HyriQueueManager implements IHyriQueueManager {
         if (player != null) {
             this.sendQueuePacket(new HyggQueueAddPlayerPacket(new HyggQueuePlayer(playerId, player.getPriority()), game, gameType, map), content -> {
                 if (content instanceof HyggQueueAddPacket.Response) {
+                    final HyggQueueAddPacket.Response response = (HyggQueueAddPacket.Response) content;
+
+                    if (response.getType() == HyggQueueAddPacket.ResponseType.ADDED) {
+                        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(playerId), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
+                    }
+
                     for (IHyriQueueHandler handler : this.handlers) {
                         handler.onPlayerAddResponse((HyggQueueAddPacket.Response) content);
                     }
@@ -106,6 +117,12 @@ public class HyriQueueManager implements IHyriQueueManager {
     public void removePlayerFromQueue(UUID playerId) {
         this.sendQueuePacket(new HyggQueueRemovePlayerPacket(playerId), content -> {
             if (content instanceof HyggQueueRemovePacket.Response) {
+                final HyggQueueRemovePacket.Response response = (HyggQueueRemovePacket.Response) content;
+
+                if (response.getType() == HyggQueueRemovePacket.ResponseType.REMOVED) {
+                    this.removePlayerQueue(playerId);
+                }
+
                 for (IHyriQueueHandler handler : this.handlers) {
                     handler.onPlayerRemoveResponse((HyggQueueRemovePacket.Response) content);
                 }
@@ -122,6 +139,12 @@ public class HyriQueueManager implements IHyriQueueManager {
     public void addPartyInQueue(IHyriParty party, String game, String gameType, String map) {
         this.sendQueuePacket(new HyggQueueAddGroupPacket(this.createGroupFromParty(party), game, gameType, map), content -> {
             if (content instanceof HyggQueueAddPacket.Response) {
+                final HyggQueueAddPacket.Response response = (HyggQueueAddPacket.Response) content;
+
+                if (response.getType() == HyggQueueAddPacket.ResponseType.ADDED) {
+                    HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PARTIES_KEY.apply(party.getId()), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
+                }
+
                 for (IHyriQueueHandler handler : this.handlers) {
                     handler.onPartyAddResponse((HyggQueueAddPacket.Response) content);
                 }
@@ -133,6 +156,12 @@ public class HyriQueueManager implements IHyriQueueManager {
     public void removePartyFromQueue(UUID partyId) {
         this.sendQueuePacket(new HyggQueueRemoveGroupPacket(partyId), content -> {
             if (content instanceof HyggQueueRemovePacket.Response) {
+                final HyggQueueRemovePacket.Response response = (HyggQueueRemovePacket.Response) content;
+
+                if (response.getType() == HyggQueueRemovePacket.ResponseType.REMOVED) {
+                    this.removePartyQueue(partyId);
+                }
+
                 for (IHyriQueueHandler handler : this.handlers) {
                     handler.onPartyRemoveResponse((HyggQueueRemovePacket.Response) content);
                 }
@@ -148,6 +177,38 @@ public class HyriQueueManager implements IHyriQueueManager {
                     handler.onPartyUpdateResponse((HyggQueueUpdateGroupPacket.Response) content);
                 }
             }
+        });
+    }
+
+    public void removePartyQueue(UUID partyId) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PARTIES_KEY.apply(partyId)));
+    }
+
+    @Override
+    public IHyriQueue getPartyQueue(UUID partyId) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String json = jedis.get(PARTIES_KEY.apply(partyId));
+
+            if (json == null) {
+                return null;
+            }
+            return HyriAPI.GSON.fromJson(json, HyriQueue.class);
+        });
+    }
+
+    public void removePlayerQueue(UUID playerId) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(playerId)));
+    }
+
+    @Override
+    public IHyriQueue getPlayerQueue(UUID playerId) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String json = jedis.get(PLAYERS_KEY.apply(playerId));
+
+            if (json == null) {
+                return null;
+            }
+            return HyriAPI.GSON.fromJson(json, HyriQueue.class);
         });
     }
 

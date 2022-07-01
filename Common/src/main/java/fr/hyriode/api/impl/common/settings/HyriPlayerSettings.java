@@ -64,7 +64,7 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
 
     @Override
     public void setPrivateMessagesLevel(HyriSettingsLevel privateMessagesLevel) {
-        if (partyRequestsLevel == HyriSettingsLevel.PARTY) {
+        if (privateMessagesLevel == HyriSettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -78,7 +78,7 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
 
     @Override
     public void setPrivateMessagesSoundLevel(HyriSettingsLevel privateMessagesSoundLevel) {
-        if (partyRequestsLevel == HyriSettingsLevel.PARTY) {
+        if (privateMessagesSoundLevel == HyriSettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -102,7 +102,7 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
 
     @Override
     public void setGlobalChatLevel(HyriSettingsLevel globalChatLevel) {
-        if (partyRequestsLevel == HyriSettingsLevel.PARTY) {
+        if (globalChatLevel == HyriSettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 

@@ -47,12 +47,8 @@ public class NetworkLeveling implements IHyriLeveling {
     }
 
     @Override
-    public void addExperience(double experience, boolean multipliers) {
-        this.runAction(() -> {
-            final IHyriPlayer player = IHyriPlayer.get(this.playerId);
-
-            this.experience += multipliers ? this.multiply(experience, player) : experience;
-        });
+    public double addExperience(double experience, boolean multipliers) {
+        return this.runAction(() -> this.experience += multipliers ? this.applyMultiplier(experience) : experience);
     }
 
     @Override
@@ -70,7 +66,7 @@ public class NetworkLeveling implements IHyriLeveling {
         return new Algo();
     }
 
-    private void runAction(Runnable action) {
+    private double runAction(Runnable action) {
         final int oldLevel = this.getLevel();
         final double oldExperience = this.experience;
 
@@ -87,11 +83,12 @@ public class NetworkLeveling implements IHyriLeveling {
         if (newLevel > oldLevel) {
             eventBus.publish(new HyriGainLevelEvent(account.getUniqueId(), this.name, oldLevel, newLevel));
         }
+        return oldExperience - this.experience;
     }
 
     @Override
-    public double multiply(double experience, IHyriPlayer account) {
-        final Multiplier multiplier = Multiplier.getByPlayer(account);
+    public double applyMultiplier(double experience) {
+        final Multiplier multiplier = Multiplier.getByPlayer(IHyriPlayer.get(this.playerId));
 
         if (multiplier != null) {
             return (long) (experience * multiplier.getAmount());
@@ -139,16 +136,14 @@ public class NetworkLeveling implements IHyriLeveling {
 
     public static class Algo implements Algorithm {
 
-        private static final double CONSTANT = 0.1D;
-
         @Override
         public int experienceToLevel(double experience) {
-            return (int) Math.floor(CONSTANT * Math.sqrt(experience));
+            return (int) (350 + Math.sqrt(122500 + 1400 * experience)) / 700;
         }
 
         @Override
         public double levelToExperience(int level) {
-            return Math.pow(level / CONSTANT, 2);
+            return 350 * level * level - 350 * level;
         }
 
     }

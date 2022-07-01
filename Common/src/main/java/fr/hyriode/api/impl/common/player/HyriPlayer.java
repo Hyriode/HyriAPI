@@ -44,7 +44,6 @@ public class HyriPlayer implements IHyriPlayer {
 
     private HyriRank rank;
     private HyriPlus hyriPlus;
-    private HyriChatColor plusColor = HyriChatColor.LIGHT_PURPLE;
 
     private UUID lastPrivateMessage;
 
@@ -105,7 +104,7 @@ public class HyriPlayer implements IHyriPlayer {
         } else if (this.rank.isStaff()) {
             return prefix;
         } else if (this.hasHyriPlus() && this.rank.getPlayerType() == HyriPlayerRankType.EPIC) {
-            return prefix + this.plusColor.toString() + "+";
+            return prefix + this.hyriPlus.getPlusColor() + "+";
         }
         return prefix;
     }
@@ -199,19 +198,9 @@ public class HyriPlayer implements IHyriPlayer {
         if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
             final long currentTime = System.currentTimeMillis();
 
-            return new HyriPlus(currentTime, currentTime + 2629800000L);
+            return new HyriPlus(currentTime, currentTime + 2592000000L);
         }
         return this.hyriPlus;
-    }
-
-    @Override
-    public HyriChatColor getPlusColor() {
-        return this.plusColor;
-    }
-
-    @Override
-    public void setPlusColor(HyriChatColor plusColor) {
-        this.plusColor = plusColor;
     }
 
     @Override
@@ -244,6 +233,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public IHyriMoney getHyris() {
+        this.hyris.setPlayerUUID(this.uuid);
+
         return this.hyris;
     }
 
@@ -407,7 +398,7 @@ public class HyriPlayer implements IHyriPlayer {
         if (this.rank.isStaff()) {
             return this.rank.getTabListPriority();
         }
-        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getTabListPriority();
+        return this.hasHyriPlus() ? HyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
     }
 
     @Override

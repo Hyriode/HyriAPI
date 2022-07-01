@@ -269,7 +269,7 @@ public class HyriParty implements IHyriParty {
                 continue;
             }
 
-            account.setParty(this.id);
+            account.setParty(null);
             account.update();
         }
 

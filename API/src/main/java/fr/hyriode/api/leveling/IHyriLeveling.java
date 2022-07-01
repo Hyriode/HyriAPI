@@ -35,16 +35,18 @@ public interface IHyriLeveling {
      *
      * @param experience The amount to add
      * @param multipliers Are multipliers used
+     * @return The added experience (with multipliers)
      */
-    void addExperience(double experience, boolean multipliers);
+    double addExperience(double experience, boolean multipliers);
 
     /**
      * Add a given amount of experience
      *
      * @param experience The amount to add
+     * @return The added experience (with multipliers)
      */
-    default void addExperience(double experience) {
-        this.addExperience(experience, true);
+    default double addExperience(double experience) {
+        return this.addExperience(experience, true);
     }
 
     /**
@@ -82,10 +84,9 @@ public interface IHyriLeveling {
      * Multiply an amount of experience for a given player
      *
      * @param experience The experience to multiply
-     * @param account The account of the player
      * @return The new multiplied experience
      */
-    default double multiply(double experience, IHyriPlayer account) {
+    default double applyMultiplier(double experience) {
         return experience;
     }
 

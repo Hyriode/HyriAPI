@@ -17,7 +17,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Date;
@@ -92,6 +91,8 @@ public class HyriJoinListener implements Listener {
             }
 
             playerManager.savePrefix(playerId, account.getNameWithRank());
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
 
         if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
@@ -103,20 +104,11 @@ public class HyriJoinListener implements Listener {
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
 
         this.hyggdrasilManager.sendData();
-
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerJoinNetworkEvent(playerId));
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage("");
-
-        this.onLeave(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerKicked(PlayerKickEvent event) {
-        event.setLeaveMessage("");
 
         this.onLeave(event.getPlayer());
     }
@@ -140,6 +132,8 @@ public class HyriJoinListener implements Listener {
             }
 
             account.update();
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
         }
 
         this.joinManager.onLogout(player);
@@ -147,8 +141,6 @@ public class HyriJoinListener implements Listener {
         HyriAPI.get().getServer().removePlayer(playerId);
 
         this.hyggdrasilManager.sendData();
-
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new PlayerQuitNetworkEvent(playerId));
     }
 
 }

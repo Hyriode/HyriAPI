@@ -109,7 +109,6 @@ public class HyriJoinManager implements IHyriJoinManager {
 
         if (connect) {
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
-            HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
         }
         return null;
     }
@@ -147,8 +146,6 @@ public class HyriJoinManager implements IHyriJoinManager {
 
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, serverName);
         }
-
-        HyriAPI.get().getQueueManager().removePartyFromQueue(partyId);
     }
 
     @Override

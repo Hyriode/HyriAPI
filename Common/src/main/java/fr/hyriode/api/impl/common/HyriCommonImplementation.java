@@ -28,7 +28,6 @@ import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
-import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.hystia.api.IHystiaAPI;
@@ -195,7 +194,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriQueueManager getQueueManager() {
+    public HyriQueueManager getQueueManager() {
         return this.queueManager;
     }
 

@@ -22,7 +22,7 @@ public class HyriPlus {
     /** The timestamp of when the Hyri+ will expire */
     private final long expirationDate;
     /** The color of the + symbol */
-    private HyriChatColor plusColor = HyriPlayerRankType.EPIC.getDefaultColor();
+    private HyriChatColor plusColor = HyriChatColor.LIGHT_PURPLE;
 
     /**
      * Constructor of {@link HyriPlus}

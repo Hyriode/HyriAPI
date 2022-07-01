@@ -88,7 +88,9 @@ public interface IHyriMoneyAction {
 
     /**
      * Execute the money action
+     *
+     * @return The amount of money removed or added (with multipliers)
      */
-    void exec();
+    long exec();
 
 }

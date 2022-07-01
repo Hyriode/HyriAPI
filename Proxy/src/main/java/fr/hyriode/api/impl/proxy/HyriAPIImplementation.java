@@ -82,7 +82,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
             processor.registerReceiver(HyggChannel.PROXIES, proxyReceiver);
-            processor.registerReceiver(HyggChannel.QUEUE, new HyriQueueReceiver());
+            processor.registerReceiver(HyggChannel.QUEUE, new HyriQueueReceiver(this));
         }
 
         final IHyriPubSub pubSub = HyriAPI.get().getPubSub();
