@@ -26,7 +26,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
     }
 
     private String getKey(HyriLeaderboardScope scope) {
-        return "leaderboards:" + type + ":" + name + ":" + scope.getId();
+        return "leaderboards:" + this.type + ":" + this.name + ":" + scope.getId();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
             final List<Tuple> tuples = jedis.zrangeWithScores(this.getKey(scope), start, stop);
 
             for (Tuple tuple : tuples) {
-                scores.add(new HyriLeaderboardScore(UUID.fromString(tuple.getElement()), (long) tuple.getScore()));
+                scores.add(new HyriLeaderboardScore(UUID.fromString(tuple.getElement()), tuple.getScore()));
             }
 
             Collections.reverse(scores);
@@ -87,21 +87,21 @@ public class HyriLeaderboard implements IHyriLeaderboard {
     }
 
     @Override
-    public long getScore(HyriLeaderboardScope scope, UUID id) {
+    public double getScore(HyriLeaderboardScope scope, UUID id) {
         try {
-            return (long) (double) (HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.getKey(scope), id.toString())));
+            return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(this.getKey(scope), id.toString()));
         } catch (NullPointerException e) {
             return 0;
         }
     }
 
     @Override
-    public void setScore(HyriLeaderboardScope scope, UUID id, long score) {
+    public void setScore(HyriLeaderboardScope scope, UUID id, double score) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zadd(this.getKey(scope), score, id.toString()));
     }
 
     @Override
-    public void incrementScore(HyriLeaderboardScope scope, UUID id, long score) {
+    public void incrementScore(HyriLeaderboardScope scope, UUID id, double score) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zincrby(this.getKey(scope), score, id.toString()));
     }
 

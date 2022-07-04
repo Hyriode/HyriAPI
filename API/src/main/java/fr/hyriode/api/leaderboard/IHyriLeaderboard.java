@@ -74,7 +74,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier of the score
      * @return The score
      */
-    long getScore(HyriLeaderboardScope scope, UUID id);
+    double getScore(HyriLeaderboardScope scope, UUID id);
 
     /**
      * Set the score related to an identifier
@@ -83,7 +83,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score
      */
-    void setScore(HyriLeaderboardScope scope, UUID id, long score);
+    void setScore(HyriLeaderboardScope scope, UUID id, double score);
 
     /**
      * Set the score related to an identifier
@@ -91,7 +91,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score
      */
-    default void setScore(UUID id, long score) {
+    default void setScore(UUID id, double score) {
         for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
             this.setScore(scope, id, score);
         }
@@ -104,7 +104,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score to add
      */
-    void incrementScore(HyriLeaderboardScope scope, UUID id, long score);
+    void incrementScore(HyriLeaderboardScope scope, UUID id, double score);
 
     /**
      * Increment an existing score
@@ -112,7 +112,7 @@ public interface IHyriLeaderboard {
      * @param id The identifier
      * @param score The score to add
      */
-    default void incrementScore(UUID id, long score) {
+    default void incrementScore(UUID id, double score) {
         for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
             this.incrementScore(scope, id, score);
         }

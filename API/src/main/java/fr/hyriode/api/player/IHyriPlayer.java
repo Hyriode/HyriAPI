@@ -8,6 +8,7 @@ import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
@@ -185,6 +186,8 @@ public interface IHyriPlayer {
      */
     default void setPlayerRank(HyriPlayerRankType playerRankType) {
         this.getRank().setPlayerType(playerRankType);
+
+        HyriAPI.get().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
     }
 
     /**
@@ -194,6 +197,8 @@ public interface IHyriPlayer {
      */
     default void setStaffRank(HyriStaffRankType staffRankType) {
         this.getRank().setStaffType(staffRankType);
+
+        HyriAPI.get().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
     }
 
     /**

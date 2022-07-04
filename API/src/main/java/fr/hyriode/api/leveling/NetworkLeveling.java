@@ -1,8 +1,7 @@
-package fr.hyriode.api.impl.common.leveling;
+package fr.hyriode.api.leveling;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.leveling.event.HyriGainLevelEvent;
 import fr.hyriode.api.leveling.event.HyriGainXPEvent;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -16,6 +15,11 @@ import java.util.UUID;
  * on 15/04/2022 at 12:42
  */
 public class NetworkLeveling implements IHyriLeveling {
+
+    public static final String LEADERBOARD_TYPE = "network-leveling";
+    public static final String LEADERBOARD_NAME = "experience";
+
+    public static final Algorithm ALGORITHM = new Algo();
 
     private final String name;
     private double experience;
@@ -58,12 +62,12 @@ public class NetworkLeveling implements IHyriLeveling {
 
     @Override
     public int getLevel() {
-        return new Algo().experienceToLevel(this.experience);
+        return ALGORITHM.experienceToLevel(this.experience);
     }
 
     @Override
     public Algorithm getAlgorithm() {
-        return new Algo();
+        return ALGORITHM;
     }
 
     private double runAction(Runnable action) {
@@ -77,6 +81,8 @@ public class NetworkLeveling implements IHyriLeveling {
         final IHyriEventBus eventBus = HyriAPI.get().getNetworkManager().getEventBus();
 
         if (oldExperience != this.experience) {
+            HyriAPI.get().getLeaderboardProvider().getLeaderboard(LEADERBOARD_TYPE, LEADERBOARD_NAME).setScore(this.playerId, this.experience);
+
             eventBus.publish(new HyriGainXPEvent(account.getUniqueId(), this.name, oldExperience, this.experience));
         }
 
@@ -99,7 +105,7 @@ public class NetworkLeveling implements IHyriLeveling {
     public enum Multiplier {
 
         PLAYER(HyriPlayerRankType.PLAYER, 1.0D),
-        VIP(HyriPlayerRankType.VIP, 1.15D),
+        VIP(HyriPlayerRankType.VIP, 1.25D),
         VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.5D),
         EPIC(HyriPlayerRankType.EPIC, 2.0D),
         HYRI_PLUS(HyriPlayerRankType.EPIC, 3.0D);

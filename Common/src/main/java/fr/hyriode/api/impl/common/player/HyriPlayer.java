@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
-import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
+import fr.hyriode.api.leveling.NetworkLeveling;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
@@ -17,6 +17,7 @@ import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 import fr.hyriode.api.transaction.IHyriTransaction;
@@ -64,7 +65,7 @@ public class HyriPlayer implements IHyriPlayer {
     private final Map<String, JsonElement> statistics = new HashMap<>();
     private final Map<String, JsonElement> data = new HashMap<>();
 
-    private final Map<String, List<HyriTransaction>> transactions = new HashMap<>();
+    private Map<String, List<HyriTransaction>> transactions = new HashMap<>();
 
     private final NetworkLeveling networkLeveling;
 
@@ -191,6 +192,7 @@ public class HyriPlayer implements IHyriPlayer {
         this.rank = rank;
 
         HyriAPI.get().getPlayerManager().savePrefix(this.uuid, this.getNameWithRank());
+        HyriAPI.get().getEventBus().publish(new HyriRankUpdatedEvent(this.uuid));
     }
 
     @Override
@@ -199,6 +201,21 @@ public class HyriPlayer implements IHyriPlayer {
             final long currentTime = System.currentTimeMillis();
 
             return new HyriPlus(currentTime, currentTime + 2592000000L);
+        } else if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
+            this.hyriPlus = null;
+            return null;
+        } else  {
+            final List<HyriTransaction> transactions = this.getTransactions(HyriPlus.TRANSACTION_TYPE);
+
+            if (transactions != null) {
+                for (HyriTransaction transaction : transactions) {
+                    final HyriPlus hyriPlus = transaction.content(HyriPlus.class);
+
+                    if (hyriPlus != null && !hyriPlus.hasExpire()) {
+                        this.hyriPlus = hyriPlus;
+                    }
+                }
+            }
         }
         return this.hyriPlus;
     }
@@ -210,15 +227,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasHyriPlus() {
-        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
-            return true;
-        }
-
-        if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
-            this.hyriPlus = null;
-            return false;
-        }
-        return this.hyriPlus != null;
+        return this.getHyriPlus() != null;
     }
 
     @Override
@@ -418,7 +427,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean removeTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
+        final List<HyriTransaction> transactions = this.getTransactions().getOrDefault(type, new ArrayList<>());
 
         if (transactions == null) {
             return false;
@@ -439,7 +448,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public HyriTransaction getTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.transactions.get(type);
+        final List<HyriTransaction> transactions = this.getTransactions().get(type);
 
         if (transactions == null) {
             return null;
@@ -455,13 +464,13 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.transactions.get(type);
+        final List<? extends IHyriTransaction> transactions = this.getTransactions().get(type);
 
         if (transactions == null) {
             return false;
         }
 
-        for (final HyriTransaction transaction : transactions) {
+        for (final IHyriTransaction transaction : transactions) {
             if (transaction.name().equals(name)) {
                 return true;
             }
@@ -470,18 +479,18 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public List<? extends IHyriTransaction> getTransactions(String type) {
-        return this.transactions.get(type);
+    public List<HyriTransaction> getTransactions(String type) {
+        return this.getTransactions().get(type);
     }
 
     @Override
-    public Map<String, ? extends List<? extends IHyriTransaction>> getTransactions() {
-        return this.transactions;
+    public Map<String, List<HyriTransaction>> getTransactions() {
+        return this.transactions == null ? this.transactions = new HashMap<>() : this.transactions;
     }
 
     @Override
     public List<String> getTransactionsTypes() {
-        return new ArrayList<>(this.transactions.keySet());
+        return new ArrayList<>(this.getTransactions().keySet());
     }
 
 }

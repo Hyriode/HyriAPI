@@ -9,9 +9,9 @@ import java.util.UUID;
 public class HyriLeaderboardScore {
 
     private final UUID id;
-    private final long value;
+    private final double value;
 
-    public HyriLeaderboardScore(UUID id, long value) {
+    public HyriLeaderboardScore(UUID id, double value) {
         this.id = id;
         this.value = value;
     }
@@ -20,7 +20,7 @@ public class HyriLeaderboardScore {
         return this.id;
     }
 
-    public long getValue() {
+    public double getValue() {
         return this.value;
     }
 

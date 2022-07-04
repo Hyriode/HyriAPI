@@ -2,6 +2,7 @@ package fr.hyriode.api.rank;
 
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.transaction.IHyriTransactionContent;
 
 import java.util.Date;
 
@@ -10,7 +11,10 @@ import java.util.Date;
  * Created by AstFaster
  * on 13/04/2022 at 11:31
  */
-public class HyriPlus {
+public class HyriPlus implements IHyriTransactionContent {
+
+    /** The type of Hyri+ transaction */
+    public static final String TRANSACTION_TYPE = "hyri+";
 
     /** The priority of the Hyri+ in queues */
     public static final int PRIORITY = HyriPlayerRankType.EPIC.getPriority() + 1;
