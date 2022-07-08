@@ -51,8 +51,8 @@ public class HyriOnlinePlayersTask implements Runnable {
             if (account.isOnline() && !this.isOnline(player)) {
                 account.setOnline(false);
 
-                HyriAPI.get().getPlayerManager().removePlayer(player);
-                HyriAPI.get().getPlayerManager().sendPlayerToHydrion(account);
+                HyriAPI.get().getPlayerManager().removeCachedPlayer(player);
+                HyriAPI.get().getPlayerManager().updatePlayer(account);
             }
 
             this.players.remove(player);

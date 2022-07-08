@@ -1,11 +1,11 @@
-package fr.hyriode.api.configuration;
+package fr.hyriode.api.config;
 
 /**
  * Project: HyriAPI
  * Created by AstFaster
  * on 12/02/2022 at 16:04
  */
-public interface IHyriAPIConfiguration {
+public interface IHyriAPIConfig {
 
     /**
      * Check if HyriAPI is running on development environment
@@ -15,13 +15,6 @@ public interface IHyriAPIConfiguration {
     boolean isDevEnvironment();
 
     /**
-     * Check if HyriAPI is used in production or not
-     *
-     * @return <code>true</code> if yes
-     */
-    boolean isProduction();
-
-    /**
      * Check if HyriAPI is currently using Hyggdrasil
      *
      * @return <code>true</code> if it's using Hyggdrasil
@@ -29,17 +22,17 @@ public interface IHyriAPIConfiguration {
     boolean withHyggdrasil();
 
     /**
-     * Get the Redis configuration for Redis
+     * Get the Redis configuration
      *
      * @return The {@link HyriRedisConfig} object
      */
     HyriRedisConfig getRedisConfig();
 
     /**
-     * Get the configuration for Hydrion
+     * Get the MongoDB configuration
      *
-     * @return The {@link HydrionConfig} object
+     * @return The {@linkplain HyriMongoDBConfig MongoDB config} object
      */
-    HydrionConfig getHydrionConfig();
+    HyriMongoDBConfig getMongoDBConfig();
 
 }

@@ -62,8 +62,8 @@ public class HyriJoinListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final UUID playerId = player.getUniqueId();
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = playerManager.getPlayerFromRedis(playerId);
 
         if (account == null) {
             player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
@@ -74,13 +74,13 @@ public class HyriJoinListener implements Listener {
 
         event.setJoinMessage("");
 
-        if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
+        if (HyriAPI.get().getConfig().isDevEnvironment()) {
             account.setName(player.getName());
             account.setLastLoginDate(new Date(System.currentTimeMillis()));
 
             playerManager.setPlayerId(account.getName(), playerId);
 
-            this.friendManager.saveFriends(this.friendManager.createHandler(playerId));
+            this.friendManager.saveFriendsInCache(this.friendManager.createHandler(playerId));
 
             account.setLastServer(account.getCurrentServer());
             account.setOnline(true);
@@ -116,9 +116,9 @@ public class HyriJoinListener implements Listener {
     private void onLeave(Player player) {
         final UUID playerId = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = playerManager.getPlayerFromRedis(player.getUniqueId());
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
 
-        if (account != null && HyriAPI.get().getConfiguration().isDevEnvironment()) {
+        if (account != null && HyriAPI.get().getConfig().isDevEnvironment()) {
             account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
             account.setOnline(false);
             account.setLastPrivateMessagePlayer(null);

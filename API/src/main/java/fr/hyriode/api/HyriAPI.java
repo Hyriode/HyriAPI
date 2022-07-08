@@ -4,13 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
-import fr.hyriode.api.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
+import fr.hyriode.api.mongodb.IHyriMongoDB;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
@@ -93,9 +94,9 @@ public abstract class HyriAPI {
     /**
      * Get the configuration of HyriAPI
      *
-     * @return The {@link IHyriAPIConfiguration} instance
+     * @return The {@link IHyriAPIConfig} instance
      */
-    public abstract IHyriAPIConfiguration getConfiguration();
+    public abstract IHyriAPIConfig getConfig();
 
     /**
      * Get a resource of {@link Jedis}
@@ -117,6 +118,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriRedisProcessor}
      */
     public abstract IHyriRedisProcessor getRedisProcessor();
+
+    /**
+     * Get the MongoDB database instance manager
+     *
+     * @return The {@link IHyriMongoDB} instance
+     */
+    public abstract IHyriMongoDB getMongoDB();
 
     /**
      * Get the default event bus

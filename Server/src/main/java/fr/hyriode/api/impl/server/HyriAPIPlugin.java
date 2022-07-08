@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.configuration.IHyriAPIConfiguration;
-import fr.hyriode.api.impl.server.configuration.HyriAPIConfig;
+import fr.hyriode.api.config.IHyriAPIConfig;
+import fr.hyriode.api.impl.server.config.HyriAPIConfig;
 import fr.hyriode.api.impl.server.join.HyriJoinListener;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hystia.api.world.IWorldManager;
@@ -25,7 +25,7 @@ import java.util.logging.Level;
  */
 public class HyriAPIPlugin extends JavaPlugin {
 
-    private IHyriAPIConfiguration configuration;
+    private IHyriAPIConfig configuration;
 
     private HyriAPIImplementation api;
 
@@ -40,7 +40,7 @@ public class HyriAPIPlugin extends JavaPlugin {
     }
 
     private void loadMap() {
-        if (this.api.getHydrionManager().isEnabled()) {
+        if (!HyriAPI.get().getConfig().isDevEnvironment()) {
             final IHyriServer server = HyriAPI.get().getServer();
 
             if (server != null) {
@@ -115,7 +115,7 @@ public class HyriAPIPlugin extends JavaPlugin {
         register.accept(new HyriJoinListener(this.api.getHyggdrasilManager(), this.api.getServerManager().getJoinManager()));
     }
 
-    public IHyriAPIConfiguration getConfiguration() {
+    public IHyriAPIConfig getConfiguration() {
         return this.configuration;
     }
 

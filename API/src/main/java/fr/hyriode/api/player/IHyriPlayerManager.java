@@ -4,7 +4,6 @@ import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Project: HyriAPI
@@ -17,20 +16,9 @@ public interface IHyriPlayerManager {
      * Get player unique id from his name
      *
      * @param name Player's name
-     * @param allowHydrionCheck Is Hydrion uuid fetching allowed
      * @return Player {@link UUID} or <code>null</code>
      */
-    UUID getPlayerId(String name, boolean allowHydrionCheck);
-
-    /**
-     * Get player unique id from his name
-     *
-     * @param name Player's name
-     * @return Player {@link UUID} or <code>null</code>
-     */
-    default UUID getPlayerId(String name) {
-        return this.getPlayerId(name, true);
-    }
+    UUID getPlayerId(String name);
 
     /**
      * Set player's id
@@ -48,6 +36,16 @@ public interface IHyriPlayerManager {
     void removePlayerId(String name);
 
     /**
+     * Create a player with a given {@link UUID}
+     *
+     * @param online Set if the player is currently connected on the network
+     * @param uuid Player {@link UUID}
+     * @param name Player name
+     * @return The created player
+     */
+    IHyriPlayer createPlayer(boolean online, UUID uuid, String name);
+
+    /**
      * Get a player with a given {@link UUID}
      *
      * @param uuid Player {@link UUID}
@@ -61,62 +59,59 @@ public interface IHyriPlayerManager {
      * @param name Player's name
      * @return {@link IHyriPlayer} instance
      */
-    IHyriPlayer getPlayer(String name);
+    default IHyriPlayer getPlayer(String name) {
+        final UUID playerId = this.getPlayerId(name);
+
+        return playerId == null ? null : this.getPlayer(playerId);
+    }
 
     /**
-     * Get a player from Redis with a given {@link UUID}
+     * Update a player
      *
-     * @param uuid Player {@link UUID}
-     * @return A player instance
+     * @param player The {@linkplain IHyriPlayer player} to update
      */
-    IHyriPlayer getPlayerFromRedis(UUID uuid);
-
-    /**
-     * Get a player from Redis by giving his name
-     *
-     * @param name Player name
-     * @return A player instance
-     */
-    IHyriPlayer getPlayerFromRedis(String name);
-
-    /**
-     * Get a player with a given {@link UUID} from Hydrion
-     *
-     * @param uuid Player {@link UUID}
-     * @return A player instance
-     */
-    CompletableFuture<IHyriPlayer> getPlayerFromHydrion(UUID uuid);
-
-    /**
-     * Create a player with a given {@link UUID}
-     *
-     * @param online Set if the player is currently connected on the network
-     * @param uuid Player {@link UUID}
-     * @param name Player name
-     * @return The created player
-     */
-    IHyriPlayer createPlayer(boolean online, UUID uuid, String name);
-
-    /**
-     * Send a player to Hydrion
-     *
-     * @param player The player to store in Hydrion
-     */
-    void sendPlayerToHydrion(IHyriPlayer player);
-
-    /**
-     * Send a player in Redis cache
-     *
-     * @param player {@link IHyriPlayer}
-     */
-    void sendPlayer(IHyriPlayer player);
+    void updatePlayer(IHyriPlayer player);
 
     /**
      * Remove a player with a given {@link UUID}
      *
-     * @param uuid Player {@link UUID}
+     * @param uuid The {@link UUID} of the player
      */
     void removePlayer(UUID uuid);
+
+    /**
+     * Get a player with a given {@link UUID} from cache
+     *
+     * @param uuid The {@linkplain UUID unique id} of the player
+     * @return The {@link IHyriPlayer} object or <code>null</code> if the player is not in cache
+     */
+    IHyriPlayer getCachedPlayer(UUID uuid);
+
+    /**
+     * Get a player with a given name from cache
+     *
+     * @param name The name of the player
+     * @return The {@link IHyriPlayer} object or <code>null</code> if the player is not in cache
+     */
+    default IHyriPlayer getCachedPlayer(String name) {
+        final UUID playerId = this.getPlayerId(name);
+
+        return playerId == null ? null : this.getCachedPlayer(playerId);
+    }
+
+    /**
+     * Update a player in cache
+     *
+     * @param player The {@link IHyriPlayer} object
+     */
+    void updateCachedPlayer(IHyriPlayer player);
+
+    /**
+     * Remove a player with a given {@link UUID} from cache
+     *
+     * @param uuid The player {@link UUID}
+     */
+    void removeCachedPlayer(UUID uuid);
 
     /**
      * Kick a player from network with a given reason

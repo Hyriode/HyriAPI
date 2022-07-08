@@ -167,7 +167,7 @@ public class HyriCServerManager implements IHyriServerManager {
     }
 
     private void runActionOnRequester(Consumer<HyggServerRequester> action) {
-        if (HyriAPI.get().getConfiguration().withHyggdrasil()) {
+        if (HyriAPI.get().getConfig().withHyggdrasil()) {
             final HyggServerRequester requester = this.implementation.getHyggdrasilManager().getHyggdrasilAPI().getServerRequester();
 
             if (requester != null) {

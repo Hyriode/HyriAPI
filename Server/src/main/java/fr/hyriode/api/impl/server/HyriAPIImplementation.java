@@ -1,9 +1,7 @@
 package fr.hyriode.api.impl.server;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.network.HyriNetwork;
 import fr.hyriode.api.impl.server.chat.GlobalChatHandler;
 import fr.hyriode.api.impl.server.chat.PartnerChatHandler;
 import fr.hyriode.api.impl.server.chat.PartyChatHandler;
@@ -13,7 +11,6 @@ import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
@@ -34,25 +31,16 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final HyriServer server;
 
-    private IHystiaAPI hystiaAPI;
+    private final IHystiaAPI hystiaAPI;
 
     private final HyriServerManager serverManager;
-
-    private final IHyriPlayerManager playerManager;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.server = this.createServer();
         this.serverManager = new HyriServerManager(plugin, this);
-        this.playerManager = new HyriPlayerManager(this.hydrionManager);
-
-        if (this.hydrionManager.isEnabled()) {
-            this.hystiaAPI = new HystiaImpl(plugin, this.hydrionManager.getClient());
-        }
-
-        if (HyriAPI.get().getConfiguration().isDevEnvironment()) {
-            this.networkManager.cacheNetwork(new HyriNetwork());
-        }
+        this.playerManager = new HyriPlayerManager();
+        this.hystiaAPI = new HystiaImpl(plugin, null);
 
         this.queueManager.start();
 
@@ -94,11 +82,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     @Override
     public IHystiaAPI getHystiaAPI() {
         return this.hystiaAPI;
-    }
-
-    @Override
-    public IHyriPlayerManager getPlayerManager() {
-        return this.playerManager;
     }
 
     @Override

@@ -39,9 +39,9 @@ public class MessageUtil {
     private static final String HYPHENS = "----------------------";
 
     public static BaseComponent[] createKickMessage(BaseComponent[] message, boolean emptyLineBetweenSupport) {
-        return new ComponentBuilder(HYPHENS).color(ChatColor.AQUA).strikethrough(true)
-                .append(" Hyriode ").reset().color(ChatColor.DARK_AQUA)
-                .append(HYPHENS).color(ChatColor.AQUA).strikethrough(true)
+        return new ComponentBuilder(HYPHENS).color(ChatColor.DARK_AQUA).strikethrough(true)
+                .append(" Hyriode ").reset().color(ChatColor.AQUA)
+                .append(HYPHENS).color(ChatColor.DARK_AQUA).strikethrough(true)
                 .append("\n\n")
                 .reset()
                 .append(message)
@@ -49,7 +49,7 @@ public class MessageUtil {
                 .reset()
                 .append("Support: ").append(HyriConstants.DISCORD_URL).color(ChatColor.AQUA)
                 .append("\n\n")
-                .append("----------------------------------------------------").color(ChatColor.AQUA).strikethrough(true)
+                .append("----------------------------------------------------").color(ChatColor.DARK_AQUA).strikethrough(true)
                 .create();
     }
 

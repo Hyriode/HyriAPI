@@ -3,7 +3,7 @@ package fr.hyriode.api.impl.common;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
-import fr.hyriode.api.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
@@ -11,12 +11,13 @@ import fr.hyriode.api.impl.common.booster.HyriBoosterManager;
 import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.game.HyriGameManager;
-import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
+import fr.hyriode.api.impl.common.mongodb.HyriMongoDB;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
+import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
@@ -26,6 +27,7 @@ import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
+import fr.hyriode.api.mongodb.IHyriMongoDB;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
@@ -44,16 +46,17 @@ import java.util.logging.Logger;
  */
 public abstract class HyriCommonImplementation extends HyriAPI {
 
-    protected final IHyriAPIConfiguration configuration;
+    protected final IHyriAPIConfig configuration;
 
     protected final HyriRedisConnection redisConnection;
     protected final HyriRedisProcessor redisProcessor;
+
+    protected final HyriMongoDB mongoDB;
 
     protected final IHyriEventBus eventBus;
     protected final HyriPubSub pubSub;
 
     protected final HyggdrasilManager hyggdrasilManager;
-    protected final HydrionManager hydrionManager;
 
     protected final HyriNetworkManager networkManager;
     protected final HyriCServerManager serverManager;
@@ -61,6 +64,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     protected final HyriQueueManager queueManager;
     protected final HyriGameManager gameManager;
 
+    protected HyriCPlayerManager playerManager;
     protected final IHyriPlayerSettingsManager playerSettingsManager;
 
     protected final IHyriBoosterManager boosterManager;
@@ -75,7 +79,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     private static BiConsumer<Level, String> logging;
 
-    public HyriCommonImplementation(IHyriAPIConfiguration configuration, Logger logger, BiConsumer<Level, String> logging) {
+    public HyriCommonImplementation(IHyriAPIConfig configuration, Logger logger, BiConsumer<Level, String> logging) {
         this.configuration = configuration;
         HyriCommonImplementation.logging = logging;
 
@@ -93,17 +97,18 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.proxyManager.start();
         this.serverManager.start();
         this.redisProcessor = new HyriRedisProcessor();
+        this.mongoDB = new HyriMongoDB();
+        this.mongoDB.startConnection();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.hydrionManager = new HydrionManager();
-        this.networkManager = new HyriNetworkManager(this.hydrionManager);
+        this.networkManager = new HyriNetworkManager();
         this.queueManager = new HyriQueueManager(this.hyggdrasilManager);
-        this.gameManager = new HyriGameManager(this.hydrionManager);
+        this.gameManager = new HyriGameManager();
         this.playerSettingsManager = new HyriPlayerSettingsManager();
-        this.boosterManager = new HyriBoosterManager(this.hydrionManager);
+        this.boosterManager = new HyriBoosterManager();
         this.moneyManager = new HyriMoneyManager();
         this.partyManager = new HyriPartyManager();
-        this.friendManager = new HyriFriendManager(this.hydrionManager);
+        this.friendManager = new HyriFriendManager(this);
         this.chatChannelManager = new HyriChatChannelManager();
         this.leaderboardProvider = new HyriLeaderboardProvider();
     }
@@ -122,6 +127,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
             this.redisProcessor.stop();
             this.redisConnection.stop();
         }
+        this.mongoDB.stopConnection();
     }
 
     @Override
@@ -130,7 +136,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriAPIConfiguration getConfiguration() {
+    public IHyriAPIConfig getConfig() {
         return this.configuration;
     }
 
@@ -160,6 +166,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
+    public IHyriMongoDB getMongoDB() {
+        return null;
+    }
+
+    @Override
     public IHyriEventBus getEventBus() {
         return this.eventBus;
     }
@@ -172,10 +183,6 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public HyggdrasilManager getHyggdrasilManager() {
         return this.hyggdrasilManager;
-    }
-
-    public HydrionManager getHydrionManager() {
-        return this.hydrionManager;
     }
 
     @Override
@@ -201,6 +208,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public HyriGameManager getGameManager() {
         return this.gameManager;
+    }
+
+    @Override
+    public HyriCPlayerManager getPlayerManager() {
+        return this.playerManager;
     }
 
     @Override

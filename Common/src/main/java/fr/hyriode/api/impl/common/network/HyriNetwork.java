@@ -1,8 +1,9 @@
 package fr.hyriode.api.impl.common.network;
 
-import fr.hyriode.api.network.HyriNetworkCount;
+import fr.hyriode.api.impl.common.network.counter.HyriGlobalCounter;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 
 /**
  * Project: HyriAPI
@@ -11,21 +12,20 @@ import fr.hyriode.api.network.IHyriNetwork;
  */
 public class HyriNetwork implements IHyriNetwork {
 
-    private final HyriNetworkCount playerCount;
     private int slots;
     private String motd;
     private final HyriMaintenance maintenance;
 
     public HyriNetwork() {
-        this.playerCount = new HyriNetworkCount();
         this.slots = -1;
         this.motd = null;
         this.maintenance = new HyriMaintenance();
     }
 
+
     @Override
-    public HyriNetworkCount getPlayerCount() {
-        return this.playerCount;
+    public IHyriGlobalCounter getPlayerCounter() {
+        return new HyriGlobalCounter();
     }
 
     @Override

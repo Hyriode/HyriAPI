@@ -1,20 +1,21 @@
 package fr.hyriode.api.impl.common.friend;
 
-import com.google.gson.JsonElement;
+import com.mongodb.client.model.Filters;
+import com.mongodb.reactivestreams.client.MongoCollection;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.HyriFriendRequest;
 import fr.hyriode.api.friend.IHyriFriend;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.friend.IHyriFriendManager;
-import fr.hyriode.api.impl.common.hydrion.HydrionManager;
-import fr.hyriode.hydrion.client.module.FriendsModule;
+import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.mongodb.subscriber.OperationSubscriber;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -29,15 +30,12 @@ public class HyriFriendManager implements IHyriFriendManager {
     public static final Function<UUID, String> REQUESTS_KEY = playerId -> REDIS_KEY + "requests:" + playerId.toString();
     public static final BiFunction<UUID, UUID, String> REQUESTS_KEY_GETTER = (playerId, sender) -> REQUESTS_KEY.apply(playerId) + ":" + sender.toString();
 
-    private final HydrionManager hydrionManager;
-    private FriendsModule friendsModule;
+    private static final Function<UUID, Bson> FRIENDS_FILTER = uuid -> Filters.eq("uuid", uuid.toString());
 
-    public HyriFriendManager(HydrionManager hydrionManager) {
-        this.hydrionManager = hydrionManager;
+    private final MongoCollection<HyriFriends> friendsCollection;
 
-        if (this.hydrionManager.isEnabled()) {
-            this.friendsModule = this.hydrionManager.getClient().getFriendsModule();
-        }
+    public HyriFriendManager(HyriCommonImplementation api) {
+        this.friendsCollection = api.getPlayerManager().getPlayersDatabase().getCollection("friends", HyriFriends.class);
     }
 
     private boolean isInCache(UUID playerId) {
@@ -46,19 +44,10 @@ public class HyriFriendManager implements IHyriFriendManager {
 
     @Override
     public List<IHyriFriend> getFriends(UUID playerId) {
-        if (this.isInCache(playerId)) {
-            return this.getFriendsFromRedis(playerId);
-        } else if (this.hydrionManager.isEnabled()) {
-            try {
-                return this.getFriendsFromHydrion(playerId).get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
+        return this.isInCache(playerId) ? this.getFriendsFromCache(playerId) : this.getFriendsFromMongo(playerId);
     }
 
-    private List<IHyriFriend> getFriendsFromRedis(UUID playerId) {
+    private List<IHyriFriend> getFriendsFromCache(UUID playerId) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final String json = jedis.get(REDIS_KEY + playerId.toString());
 
@@ -69,17 +58,18 @@ public class HyriFriendManager implements IHyriFriendManager {
         });
     }
 
-    private CompletableFuture<List<IHyriFriend>> getFriendsFromHydrion(UUID playerId) {
-        return this.friendsModule.getFriends(playerId).thenApply(response -> {
-            final JsonElement content = response.getContent();
+    private List<IHyriFriend> getFriendsFromMongo(UUID playerId) {
+        final OperationSubscriber<HyriFriends> subscriber = new OperationSubscriber<>();
 
-            if (!content.isJsonNull()) {
-                final HyriFriends friends = HyriAPI.GSON.fromJson(content, HyriFriends.class);
+        this.friendsCollection.find(FRIENDS_FILTER.apply(playerId)).subscribe(subscriber);
 
-                return friends.getFriends();
-            }
-            return new ArrayList<>();
-        });
+        final HyriFriends friends = subscriber.get();
+
+        if (friends == null) {
+            return null;
+        }
+
+        return friends.getFriends();
     }
 
     @Override
@@ -94,20 +84,11 @@ public class HyriFriendManager implements IHyriFriendManager {
 
     @Override
     public CompletableFuture<IHyriFriendHandler> createHandlerAsync(UUID playerId) {
-        final List<IHyriFriend> friends = this.getFriendsFromRedis(playerId);
-
-        if (friends != null) {
-            return CompletableFuture.completedFuture(new HyriFriendHandler(playerId, friends));
-        }
-
-        if (this.hydrionManager.isEnabled()) {
-            return this.getFriendsFromHydrion(playerId).thenApply(list -> new HyriFriendHandler(playerId, list));
-        }
-        return null;
+        return CompletableFuture.completedFuture(new HyriFriendHandler(playerId, this.getFriends(playerId)));
     }
 
     @Override
-    public void saveFriends(IHyriFriendHandler friendHandler) {
+    public void saveFriendsInCache(IHyriFriendHandler friendHandler) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(REDIS_KEY + friendHandler.getOwner().toString(), HyriAPI.GSON.toJson(new HyriFriends(friendHandler))));
     }
 
@@ -115,15 +96,17 @@ public class HyriFriendManager implements IHyriFriendManager {
     public void updateFriends(IHyriFriendHandler friendHandler) {
         final UUID playerId = friendHandler.getOwner();
 
-        if (this.isInCache(playerId) || HyriAPI.get().getPlayerManager().getPlayer(playerId).isOnline()) {
-            this.saveFriends(friendHandler);
-        } else if (this.hydrionManager.isEnabled()) {
-            this.friendsModule.setFriends(playerId, HyriAPI.GSON.toJson(new HyriFriends(friendHandler.getFriends())));
+        if (HyriAPI.get().getPlayerManager().getPlayer(playerId).isOnline()) {
+            this.saveFriendsInCache(friendHandler);
+        } else if (this.getFriendsFromMongo(playerId) == null) {
+            this.friendsCollection.insertOne(new HyriFriends(friendHandler)).subscribe(new OperationSubscriber<>());
+        } else {
+            this.friendsCollection.replaceOne(FRIENDS_FILTER.apply(playerId), new HyriFriends(friendHandler)).subscribe(new OperationSubscriber<>());
         }
     }
 
     @Override
-    public void removeFriends(UUID playerId) {
+    public void removeCachedFriends(UUID playerId) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(REDIS_KEY + playerId.toString()));
     }
 

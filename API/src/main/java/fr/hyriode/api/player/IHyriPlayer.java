@@ -1,7 +1,6 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
@@ -518,10 +517,10 @@ public interface IHyriPlayer {
     List<String> getTransactionsTypes();
 
     /**
-     * Update the player account in database
+     * Update the player account in cache
      */
     default void update() {
-        HyriAPI.get().getPlayerManager().sendPlayer(this);
+        HyriAPI.get().getPlayerManager().updateCachedPlayer(this);
     }
 
     /**

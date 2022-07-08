@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.HyriChatReceiver;
@@ -29,12 +28,10 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final HyriServerManager serverManager;
 
-    private final HyriPlayerManager playerManager;
-
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
         this.proxy = this.createProxy();
-        this.playerManager = new HyriPlayerManager(this.hydrionManager);
+        this.playerManager = new HyriPlayerManager();
         this.serverManager = new HyriServerManager(this);
 
         final IHyriNetwork network = this.networkManager.getNetwork();
@@ -50,15 +47,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         if (HyriAPI.get().getProxy().getData().get("first-proxy") != null) {
             network.setSlots(plugin.getConfiguration().getSlots());
             network.setMotd(plugin.getConfiguration().getMotd());
-            network.getPlayerCount().reset();
-
-            for (IHyriGameInfo gameInfo : this.gameManager.getGamesInfo()) {
-                if (gameInfo != null) {
-                    this.gameManager.deleteGameInfoFromRedis(gameInfo.getName());
-                }
-            }
-
-            this.gameManager.getGamesInfo();
         }
 
         this.networkManager.setNetwork(network);
@@ -95,11 +83,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     @Override
     public IHyriProxy getProxy() {
         return this.proxy;
-    }
-
-    @Override
-    public HyriPlayerManager getPlayerManager() {
-        return this.playerManager;
     }
 
     @Override

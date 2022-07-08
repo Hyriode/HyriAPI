@@ -39,25 +39,25 @@ public interface IHyriFriendManager {
     CompletableFuture<IHyriFriendHandler> createHandlerAsync(UUID playerId);
 
     /**
-     * Update friends in Redis database from a {@link IHyriFriendHandler}
-     *
-     * @param friendHandler The {@link IHyriFriendHandler} with data
-     */
-    void saveFriends(IHyriFriendHandler friendHandler);
-
-    /**
-     * Update friends in Hydrion (or Redis if the owner is online) from a {@link IHyriFriendHandler}
+     * Update friends  from a {@link IHyriFriendHandler}
      *
      * @param friendHandler The {@link IHyriFriendHandler} with data
      */
     void updateFriends(IHyriFriendHandler friendHandler);
 
     /**
+     * Update friends in Redis database from a {@link IHyriFriendHandler}
+     *
+     * @param friendHandler The {@link IHyriFriendHandler} with data
+     */
+    void saveFriendsInCache(IHyriFriendHandler friendHandler);
+
+    /**
      * Remove friends from cache
      *
      * @param playerId The {@link UUID} of the player
      */
-    void removeFriends(UUID playerId);
+    void removeCachedFriends(UUID playerId);
 
     /**
      * Send a friend's request to a given player

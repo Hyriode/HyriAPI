@@ -77,7 +77,7 @@ public class HyriProxyManager implements IHyriProxyManager {
     }
 
     private void runActionOnRequester(Consumer<HyggProxyRequester> action) {
-        if (HyriAPI.get().getConfiguration().withHyggdrasil()) {
+        if (HyriAPI.get().getConfig().withHyggdrasil()) {
             final HyggProxyRequester requester = this.hyggdrasilManager.getHyggdrasilAPI().getProxyRequester();
 
             if (requester != null) {

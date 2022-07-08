@@ -3,12 +3,11 @@ package fr.hyriode.api.impl.proxy;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
 import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
-import fr.hyriode.api.impl.proxy.configuration.HyriAPIConfig;
+import fr.hyriode.api.impl.proxy.config.HyriAPIConfig;
 import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
 import fr.hyriode.api.impl.proxy.listener.HyriNetworkListener;
 import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
-import fr.hyriode.api.impl.proxy.task.HyriCounterSyncTask;
 import fr.hyriode.api.impl.proxy.task.HyriOnlinePlayersTask;
 import fr.hyriode.api.proxy.IHyriProxy;
 import net.md_5.bungee.api.ChatColor;
@@ -33,7 +32,6 @@ public class HyriAPIPlugin extends Plugin  {
     private HyriPlayerLoader playerLoader;
 
     private HyriOnlinePlayersTask onlinePlayersTask;
-    private HyriCounterSyncTask counterSyncTask;
 
     private ClientSupportManager clientSupportManager;
 
@@ -42,12 +40,10 @@ public class HyriAPIPlugin extends Plugin  {
         this.configuration = HyriAPIConfig.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
 
-        this.playerLoader = new HyriPlayerLoader(this.api.getHydrionManager());
+        this.playerLoader = new HyriPlayerLoader();
 
         this.onlinePlayersTask = new HyriOnlinePlayersTask();
         this.onlinePlayersTask.start(this);
-        this.counterSyncTask = new HyriCounterSyncTask();
-        this.counterSyncTask.start(this);
 
         this.clientSupportManager = new ClientSupportManager();
         this.clientSupportManager.registerSupport(new AZLauncherSupport(this));
@@ -61,7 +57,6 @@ public class HyriAPIPlugin extends Plugin  {
     public void onDisable() {
         this.api.stop();
         this.onlinePlayersTask.stop();
-        this.counterSyncTask.stop();
 
         log(HyriAPI.NAME + " is now disabled. See you soon!");
     }

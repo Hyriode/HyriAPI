@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.proxy.player;
 
-import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import net.md_5.bungee.BungeeTitle;
@@ -16,10 +15,6 @@ import java.util.UUID;
  * on 13/02/2022 at 15:30
  */
 public class HyriPlayerManager extends HyriCPlayerManager {
-
-    public HyriPlayerManager(HydrionManager hydrionManager) {
-        super(hydrionManager);
-    }
 
     @Override
     public UUID getPlayerId(String name) {

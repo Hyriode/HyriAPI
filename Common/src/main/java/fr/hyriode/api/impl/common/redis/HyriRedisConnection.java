@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.common.redis;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.configuration.HyriRedisConfig;
-import fr.hyriode.api.configuration.IHyriAPIConfiguration;
+import fr.hyriode.api.config.HyriRedisConfig;
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggRedisCredentials;
@@ -36,9 +36,9 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     public HyriRedisConnection(HyriCommonImplementation api) {
         this.api = api;
 
-        final IHyriAPIConfiguration config = this.api.getConfiguration();
+        final IHyriAPIConfig config = this.api.getConfig();
 
-        if (this.api.getConfiguration().withHyggdrasil()) {
+        if (this.api.getConfig().withHyggdrasil()) {
             final HyggRedisCredentials credentials = this.api.getHyggdrasilManager().getEnvironment().getRedisCredentials();
 
             this.hostname = credentials.getHostname();

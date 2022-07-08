@@ -1,6 +1,8 @@
 package fr.hyriode.api.network;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.network.counter.IHyriCategoryCounter;
+import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 
 /**
  * Project: HyriAPI
@@ -10,11 +12,11 @@ import fr.hyriode.api.HyriAPI;
 public interface IHyriNetwork {
 
     /**
-     * Get the player count
+     * Get the player counter
      *
-     * @return The {@link HyriNetworkCount} object
+     * @return The {@linkplain IHyriGlobalCounter global counter} object
      */
-    HyriNetworkCount getPlayerCount();
+    IHyriGlobalCounter getPlayerCounter();
 
     /**
      * Get the amount of available slots on the network

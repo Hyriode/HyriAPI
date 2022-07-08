@@ -99,7 +99,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
 
     @Override
     public boolean withHyggdrasil() {
-        return this.implementation.get().getConfiguration().withHyggdrasil();
+        return this.implementation.get().getConfig().withHyggdrasil();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.server.player;
 
-import fr.hyriode.api.impl.common.hydrion.HydrionManager;
 import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -20,18 +19,14 @@ import java.util.function.Consumer;
  */
 public class HyriPlayerManager extends HyriCPlayerManager {
 
-    public HyriPlayerManager(HydrionManager hydrionManager) {
-        super(hydrionManager);
-    }
-
     @Override
-    public UUID getPlayerId(String name, boolean allowHydrionCheck) {
+    public UUID getPlayerId(String name) {
         final Player player = Bukkit.getPlayer(name);
 
         if (player != null) {
             return player.getUniqueId();
         }
-        return super.getPlayerId(name, allowHydrionCheck);
+        return super.getPlayerId(name);
     }
 
     @Override

@@ -58,4 +58,5 @@ dependencies {
     api 'fr.hyriode:hystia-api:1.0.5'
     api 'org.slf4j:slf4j-nop:1.7.36'
     api 'com.google.guava:guava:31.1-jre'
+    api 'org.mongodb:mongodb-driver-reactivestreams:4.6.1'
 }

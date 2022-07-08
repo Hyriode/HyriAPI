@@ -106,7 +106,7 @@ public class HyriFriendHandler implements IHyriFriendHandler {
 
     @Override
     public void update() {
-        HyriAPI.get().getFriendManager().saveFriends(this);
+        HyriAPI.get().getFriendManager().saveFriendsInCache(this);
     }
 
 }

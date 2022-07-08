@@ -5,6 +5,7 @@ import fr.hyriode.api.friend.IHyriFriendHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -13,9 +14,11 @@ import java.util.List;
  */
 public class HyriFriends {
 
+    private final UUID uuid;
     private final List<HyriFriend> friends;
 
-    public HyriFriends(List<IHyriFriend> friends) {
+    public HyriFriends(List<IHyriFriend> friends, UUID uuid) {
+        this.uuid = uuid;
         this.friends = new ArrayList<>();
 
         if (friends == null) {
@@ -28,7 +31,11 @@ public class HyriFriends {
     }
 
     public HyriFriends(IHyriFriendHandler friendHandler) {
-        this(friendHandler.getFriends());
+        this(friendHandler.getFriends(), friendHandler.getOwner());
+    }
+
+    public UUID getUUID() {
+        return this.uuid;
     }
 
     public List<IHyriFriend> getFriends() {

@@ -40,7 +40,7 @@ public class HyriParty implements IHyriParty {
 
         this.members.put(this.leader, HyriPartyRank.LEADER);
 
-        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayerFromRedis(this.leader);
+        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(this.leader);
 
         account.setParty(this.id);
         account.update();
@@ -112,7 +112,7 @@ public class HyriParty implements IHyriParty {
         if (this.members.get(uuid) == null) {
             this.members.putIfAbsent(uuid, rank);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid);
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
 
             account.setParty(this.id);
             account.update();
@@ -165,7 +165,7 @@ public class HyriParty implements IHyriParty {
         if (this.members.get(uuid) != null) {
             this.members.remove(uuid);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid);
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
 
             account.setParty(null);
             account.update();
@@ -182,7 +182,7 @@ public class HyriParty implements IHyriParty {
         if (this.members.get(uuid) != null) {
             this.members.remove(uuid);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayerFromRedis(uuid);
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
 
             account.setParty(null);
             account.update();
@@ -263,7 +263,7 @@ public class HyriParty implements IHyriParty {
         HyriAPI.get().getQueueManager().removePartyFromQueue(this.id);
 
         for (UUID member : this.members.keySet()) {
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayerFromRedis(member);
+            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(member);
 
             if (account == null) {
                 continue;
