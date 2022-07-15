@@ -1,6 +1,6 @@
 package fr.hyriode.api.party;
 
-import fr.hyriode.api.settings.HyriLanguage;
+import fr.hyriode.api.language.HyriLanguage;
 
 public enum HyriPartyRank {
 

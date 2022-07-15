@@ -9,9 +9,6 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.HyriMongoDBConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 /**
  * Created by AstFaster
@@ -27,12 +24,10 @@ public class HyriMongoDB implements IHyriMongoDB {
         HyriCommonImplementation.log("Starting MongoDB connection...");
 
         final HyriMongoDBConfig config = HyriAPI.get().getConfig().getMongoDBConfig();
-        final ConnectionString connectionString = new ConnectionString("mongodb://" + config.getUsername() + ":" + config.getPassword() + "@" + config.getHostname() + ":" + config.getPort());
-        final CodecRegistry pojoCodecProvider = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
-        final CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecProvider);
+        System.out.println(config.toURL());
+        final ConnectionString connectionString = new ConnectionString(config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
-                .codecRegistry(codecRegistry)
                 .build();
 
         this.client = MongoClients.create(settings);

@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.friend;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import fr.hyriode.api.HyriAPI;
@@ -16,8 +17,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Project: HyriAPI
@@ -32,10 +35,10 @@ public class HyriFriendManager implements IHyriFriendManager {
 
     private static final Function<UUID, Bson> FRIENDS_FILTER = uuid -> Filters.eq("uuid", uuid.toString());
 
-    private final MongoCollection<HyriFriends> friendsCollection;
+    private final Supplier<MongoCollection<BasicDBObject>> friendsCollection;
 
     public HyriFriendManager(HyriCommonImplementation api) {
-        this.friendsCollection = api.getPlayerManager().getPlayersDatabase().getCollection("friends", HyriFriends.class);
+        this.friendsCollection = () -> api.getPlayerManager().getPlayersDatabase().getCollection("friends", BasicDBObject.class);
     }
 
     private boolean isInCache(UUID playerId) {
@@ -59,16 +62,21 @@ public class HyriFriendManager implements IHyriFriendManager {
     }
 
     private List<IHyriFriend> getFriendsFromMongo(UUID playerId) {
-        final OperationSubscriber<HyriFriends> subscriber = new OperationSubscriber<>();
+        final OperationSubscriber<BasicDBObject> subscriber = new OperationSubscriber<>();
 
-        this.friendsCollection.find(FRIENDS_FILTER.apply(playerId)).subscribe(subscriber);
+        this.friendsCollection.get().find(FRIENDS_FILTER.apply(playerId)).subscribe(subscriber);
 
-        final HyriFriends friends = subscriber.get();
+        final BasicDBObject dbObject = subscriber.get();
+
+        if (dbObject == null) {
+            return null;
+        }
+
+        final HyriFriends friends = HyriAPI.GSON.fromJson(dbObject.toJson(), HyriFriends.class);
 
         if (friends == null) {
             return null;
         }
-
         return friends.getFriends();
     }
 
@@ -99,9 +107,9 @@ public class HyriFriendManager implements IHyriFriendManager {
         if (HyriAPI.get().getPlayerManager().getPlayer(playerId).isOnline()) {
             this.saveFriendsInCache(friendHandler);
         } else if (this.getFriendsFromMongo(playerId) == null) {
-            this.friendsCollection.insertOne(new HyriFriends(friendHandler)).subscribe(new OperationSubscriber<>());
+            this.friendsCollection.get().insertOne(BasicDBObject.parse(HyriAPI.GSON.toJson(new HyriFriends(friendHandler)))).subscribe(new OperationSubscriber<>());
         } else {
-            this.friendsCollection.replaceOne(FRIENDS_FILTER.apply(playerId), new HyriFriends(friendHandler)).subscribe(new OperationSubscriber<>());
+            this.friendsCollection.get().replaceOne(FRIENDS_FILTER.apply(playerId), BasicDBObject.parse(HyriAPI.GSON.toJson(new HyriFriends(friendHandler)))).subscribe(new OperationSubscriber<>());
         }
     }
 

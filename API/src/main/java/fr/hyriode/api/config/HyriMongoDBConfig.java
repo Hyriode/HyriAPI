@@ -34,4 +34,22 @@ public class HyriMongoDBConfig {
         return this.port;
     }
 
+    public String toURL() {
+        String url = "mongodb://";
+
+        if (this.username != null) {
+            url += this.username;
+        }
+
+        if (this.password != null) {
+            url += ":" + this.password;
+        }
+
+        if (this.username != null || this.password != null) {
+            url += "@";
+        }
+
+        return url + (this.hostname + ":" + this.port);
+    }
+
 }

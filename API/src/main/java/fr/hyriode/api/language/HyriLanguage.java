@@ -1,4 +1,4 @@
-package fr.hyriode.api.settings;
+package fr.hyriode.api.language;
 
 /**
  * Project: HyriAPI

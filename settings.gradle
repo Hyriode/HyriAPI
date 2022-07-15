@@ -3,4 +3,5 @@ include 'API'
 include 'Common'
 include 'Server'
 include 'Proxy'
+include 'App'
 

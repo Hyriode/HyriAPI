@@ -182,16 +182,11 @@ public class HyriServer implements IHyriServer {
             return configClass.cast(this.config);
         }
 
-        try {
-            final T config = HyriAPI.get().getHystiaAPI().getConfigManager().getConfig(configClass, this.type, this.gameType, this.map).get();
+        final T config = HyriAPI.get().getHystiaAPI().getConfigManager().getConfig(configClass, this.type, this.gameType, this.map);
 
-            this.config = config;
+        this.config = config;
 
-            return config;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return config;
     }
 
 }

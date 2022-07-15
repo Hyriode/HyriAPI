@@ -4,17 +4,13 @@ plugins {
 
 archivesBaseName = 'HyriAPI-Server'
 
-repositories {
-    maven { url "https://hub.spigotmc.org/nexus/content/repositories/public/" }
-}
-
 shadowJar {
     configurations = [project.configurations.shadow]
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'fr.hyriode:hystia-spigot:1.0.5'
+    shadow 'fr.hyriode:hystia-spigot:1.0.6'
     shadow project(':Common')
 }
 

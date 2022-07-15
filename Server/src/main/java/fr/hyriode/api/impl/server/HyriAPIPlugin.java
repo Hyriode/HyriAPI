@@ -50,20 +50,16 @@ public class HyriAPIPlugin extends JavaPlugin {
 
                 String mapName = HyriAPI.get().getServer().getMap();
                 if (mapName == null) {
-                    try {
-                        final List<String> maps = gameType == null ? worldManager.getWorlds(serverType).get() : worldManager.getWorlds(serverType, gameType).get();
+                    final List<String> maps = gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType);
 
-                        if (maps != null && maps.size() > 0) {
-                            Collections.shuffle(maps);
+                    if (maps != null && maps.size() > 0) {
+                        Collections.shuffle(maps);
 
-                            for (String map : maps) {
-                                System.out.println(map);
-                            }
-
-                            mapName = maps.get(0);
+                        for (String map : maps) {
+                            System.out.println(map);
                         }
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+
+                        mapName = maps.get(0);
                     }
                 }
 
@@ -74,10 +70,6 @@ public class HyriAPIPlugin extends JavaPlugin {
                         System.out.println("Loaded '" + mapName + "' map for the server (" + serverType + "#" + gameType + ").");
 
                         worldManager.loadWorld(new File("world"), serverType, gameType, mapName);
-                    } else {
-                        worldManager.loadWorld(new File("world"), serverType, mapName);
-
-                        System.out.println("Loaded '" + mapName + "' map for the server (" + serverType + ").");
                     }
                 }
             }

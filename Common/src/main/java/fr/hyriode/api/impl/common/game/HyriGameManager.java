@@ -77,22 +77,18 @@ public class HyriGameManager implements IHyriGameManager {
 
     @Override
     public List<String> getMaps(String game, String gameType) {
-        final String json = HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(MAPS_KEY_FORMATTER.apply(game, gameType)));
+        final String key = MAPS_KEY_FORMATTER.apply(game, gameType);
+        final String json = HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(key));
 
         if (json != null) {
             return HyriAPI.GSON.fromJson(json, new TypeToken<List<String>>() {}.getType());
         }
 
-        try {
-            final List<String> maps = this.worldManager.getWorlds(game, gameType).get();
+        final List<String> maps = this.worldManager.getWorlds(game, gameType);
 
-            HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(MAPS_KEY_FORMATTER.apply(game, gameType), HyriAPI.GSON.toJson(maps)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(key, HyriAPI.GSON.toJson(maps)));
 
-            return maps;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return maps;
     }
 
 }

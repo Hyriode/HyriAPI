@@ -1,6 +1,5 @@
 package fr.hyriode.api.mongodb.subscriber;
 
-import com.mongodb.MongoTimeoutException;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -48,15 +47,13 @@ public class OperationSubscriber<T> implements Subscriber<T> {
         try {
             this.subscription.request(Integer.MAX_VALUE);
 
-            if (!this.latch.await(timeout, unit)) {
-                throw new MongoTimeoutException("Subscriber onComplete timed out!");
-            }
+            if (this.latch.await(timeout, unit)) {
+                if (!this.errors.isEmpty()) {
+                    throw this.errors.get(0);
+                }
 
-            if (!this.errors.isEmpty()) {
-                throw this.errors.get(0);
+                return this.received;
             }
-
-            return this.received;
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -70,13 +67,13 @@ public class OperationSubscriber<T> implements Subscriber<T> {
     public T get(long timeout, TimeUnit unit) {
         final List<T> all = this.getAll(timeout, unit);
 
-        return all.isEmpty() ? null : all.get(0);
+        return all == null || all.isEmpty() ? null : all.get(0);
     }
 
     public T get() {
         final List<T> all = this.getAll();
 
-        return all.isEmpty() ? null : all.get(0);
+        return all == null || all.isEmpty() ? null : all.get(0);
     }
 
 }

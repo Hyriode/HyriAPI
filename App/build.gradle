@@ -4,19 +4,7 @@ plugins {
 
 apply plugin: 'maven-publish'
 
-archivesBaseName = 'HyriAPI-Common'
-
-repositories {
-    maven {
-        name = 'Hydrion_maven'
-        url = 'https://maven.pkg.github.com/Hyriode/Hydrion/'
-
-        credentials {
-            username System.getenv('USERNAME')
-            password System.getenv('TOKEN')
-        }
-    }
-}
+archivesBaseName = 'HyriAPI-App'
 
 shadowJar {
     configurations = [project.configurations.runtimeClasspath]
@@ -24,15 +12,15 @@ shadowJar {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            from components.java
+        maven(MavenPublication) { publication ->
+            project.shadow.component(publication)
 
             pom {
                 groupId = project.group
-                artifactId = 'hyriapi-common'
+                artifactId = 'hyriapi-app'
                 version = project.version
-                name = 'HyriAPI-Common'
-                description = 'Project with the common implementation of HyriAPI'
+                name = 'HyriAPI-App'
+                description = 'Project with the implementation for applications of HyriAPI'
                 url = 'https://github.com/Hyriode/HyriAPI'
             }
         }
@@ -51,6 +39,11 @@ publishing {
 }
 
 dependencies {
-    api project(':API')
-    api 'fr.hyriode:hystia-impl:1.0.6'
+    implementation project(':Common')
+}
+
+processResources {
+    filter {
+        it.replace('@version@', project.version)
+    }
 }

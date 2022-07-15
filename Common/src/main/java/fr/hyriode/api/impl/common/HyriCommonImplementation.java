@@ -12,6 +12,7 @@ import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.game.HyriGameManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.language.HyriLanguageManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.mongodb.HyriMongoDB;
@@ -23,16 +24,20 @@ import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
 import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
 import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
+import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
+import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.proxy.IHyriProxy;
+import fr.hyriode.api.scheduler.IHyriScheduler;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.hystia.api.IHystiaAPI;
+import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
 import java.util.function.BiConsumer;
@@ -48,34 +53,37 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected final IHyriAPIConfig configuration;
 
-    protected final HyriRedisConnection redisConnection;
-    protected final HyriRedisProcessor redisProcessor;
+    protected HyriRedisConnection redisConnection;
+    protected HyriRedisProcessor redisProcessor;
 
-    protected final HyriMongoDB mongoDB;
+    protected HyriMongoDB mongoDB;
 
-    protected final IHyriEventBus eventBus;
-    protected final HyriPubSub pubSub;
+    protected IHyriEventBus eventBus;
+    protected HyriPubSub pubSub;
+    protected HyriScheduler scheduler;
 
-    protected final HyggdrasilManager hyggdrasilManager;
+    protected HyggdrasilManager hyggdrasilManager;
+    protected IHystiaAPI hystiaAPI;
 
-    protected final HyriNetworkManager networkManager;
-    protected final HyriCServerManager serverManager;
-    protected final HyriProxyManager proxyManager;
-    protected final HyriQueueManager queueManager;
-    protected final HyriGameManager gameManager;
+    protected HyriNetworkManager networkManager;
+    protected HyriCServerManager serverManager;
+    protected HyriProxyManager proxyManager;
+    protected HyriQueueManager queueManager;
+    protected HyriGameManager gameManager;
 
     protected HyriCPlayerManager playerManager;
-    protected final IHyriPlayerSettingsManager playerSettingsManager;
+    protected IHyriPlayerSettingsManager playerSettingsManager;
+    protected IHyriLanguageManager languageManager;
 
-    protected final IHyriBoosterManager boosterManager;
-    protected final IHyriMoneyManager moneyManager;
+    protected IHyriBoosterManager boosterManager;
+    protected IHyriMoneyManager moneyManager;
 
-    protected final IHyriPartyManager partyManager;
-    protected final IHyriFriendManager friendManager;
+    protected IHyriPartyManager partyManager;
+    protected IHyriFriendManager friendManager;
 
-    protected final IHyriChatChannelManager chatChannelManager;
+    protected IHyriChatChannelManager chatChannelManager;
 
-    protected final IHyriLeaderboardProvider leaderboardProvider;
+    protected IHyriLeaderboardProvider leaderboardProvider;
 
     private static BiConsumer<Level, String> logging;
 
@@ -101,10 +109,13 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.mongoDB.startConnection();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
+        this.scheduler = new HyriScheduler();
+        this.hystiaAPI = new Hystia(this.mongoDB.getClient());
         this.networkManager = new HyriNetworkManager();
         this.queueManager = new HyriQueueManager(this.hyggdrasilManager);
         this.gameManager = new HyriGameManager();
         this.playerSettingsManager = new HyriPlayerSettingsManager();
+        this.languageManager = new HyriLanguageManager();
         this.boosterManager = new HyriBoosterManager();
         this.moneyManager = new HyriMoneyManager();
         this.partyManager = new HyriPartyManager();
@@ -128,11 +139,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
             this.redisConnection.stop();
         }
         this.mongoDB.stopConnection();
-    }
-
-    @Override
-    public IHystiaAPI getHystiaAPI() {
-        return null;
+        this.scheduler.stop();
     }
 
     @Override
@@ -167,7 +174,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     @Override
     public IHyriMongoDB getMongoDB() {
-        return null;
+        return this.mongoDB;
     }
 
     @Override
@@ -181,8 +188,18 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
+    public HyriScheduler getScheduler() {
+        return this.scheduler;
+    }
+
+    @Override
     public HyggdrasilManager getHyggdrasilManager() {
         return this.hyggdrasilManager;
+    }
+
+    @Override
+    public IHystiaAPI getHystiaAPI() {
+        return this.hystiaAPI;
     }
 
     @Override
@@ -218,6 +235,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public IHyriPlayerSettingsManager getPlayerSettingsManager() {
         return this.playerSettingsManager;
+    }
+
+    @Override
+    public IHyriLanguageManager getLanguageManager() {
+        return this.languageManager;
     }
 
     @Override

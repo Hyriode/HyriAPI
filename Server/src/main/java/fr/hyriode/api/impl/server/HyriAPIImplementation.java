@@ -17,7 +17,7 @@ import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hystia.api.IHystiaAPI;
-import fr.hyriode.hystia.spigot.HystiaImpl;
+import fr.hyriode.hystia.spigot.HystiaSpigot;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +31,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
 
     private final HyriServer server;
 
-    private final IHystiaAPI hystiaAPI;
-
     private final HyriServerManager serverManager;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
@@ -40,8 +38,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.server = this.createServer();
         this.serverManager = new HyriServerManager(plugin, this);
         this.playerManager = new HyriPlayerManager();
-        this.hystiaAPI = new HystiaImpl(plugin, null);
-
+        this.hystiaAPI = new HystiaSpigot(plugin, this.getMongoDB().getClient());
         this.queueManager.start();
 
         this.registerReceivers();

@@ -103,20 +103,19 @@ public class HyriJoinListener implements Listener {
 
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
 
+        account.update();
+
         this.hyggdrasilManager.sendData();
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event) {
-        event.setQuitMessage("");
-
-        this.onLeave(event.getPlayer());
-    }
-
-    private void onLeave(Player player) {
+        final Player player = event.getPlayer();
         final UUID playerId = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayer account = IHyriPlayer.get(playerId);
+
+        event.setQuitMessage("");
 
         if (account != null && HyriAPI.get().getConfig().isDevEnvironment()) {
             account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
@@ -133,7 +132,13 @@ public class HyriJoinListener implements Listener {
 
             account.update();
 
+            this.friendManager.updateFriends(this.friendManager.createHandler(playerId));
+            this.friendManager.removeCachedFriends(playerId);
+
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
+
+            playerManager.removeCachedPlayer(playerId);
+            playerManager.updatePlayer(account);
         }
 
         this.joinManager.onLogout(player);

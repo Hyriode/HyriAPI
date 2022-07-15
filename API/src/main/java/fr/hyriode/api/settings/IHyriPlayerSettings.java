@@ -1,5 +1,7 @@
 package fr.hyriode.api.settings;
 
+import fr.hyriode.api.language.HyriLanguage;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster

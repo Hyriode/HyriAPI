@@ -9,6 +9,7 @@ import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
+import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
@@ -22,6 +23,7 @@ import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import fr.hyriode.api.redis.IHyriRedisProcessor;
+import fr.hyriode.api.scheduler.IHyriScheduler;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
@@ -141,6 +143,13 @@ public abstract class HyriAPI {
     public abstract IHyriPubSub getPubSub();
 
     /**
+     * Get the scheduler instance used to run tasks
+     *
+     * @return The {@link IHyriScheduler} instance
+     */
+    public abstract IHyriScheduler getScheduler();
+
+    /**
      * Get the Hyggdrasil manager instance
      *
      * @return The {@link IHyggdrasilManager} instance
@@ -202,6 +211,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriPlayerSettingsManager}
      */
     public abstract IHyriPlayerSettingsManager getPlayerSettingsManager();
+
+    /**
+     * Get the language manager instance; it contains all languages-API methods
+     *
+     * @return The {@linkplain IHyriLanguageManager language manager} instance
+     */
+    public abstract IHyriLanguageManager getLanguageManager();
 
     /**
      * Get the booster manager

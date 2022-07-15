@@ -264,6 +264,8 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public IHyriPlayerSettings getSettings() {
+        this.settings.providePlayerId(this.uuid);
+
         return this.settings;
     }
 

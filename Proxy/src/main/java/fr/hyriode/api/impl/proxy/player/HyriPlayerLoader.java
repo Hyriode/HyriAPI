@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -28,7 +29,6 @@ public class HyriPlayerLoader {
         account.setLastLoginDate(new Date(System.currentTimeMillis()));
         account.setCurrentProxy(HyriAPI.get().getProxy().getName());
         account.setParty(null);
-
         account.update();
 
         playerManager.updatePlayer(account);
@@ -78,7 +78,10 @@ public class HyriPlayerLoader {
                 account.setNickname(null);
             }
 
-            HyriAPI.get().getFriendManager().removeCachedFriends(uuid);
+            final IHyriFriendManager friendManager = HyriAPI.get().getFriendManager();
+
+            friendManager.updateFriends(friendManager.createHandler(uuid));
+            friendManager.removeCachedFriends(uuid);
 
             pm.updatePlayer(account);
             pm.removeCachedPlayer(uuid);

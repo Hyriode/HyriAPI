@@ -1,6 +1,8 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import fr.hyriode.api.HyriAPI;
@@ -12,6 +14,7 @@ import fr.hyriode.api.impl.common.player.packet.HyriPlayerKickPacket;
 import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
+import fr.hyriode.api.mongodb.subscriber.CallbackSubscriber;
 import fr.hyriode.api.mongodb.subscriber.OperationSubscriber;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
@@ -25,6 +28,7 @@ import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import org.bson.conversions.Bson;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -40,7 +44,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     private static final Function<UUID, Bson> ACCOUNTS_FILTER = uuid -> Filters.eq("uuid", uuid.toString());
 
     private final MongoDatabase playersDatabase;
-    private final MongoCollection<HyriPlayer> accountsCollection;
+    private final MongoCollection<BasicDBObject> accountsCollection;
 
     private final IHyriNicknameManager nicknameManager;
     private final IHyriWhitelistManager whitelistManager;
@@ -49,7 +53,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
         this.nicknameManager = new HyriNicknameManager();
         this.whitelistManager = new HyriWhitelistManager();
         this.playersDatabase = HyriAPI.get().getMongoDB().getDatabase("players");
-        this.accountsCollection = this.playersDatabase.getCollection("accounts", HyriPlayer.class);
+        this.accountsCollection = this.playersDatabase.getCollection("accounts", BasicDBObject.class);
     }
 
     @Override
@@ -83,7 +87,7 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
             player.setRank(rank);
         }
 
-        this.accountsCollection.insertOne(player).subscribe(new OperationSubscriber<>());
+        this.accountsCollection.insertOne(BasicDBObject.parse(HyriAPI.GSON.toJson(player))).subscribe(new OperationSubscriber<>());
 
         this.updateCachedPlayer(player);
         this.setPlayerId(name, uuid);
@@ -98,20 +102,22 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
         final IHyriPlayer player = this.getCachedPlayer(uuid);
 
         if (player == null) {
-            final OperationSubscriber<HyriPlayer> subscriber = new OperationSubscriber<>();
+            final OperationSubscriber<BasicDBObject> subscriber = new OperationSubscriber<>();
 
             this.accountsCollection.find(ACCOUNTS_FILTER.apply(uuid))
                     .first()
                     .subscribe(subscriber);
 
-            return subscriber.get();
+            final BasicDBObject dbObject = subscriber.get();
+
+            return dbObject == null ? null : HyriAPI.GSON.fromJson(dbObject.toJson(), HyriPlayer.class);
         }
         return player;
     }
 
     @Override
     public void updatePlayer(IHyriPlayer player) {
-        this.accountsCollection.replaceOne(ACCOUNTS_FILTER.apply(player.getUniqueId()), (HyriPlayer) player).subscribe(new OperationSubscriber<>());
+        this.accountsCollection.replaceOne(ACCOUNTS_FILTER.apply(player.getUniqueId()), BasicDBObject.parse(HyriAPI.GSON.toJson(player))).subscribe(new OperationSubscriber<>());
     }
 
     @Override

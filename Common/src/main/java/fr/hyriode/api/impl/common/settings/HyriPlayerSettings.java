@@ -1,9 +1,13 @@
 package fr.hyriode.api.impl.common.settings;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.settings.HyriLanguage;
+import fr.hyriode.api.language.HyriLanguage;
+import fr.hyriode.api.language.HyriLanguageUpdatedEvent;
 import fr.hyriode.api.settings.HyriSettingsLevel;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -22,6 +26,12 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     private HyriLanguage language = HyriLanguage.FR;
     private boolean autoQueueEnabled = true;
     private String chatChannel = HyriChatChannel.GLOBAL.getChannel();
+
+    private transient UUID playerId;
+
+    public void providePlayerId(UUID playerId) {
+        this.playerId = playerId;
+    }
 
     @Override
     public boolean isFriendRequestsEnabled() {
@@ -117,6 +127,8 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     @Override
     public void setLanguage(HyriLanguage language) {
         this.language = language;
+
+        HyriAPI.get().getEventBus().publish(new HyriLanguageUpdatedEvent(this.playerId, this.language));
     }
 
     @Override
