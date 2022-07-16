@@ -1,9 +1,9 @@
 package fr.hyriode.api.queue;
 
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueAddPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueInfoPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueRemovePacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueUpdateGroupPacket;
+import fr.hyriode.hylios.api.queue.event.QueueAddEvent;
+import fr.hyriode.hylios.api.queue.event.QueueRemoveEvent;
+import fr.hyriode.hylios.api.queue.event.QueueUpdateGroupEvent;
+import fr.hyriode.hylios.api.queue.packet.QueueInfoPacket;
 
 /**
  * Project: HyriAPI
@@ -12,16 +12,46 @@ import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueUpdateGroupPacket;
  */
 public interface IHyriQueueHandler {
 
-    default void onQueueInfo(HyggQueueInfoPacket infoPacket) {}
+    /**
+     * Triggered when information about a queue is received
+     *
+     * @param info The information of the queue
+     */
+    default void onQueueInfo(QueueInfoPacket info) {}
 
-    default void onPlayerAddResponse(HyggQueueAddPacket.Response response) {}
+    /**
+     * Triggered when a player is added in a queue
+     *
+     * @param event The triggered event
+     */
+    default void onPlayerAdd(QueueAddEvent event) {}
 
-    default void onPlayerRemoveResponse(HyggQueueRemovePacket.Response response) {}
+    /**
+     * Triggered when a player is removed from a queue
+     *
+     * @param event The triggered event
+     */
+    default void onPlayerRemove(QueueRemoveEvent event) {}
 
-    default void onPartyAddResponse(HyggQueueAddPacket.Response response) {}
+    /**
+     * Triggered when a party is added in a queue
+     *
+     * @param event The triggered event
+     */
+    default void onPartyAdd(QueueAddEvent event) {}
 
-    default void onPartyRemoveResponse(HyggQueueRemovePacket.Response response) {}
+    /**
+     * Triggered when a party is removed from a queue
+     *
+     * @param event The triggered event
+     */
+    default void onPartyRemove(QueueRemoveEvent event) {}
 
-    default void onPartyUpdateResponse(HyggQueueUpdateGroupPacket.Response response) {}
+    /**
+     * Triggered when a party is updated in a queue
+     *
+     * @param event The triggered event
+     */
+    default void onPartyUpdate(QueueUpdateGroupEvent event) {}
 
 }

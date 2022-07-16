@@ -33,6 +33,13 @@ public interface IHyggdrasilManager {
     HyggEnvironment getEnvironment();
 
     /**
+     * Set the environment of the running application
+     *
+     * @param environment The new {@linkplain HyggEnvironment environment} object
+     */
+    void setEnvironment(HyggEnvironment environment);
+
+    /**
      * Get the application object of the current server/proxy
      *
      * @return A {@link HyggApplication} object

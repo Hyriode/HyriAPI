@@ -12,11 +12,11 @@ import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
 import fr.hyriode.api.server.join.packet.HyriPlayerJoinPacket;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
-import fr.hyriode.hyggdrasil.api.lobby.HyggLobbyAPI;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequester;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
+import fr.hyriode.hylios.api.lobby.LobbyAPI;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -88,19 +88,14 @@ public class HyriCServerManager implements IHyriServerManager {
 
     @Override
     public HyggServer getLobby() {
-        if (this.hyggdrasilManager.withHyggdrasil()) {
-            final String lobbyName = this.hyggdrasilManager.getHyggdrasilAPI().getLobbyAPI().getBestLobby();
+        final String bestLobby = HyriAPI.get().getHyliosAPI().getLobbyAPI().getBestLobby();
 
-            if (lobbyName != null) {
-                return this.getServer(lobbyName);
-            }
-        }
-        return null;
+        return bestLobby != null ? this.getServer(bestLobby) : null;
     }
 
     @Override
     public List<HyggServer> getLobbies() {
-        return new ArrayList<>(this.getServers(HyggLobbyAPI.TYPE));
+        return new ArrayList<>(this.getServers(LobbyAPI.TYPE));
     }
 
     @Override
@@ -170,7 +165,7 @@ public class HyriCServerManager implements IHyriServerManager {
         if (HyriAPI.get().getConfig().withHyggdrasil()) {
             final HyggServerRequester requester = this.implementation.getHyggdrasilManager().getHyggdrasilAPI().getServerRequester();
 
-            if (requester != null) {
+            if (requester != null && action != null) {
                 action.accept(requester);
             }
         }

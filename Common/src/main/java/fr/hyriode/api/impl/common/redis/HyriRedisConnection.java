@@ -2,10 +2,8 @@ package fr.hyriode.api.impl.common.redis;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.HyriRedisConfig;
-import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.redis.IHyriRedisConnection;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggRedisCredentials;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -36,21 +34,11 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     public HyriRedisConnection(HyriCommonImplementation api) {
         this.api = api;
 
-        final IHyriAPIConfig config = this.api.getConfig();
+        final HyriRedisConfig redisConfig = this.api.getConfig().getRedisConfig();
 
-        if (this.api.getConfig().withHyggdrasil()) {
-            final HyggRedisCredentials credentials = this.api.getHyggdrasilManager().getEnvironment().getRedisCredentials();
-
-            this.hostname = credentials.getHostname();
-            this.port = credentials.getPort();
-            this.password = credentials.getPassword();
-        } else {
-            final HyriRedisConfig redisConfig = config.getRedisConfig();
-
-            this.hostname = redisConfig.getHostname();
-            this.port = redisConfig.getPort();
-            this.password = redisConfig.getPassword();
-        }
+        this.hostname = redisConfig.getHostname();
+        this.port = redisConfig.getPort();
+        this.password = redisConfig.getPassword();
 
         this.start();
     }

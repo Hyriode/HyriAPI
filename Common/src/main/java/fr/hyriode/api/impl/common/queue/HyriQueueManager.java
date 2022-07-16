@@ -1,31 +1,25 @@
 package fr.hyriode.api.impl.common.queue;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.queue.IHyriQueue;
 import fr.hyriode.api.queue.IHyriQueueHandler;
 import fr.hyriode.api.queue.IHyriQueueManager;
-import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
-import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacket;
-import fr.hyriode.hyggdrasil.api.protocol.response.content.HyggResponseContent;
-import fr.hyriode.hyggdrasil.api.queue.HyggQueueGroup;
-import fr.hyriode.hyggdrasil.api.queue.HyggQueuePlayer;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueAddPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueInfoPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.HyggQueueRemovePacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueAddGroupPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueRemoveGroupPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.group.HyggQueueUpdateGroupPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.player.HyggQueueAddPlayerPacket;
-import fr.hyriode.hyggdrasil.api.queue.packet.player.HyggQueueRemovePlayerPacket;
+import fr.hyriode.hylios.api.queue.QueueAPI;
+import fr.hyriode.hylios.api.queue.QueueGroup;
+import fr.hyriode.hylios.api.queue.QueuePlayer;
+import fr.hyriode.hylios.api.queue.packet.group.QueueAddGroupPacket;
+import fr.hyriode.hylios.api.queue.packet.group.QueueRemoveGroupPacket;
+import fr.hyriode.hylios.api.queue.packet.group.QueueUpdateGroupPacket;
+import fr.hyriode.hylios.api.queue.packet.player.QueueAddPlayerPacket;
+import fr.hyriode.hylios.api.queue.packet.player.QueueRemovePlayerPacket;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -40,23 +34,13 @@ public class HyriQueueManager implements IHyriQueueManager {
 
     private final List<IHyriQueueHandler> handlers;
 
-    private final HyggdrasilManager hyggdrasilManager;
-
-    public HyriQueueManager(HyggdrasilManager hyggdrasilManager) {
-        this.hyggdrasilManager = hyggdrasilManager;
+    public HyriQueueManager() {
         this.handlers = new ArrayList<>();
     }
 
     public void start() {
-        if (this.hyggdrasilManager.withHyggdrasil()) {
-            this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor().registerReceiver(HyggChannel.QUEUE, new HyriQueueReceiver(this));
-        }
-    }
-
-    void onQueueInfo(HyggQueueInfoPacket info) {
-        for (IHyriQueueHandler handler : this.handlers) {
-            handler.onQueueInfo(info);
-        }
+        HyriAPI.get().getPubSub().subscribe(QueueAPI.CHANNEL, new HyriQueueReceiver(this));
+        HyriAPI.get().getNetworkManager().getEventBus().register(new HyriQueueListener(this));
     }
 
     @Override
@@ -70,10 +54,10 @@ public class HyriQueueManager implements IHyriQueueManager {
     }
 
     @Override
-    public boolean addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType) {
-        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
+    public boolean addPlayerInQueue(UUID playerId, String game, String gameType, String map, boolean partyCheck) {
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
 
-        if (account.hasParty()) {
+        if (account.hasParty() && partyCheck) {
             final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(playerId);
 
             if (party.isLeader(playerId)) {
@@ -81,105 +65,33 @@ public class HyriQueueManager implements IHyriQueueManager {
                 return true;
             }
             return false;
-        } else {
-            this.addPlayerInQueue(playerId, game, gameType);
         }
+
+        this.sendQueuePacket(new QueueAddPlayerPacket(new QueuePlayer(playerId, account.getPriority()), game, gameType, map));
         return true;
     }
 
     @Override
-    public void addPlayerInQueue(UUID playerId, String game, String gameType) {
-        this.addPlayerInQueue(playerId, game, gameType, null);
-    }
-
-    @Override
-    public void addPlayerInQueue(UUID playerId, String game, String gameType, String map) {
-        final IHyriPlayer player = HyriAPI.get().getPlayerManager().getPlayer(playerId);
-
-        if (player != null) {
-            this.sendQueuePacket(new HyggQueueAddPlayerPacket(new HyggQueuePlayer(playerId, player.getPriority()), game, gameType, map), content -> {
-                if (content instanceof HyggQueueAddPacket.Response) {
-                    final HyggQueueAddPacket.Response response = (HyggQueueAddPacket.Response) content;
-
-                    if (response.getType() == HyggQueueAddPacket.ResponseType.ADDED) {
-                        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(playerId), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
-                    }
-
-                    for (IHyriQueueHandler handler : this.handlers) {
-                        handler.onPlayerAddResponse((HyggQueueAddPacket.Response) content);
-                    }
-                }
-            });
-        }
-    }
-
-    @Override
     public void removePlayerFromQueue(UUID playerId) {
-        this.sendQueuePacket(new HyggQueueRemovePlayerPacket(playerId), content -> {
-            if (content instanceof HyggQueueRemovePacket.Response) {
-                final HyggQueueRemovePacket.Response response = (HyggQueueRemovePacket.Response) content;
-
-                if (response.getType() == HyggQueueRemovePacket.ResponseType.REMOVED) {
-                    this.removePlayerQueue(playerId);
-                }
-
-                for (IHyriQueueHandler handler : this.handlers) {
-                    handler.onPlayerRemoveResponse((HyggQueueRemovePacket.Response) content);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void addPartyInQueue(IHyriParty party, String game, String gameType) {
-        this.addPartyInQueue(party, game, gameType, null);
+        this.sendQueuePacket(new QueueRemovePlayerPacket(playerId));
     }
 
     @Override
     public void addPartyInQueue(IHyriParty party, String game, String gameType, String map) {
-        this.sendQueuePacket(new HyggQueueAddGroupPacket(this.createGroupFromParty(party), game, gameType, map), content -> {
-            if (content instanceof HyggQueueAddPacket.Response) {
-                final HyggQueueAddPacket.Response response = (HyggQueueAddPacket.Response) content;
-
-                if (response.getType() == HyggQueueAddPacket.ResponseType.ADDED) {
-                    HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PARTIES_KEY.apply(party.getId()), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
-                }
-
-                for (IHyriQueueHandler handler : this.handlers) {
-                    handler.onPartyAddResponse((HyggQueueAddPacket.Response) content);
-                }
-            }
-        });
+        this.sendQueuePacket(new QueueAddGroupPacket(game, gameType, map, this.createGroupFromParty(party)));
     }
 
     @Override
     public void removePartyFromQueue(UUID partyId) {
-        this.sendQueuePacket(new HyggQueueRemoveGroupPacket(partyId), content -> {
-            if (content instanceof HyggQueueRemovePacket.Response) {
-                final HyggQueueRemovePacket.Response response = (HyggQueueRemovePacket.Response) content;
-
-                if (response.getType() == HyggQueueRemovePacket.ResponseType.REMOVED) {
-                    this.removePartyQueue(partyId);
-                }
-
-                for (IHyriQueueHandler handler : this.handlers) {
-                    handler.onPartyRemoveResponse((HyggQueueRemovePacket.Response) content);
-                }
-            }
-        });
+        this.sendQueuePacket(new QueueRemoveGroupPacket(partyId));
     }
 
     @Override
     public void updatePartyInQueue(IHyriParty party) {
-        this.sendQueuePacket(new HyggQueueUpdateGroupPacket(this.createGroupFromParty(party)), content -> {
-            if (content instanceof HyggQueueUpdateGroupPacket.Response) {
-                for (IHyriQueueHandler handler : this.handlers) {
-                    handler.onPartyUpdateResponse((HyggQueueUpdateGroupPacket.Response) content);
-                }
-            }
-        });
+        this.sendQueuePacket(new QueueUpdateGroupPacket(this.createGroupFromParty(party)));
     }
 
+    @Override
     public void removePartyQueue(UUID partyId) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PARTIES_KEY.apply(partyId)));
     }
@@ -196,6 +108,12 @@ public class HyriQueueManager implements IHyriQueueManager {
         });
     }
 
+    @Override
+    public void setPartyQueue(UUID partyId, String game, String gameType, String map) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PARTIES_KEY.apply(partyId), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
+    }
+
+    @Override
     public void removePlayerQueue(UUID playerId) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(playerId)));
     }
@@ -212,35 +130,33 @@ public class HyriQueueManager implements IHyriQueueManager {
         });
     }
 
-    private HyggQueueGroup createGroupFromParty(IHyriParty party) {
+    @Override
+    public void setPlayerQueue(UUID playerId, String game, String gameType, String map) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(playerId), HyriAPI.GSON.toJson(new HyriQueue(game, gameType, map))));
+    }
+
+    private QueueGroup createGroupFromParty(IHyriParty party) {
         final UUID leader = party.getLeader();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final HyggQueuePlayer queueLeader = new HyggQueuePlayer(leader, playerManager.getPlayer(leader).getPriority());
-        final List<HyggQueuePlayer> players = new ArrayList<>();
+        final QueuePlayer queueLeader = new QueuePlayer(leader, playerManager.getPlayer(leader).getPriority());
+        final List<QueuePlayer> players = new ArrayList<>();
 
         for (UUID member : party.getMembers().keySet()) {
             if (party.isLeader(member)) {
                 continue;
             }
 
-            players.add(new HyggQueuePlayer(member, playerManager.getPlayer(member).getPriority()));
+            players.add(new QueuePlayer(member, playerManager.getPlayer(member).getPriority()));
         }
-
-        return new HyggQueueGroup(party.getId(), queueLeader, players);
+        return new QueueGroup(party.getId(), queueLeader, players);
     }
 
-    private void sendQueuePacket(HyggPacket packet, Consumer<HyggResponseContent> contentConsumer) {
-        if (this.hyggdrasilManager.withHyggdrasil()) {
-            this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor().request(HyggChannel.QUEUE, packet)
-                    .withResponseCallback(response -> {
-                        final HyggResponseContent content = response.getContent();
+    private void sendQueuePacket(HyriPacket packet) {
+        HyriAPI.get().getPubSub().send(QueueAPI.CHANNEL, packet);
+    }
 
-                        if (content != null) {
-                            contentConsumer.accept(content);
-                        }
-                    })
-                    .exec();
-        }
+    public List<IHyriQueueHandler> getHandlers() {
+        return this.handlers;
     }
 
 }

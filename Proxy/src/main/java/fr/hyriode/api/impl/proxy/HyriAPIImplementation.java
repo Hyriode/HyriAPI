@@ -6,7 +6,6 @@ import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.proxy.receiver.HyriPlayerReceiver;
 import fr.hyriode.api.impl.proxy.receiver.HyriProxyReceiver;
-import fr.hyriode.api.impl.proxy.receiver.HyriQueueReceiver;
 import fr.hyriode.api.impl.proxy.server.HyriServerManager;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.packet.HyriChannel;
@@ -70,7 +69,6 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
             final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
 
             processor.registerReceiver(HyggChannel.PROXIES, proxyReceiver);
-            processor.registerReceiver(HyggChannel.QUEUE, new HyriQueueReceiver(this));
         }
 
         final IHyriPubSub pubSub = HyriAPI.get().getPubSub();

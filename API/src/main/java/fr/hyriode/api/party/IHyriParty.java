@@ -206,4 +206,14 @@ public interface IHyriParty {
         HyriAPI.get().getPartyManager().sendParty(this);
     }
 
+    /**
+     * Get a party by its identifier
+     *
+     * @param partyId The identifier of the party
+     * @return The {@link IHyriParty} object or <code>null</code> if no party exists with the given identifier
+     */
+    static IHyriParty get(UUID partyId) {
+        return HyriAPI.get().getPartyManager().getParty(partyId);
+    }
+
 }

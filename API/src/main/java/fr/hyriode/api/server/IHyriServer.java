@@ -78,12 +78,12 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     void setSlots(int slots);
 
     /**
-     * Get the type of the game.<br>
-     * This getter will only work if the server is a game!
+     * Get the subtype of the server.<br>
+     * This getter will only work if the server has a subtype!
      *
      * @return A game type
      */
-    String getGameType();
+    String getSubType();
 
     /**
      * Get the map to use on the server

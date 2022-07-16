@@ -26,23 +26,16 @@ public interface IHyriQueueManager {
     void removeHandler(IHyriQueueHandler handler);
 
     /**
-     * Add a player in the queue but also check if the player has a party
-     *
-     * @param playerId The player's id
-     * @param game The game's name
-     * @param gameType The game's type
-     * @return <code>true</code> if the player has been added in queue
-     */
-    boolean addPlayerInQueueWithPartyCheck(UUID playerId, String game, String gameType);
-
-    /**
      * Add a player in a specific queue
      *
      * @param playerId The unique id of the player
      * @param game The game's name
      * @param gameType The game's type
+     * @param map The game's map
+     * @param partyCheck If <code>true</code>, and the player is in a party, it will add his party in queue
+     * @return <code>true</code> if the request to add the player in the queue has been submitted
      */
-    void addPlayerInQueue(UUID playerId, String game, String gameType);
+    boolean addPlayerInQueue(UUID playerId, String game, String gameType, String map, boolean partyCheck);
 
     /**
      * Add a player in a specific queue
@@ -51,8 +44,11 @@ public interface IHyriQueueManager {
      * @param game The game's name
      * @param gameType The game's type
      * @param map The game's map
+     * @return <code>true</code> if the request to add the player in the queue has been submitted
      */
-    void addPlayerInQueue(UUID playerId, String game, String gameType, String map);
+    default boolean addPlayerInQueue(UUID playerId, String game, String gameType, String map) {
+        return this.addPlayerInQueue(playerId, game, gameType, map, false);
+    }
 
     /**
      * Remove a player from the queue.<br>
@@ -68,8 +64,9 @@ public interface IHyriQueueManager {
      * @param party The party to add
      * @param game The game's name
      * @param gameType The game's type
+     * @param map The game's map
      */
-    void addPartyInQueue(IHyriParty party, String game, String gameType);
+    void addPartyInQueue(IHyriParty party, String game, String gameType, String map);
 
     /**
      * Add a party in a queue
@@ -77,9 +74,10 @@ public interface IHyriQueueManager {
      * @param party The party to add
      * @param game The game's name
      * @param gameType The game's type
-     * @param map The game's map
      */
-    void addPartyInQueue(IHyriParty party, String game, String gameType, String map);
+    default void addPartyInQueue(IHyriParty party, String game, String gameType) {
+        this.addPartyInQueue(party, game, gameType, null);
+    }
 
     /**
      * Remove a party from queue
@@ -105,11 +103,45 @@ public interface IHyriQueueManager {
     IHyriQueue getPartyQueue(UUID partyId);
 
     /**
+     * Set the current queue of a party
+     *
+     * @param partyId The identifier of the party
+     * @param game The queued game
+     * @param gameType The type of the game
+     * @param map The map of the game
+     */
+    void setPartyQueue(UUID partyId, String game, String gameType, String map);
+
+    /**
+     * Remove the queue linked to a party
+     *
+     * @param partyId The identifier of the party
+     */
+    void removePartyQueue(UUID partyId);
+
+    /**
      * Get in which queue a player is in
      *
      * @param playerId The identifier of the player
      * @return The {@linkplain IHyriQueue queue} or <code>null</code> if the player is not in a queue
      */
     IHyriQueue getPlayerQueue(UUID playerId);
+
+    /**
+     * Set the current queue of a player
+     *
+     * @param playerId The identifier of the player
+     * @param game The queued game
+     * @param gameType The type of the game
+     * @param map The map of the game
+     */
+    void setPlayerQueue(UUID playerId, String game, String gameType, String map);
+
+    /**
+     * Remove the queue linked to a player
+     *
+     * @param playerId The identifier of a player
+     */
+    void removePlayerQueue(UUID playerId);
 
 }

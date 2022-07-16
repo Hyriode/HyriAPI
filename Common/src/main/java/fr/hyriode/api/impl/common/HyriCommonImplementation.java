@@ -36,6 +36,7 @@ import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.scheduler.IHyriScheduler;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
+import fr.hyriode.hylios.api.HyliosAPI;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
@@ -64,6 +65,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected HyggdrasilManager hyggdrasilManager;
     protected IHystiaAPI hystiaAPI;
+    protected HyliosAPI hyliosAPI;
 
     protected HyriNetworkManager networkManager;
     protected HyriCServerManager serverManager;
@@ -111,8 +113,9 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.pubSub = new HyriPubSub();
         this.scheduler = new HyriScheduler();
         this.hystiaAPI = new Hystia(this.mongoDB.getClient());
+        this.hyliosAPI = new HyliosAPI();
         this.networkManager = new HyriNetworkManager();
-        this.queueManager = new HyriQueueManager(this.hyggdrasilManager);
+        this.queueManager = new HyriQueueManager();
         this.gameManager = new HyriGameManager();
         this.playerSettingsManager = new HyriPlayerSettingsManager();
         this.languageManager = new HyriLanguageManager();
@@ -140,6 +143,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         }
         this.mongoDB.stopConnection();
         this.scheduler.stop();
+        this.hyggdrasilManager.stop();
     }
 
     @Override
@@ -200,6 +204,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public IHystiaAPI getHystiaAPI() {
         return this.hystiaAPI;
+    }
+
+    @Override
+    public HyliosAPI getHyliosAPI() {
+        return this.hyliosAPI;
     }
 
     @Override

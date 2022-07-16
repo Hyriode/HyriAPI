@@ -48,7 +48,7 @@ public class HyriServer implements IHyriServer {
         this.startedTime = startedTime;
         this.data = data;
         this.state = State.STARTING;
-        this.gameType = data.get(HyggServer.GAME_TYPE_KEY);
+        this.gameType = data.get(HyggServer.SUB_TYPE_KEY);
         this.map = data.get(HyggServer.MAP_KEY);
         this.players = new ArrayList<>();
         this.playersPlaying = new ArrayList<>();
@@ -138,7 +138,7 @@ public class HyriServer implements IHyriServer {
     }
 
     @Override
-    public String getGameType() {
+    public String getSubType() {
         return this.gameType;
     }
 

@@ -2,6 +2,8 @@ package fr.hyriode.api.impl.application;
 
 import fr.hyriode.api.impl.application.config.HyriAPIConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
 
 import java.util.logging.Level;
 
@@ -11,7 +13,7 @@ import java.util.logging.Level;
  */
 public class HyriAPIImpl extends HyriCommonImplementation {
 
-    public HyriAPIImpl(HyriAPIConfig config) {
+    public HyriAPIImpl(HyriAPIConfig config, String applicationName) {
         super(config, null, (level, message) -> {
             if (level == Level.SEVERE) {
                 System.err.println(message);
@@ -19,6 +21,10 @@ public class HyriAPIImpl extends HyriCommonImplementation {
                 System.out.println(message);
             }
         });
+
+        log("Starting HyriAPI for '" + applicationName + "'.");
+
+        this.hyggdrasilManager.setEnvironment(new HyggEnvironment(new HyggApplication(HyggApplication.Type.OTHER, applicationName, System.currentTimeMillis())));
     }
 
 }

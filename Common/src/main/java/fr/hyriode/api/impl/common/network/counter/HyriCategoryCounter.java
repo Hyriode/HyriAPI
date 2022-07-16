@@ -29,7 +29,7 @@ public class HyriCategoryCounter implements IHyriCategoryCounter {
     public int getPlayers(String type) {
         int players = 0;
         for (HyggServer server : HyriAPI.get().getServerManager().getServers(this.name)) {
-            if (server.getGameType().equals(type)) {
+            if (server.getSubType().equals(type)) {
                 players += server.getPlayingPlayers().size();
             }
         }

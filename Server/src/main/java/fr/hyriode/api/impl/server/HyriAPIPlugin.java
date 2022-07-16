@@ -14,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -45,7 +44,7 @@ public class HyriAPIPlugin extends JavaPlugin {
 
             if (server != null) {
                 final IWorldManager worldManager = this.api.getHystiaAPI().getWorldManager();
-                final String gameType = server.getGameType();
+                final String gameType = server.getSubType();
                 final String serverType = server.getType();
 
                 String mapName = HyriAPI.get().getServer().getMap();
