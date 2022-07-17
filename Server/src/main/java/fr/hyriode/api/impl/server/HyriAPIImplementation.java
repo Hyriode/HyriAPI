@@ -11,6 +11,7 @@ import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
 import fr.hyriode.api.packet.HyriChannel;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
@@ -18,6 +19,7 @@ import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.spigot.HystiaSpigot;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +42,8 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.playerManager = new HyriPlayerManager();
         this.hystiaAPI = new HystiaSpigot(plugin, this.getMongoDB().getClient());
         this.queueManager.start();
+
+        this.languageManager.registerAdapter(Player.class, (message, player) -> message.getValue(player.getUniqueId()));
 
         this.registerReceivers();
         this.registerChatHandlers();

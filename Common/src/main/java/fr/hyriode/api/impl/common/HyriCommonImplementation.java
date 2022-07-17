@@ -27,11 +27,14 @@ import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
 import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
+import fr.hyriode.api.language.HyriLanguageMessage;
+import fr.hyriode.api.language.IHyriLanguageAdapter;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
 import fr.hyriode.api.party.IHyriPartyManager;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.scheduler.IHyriScheduler;
 import fr.hyriode.api.server.IHyriServer;
@@ -41,6 +44,7 @@ import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,6 +129,9 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.friendManager = new HyriFriendManager(this);
         this.chatChannelManager = new HyriChatChannelManager();
         this.leaderboardProvider = new HyriLeaderboardProvider();
+
+        this.languageManager.registerAdapter(IHyriPlayer.class, ((message, account) -> message.getValue(account.getSettings().getLanguage())));
+        this.languageManager.registerAdapter(UUID.class, (message, uuid) -> message.getValue(IHyriPlayer.get(uuid)));
     }
 
     public static void log(Level level, String message) {

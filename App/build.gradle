@@ -8,12 +8,13 @@ archivesBaseName = 'HyriAPI-App'
 
 shadowJar {
     configurations = [project.configurations.runtimeClasspath]
+    classifier ''
 }
 
 publishing {
     publications {
-        maven(MavenPublication) { publication ->
-            project.shadow.component(publication)
+        maven(MavenPublication) {
+            from components.java
 
             pom {
                 groupId = project.group
@@ -39,7 +40,7 @@ publishing {
 }
 
 dependencies {
-    implementation project(':Common')
+    api project(':Common')
 }
 
 processResources {

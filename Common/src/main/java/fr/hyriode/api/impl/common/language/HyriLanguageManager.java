@@ -6,9 +6,8 @@ import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.HyriLanguageMessage;
+import fr.hyriode.api.language.IHyriLanguageAdapter;
 import fr.hyriode.api.language.IHyriLanguageManager;
-import fr.hyriode.api.language.IHyriLanguagePlayer;
-import fr.hyriode.api.player.IHyriPlayer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,9 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HyriLanguageManager implements IHyriLanguageManager {
 
     private final Set<HyriLanguageMessage> messages;
+    private final Map<Class<?>, IHyriLanguageAdapter<?>> adapters;
 
     public HyriLanguageManager() {
         this.messages = ConcurrentHashMap.newKeySet();
+        this.adapters = new HashMap<>();
     }
 
     @Override
@@ -85,6 +86,11 @@ public class HyriLanguageManager implements IHyriLanguageManager {
     }
 
     @Override
+    public <T> void registerAdapter(Class<T> clazz, IHyriLanguageAdapter<T> adapter) {
+        this.adapters.put(clazz, adapter);
+    }
+
+    @Override
     public void addMessage(HyriLanguageMessage message) {
         final String key = message.getKey();
 
@@ -120,28 +126,24 @@ public class HyriLanguageManager implements IHyriLanguageManager {
     }
 
     @Override
-    public String getValue(HyriLanguage language, String messageKey) {
-        return this.getMessage(messageKey).getValue(language);
-    }
-
-    @Override
-    public String getValue(UUID playerId, String messageKey) {
-        return this.getMessage(messageKey).getForPlayer(playerId);
-    }
-
-    @Override
-    public String getValue(IHyriPlayer player, String messageKey) {
-        return this.getMessage(messageKey).getForPlayer(player);
-    }
-
-    @Override
-    public String getValue(IHyriLanguagePlayer languagePlayer, String messageKey) {
-        return this.getMessage(messageKey) .getForPlayer(languagePlayer);
-    }
-
-    @Override
     public Set<HyriLanguageMessage> getMessages() {
         return this.messages;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> IHyriLanguageAdapter<T> getAdapter(Class<T> clazz) {
+        for (Map.Entry<Class<?>, IHyriLanguageAdapter<?>> entry : this.adapters.entrySet()) {
+            if (entry.getKey().isAssignableFrom(clazz)) {
+                return (IHyriLanguageAdapter<T>) entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Map<Class<?>, IHyriLanguageAdapter<?>> getAdapters() {
+        return this.adapters;
     }
 
 }

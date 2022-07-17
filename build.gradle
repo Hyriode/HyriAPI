@@ -7,7 +7,7 @@ allprojects {
     apply plugin: 'java-library'
 
     group = 'fr.hyriode'
-    version = '1.2.7'
+    version = '1.2.8'
 
     java {
         withSourcesJar()

@@ -15,6 +15,7 @@ import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * Project: HyriAPI
@@ -32,6 +33,8 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.proxy = this.createProxy();
         this.playerManager = new HyriPlayerManager();
         this.serverManager = new HyriServerManager(this);
+
+        this.languageManager.registerAdapter(ProxiedPlayer.class, (message, player) -> message.getValue(player.getUniqueId()));
 
         final IHyriNetwork network = this.networkManager.getNetwork();
 

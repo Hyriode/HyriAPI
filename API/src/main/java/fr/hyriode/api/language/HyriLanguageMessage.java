@@ -1,12 +1,10 @@
 package fr.hyriode.api.language;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Project: Hyrame
@@ -17,7 +15,6 @@ public class HyriLanguageMessage {
 
     /** All the possible values for languages */
     private Map<HyriLanguage, String> values = new HashMap<>();
-
     /** The key of the message. For example: gui.team.name */
     private String key;
 
@@ -102,33 +99,21 @@ public class HyriLanguageMessage {
     }
 
     /**
-     * Get the value of the message for a given player
+     * Get the value of the message by giving an object.<br>
+     * This method will work if an adapter as been registered for this type of object.
      *
-     * @param player The account of the player
-     * @return The value that correspond to the player
+     * @param object The object that will be used
+     * @return The value linked to the object
+     * @param <T> The type of the object
      */
-    public String getForPlayer(IHyriPlayer player) {
-        return this.getValue(player.getSettings().getLanguage());
-    }
+    @SuppressWarnings("unchecked")
+    public <T> String getValue(T object) {
+        final IHyriLanguageAdapter<T> adapter = (IHyriLanguageAdapter<T>) HyriAPI.get().getLanguageManager().getAdapter(object.getClass());
 
-    /**
-     * Get the value of the message for a given player
-     *
-     * @param playerId The identifier of the player
-     * @return The value that correspond to the player
-     */
-    public String getForPlayer(UUID playerId) {
-        return this.getForPlayer(IHyriPlayer.get(playerId));
-    }
-
-    /**
-     * Get the value of the message for a given player
-     *
-     * @param languagePlayer A language player
-     * @return The value that correspond to the player
-     */
-    public String getForPlayer(IHyriLanguagePlayer languagePlayer) {
-        return this.getForPlayer(languagePlayer.getAccount());
+        if (adapter != null) {
+            return adapter.getValue(this, object);
+        }
+        throw new RuntimeException("Cannot find an adapter for '" + object.getClass() + "'!");
     }
 
     /**

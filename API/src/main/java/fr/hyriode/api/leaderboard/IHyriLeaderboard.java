@@ -53,6 +53,7 @@ public interface IHyriLeaderboard {
     /**
      * Get all the scores registered in the leaderboard
      *
+     * @param scope The scope to use
      * @return A list of score related to their owner
      */
     List<HyriLeaderboardScore> getScores(HyriLeaderboardScope scope);

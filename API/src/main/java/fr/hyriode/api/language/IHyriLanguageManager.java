@@ -1,11 +1,9 @@
 package fr.hyriode.api.language;
 
-import fr.hyriode.api.player.IHyriPlayer;
-
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Created by AstFaster
@@ -21,6 +19,15 @@ public interface IHyriLanguageManager {
      * @return The list of all messages loaded
      */
     List<HyriLanguageMessage> loadLanguagesMessages(File folder);
+
+    /**
+     * Register an adapter for a given object class
+     *
+     * @param clazz The class of the object
+     * @param adapter The adapter to register
+     * @param <T> The type linked with the class and the adapter
+     */
+    <T> void registerAdapter(Class<T> clazz, IHyriLanguageAdapter<T> adapter);
 
     /**
      * Add a language message
@@ -52,46 +59,26 @@ public interface IHyriLanguageManager {
     HyriLanguageMessage getMessage(String key);
 
     /**
-     * Get the message's value in a language by giving the message key
-     *
-     * @param language Value language
-     * @param messageKey Message key
-     * @return Message value
-     */
-    String getValue(HyriLanguage language, String messageKey);
-
-    /**
-     * Get the message's value for a player by giving the message key
-     *
-     * @param playerId Player {@link UUID}
-     * @param messageKey Message key
-     * @return Message value
-     */
-    String getValue(UUID playerId, String messageKey);
-
-    /**
-     * Get the message's value for a player by giving the message key
-     *
-     * @param account Player account
-     * @param messageKey Message key
-     * @return Message value
-     */
-    String getValue(IHyriPlayer account, String messageKey);
-
-    /**
-     * Get the message's value for a player by giving the message key
-     *
-     * @param languagePlayer The language player
-     * @param messageKey Message key
-     * @return Message value
-     */
-    String getValue(IHyriLanguagePlayer languagePlayer, String messageKey);
-
-    /**
      * Get all loaded messages
      *
      * @return A {@link Set} of messages
      */
     Set<HyriLanguageMessage> getMessages();
+
+    /**
+     * Get an adapter instance by its linked class
+     *
+     * @param clazz The class linked to the adapter
+     * @return A {@link IHyriLanguageAdapter} or <code>null</code> if no adapter is linked to the given class
+     * @param <T> The type of adapter to return
+     */
+    <T> IHyriLanguageAdapter<T> getAdapter(Class<T> clazz);
+
+    /**
+     * Get all the registered adapters
+     *
+     * @return The map of {@link IHyriLanguageAdapter}
+     */
+    Map<Class<?>, IHyriLanguageAdapter<?>> getAdapters();
 
 }
