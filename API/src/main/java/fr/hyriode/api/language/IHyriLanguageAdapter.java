@@ -7,6 +7,13 @@ package fr.hyriode.api.language;
 @FunctionalInterface
 public interface IHyriLanguageAdapter<T> {
 
+    /**
+     * Get the value of a message from the object linked to this adapter
+     *
+     * @param message The message
+     * @param object The object to use
+     * @return The value
+     */
     String getValue(HyriLanguageMessage message, T object);
 
 }
