@@ -7,6 +7,7 @@ import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.hylios.api.lobby.LobbyAPI;
 
 import java.util.Date;
 import java.util.UUID;
@@ -59,6 +60,7 @@ public class HyriPlayerLoader {
             }
 
             HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
+            HyriAPI.get().getQueueManager().removePlayerQueue(uuid);
 
             account.setParty(null);
             account.setLastPrivateMessagePlayer(null);

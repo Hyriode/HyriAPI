@@ -8,6 +8,7 @@ import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.HyriLanguageMessage;
 import fr.hyriode.api.language.IHyriLanguageAdapter;
 import fr.hyriode.api.language.IHyriLanguageManager;
+import fr.hyriode.hylios.api.lobby.LobbyAPI;
 
 import java.io.File;
 import java.io.FileReader;
@@ -70,9 +71,11 @@ public class HyriLanguageManager implements IHyriLanguageManager {
 
                     message.addValue(language, value);
 
-                    this.messages.add(message);
-
+                    messages.remove(message);
                     messages.add(message);
+
+                    this.messages.remove(message);
+                    this.messages.add(message);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
