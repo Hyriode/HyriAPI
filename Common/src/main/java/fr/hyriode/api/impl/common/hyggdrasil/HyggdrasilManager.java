@@ -37,11 +37,14 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     private final Logger logger;
     private final Supplier<HyriCommonImplementation> implementation;
 
-    public HyggdrasilManager(Logger logger, Supplier<HyriCommonImplementation> implementation) {
+    public HyggdrasilManager(Logger logger, Supplier<HyriCommonImplementation> implementation, HyggEnvironment environment) {
         this.logger = logger;
         this.implementation = implementation;
+        this.environment = environment;
 
-        this.load();
+        if (this.environment == null) {
+            this.load();
+        }
     }
 
     private void load() {
@@ -53,7 +56,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     }
 
     public void start() {
-        if (this.withHyggdrasil() && this.environment != null) {
+        if (this.withHyggdrasil()) {
             HyriCommonImplementation.log("Starting Hyggdrasil manager...");
 
             this.hyggdrasilAPI = new HyggdrasilAPI.Builder()
@@ -120,11 +123,6 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     @Override
     public HyggEnvironment getEnvironment() {
         return this.environment;
-    }
-
-    @Override
-    public void setEnvironment(HyggEnvironment environment) {
-        this.environment = environment;
     }
 
     @Override

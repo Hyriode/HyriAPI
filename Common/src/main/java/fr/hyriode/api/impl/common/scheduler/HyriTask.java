@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by AstFaster
  * on 14/07/2022 at 23:26
  */
-public class HyriTask implements IHyriTask, Runnable {
+public class HyriTask implements IHyriTask {
 
     private Runnable then;
 
@@ -31,7 +31,7 @@ public class HyriTask implements IHyriTask, Runnable {
 
     @Override
     public void run() {
-        if (delay > 0) {
+        if (this.delay > 0) {
             try {
                 Thread.sleep(this.delay);
             } catch (InterruptedException e) {
@@ -52,6 +52,7 @@ public class HyriTask implements IHyriTask, Runnable {
                 Thread.currentThread().interrupt();
             }
         }
+
         this.cancel();
     }
 

@@ -10,6 +10,9 @@ import fr.hyriode.api.config.HyriMongoDBConfig;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by AstFaster
  * on 08/07/2022 at 09:57
@@ -24,11 +27,12 @@ public class HyriMongoDB implements IHyriMongoDB {
         HyriCommonImplementation.log("Starting MongoDB connection...");
 
         final HyriMongoDBConfig config = HyriAPI.get().getConfig().getMongoDBConfig();
-        System.out.println(config.toURL());
         final ConnectionString connectionString = new ConnectionString(config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
+
+        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
 
         this.client = MongoClients.create(settings);
         this.connected = true;

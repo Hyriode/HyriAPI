@@ -1,8 +1,6 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriend;
-import fr.hyriode.api.impl.common.friend.HyriFriends;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
@@ -15,8 +13,6 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
-import fr.hyriode.api.rank.HyriPlus;
-import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
@@ -24,7 +20,10 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 

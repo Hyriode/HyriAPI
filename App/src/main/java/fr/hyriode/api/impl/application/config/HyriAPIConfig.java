@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.application.config;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.HyriMongoDBConfig;
 import fr.hyriode.api.config.HyriRedisConfig;
 import fr.hyriode.api.config.IHyriAPIConfig;

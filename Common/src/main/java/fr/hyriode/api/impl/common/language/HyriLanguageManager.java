@@ -62,19 +62,16 @@ public class HyriLanguageManager implements IHyriLanguageManager {
                     final String key = entry.getKey();
                     final String value = HyriChatColor.translateAlternateColorCodes('&', entry.getValue());
 
-                    HyriLanguageMessage message = this.getMessage(key, true);
+                    HyriLanguageMessage message = this.getMessage(key);
 
                     if (message == null) {
-                        message = new HyriLanguageMessage(entry.getKey());
-                    } else {
-                        this.messages.remove(message);
+                        message = new HyriLanguageMessage(key);
                     }
 
                     message.addValue(language, value);
 
                     this.messages.add(message);
 
-                    messages.remove(message);
                     messages.add(message);
                 }
             } catch (IOException e) {
@@ -113,16 +110,12 @@ public class HyriLanguageManager implements IHyriLanguageManager {
 
     @Override
     public HyriLanguageMessage getMessage(String key) {
-        return this.getMessage(key, false);
-    }
-
-    private HyriLanguageMessage getMessage(String key, boolean nullResult) {
         for (HyriLanguageMessage message : this.messages) {
             if (message.getKey().equals(key)) {
                 return message;
             }
         }
-        return nullResult ? null : new HyriLanguageMessage("");
+        return null;
     }
 
     @Override

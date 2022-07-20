@@ -3,7 +3,6 @@ package fr.hyriode.api.impl.common.server;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.packet.BroadcastPacket;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.server.reconnection.HyriReconnectionHandler;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriEvacuateServerPacket;
@@ -33,11 +32,9 @@ public class HyriCServerManager implements IHyriServerManager {
     private final IHyriReconnectionHandler reconnectionHandler;
 
     private final HyriCommonImplementation implementation;
-    private final HyggdrasilManager hyggdrasilManager;
 
     public HyriCServerManager(HyriCommonImplementation implementation) {
         this.implementation = implementation;
-        this.hyggdrasilManager = this.implementation.getHyggdrasilManager();
         this.reconnectionHandler = new HyriReconnectionHandler();
         this.servers = new HashMap<>();
     }

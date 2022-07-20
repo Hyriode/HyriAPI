@@ -29,7 +29,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     private final HyriServerManager serverManager;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
-        super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
+        super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log, null);
         this.proxy = this.createProxy();
         this.playerManager = new HyriPlayerManager();
         this.serverManager = new HyriServerManager(this);

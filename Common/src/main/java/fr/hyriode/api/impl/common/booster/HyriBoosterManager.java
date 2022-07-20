@@ -7,7 +7,6 @@ import fr.hyriode.api.booster.IHyriBoosterManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 

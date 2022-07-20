@@ -12,7 +12,6 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Project: HyriAPI

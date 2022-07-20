@@ -33,9 +33,6 @@ public class MessageUtil {
     public static final BaseComponent[] ALREADY_ONLINE = createKickMessage(new ComponentBuilder("Vous êtes déjà connecté sur le serveur !").color(ChatColor.RED)
             .create(), true);
 
-    public static final BaseComponent[] NO_PERMISSION = createKickMessage((new ComponentBuilder("Vous n'avez pas la permission de vous connecter !")).color(ChatColor.RED)
-            .create(), true);
-
     private static final String HYPHENS = "----------------------";
 
     public static BaseComponent[] createKickMessage(BaseComponent[] message, boolean emptyLineBetweenSupport) {

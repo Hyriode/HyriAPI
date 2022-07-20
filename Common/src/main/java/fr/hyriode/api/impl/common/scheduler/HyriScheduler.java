@@ -45,7 +45,7 @@ public class HyriScheduler implements IHyriScheduler {
             this.writeLock.unlock();
         }
 
-        this.executorService.execute(runnable);
+        this.executorService.execute(task);
 
         return task;
     }

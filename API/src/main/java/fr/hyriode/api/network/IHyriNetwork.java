@@ -1,7 +1,6 @@
 package fr.hyriode.api.network;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.network.counter.IHyriCategoryCounter;
 import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 
 /**

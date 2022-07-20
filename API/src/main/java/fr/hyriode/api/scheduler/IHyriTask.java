@@ -4,7 +4,7 @@ package fr.hyriode.api.scheduler;
  * Created by AstFaster
  * on 14/07/2022 at 23:09
  */
-public interface IHyriTask {
+public interface IHyriTask extends Runnable {
 
     /**
      * Cancel the task

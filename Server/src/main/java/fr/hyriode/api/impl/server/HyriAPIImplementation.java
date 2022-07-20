@@ -11,7 +11,6 @@ import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
@@ -36,7 +35,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     private final HyriServerManager serverManager;
 
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
-        super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log);
+        super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log, null);
         this.server = this.createServer();
         this.serverManager = new HyriServerManager(plugin, this);
         this.playerManager = new HyriPlayerManager();

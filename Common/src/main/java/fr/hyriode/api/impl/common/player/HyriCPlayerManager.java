@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.common.player;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import fr.hyriode.api.HyriAPI;
@@ -14,7 +13,6 @@ import fr.hyriode.api.impl.common.player.packet.HyriPlayerKickPacket;
 import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
-import fr.hyriode.api.mongodb.subscriber.CallbackSubscriber;
 import fr.hyriode.api.mongodb.subscriber.OperationSubscriber;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
@@ -28,7 +26,6 @@ import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import org.bson.conversions.Bson;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**

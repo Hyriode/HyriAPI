@@ -1,7 +1,5 @@
 package fr.hyriode.api.leveling;
 
-import fr.hyriode.api.player.IHyriPlayer;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster

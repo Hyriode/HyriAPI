@@ -9,7 +9,6 @@ import fr.hyriode.hystia.api.world.IWorldManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
