@@ -93,6 +93,8 @@ public class HyriJoinListener implements Listener {
             playerManager.savePrefix(playerId, account.getNameWithRank());
 
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
+
+            account.update();
         }
 
         if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
@@ -102,8 +104,6 @@ public class HyriJoinListener implements Listener {
         this.joinManager.onJoin(player);
 
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
-
-        account.update();
 
         this.hyggdrasilManager.sendData();
     }

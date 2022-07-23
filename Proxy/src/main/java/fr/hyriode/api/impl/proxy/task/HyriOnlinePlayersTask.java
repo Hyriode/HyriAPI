@@ -30,7 +30,7 @@ public class HyriOnlinePlayersTask implements Runnable {
     public void start(Plugin plugin) {
         HyriCommonImplementation.log("Starting online players checking task...");
 
-        this.task = ProxyServer.getInstance().getScheduler().schedule(plugin, this, 0, 5, TimeUnit.SECONDS);
+        this.task = ProxyServer.getInstance().getScheduler().schedule(plugin, this, 0, 3, TimeUnit.SECONDS);
     }
 
     public void stop() {

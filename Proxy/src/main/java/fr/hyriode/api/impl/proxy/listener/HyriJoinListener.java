@@ -12,7 +12,6 @@ import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
-import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
@@ -38,7 +37,6 @@ import java.util.UUID;
  */
 public class HyriJoinListener implements Listener {
 
-    private final List<UUID> loginPlayers;
     private final List<UUID> reconnections;
 
     private final HyriPlayerLoader playerLoader;
@@ -46,11 +44,13 @@ public class HyriJoinListener implements Listener {
 
     private final HyggdrasilManager hyggdrasilManager;
 
+    private final HyriAPIPlugin plugin;
+
     public HyriJoinListener(HyriAPIPlugin plugin) {
-        this.hyggdrasilManager = plugin.getAPI().getHyggdrasilManager();
-        this.playerLoader = plugin.getPlayerLoader();
-        this.onlineTask = plugin.getOnlinePlayersTask();
-        this.loginPlayers = new ArrayList<>();
+        this.plugin = plugin;
+        this.hyggdrasilManager = this.plugin.getAPI().getHyggdrasilManager();
+        this.playerLoader = this.plugin.getPlayerLoader();
+        this.onlineTask = this.plugin.getOnlinePlayersTask();
         this.reconnections = new ArrayList<>();
     }
 
@@ -133,7 +133,7 @@ public class HyriJoinListener implements Listener {
             return;
         }
 
-        // Reconnection part (if the player was in a game and reconnected)
+        // Reconnection part (if the player was in a game)
         final IHyriReconnectionData reconnectionData = HyriAPI.get().getServerManager().getReconnectionHandler().get(playerId);
 
         if (reconnectionData != null) {
@@ -143,16 +143,7 @@ public class HyriJoinListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
-        final ProxiedPlayer player = event.getPlayer();
-        final UUID playerId = player.getUniqueId();
-
-        if (this.loginPlayers.contains(playerId)) {
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
-
-            this.playerLoader.unloadPlayerAccount(playerId);
-            this.hyggdrasilManager.sendData();
-            this.loginPlayers.remove(playerId);
-        }
+        this.playerLoader.handleDisconnection(event.getPlayer());
     }
 
     private void connectToLobby(ProxiedPlayer player, ServerConnectEvent event) {
@@ -173,7 +164,8 @@ public class HyriJoinListener implements Listener {
             event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
             event.setCancelled(false);
 
-            this.loginPlayers.add(playerId);
+            this.plugin.getAPI().getProxy().addPlayer(playerId);
+
             this.hyggdrasilManager.sendData();
 
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));

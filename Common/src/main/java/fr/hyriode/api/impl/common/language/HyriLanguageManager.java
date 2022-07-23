@@ -67,15 +67,16 @@ public class HyriLanguageManager implements IHyriLanguageManager {
 
                     if (message == null) {
                         message = new HyriLanguageMessage(key);
+                    } else {
+                        this.messages.remove(message);
                     }
 
                     message.addValue(language, value);
 
+                    this.messages.add(message);
+
                     messages.remove(message);
                     messages.add(message);
-
-                    this.messages.remove(message);
-                    this.messages.add(message);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

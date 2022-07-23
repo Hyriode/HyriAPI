@@ -6,6 +6,10 @@ import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import net.md_5.bungee.api.ProxyServer;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -19,6 +23,8 @@ public class HyriProxy implements IHyriProxy {
     private State state;
     private Runnable stopHandler;
 
+    private final Set<UUID> players;
+
     private final HyggdrasilManager hyggdrasilManager;
 
     private final HyggData data;
@@ -26,6 +32,7 @@ public class HyriProxy implements IHyriProxy {
     public HyriProxy(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
         this.hyggdrasilManager = hyggdrasilManager;
         this.name = name;
+        this.players = new HashSet<>();
         this.startedTime = startedTime;
         this.state = State.STARTING;
         this.data = data;
@@ -67,7 +74,15 @@ public class HyriProxy implements IHyriProxy {
 
     @Override
     public int getPlayers() {
-        return ProxyServer.getInstance().getOnlineCount();
+        return this.players.size();
+    }
+
+    public void addPlayer(UUID player) {
+        this.players.add(player);
+    }
+
+    public void removePlayer(UUID player) {
+        this.players.remove(player);
     }
 
     @Override

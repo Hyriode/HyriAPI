@@ -40,6 +40,10 @@ public class HyriQueueListener {
         this.triggerHandlers(handler -> {
             final QueueGroup group = event.getGroup();
 
+            if (group == null) {
+                return;
+            }
+
             if (IHyriParty.get(group.getId()) != null) {
                 handler.onPartyRemove(event);
             } else {

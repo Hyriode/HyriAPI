@@ -13,9 +13,12 @@ import fr.hyriode.api.proxy.IHyriProxy;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -40,7 +43,7 @@ public class HyriAPIPlugin extends Plugin  {
         this.configuration = HyriAPIConfig.Loader.load(this);
         this.api = new HyriAPIImplementation(this);
 
-        this.playerLoader = new HyriPlayerLoader();
+        this.playerLoader = new HyriPlayerLoader(this);
 
         this.onlinePlayersTask = new HyriOnlinePlayersTask();
         this.onlinePlayersTask.start(this);
@@ -58,7 +61,19 @@ public class HyriAPIPlugin extends Plugin  {
         this.api.stop();
         this.onlinePlayersTask.stop();
 
+        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            this.playerLoader.handleDisconnection(player);
+        }
+
         log(HyriAPI.NAME + " is now disabled. See you soon!");
+    }
+
+    public void createServerInfo(String serverName, int serverPort) {
+        final ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(serverName, new InetSocketAddress(serverName, serverPort), "", false);
+
+        ProxyServer.getInstance().getServers().put(serverName, serverInfo);
+
+        HyriAPIPlugin.log("Added '" + serverName + "' server.");
     }
 
     public static void log(Level level, String message) {

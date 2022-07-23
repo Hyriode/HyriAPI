@@ -28,26 +28,26 @@ import java.util.UUID;
  */
 public class HyriProxyReceiver implements IHyggPacketReceiver, IHyriPacketReceiver {
 
+    private final HyriAPIPlugin plugin;
+
+    public HyriProxyReceiver(HyriAPIPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public IHyggResponse receive(String channel, HyggPacket packet, HyggRequestHeader header) {
         if (packet instanceof HyggProxyServerActionPacket) {
-            final long before = System.currentTimeMillis();
             final HyggProxyServerActionPacket serverAction = (HyggProxyServerActionPacket) packet;
             final HyggProxyServerActionPacket.Action action = serverAction.getAction();
             final String serverName = serverAction.getServerName();
-            final int serverPort = serverAction.getServerPort();
 
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(serverName);
             if (serverInfo != null && action == HyggProxyServerActionPacket.Action.REMOVE) {
                 ProxyServer.getInstance().getServers().remove(serverName);
 
-                HyriAPIPlugin.log("Removed '" + serverName + "' server (time: " + (System.currentTimeMillis() - before) + ").");
+                HyriAPIPlugin.log("Removed '" + serverName + "' server");
             } else if (serverInfo == null && action == HyggProxyServerActionPacket.Action.ADD) {
-                serverInfo = ProxyServer.getInstance().constructServerInfo(serverName, new InetSocketAddress(serverName, serverPort), "", false);
-
-                ProxyServer.getInstance().getServers().put(serverName, serverInfo);
-
-                HyriAPIPlugin.log("Added '" + serverName + "' server (time: " + (System.currentTimeMillis() - before) + ").");
+                this.plugin.createServerInfo(serverName, serverAction.getServerPort());
             }
             return HyggResponse.Type.SUCCESS;
         } else if (packet instanceof HyggStopProxyPacket) {

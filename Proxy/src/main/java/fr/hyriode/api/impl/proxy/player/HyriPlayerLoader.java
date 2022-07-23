@@ -2,12 +2,15 @@ package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.hylios.api.lobby.LobbyAPI;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Date;
 import java.util.UUID;
@@ -18,6 +21,12 @@ import java.util.UUID;
  * on 13/04/2022 at 19:13
  */
 public class HyriPlayerLoader {
+
+    private final HyriAPIPlugin plugin;
+
+    public HyriPlayerLoader(HyriAPIPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     public IHyriPlayer loadPlayerAccount(IHyriPlayer account, UUID uuid, String name) {
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
@@ -36,6 +45,17 @@ public class HyriPlayerLoader {
         playerManager.setPlayerId(name, uuid);
 
         return account;
+    }
+
+    public void handleDisconnection(ProxiedPlayer player) {
+        final UUID playerId = player.getUniqueId();
+
+        this.unloadPlayerAccount(playerId);
+
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
+
+        this.plugin.getAPI().getProxy().removePlayer(playerId);
+        this.plugin.getAPI().getHyggdrasilManager().sendData();
     }
 
     public void unloadPlayerAccount(UUID uuid) {

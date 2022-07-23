@@ -33,6 +33,8 @@ public class HyriMongoDB implements IHyriMongoDB {
                 .build();
 
         Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
+        Logger.getLogger("org.mongodb.driver.connection").setLevel(Level.OFF);
+        Logger.getLogger("org.mongodb.driver.client").setLevel(Level.OFF);
 
         this.client = MongoClients.create(settings);
         this.connected = true;

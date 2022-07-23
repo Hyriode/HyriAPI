@@ -15,6 +15,7 @@ import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
@@ -24,12 +25,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class HyriAPIImplementation extends HyriCommonImplementation {
 
-    private final IHyriProxy proxy;
+    private final HyriProxy proxy;
 
     private final HyriServerManager serverManager;
 
+    private final HyriAPIPlugin plugin;
+
     public HyriAPIImplementation(HyriAPIPlugin plugin) {
         super(plugin.getConfiguration(), plugin.getLogger(), HyriAPIPlugin::log, null);
+        this.plugin = plugin;
         this.proxy = this.createProxy();
         this.playerManager = new HyriPlayerManager();
         this.serverManager = new HyriServerManager(this);
@@ -54,9 +58,15 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.networkManager.setNetwork(network);
 
         this.registerReceivers();
+
+        this.hyggdrasilManager.getHyggdrasilAPI().getServerRequester().fetchServers(servers -> {
+            for (HyggServer server : servers) {
+                this.plugin.createServerInfo(server.getName(), 25565);
+            }
+        });
     }
 
-    private IHyriProxy createProxy() {
+    private HyriProxy createProxy() {
         if (this.hyggdrasilManager.withHyggdrasil()) {
             final HyggApplication application = this.hyggdrasilManager.getApplication();
 
@@ -66,7 +76,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     private void registerReceivers() {
-        final HyriProxyReceiver proxyReceiver = new HyriProxyReceiver();
+        final HyriProxyReceiver proxyReceiver = new HyriProxyReceiver(this.plugin);
 
         if (this.hyggdrasilManager.withHyggdrasil()) {
             final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
@@ -82,7 +92,7 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
     }
 
     @Override
-    public IHyriProxy getProxy() {
+    public HyriProxy getProxy() {
         return this.proxy;
     }
 
