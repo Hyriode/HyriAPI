@@ -33,7 +33,7 @@ import java.util.function.Function;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public abstract class HyriCPlayerManager implements IHyriPlayerManager {
+public class HyriCPlayerManager implements IHyriPlayerManager {
 
     private static final Function<UUID, String> PLAYERS_KEY = uuid -> "players:" + uuid.toString();
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
@@ -165,6 +165,11 @@ public abstract class HyriCPlayerManager implements IHyriPlayerManager {
     @Override
     public void sendTitleToAll(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new TitlePacket(title, subtitle, fadeIn, stay, fadeOut));
+    }
+
+    @Override
+    public int getPing(UUID uuid) {
+        return -1;
     }
 
     @Override

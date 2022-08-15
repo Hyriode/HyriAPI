@@ -2,6 +2,7 @@ package fr.hyriode.api.server;
 
 import fr.hyriode.api.application.IHyriApplication;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
+import fr.hyriode.hylios.api.host.HostData;
 import fr.hyriode.hystia.api.config.IConfig;
 
 import java.util.List;
@@ -86,11 +87,18 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
     String getSubType();
 
     /**
-     * Get the map to use on the server
+     * Get the map used on the server
      *
      * @return A map name
      */
     String getMap();
+
+    /**
+     * Set the map used on the server
+     *
+     * @param map The new map name
+     */
+    void setMap(String map);
 
     /**
      * Get the data provided by Hyggdrasil
@@ -98,6 +106,21 @@ public interface IHyriServer extends IHyriApplication<IHyriServer.State> {
      * @return A {@link HyggData} object
      */
     HyggData getData();
+
+    /**
+     * Get the host data of the server.<br>
+     * Warning: it will only work if the server is running in host mode
+     *
+     * @return A {@link HostData} object
+     */
+    HostData getHostData();
+
+    /**
+     * Check if the server is a host
+     *
+     * @return <code>true</code> if the server is a host and <code>false</code> otherwise
+     */
+    boolean isHost();
 
     /**
      * Set if the server is accessible to normal players

@@ -37,9 +37,7 @@ public abstract class HyriPacket {
                 final String content = object.get(CONTENT).getAsString();
 
                 return (HyriPacket) HyriAPI.NORMAL_GSON.fromJson(content, clazz);
-            } catch (ClassNotFoundException e) {
-                System.err.println("Couldn't find a packet class with the following name: " + className);
-            }
+            } catch (ClassNotFoundException ignored) {}
             return null;
         }
 

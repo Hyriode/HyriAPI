@@ -4,6 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameManager;
+import fr.hyriode.api.game.rotating.IHyriRotatingGameManager;
+import fr.hyriode.api.impl.common.game.rotating.HyriRotatingGameManager;
 import fr.hyriode.hystia.api.world.IWorldManager;
 
 import java.util.ArrayList;
@@ -25,9 +27,11 @@ public class HyriGameManager implements IHyriGameManager {
     private static final String KEY = "games:";
     private static final Function<String, String> KEY_FORMATTER = name -> KEY + name;
 
+    private final IHyriRotatingGameManager rotatingGameManager;
     private final IWorldManager worldManager;
 
     public HyriGameManager() {
+        this.rotatingGameManager = new HyriRotatingGameManager();
         this.worldManager = HyriAPI.get().getHystiaAPI().getWorldManager();
     }
 
@@ -85,9 +89,17 @@ public class HyriGameManager implements IHyriGameManager {
 
         final List<String> maps = this.worldManager.getWorlds(game, gameType);
 
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(key, HyriAPI.GSON.toJson(maps)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            jedis.set(key, HyriAPI.GSON.toJson(maps));
+            jedis.expire(key, 120);
+        });
 
         return maps;
+    }
+
+    @Override
+    public IHyriRotatingGameManager getRotatingGameManager() {
+        return this.rotatingGameManager;
     }
 
 }

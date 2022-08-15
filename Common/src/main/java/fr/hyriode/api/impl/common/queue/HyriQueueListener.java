@@ -7,6 +7,9 @@ import fr.hyriode.hylios.api.queue.QueueGroup;
 import fr.hyriode.hylios.api.queue.event.QueueAddEvent;
 import fr.hyriode.hylios.api.queue.event.QueueRemoveEvent;
 import fr.hyriode.hylios.api.queue.event.QueueUpdateGroupEvent;
+import fr.hyriode.hylios.api.queue.server.event.SQueueAddEvent;
+import fr.hyriode.hylios.api.queue.server.event.SQueueRemoveEvent;
+import fr.hyriode.hylios.api.queue.server.event.SQueueUpdateGroupEvent;
 
 import java.util.function.Consumer;
 
@@ -24,37 +27,46 @@ public class HyriQueueListener {
 
     @HyriEventHandler
     public void onAdd(QueueAddEvent event) {
-        this.triggerHandlers(handler -> {
-            final QueueGroup group = event.getGroup();
-
-            if (IHyriParty.get(group.getId()) != null) {
-                handler.onPartyAdd(event);
-            } else {
-                handler.onPlayerAdd(event);
-            }
-        });
+        this.checkParty(event.getGroup(), handler -> handler.onPartyAdd(event), handler -> handler.onPlayerAdd(event));
     }
 
     @HyriEventHandler
     public void onRemove(QueueRemoveEvent event) {
-        this.triggerHandlers(handler -> {
-            final QueueGroup group = event.getGroup();
-
-            if (group == null) {
-                return;
-            }
-
-            if (IHyriParty.get(group.getId()) != null) {
-                handler.onPartyRemove(event);
-            } else {
-                handler.onPlayerRemove(event);
-            }
-        });
+        this.checkParty(event.getGroup(), handler -> handler.onPartyRemove(event), handler -> handler.onPlayerRemove(event));
     }
 
     @HyriEventHandler
     public void onGroupUpdate(QueueUpdateGroupEvent event) {
         this.triggerHandlers(handler -> handler.onPartyUpdate(event));
+    }
+
+    @HyriEventHandler
+    public void onAdd(SQueueAddEvent event) {
+        this.checkParty(event.getGroup(), handler -> handler.onPartyAdd(event), handler -> handler.onPlayerAdd(event));
+    }
+
+    @HyriEventHandler
+    public void onRemove(SQueueRemoveEvent event) {
+        this.checkParty(event.getGroup(), handler -> handler.onPartyRemove(event), handler -> handler.onPlayerRemove(event));
+    }
+
+    @HyriEventHandler
+    public void onGroupUpdate(SQueueUpdateGroupEvent event) {
+        this.triggerHandlers(handler -> handler.onPartyUpdate(event));
+    }
+
+    private void checkParty(QueueGroup group, Consumer<IHyriQueueHandler> onParty, Consumer<IHyriQueueHandler> onPlayer) {
+        this.triggerHandlers(handler -> {
+            if (group == null) {
+                return;
+            }
+
+            if (IHyriParty.get(group.getId()) != null) {
+                onParty.accept(handler);
+            } else {
+                onPlayer.accept(handler);
+            }
+        });
     }
 
     private void triggerHandlers(Consumer<IHyriQueueHandler> handlerConsumer) {

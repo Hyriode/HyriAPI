@@ -65,9 +65,9 @@ publishing {
 }
 
 dependencies {
-    api 'fr.hyriode:hylios-api:1.0.1'
-    api 'fr.hyriode:hystia-api:1.0.6'
+    api 'fr.hyriode:hylios-api:1.0.2'
+    api 'fr.hyriode:hystia-api:1.0.8'
     api 'org.slf4j:slf4j-nop:1.7.36'
     api 'com.google.guava:guava:31.1-jre'
-    api 'org.mongodb:mongodb-driver-reactivestreams:4.6.1'
+    api 'org.mongodb:mongodb-driver-reactivestreams:4.7.1'
 }

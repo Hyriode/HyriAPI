@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.server;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.server.chat.GlobalChatHandler;
@@ -10,6 +11,7 @@ import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.HyriChatReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriServerReceiver;
 import fr.hyriode.api.impl.server.receiver.HyriSoundReceiver;
+import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -18,6 +20,8 @@ import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.spigot.HystiaSpigot;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -42,7 +46,14 @@ public class HyriAPIImplementation extends HyriCommonImplementation {
         this.hystiaAPI = new HystiaSpigot(plugin, this.getMongoDB().getClient());
         this.queueManager.start();
 
-        this.languageManager.registerAdapter(Player.class, (message, player) -> message.getValue(player.getUniqueId()));
+        this.languageManager.registerAdapter(CommandSender.class, (message, sender) -> {
+            if (sender instanceof Player) {
+                return message.getValue(((Player) sender).getUniqueId());
+            } else if (sender instanceof OfflinePlayer) {
+                return message.getValue(((OfflinePlayer) sender).getUniqueId());
+            }
+            return message.getValue(HyriLanguage.EN);
+        });
 
         this.registerReceivers();
         this.registerChatHandlers();

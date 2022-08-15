@@ -46,6 +46,10 @@ public class HyriPlayer implements IHyriPlayer {
     private HyriRank rank;
     private HyriPlus hyriPlus;
 
+    private int availableHosts;
+    private List<UUID> playersBannedFromHost = new ArrayList<>();
+    private List<String> favoriteHostConfigs = new ArrayList<>();
+
     private UUID lastPrivateMessage;
 
     private final Hyris hyris;
@@ -62,8 +66,8 @@ public class HyriPlayer implements IHyriPlayer {
     private boolean moderationMode;
     private boolean vanishMode;
 
-    private final Map<String, JsonElement> statistics = new HashMap<>();
-    private final Map<String, JsonElement> data = new HashMap<>();
+    private Map<String, JsonElement> statistics = new HashMap<>();
+    private Map<String, JsonElement> data = new HashMap<>();
 
     private Map<String, List<HyriTransaction>> transactions = new HashMap<>();
 
@@ -231,6 +235,46 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
+    public int getAvailableHosts() {
+        return this.rank.isSuperior(HyriPlayerRankType.EPIC) ? 1 : this.availableHosts;
+    }
+
+    @Override
+    public void setAvailableHosts(int availableHosts) {
+        this.availableHosts = availableHosts;
+    }
+
+    @Override
+    public List<UUID> getPlayersBannedFromHost() {
+        return this.playersBannedFromHost == null ? this.playersBannedFromHost = new ArrayList<>() : this.playersBannedFromHost;
+    }
+
+    @Override
+    public void addPlayerBannedFromHost(UUID playerId) {
+        this.getPlayersBannedFromHost().add(playerId);
+    }
+
+    @Override
+    public void removePlayerBannedFromHost(UUID playerId) {
+        this.getPlayersBannedFromHost().remove(playerId);
+    }
+
+    @Override
+    public List<String> getFavoriteHostConfigs() {
+        return this.favoriteHostConfigs == null ? this.favoriteHostConfigs = new ArrayList<>() : this.favoriteHostConfigs;
+    }
+
+    @Override
+    public void addFavoriteHostConfig(String configId) {
+        this.getFavoriteHostConfigs().add(configId);
+    }
+
+    @Override
+    public void removeFavoriteHostConfig(String configId) {
+        this.getFavoriteHostConfigs().remove(configId);
+    }
+
+    @Override
     public UUID getLastPrivateMessagePlayer() {
         return this.lastPrivateMessage;
     }
@@ -334,9 +378,13 @@ public class HyriPlayer implements IHyriPlayer {
         return new ArrayList<>(this.statistics.keySet());
     }
 
+    private Map<String, JsonElement> getStatisticsMap() {
+        return this.statistics == null ? this.statistics = new HashMap<>() : this.statistics;
+    }
+
     @Override
     public <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass) {
-        final JsonElement serialized = this.statistics.get(key);
+        final JsonElement serialized = this.getStatisticsMap().get(key);
 
         if (serialized != null) {
             return HyriAPI.GSON.fromJson(serialized, statisticsClass);
@@ -346,27 +394,31 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public void addStatistics(String key, HyriPlayerData statistics) {
-        this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
+        this.getStatisticsMap().put(key, HyriAPI.GSON.toJsonTree(statistics));
     }
 
     @Override
     public void removeStatistics(String key) {
-        this.statistics.remove(key);
+        this.getStatisticsMap().remove(key);
     }
 
     @Override
     public boolean hasStatistics(String key) {
-        return this.statistics.containsKey(key);
+        return this.getStatisticsMap().containsKey(key);
     }
 
     @Override
     public List<String> getData() {
-        return new ArrayList<>(this.data.keySet());
+        return new ArrayList<>(this.getDataMap().keySet());
+    }
+
+    private Map<String, JsonElement> getDataMap() {
+        return this.data == null ? this.data = new HashMap<>() : this.data;
     }
 
     @Override
     public <T extends HyriPlayerData> T getData(String key, Class<T> dataClass) {
-        final JsonElement serialized = this.data.get(key);
+        final JsonElement serialized = this.getDataMap().get(key);
 
         if (serialized != null) {
             return HyriAPI.GSON.fromJson(serialized, dataClass);
@@ -376,17 +428,17 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public void addData(String key, HyriPlayerData data) {
-        this.data.put(key, HyriAPI.GSON.toJsonTree(data));
+        this.getDataMap().put(key, HyriAPI.GSON.toJsonTree(data));
     }
 
     @Override
     public void removeData(String key) {
-        this.data.remove(key);
+        this.getDataMap().remove(key);
     }
 
     @Override
     public boolean hasData(String key) {
-        return this.data.containsKey(key);
+        return this.getDataMap().containsKey(key);
     }
 
     @Override
@@ -418,7 +470,7 @@ public class HyriPlayer implements IHyriPlayer {
             return false;
         }
 
-        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
+        final List<HyriTransaction> transactions = this.getTransactions().getOrDefault(type, new ArrayList<>());
 
         transactions.add(new HyriTransaction(name, System.currentTimeMillis(), content));
 

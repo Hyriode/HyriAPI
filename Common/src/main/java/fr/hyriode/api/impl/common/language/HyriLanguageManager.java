@@ -3,16 +3,16 @@ package fr.hyriode.api.impl.common.language;
 import com.google.gson.stream.JsonReader;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
+import fr.hyriode.api.event.HyriEventHandler;
 import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.language.HyriLanguage;
-import fr.hyriode.api.language.HyriLanguageMessage;
-import fr.hyriode.api.language.IHyriLanguageAdapter;
-import fr.hyriode.api.language.IHyriLanguageManager;
+import fr.hyriode.api.language.*;
 import fr.hyriode.hylios.api.lobby.LobbyAPI;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,12 +22,34 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HyriLanguageManager implements IHyriLanguageManager {
 
+    private final Map<UUID, HyriLanguage> cachedPlayerLanguages;
+
     private final Set<HyriLanguageMessage> messages;
     private final Map<Class<?>, IHyriLanguageAdapter<?>> adapters;
 
     public HyriLanguageManager() {
         this.messages = ConcurrentHashMap.newKeySet();
         this.adapters = new HashMap<>();
+        this.cachedPlayerLanguages = new HashMap<>();
+
+        HyriAPI.get().getEventBus().register(this);
+    }
+
+    @HyriEventHandler
+    public void onLanguageUpdated(HyriLanguageUpdatedEvent event) {
+        this.cachedPlayerLanguages.put(event.getPlayerId(), event.getLanguage());
+    }
+
+    public void setCachedPlayerLanguage(UUID playerId, HyriLanguage language) {
+        this.cachedPlayerLanguages.put(playerId, language);
+    }
+
+    public void removeCachedPlayerLanguage(UUID playerId) {
+        this.cachedPlayerLanguages.remove(playerId);
+    }
+
+    public HyriLanguage getCachedPlayerLanguage(UUID playerId) {
+        return this.cachedPlayerLanguages.get(playerId);
     }
 
     @Override
@@ -53,7 +75,7 @@ public class HyriLanguageManager implements IHyriLanguageManager {
                 continue;
             }
 
-            try (final FileReader reader = new FileReader(file)) {
+            try (final BufferedReader reader = Files.newBufferedReader(file.toPath())) {
                 final JsonReader jsonReader = new JsonReader(reader);
                 final Map<String, String> map = HyriAPI.GSON.fromJson(jsonReader, Map.class);
 
@@ -81,7 +103,6 @@ public class HyriLanguageManager implements IHyriLanguageManager {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         }
         return messages;
     }
@@ -115,7 +136,7 @@ public class HyriLanguageManager implements IHyriLanguageManager {
     @Override
     public HyriLanguageMessage getMessage(String key) {
         for (HyriLanguageMessage message : this.messages) {
-            if (message.getKey().equals(key)) {
+            if (message.getKey().equalsIgnoreCase(key)) {
                 return message;
             }
         }

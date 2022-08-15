@@ -14,7 +14,7 @@ import java.util.Map;
 public class HyriGameInfo implements IHyriGameInfo {
 
     private final String name;
-    private final String displayName;
+    private String displayName;
     private final Map<String, HyriGameType> types;
 
     public HyriGameInfo(String name, String displayName) {
@@ -31,6 +31,11 @@ public class HyriGameInfo implements IHyriGameInfo {
     @Override
     public String getDisplayName() {
         return this.displayName;
+    }
+
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     @Override

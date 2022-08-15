@@ -44,18 +44,20 @@ public class HyriAPIPlugin extends JavaPlugin {
 
             if (server != null) {
                 final IWorldManager worldManager = this.api.getHystiaAPI().getWorldManager();
-                final String gameType = server.getSubType();
                 final String serverType = server.getType();
+                final String subType = server.getSubType();
 
                 String mapName = HyriAPI.get().getServer().getMap();
                 if (mapName == null) {
-                    final List<String> maps = gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType);
+                    final List<String> maps = subType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, subType);
 
                     if (maps != null && maps.size() > 0) {
                         Collections.shuffle(maps);
 
+                        log("Available maps:");
+
                         for (String map : maps) {
-                            System.out.println(map);
+                            log(" - " + map);
                         }
 
                         mapName = maps.get(0);
@@ -65,10 +67,10 @@ public class HyriAPIPlugin extends JavaPlugin {
                 if (mapName != null) {
                     this.api.getServer().setMap(mapName);
 
-                    if (gameType != null) {
-                        System.out.println("Loaded '" + mapName + "' map for the server (" + serverType + "#" + gameType + ").");
+                    if (subType != null) {
+                        log("Loaded '" + mapName + "' map for the server (" + serverType + "#" + subType + ").");
 
-                        worldManager.loadWorld(new File("world"), serverType, gameType, mapName);
+                        worldManager.loadWorld(new File("world"), serverType, subType, mapName);
                     }
                 }
             }
@@ -103,7 +105,7 @@ public class HyriAPIPlugin extends JavaPlugin {
     private void registerListeners() {
         final Consumer<Listener> register = listener -> this.getServer().getPluginManager().registerEvents(listener, this);
 
-        register.accept(new HyriJoinListener(this.api.getHyggdrasilManager(), this.api.getServerManager().getJoinManager()));
+        register.accept(new HyriJoinListener(this.api, this.api.getHyggdrasilManager(), this.api.getServerManager().getJoinManager()));
     }
 
     public IHyriAPIConfig getConfiguration() {

@@ -8,9 +8,21 @@ shadowJar {
     configurations = [project.configurations.shadow]
 }
 
+repositories {
+    maven {
+        name = 'Hystia_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/Hystia/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'fr.hyriode:hystia-spigot:1.0.6'
+    shadow 'fr.hyriode:hystia-spigot:1.0.8'
     shadow project(':Common')
 }
 

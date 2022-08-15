@@ -39,4 +39,10 @@ public interface IHyggdrasilManager {
      */
     HyggApplication getApplication();
 
+    /**
+     * Send data of the application to Hyggdrasil.<br>
+     * Warning: this will only work if the application supports this system!
+     */
+    void sendData();
+
 }

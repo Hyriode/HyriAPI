@@ -8,6 +8,7 @@ import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
+import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
@@ -268,6 +269,13 @@ public abstract class HyriAPI {
      * @return The {@linkplain IHyriLeaderboardProvider leaderboard provider} instance
      */
     public abstract IHyriLeaderboardProvider getLeaderboardProvider();
+
+    /**
+     * Get the {@link IHostConfigManager} instance
+     *
+     * @return The {@link IHostConfigManager} instance
+     */
+    public abstract IHostConfigManager getHostConfigManager();
 
     /**
      * Get the instance of {@link HyriAPI}

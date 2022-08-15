@@ -51,6 +51,16 @@ public interface IHyriQueueManager {
     }
 
     /**
+     * Add a player in a server queue
+     *
+     * @param playerId The unique id of the player
+     * @param serverName The name of the server to queue for
+     * @param partyCheck If <code>true</code>, and the player is in a party, it will add his party in queue
+     * @return <code>true</code> if the request to add the player in the queue has been submitted
+     */
+    boolean addPlayerInQueue(UUID playerId, String serverName, boolean partyCheck);
+
+    /**
      * Remove a player from the queue.<br>
      * This method will only work if the player is in a queue
      *
@@ -78,6 +88,14 @@ public interface IHyriQueueManager {
     default void addPartyInQueue(IHyriParty party, String game, String gameType) {
         this.addPartyInQueue(party, game, gameType, null);
     }
+
+    /**
+     * Add a party in a server queue
+     *
+     * @param party The party to add
+     * @param serverName The name of the server to queue for
+     */
+    void addPartyInQueue(IHyriParty party, String serverName);
 
     /**
      * Remove a party from queue

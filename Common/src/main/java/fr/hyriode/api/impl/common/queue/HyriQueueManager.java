@@ -16,6 +16,8 @@ import fr.hyriode.hylios.api.queue.packet.group.QueueRemoveGroupPacket;
 import fr.hyriode.hylios.api.queue.packet.group.QueueUpdateGroupPacket;
 import fr.hyriode.hylios.api.queue.packet.player.QueueAddPlayerPacket;
 import fr.hyriode.hylios.api.queue.packet.player.QueueRemovePlayerPacket;
+import fr.hyriode.hylios.api.queue.server.packet.group.SQueueAddGroupPacket;
+import fr.hyriode.hylios.api.queue.server.packet.player.SQueueAddPlayerPacket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +74,24 @@ public class HyriQueueManager implements IHyriQueueManager {
     }
 
     @Override
+    public boolean addPlayerInQueue(UUID playerId, String serverName, boolean partyCheck) {
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
+
+        if (account.hasParty() && partyCheck) {
+            final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(playerId);
+
+            if (party.isLeader(playerId)) {
+                this.addPartyInQueue(party, serverName);
+                return true;
+            }
+            return false;
+        }
+
+        this.sendQueuePacket(new SQueueAddPlayerPacket(serverName, new QueuePlayer(playerId, account.getPriority())));
+        return true;
+    }
+
+    @Override
     public void removePlayerFromQueue(UUID playerId) {
         this.sendQueuePacket(new QueueRemovePlayerPacket(playerId));
     }
@@ -79,6 +99,11 @@ public class HyriQueueManager implements IHyriQueueManager {
     @Override
     public void addPartyInQueue(IHyriParty party, String game, String gameType, String map) {
         this.sendQueuePacket(new QueueAddGroupPacket(game, gameType, map, this.createGroupFromParty(party)));
+    }
+
+    @Override
+    public void addPartyInQueue(IHyriParty party, String serverName) {
+        this.sendQueuePacket(new SQueueAddGroupPacket(serverName, this.createGroupFromParty(party)));
     }
 
     @Override

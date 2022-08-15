@@ -84,7 +84,7 @@ public interface IHyriPlayer {
      *
      * @param name The name to use as a nickname
      * @param skinOwner The owner of the skin that will be used
-     * @param skin The skin that will be usezd
+     * @param skin The skin that will be used
      * @return The created {@link IHyriNickname}
      */
     IHyriNickname createNickname(String name, String skinOwner, Skin skin);
@@ -186,7 +186,7 @@ public interface IHyriPlayer {
     default void setPlayerRank(HyriPlayerRankType playerRankType) {
         this.getRank().setPlayerType(playerRankType);
 
-        HyriAPI.get().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
+        HyriAPI.get().getNetworkManager().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
     }
 
     /**
@@ -197,7 +197,7 @@ public interface IHyriPlayer {
     default void setStaffRank(HyriStaffRankType staffRankType) {
         this.getRank().setStaffType(staffRankType);
 
-        HyriAPI.get().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
+        HyriAPI.get().getNetworkManager().getEventBus().register(new HyriRankUpdatedEvent(this.getUniqueId()));
     }
 
     /**
@@ -220,6 +220,62 @@ public interface IHyriPlayer {
      * @return <code>true</code> if the player has Hyri+
      */
     boolean hasHyriPlus();
+
+    /**
+     * Get the available hosts of the player
+     *
+     * @return A number between 0 and {@link Integer#MAX_VALUE}
+     */
+    int getAvailableHosts();
+
+    /**
+     * Set the available hosts of the player
+     *
+     * @param availableHosts A number between 0 and {@link Integer#MAX_VALUE}
+     */
+    void setAvailableHosts(int availableHosts);
+
+    /**
+     * Get all the players banned from player host
+     *
+     * @return A list of player {@link UUID}
+     */
+    List<UUID> getPlayersBannedFromHost();
+
+    /**
+     * Add a player banned from player host
+     *
+     * @param playerId The {@link UUID} of the player
+     */
+    void addPlayerBannedFromHost(UUID playerId);
+
+    /**
+     * Remove a player banned from player host
+     *
+     * @param playerId The {@link UUID} of the player
+     */
+    void removePlayerBannedFromHost(UUID playerId);
+
+    /**
+     * Get the favorite host configs of the player
+     *
+     * @return A list of config id
+     */
+    List<String> getFavoriteHostConfigs();
+
+    /**
+     * Add a favorite host config to the player account
+     *
+     * @param configId The identifier of the config to add
+     */
+    void addFavoriteHostConfig(String configId);
+
+    /**
+     * Remove a favorite host config from the player account
+     *
+     * @param configId The identifier of the config to remove
+     */
+    void removeFavoriteHostConfig(String configId);
 
     /**
      * Get the {@link UUID} of the last player which this player talks with in private chat

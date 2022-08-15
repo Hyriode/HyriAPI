@@ -47,14 +47,14 @@ public class HyriJoinManager implements IHyriJoinManager {
             return;
         }
 
-        /*if (!this.expectedPlayers.contains(playerId)) {
-            final String message = this.requestPlayerJoin(playerId, false, false);
+        if (!this.expectedPlayers.contains(playerId)) {
+            final String message = this.requestPlayerJoin(playerId, false, HyriAPI.get().getConfig().isDevEnvironment());
 
             if (message != null) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, message);
                 return;
             }
-        }*/
+        }
 
         this.expectedPlayers.remove(playerId);
 

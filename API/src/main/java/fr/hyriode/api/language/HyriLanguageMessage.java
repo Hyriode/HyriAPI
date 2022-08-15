@@ -48,23 +48,23 @@ public class HyriLanguageMessage {
     /**
      * Add a value to message
      *
-     * @param HyriLanguage - Value's language
+     * @param language - Value's language
      * @param value - Value to add
      * @return - This message (useful to make inline pattern)
      */
-    public HyriLanguageMessage addValue(HyriLanguage HyriLanguage, String value) {
-        this.values.put(HyriLanguage, value);
+    public HyriLanguageMessage addValue(HyriLanguage language, String value) {
+        this.values.put(language, value);
         return this;
     }
 
     /**
      * Remove a value from the message
      *
-     * @param HyriLanguage - Value's HyriLanguage to remove
+     * @param language - Value's HyriLanguage to remove
      * @return - This message (useful to make inline pattern)
      */
-    public HyriLanguageMessage removeValue(HyriLanguage HyriLanguage) {
-        this.values.remove(HyriLanguage);
+    public HyriLanguageMessage removeValue(HyriLanguage language) {
+        this.values.remove(language);
         return this;
     }
 

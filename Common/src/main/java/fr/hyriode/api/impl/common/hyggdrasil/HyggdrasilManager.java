@@ -11,6 +11,7 @@ import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
 import fr.hyriode.hyggdrasil.api.event.model.HyggStartedEvent;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
@@ -18,6 +19,8 @@ import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyInfoPacket;
 import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
 import fr.hyriode.hyggdrasil.api.server.HyggServerState;
 import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
+import fr.hyriode.hylios.api.host.HostAPI;
+import fr.hyriode.hylios.api.host.HostData;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +85,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
         this.hyggdrasilAPI.stop();
     }
 
+    @Override
     public void sendData() {
         if (this.withHyggdrasil()) {
             final HyggApplication.Type type = this.getApplication().getType();
@@ -93,8 +97,13 @@ public class HyggdrasilManager implements IHyggdrasilManager {
                 packetProcessor.request(HyggChannel.PROXIES, new HyggProxyInfoPacket(HyggProxyState.valueOf(proxy.getState().name()), proxy.getPlayers(), proxy.getStartedTime())).exec();
             } else if (type == HyggApplication.Type.SERVER) {
                 final IHyriServer server = HyriAPI.get().getServer();
+                final HyggData data = server.getData();
 
-                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getPlayersPlaying(), server.getStartedTime(), new HyggServerOptions(), server.getData(), server.getSlots(), server.isAccessible())).exec();
+                if (server.isHost()) {
+                    data.add(HostAPI.DATA_KEY, HyriAPI.GSON.toJson(server.getHostData()));
+                }
+
+                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getPlayersPlaying(), server.getStartedTime(), new HyggServerOptions(), data, server.getSlots(), server.isAccessible())).exec();
             }
         }
     }

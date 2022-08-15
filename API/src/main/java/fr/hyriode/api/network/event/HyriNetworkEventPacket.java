@@ -39,12 +39,12 @@ public class HyriNetworkEventPacket extends HyriPacket {
         if (this.eventClass == null) {
             return null;
         }
+
         try {
             return Class.forName(this.eventClass);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**

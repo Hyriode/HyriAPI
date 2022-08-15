@@ -6,6 +6,8 @@ import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import fr.hyriode.hylios.api.host.HostAPI;
+import fr.hyriode.hylios.api.host.HostData;
 import fr.hyriode.hystia.api.config.IConfig;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
@@ -25,6 +27,7 @@ public class HyriServer implements IHyriServer {
     private final long startedTime;
     private final HyggData data;
     private int slots = -1;
+    private final HostData hostData;
     private boolean accessible;
 
     private IConfig config;
@@ -51,6 +54,7 @@ public class HyriServer implements IHyriServer {
         this.map = data.get(HyggServer.MAP_KEY);
         this.players = new ArrayList<>();
         this.playersPlaying = new ArrayList<>();
+        this.hostData = HyriAPI.get().getHyliosAPI().getHostAPI().getHostData(this.data);
     }
 
     @Override
@@ -134,6 +138,8 @@ public class HyriServer implements IHyriServer {
     @Override
     public void setSlots(int slots) {
         this.slots = slots;
+
+        this.hyggdrasilManager.sendData();
     }
 
     @Override
@@ -146,6 +152,7 @@ public class HyriServer implements IHyriServer {
         return this.map;
     }
 
+    @Override
     public void setMap(String map) {
         this.map = map;
         this.data.add(HyggServer.MAP_KEY, map);
@@ -156,6 +163,16 @@ public class HyriServer implements IHyriServer {
     @Override
     public HyggData getData() {
         return this.data;
+    }
+
+    @Override
+    public HostData getHostData() {
+        return this.hostData;
+    }
+
+    @Override
+    public boolean isHost() {
+        return this.hostData != null;
     }
 
     @Override

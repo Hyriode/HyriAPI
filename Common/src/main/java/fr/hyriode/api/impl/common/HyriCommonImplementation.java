@@ -7,10 +7,12 @@ import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.impl.common.booster.HyriBoosterManager;
 import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
 import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.game.HyriGameManager;
+import fr.hyriode.api.impl.common.host.HostConfigManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.language.HyriLanguageManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
@@ -27,6 +29,7 @@ import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
 import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
+import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -77,7 +80,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
     protected HyriCPlayerManager playerManager;
     protected IHyriPlayerSettingsManager playerSettingsManager;
-    protected IHyriLanguageManager languageManager;
+    protected HyriLanguageManager languageManager;
 
     protected IHyriBoosterManager boosterManager;
     protected IHyriMoneyManager moneyManager;
@@ -88,6 +91,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     protected IHyriChatChannelManager chatChannelManager;
 
     protected IHyriLeaderboardProvider leaderboardProvider;
+
+    protected IHostConfigManager hostConfigManager;
 
     private static BiConsumer<Level, String> logging;
 
@@ -119,6 +124,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.networkManager = new HyriNetworkManager();
         this.queueManager = new HyriQueueManager();
         this.gameManager = new HyriGameManager();
+        this.playerManager = new HyriCPlayerManager();
         this.playerSettingsManager = new HyriPlayerSettingsManager();
         this.languageManager = new HyriLanguageManager();
         this.boosterManager = new HyriBoosterManager();
@@ -127,9 +133,14 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.friendManager = new HyriFriendManager(this);
         this.chatChannelManager = new HyriChatChannelManager();
         this.leaderboardProvider = new HyriLeaderboardProvider();
+        this.hostConfigManager = new HostConfigManager();
 
-        this.languageManager.registerAdapter(IHyriPlayer.class, ((message, account) -> message.getValue(account.getSettings().getLanguage())));
-        this.languageManager.registerAdapter(UUID.class, (message, uuid) -> message.getValue(IHyriPlayer.get(uuid)));
+        this.languageManager.registerAdapter(IHyriPlayer.class, (message, account) -> message.getValue(account.getSettings().getLanguage()));
+        this.languageManager.registerAdapter(UUID.class, (message, uuid) -> {
+            final HyriLanguage cachedLanguage = this.languageManager.getCachedPlayerLanguage(uuid);
+
+            return cachedLanguage != null ? message.getValue(cachedLanguage) : message.getValue(IHyriPlayer.get(uuid));
+        });
     }
 
     public static void log(Level level, String message) {
@@ -252,7 +263,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     }
 
     @Override
-    public IHyriLanguageManager getLanguageManager() {
+    public HyriLanguageManager getLanguageManager() {
         return this.languageManager;
     }
 
@@ -284,6 +295,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public IHyriLeaderboardProvider getLeaderboardProvider() {
         return this.leaderboardProvider;
+    }
+
+    @Override
+    public IHostConfigManager getHostConfigManager() {
+        return this.hostConfigManager;
     }
 
 }

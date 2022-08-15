@@ -2,12 +2,15 @@ package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendManager;
+import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
+import fr.hyriode.api.player.event.PlayerJoinServerEvent;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
+import fr.hyriode.api.player.event.PlayerQuitServerEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import org.bukkit.ChatColor;
@@ -31,11 +34,12 @@ public class HyriJoinListener implements Listener {
 
     private final IHyriFriendManager friendManager;
 
+    private final HyriCommonImplementation hyriAPI;
     private final HyggdrasilManager hyggdrasilManager;
-
     private final HyriJoinManager joinManager;
 
-    public HyriJoinListener(HyggdrasilManager hyggdrasilManager, HyriJoinManager joinManager) {
+    public HyriJoinListener(HyriCommonImplementation hyriAPI, HyggdrasilManager hyggdrasilManager, HyriJoinManager joinManager) {
+        this.hyriAPI = hyriAPI;
         this.hyggdrasilManager = hyggdrasilManager;
         this.joinManager = joinManager;
         this.friendManager = HyriAPI.get().getFriendManager();
@@ -70,11 +74,15 @@ public class HyriJoinListener implements Listener {
             return;
         }
 
-        final IHyriParty party = HyriAPI.get().getPartyManager().getParty(account.getParty());
+        if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
+            player.setOp(true);
+        }
 
         event.setJoinMessage("");
 
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
+            final IHyriParty party = IHyriParty.get(account.getParty());
+
             account.setName(player.getName());
             account.setLastLoginDate(new Date(System.currentTimeMillis()));
 
@@ -92,15 +100,14 @@ public class HyriJoinListener implements Listener {
 
             playerManager.savePrefix(playerId, account.getNameWithRank());
 
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
-
             account.update();
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
 
-        if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
-            player.setOp(true);
-        }
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinServerEvent(playerId, HyriAPI.get().getServer().getName()));
 
+        this.hyriAPI.getLanguageManager().setCachedPlayerLanguage(playerId, account.getSettings().getLanguage());
         this.joinManager.onJoin(player);
 
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
@@ -135,12 +142,15 @@ public class HyriJoinListener implements Listener {
             this.friendManager.updateFriends(this.friendManager.createHandler(playerId));
             this.friendManager.removeCachedFriends(playerId);
 
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
-
             playerManager.removeCachedPlayer(playerId);
             playerManager.updatePlayer(account);
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
         }
 
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitServerEvent(playerId, HyriAPI.get().getServer().getName()));
+
+        this.hyriAPI.getLanguageManager().removeCachedPlayerLanguage(playerId);
         this.joinManager.onLogout(player);
 
         HyriAPI.get().getServer().removePlayer(playerId);
