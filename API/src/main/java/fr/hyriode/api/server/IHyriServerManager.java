@@ -80,6 +80,14 @@ public interface IHyriServerManager {
     void sendPlayerToServer(UUID playerUUID, String serverName);
 
     /**
+     * Send a spectator to a given server
+     *
+     * @param playerId The {@link UUID} of the spectator to send
+     * @param serverName A {@link String} which represents the name of a server
+     */
+    void sendSpectatorToServer(UUID playerId, String serverName);
+
+    /**
      * Send a party to a lobby
      *
      * @param partyId The {@link UUID} of the party

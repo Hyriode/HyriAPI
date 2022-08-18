@@ -10,6 +10,7 @@ import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.server.join.packet.HyriPartyJoinPacket;
 import fr.hyriode.api.server.join.packet.HyriPlayerJoinPacket;
+import fr.hyriode.api.server.join.packet.HyriPlayerSpectatePacket;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
@@ -107,6 +108,11 @@ public class HyriCServerManager implements IHyriServerManager {
     @Override
     public void sendPlayerToServer(UUID playerUUID, String serverName) {
         HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerJoinPacket(serverName, playerUUID));
+    }
+
+    @Override
+    public void sendSpectatorToServer(UUID playerId, String serverName) {
+        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerSpectatePacket(serverName, playerId));
     }
 
     @Override

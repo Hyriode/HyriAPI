@@ -89,7 +89,7 @@ public class NetworkLeveling implements IHyriLeveling {
         if (newLevel > oldLevel) {
             eventBus.publish(new HyriGainLevelEvent(account.getUniqueId(), this.name, oldLevel, newLevel));
         }
-        return oldExperience - this.experience;
+        return this.experience - oldExperience;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class NetworkLeveling implements IHyriLeveling {
         final Multiplier multiplier = Multiplier.getByPlayer(IHyriPlayer.get(this.playerId));
 
         if (multiplier != null) {
-            return (long) (experience * multiplier.getAmount());
+            return experience * multiplier.getAmount();
         }
         return experience;
     }

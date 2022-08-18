@@ -17,6 +17,10 @@ public interface IHyriJoinHandler {
         return currentResponse;
     }
 
+    default HyriJoinResponse requestSpectator(UUID player, HyriJoinResponse currentResponse) {
+        return currentResponse;
+    }
+
     default HyriJoinResponse requestPartyJoin(UUID partyId, HyriJoinResponse currentResponse) {
         return currentResponse;
     }
