@@ -29,10 +29,6 @@ repositories {
 }
 
 shadowJar {
-    dependencies {
-        exclude(dependency('fr.hyriode:hyriapi:.*'))
-    }
-
     configurations = [project.configurations.runtimeClasspath]
 }
 
@@ -69,7 +65,7 @@ publishing {
 }
 
 dependencies {
-    api 'fr.hyriode:hylios-api:1.0.2'
+    api 'fr.hyriode:hylios-api:1.0.3'
     api 'fr.hyriode:hystia-api:1.0.8'
     api 'org.slf4j:slf4j-nop:2.0.1'
     api 'com.google.guava:guava:31.1-jre'
