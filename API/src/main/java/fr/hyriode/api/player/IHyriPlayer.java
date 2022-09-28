@@ -5,7 +5,7 @@ import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.rank.HyriPlus;
+import fr.hyriode.api.rank.hyriplus.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
@@ -26,6 +26,13 @@ import java.util.UUID;
  * on 21/07/2021 at 18:40
  */
 public interface IHyriPlayer {
+
+    /**
+     * Check whether the player is premium or not
+     *
+     * @return <code>true</code> if the player is premium
+     */
+    boolean isPremium();
 
     /**
      * Check if the player is currently connected on the network
@@ -206,13 +213,6 @@ public interface IHyriPlayer {
      * @return The {@link HyriPlus} offer instance
      */
     HyriPlus getHyriPlus();
-
-    /**
-     * Set Hyri+ offer
-     *
-     * @param hyriPlus New {@link HyriPlus} offer instance
-     */
-    void setHyriPlus(HyriPlus hyriPlus);
 
     /**
      * Check if the player has Hyri+ offer
@@ -576,7 +576,7 @@ public interface IHyriPlayer {
      * Update the player account in cache
      */
     default void update() {
-        HyriAPI.get().getPlayerManager().updateCachedPlayer(this);
+        HyriAPI.get().getPlayerManager().updatePlayer(this);
     }
 
     /**

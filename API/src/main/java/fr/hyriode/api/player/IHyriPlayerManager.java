@@ -38,12 +38,13 @@ public interface IHyriPlayerManager {
     /**
      * Create a player with a given {@link UUID}
      *
+     * @param premium Set whether the player is a premium player
      * @param online Set if the player is currently connected on the network
      * @param uuid Player {@link UUID}
      * @param name Player name
      * @return The created player
      */
-    IHyriPlayer createPlayer(boolean online, UUID uuid, String name);
+    IHyriPlayer createPlayer(boolean premium, boolean online, UUID uuid, String name);
 
     /**
      * Get a player with a given {@link UUID}
@@ -66,9 +67,9 @@ public interface IHyriPlayerManager {
     }
 
     /**
-     * Update a player
+     * Update a player's account
      *
-     * @param player The {@linkplain IHyriPlayer player} to update
+     * @param player The {@link IHyriPlayer} object
      */
     void updatePlayer(IHyriPlayer player);
 
@@ -98,20 +99,6 @@ public interface IHyriPlayerManager {
 
         return playerId == null ? null : this.getCachedPlayer(playerId);
     }
-
-    /**
-     * Update a player in cache
-     *
-     * @param player The {@link IHyriPlayer} object
-     */
-    void updateCachedPlayer(IHyriPlayer player);
-
-    /**
-     * Remove a player with a given {@link UUID} from cache
-     *
-     * @param uuid The player {@link UUID}
-     */
-    void removeCachedPlayer(UUID uuid);
 
     /**
      * Kick a player from network with a given reason

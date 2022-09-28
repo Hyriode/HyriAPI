@@ -1,5 +1,6 @@
 package fr.hyriode.api.settings;
 
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.language.HyriLanguage;
 
 /**
@@ -148,5 +149,19 @@ public interface IHyriPlayerSettings {
      * @param chatChannel String
      */
     void setChatChannel(String chatChannel);
+
+    /**
+     * Get the color of the Hyri+ prefix
+     *
+     * @return A {@link HyriChatColor}
+     */
+    HyriChatColor getHyriPlusColor();
+
+    /**
+     * Set the color of the Hyri+ prefix
+     *
+     * @param color The new {@link HyriChatColor}
+     */
+    void setHyriPlusColor(HyriChatColor color);
 
 }

@@ -73,8 +73,8 @@ public class HyriCPlayerManager implements IHyriPlayerManager {
     }
 
     @Override
-    public IHyriPlayer createPlayer(boolean online, UUID uuid, String name) {
-        final HyriPlayer player = new HyriPlayer(online, name, uuid);
+    public IHyriPlayer createPlayer(boolean premium, boolean online, UUID uuid, String name) {
+        final HyriPlayer player = new HyriPlayer(premium, online, name, uuid);
 
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
             final HyriRank rank = new HyriRank(HyriPlayerRankType.PLAYER);
@@ -86,7 +86,8 @@ public class HyriCPlayerManager implements IHyriPlayerManager {
 
         this.accountsCollection.insertOne(BasicDBObject.parse(HyriAPI.GSON.toJson(player))).subscribe(new OperationSubscriber<>());
 
-        this.updateCachedPlayer(player);
+        player.update();
+
         this.setPlayerId(name, uuid);
 
         HyriAPI.get().getEventBus().publishAsync(new HyriAccountCreatedEvent(player));
@@ -114,27 +115,19 @@ public class HyriCPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void updatePlayer(IHyriPlayer player) {
-        this.accountsCollection.replaceOne(ACCOUNTS_FILTER.apply(player.getUniqueId()), BasicDBObject.parse(HyriAPI.GSON.toJson(player))).subscribe(new OperationSubscriber<>());
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
         this.accountsCollection.deleteOne(ACCOUNTS_FILTER.apply(uuid)).subscribe(new OperationSubscriber<>());
+
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid)));
     }
 
     @Override
     public IHyriPlayer getCachedPlayer(UUID uuid) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(PLAYERS_KEY.apply(uuid)), HyriPlayer.class));
-    }
-
-    @Override
-    public void updateCachedPlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
-    }
-
-    @Override
-    public void removeCachedPlayer(UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid)));
     }
 
     @Override

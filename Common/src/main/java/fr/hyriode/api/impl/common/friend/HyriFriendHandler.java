@@ -53,11 +53,10 @@ public class HyriFriendHandler implements IHyriFriendHandler {
         if (!this.areFriends(friend)) {
             this.addFriend0(friend);
 
-            HyriAPI.get().getFriendManager().createHandlerAsync(friend).whenComplete((friendHandler, throwable) -> {
-                friendHandler.addFriend0(this.owner);
+            final IHyriFriendHandler handler = HyriAPI.get().getFriendManager().createHandler(friend);
 
-                HyriAPI.get().getFriendManager().updateFriends(friendHandler);
-            });
+            handler.addFriend0(this.owner);
+            handler.update();
 
             this.update();
         }
@@ -72,11 +71,12 @@ public class HyriFriendHandler implements IHyriFriendHandler {
     public void removeFriend(IHyriFriend friend) {
         this.friends.remove(friend);
 
-        HyriAPI.get().getFriendManager().createHandlerAsync(friend.getUniqueId()).whenComplete((friendHandler, throwable) -> {
-            friendHandler.removeFriend0(this.owner);
+        final IHyriFriendHandler handler = HyriAPI.get().getFriendManager().createHandler(friend.getUniqueId());
 
-            HyriAPI.get().getFriendManager().updateFriends(friendHandler);
-        });
+        handler.removeFriend0(this.owner);
+        handler.update();
+
+        this.update();
 
         this.update();
     }
@@ -106,7 +106,7 @@ public class HyriFriendHandler implements IHyriFriendHandler {
 
     @Override
     public void update() {
-        HyriAPI.get().getFriendManager().saveFriendsInCache(this);
+        HyriAPI.get().getFriendManager().saveFriends(this);
     }
 
 }

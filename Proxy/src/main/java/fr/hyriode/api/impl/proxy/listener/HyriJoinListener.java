@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.impl.common.player.HyriPlayer;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
 import fr.hyriode.api.impl.proxy.task.HyriOnlinePlayersTask;
@@ -19,15 +20,14 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -54,27 +54,44 @@ public class HyriJoinListener implements Listener {
         this.reconnections = new ArrayList<>();
     }
 
-    @EventHandler
-    public void onLogin(LoginEvent event) {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPreLogin(PreLoginEvent event) {
         try {
             final PendingConnection connection = event.getConnection();
-            final UUID uuid = connection.getUniqueId();
             final String name = connection.getName();
-            IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(uuid);
+            final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
-            if (account != null && account.isOnline() && HyriAPI.get().getPlayerManager().getCachedPlayer(uuid) != null) {
-                event.setCancelled(true);
-                event.setCancelReason(MessageUtil.ALREADY_ONLINE);
+            UUID playerId = playerManager.getPlayerId(name);
+            IHyriPlayer account = playerId == null ? null : IHyriPlayer.get(playerId);
 
-                this.onlineTask.addPlayerToCheck(uuid);
+            if (account != null) {
+                if (account.isOnline()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.ALREADY_ONLINE);
+
+                    this.onlineTask.addPlayerToCheck(playerId);
+                } else if (!account.isPremium()) {
+                    final HyriPlayerLoader.MojangProfile mojangProfile = this.playerLoader.fetchMojangProfile(name);
+
+                    if (mojangProfile.isPremium()) {
+                        account = playerManager.createPlayer(true, false, mojangProfile.getPlayerId(), name);
+                    }
+                }
+
+                this.playerLoader.loadPlayerAccount(account, name);
+
+                event.setEncrypting(account.isPremium());
                 return;
             }
 
-            account = this.playerLoader.loadPlayerAccount(account, uuid, name);
+            final HyriPlayerLoader.MojangProfile mojangProfile = this.playerLoader.fetchMojangProfile(name);
 
-            if (!HyriAPI.get().getNetworkManager().getNetwork().getMaintenance().isActive() || account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(name)) {
-                HyriAPI.get().getFriendManager().saveFriendsInCache(HyriAPI.get().getFriendManager().createHandler(uuid));
-            }
+            playerId = mojangProfile.getPlayerId();
+            account = HyriAPI.get().getPlayerManager().createPlayer(mojangProfile.isPremium(), false, playerId, name);
+
+            this.playerLoader.loadPlayerAccount(account, name);
+
+            event.setEncrypting(account.isPremium());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -90,8 +107,10 @@ public class HyriJoinListener implements Listener {
         if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
             final UUID playerId = player.getUniqueId();
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(playerId);
+            final IHyriPlayer account = IHyriPlayer.get(playerId);
             final IHyriMaintenance maintenance = network.getMaintenance();
+
+            System.out.println(HyriAPI.GSON.toJson(account));
 
             event.setCancelled(true);
 

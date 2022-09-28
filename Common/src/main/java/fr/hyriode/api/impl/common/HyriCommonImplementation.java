@@ -30,7 +30,6 @@ import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
 import fr.hyriode.api.impl.common.server.HyriCServerManager;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
 import fr.hyriode.api.language.HyriLanguage;
-import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
@@ -130,7 +129,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.boosterManager = new HyriBoosterManager();
         this.moneyManager = new HyriMoneyManager();
         this.partyManager = new HyriPartyManager();
-        this.friendManager = new HyriFriendManager(this);
+        this.friendManager = new HyriFriendManager();
         this.chatChannelManager = new HyriChatChannelManager();
         this.leaderboardProvider = new HyriLeaderboardProvider();
         this.hostConfigManager = new HostConfigManager();

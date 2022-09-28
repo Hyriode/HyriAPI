@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.player;
 
+import com.google.gson.JsonObject;
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
@@ -9,9 +9,17 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.hylios.api.lobby.LobbyAPI;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,18 +30,59 @@ import java.util.UUID;
  */
 public class HyriPlayerLoader {
 
+    private static final String PROFILES_CACHE_KEY = "proxy-mojang-profiles:";
+
     private final HyriAPIPlugin plugin;
 
     public HyriPlayerLoader(HyriAPIPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public IHyriPlayer loadPlayerAccount(IHyriPlayer account, UUID uuid, String name) {
-        final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
+    public MojangProfile fetchMojangProfile(String playerName) {
+        final String key = PROFILES_CACHE_KEY + playerName;
+        final MojangProfile cachedProfile = HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String json = jedis.get(key);
 
-        if (account == null) {
-            account = playerManager.createPlayer(false, uuid, name);
+            return json == null ? null : HyriAPI.GSON.fromJson(json, MojangProfile.class);
+        });
+
+        if (cachedProfile != null) {
+            return cachedProfile;
         }
+
+        try (final CloseableHttpClient client = HttpClients.createDefault()) {
+            final HttpGet request = new HttpGet("https://api.mojang.com/users/profiles/minecraft/" + playerName);
+            final HttpResponse response = client.execute(request);
+            final int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode == 200 || statusCode == 204) {
+                final boolean premium = statusCode == 200;
+
+                MojangProfile profile;
+                if (premium) {
+                    final JsonObject body = HyriAPI.GSON.fromJson(EntityUtils.toString(response.getEntity()), JsonObject.class);
+
+                    profile = new MojangProfile(Util.getUUID(body.get("id").getAsString()), true);
+                } else {
+                    profile = new MojangProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
+                }
+
+                HyriAPI.get().getRedisProcessor().process(jedis -> {
+                    jedis.set(key, HyriAPI.GSON.toJson(profile));
+                    jedis.expire(key, 60 * 60L);
+                });
+
+                return profile;
+            } else {
+                throw new RuntimeException("An error occurred while requesting to Mojang!");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void loadPlayerAccount(IHyriPlayer account, String name) {
+        final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
         account.setName(name);
         account.setLastLoginDate(new Date(System.currentTimeMillis()));
@@ -41,10 +90,7 @@ public class HyriPlayerLoader {
         account.setParty(null);
         account.update();
 
-        playerManager.updatePlayer(account);
-        playerManager.setPlayerId(name, uuid);
-
-        return account;
+        playerManager.setPlayerId(name, account.getUniqueId());
     }
 
     public void handleDisconnection(ProxiedPlayer player) {
@@ -58,7 +104,7 @@ public class HyriPlayerLoader {
         this.plugin.getAPI().getHyggdrasilManager().sendData();
     }
 
-    public void unloadPlayerAccount(UUID uuid) {
+    private void unloadPlayerAccount(UUID uuid) {
         final IHyriPlayer account = IHyriPlayer.get(uuid);
         final IHyriPlayerManager pm = HyriAPI.get().getPlayerManager();
 
@@ -100,14 +146,28 @@ public class HyriPlayerLoader {
                 account.setNickname(null);
             }
 
-            final IHyriFriendManager friendManager = HyriAPI.get().getFriendManager();
-
-            friendManager.updateFriends(friendManager.createHandler(uuid));
-            friendManager.removeCachedFriends(uuid);
-
-            pm.updatePlayer(account);
-            pm.removeCachedPlayer(uuid);
+            account.update();
         }
+    }
+
+    public static class MojangProfile {
+
+        private final UUID playerId;
+        private final boolean premium;
+
+        public MojangProfile(UUID playerId, boolean premium) {
+            this.playerId = playerId;
+            this.premium = premium;
+        }
+
+        public UUID getPlayerId() {
+            return this.playerId;
+        }
+
+        public boolean isPremium() {
+            return this.premium;
+        }
+
     }
 
 }

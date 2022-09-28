@@ -15,7 +15,7 @@ import fr.hyriode.api.player.HyriPlayerData;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.rank.HyriPlus;
+import fr.hyriode.api.rank.hyriplus.HyriPlus;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
@@ -33,6 +33,7 @@ import java.util.*;
  */
 public class HyriPlayer implements IHyriPlayer {
 
+    private boolean premium;
     private boolean online;
 
     private String name;
@@ -44,7 +45,7 @@ public class HyriPlayer implements IHyriPlayer {
     private long playTime;
 
     private HyriRank rank;
-    private HyriPlus hyriPlus;
+    private final HyriPlus hyriPlus = new HyriPlus();
 
     private int availableHosts;
     private List<UUID> playersBannedFromHost = new ArrayList<>();
@@ -73,21 +74,25 @@ public class HyriPlayer implements IHyriPlayer {
 
     private final NetworkLeveling networkLeveling;
 
-    public HyriPlayer(boolean online, String name, UUID uuid) {
+    public HyriPlayer(boolean premium, boolean online, String name, UUID uuid) {
+        this.premium = premium;
         this.online = online;
         this.name = name;
         this.uuid = uuid;
         this.firstLoginDate = System.currentTimeMillis();
         this.lastLoginDate = this.firstLoginDate;
         this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
-        this.hyriPlus = null;
-        this.lastPrivateMessage = null;
         this.hyris = new Hyris(this.uuid);
-        this.party = null;
         this.settings = new HyriPlayerSettings();
-        this.moderationMode = false;
-        this.vanishMode = false;
         this.networkLeveling = new NetworkLeveling(this.uuid);
+    }
+
+    @Override
+    public boolean isPremium() {
+        if (!this.premium && this.firstLoginDate < 1664386495000L) {
+            this.premium = true;
+        }
+        return this.premium;
     }
 
     @Override
@@ -109,7 +114,7 @@ public class HyriPlayer implements IHyriPlayer {
         } else if (this.rank.isStaff()) {
             return prefix;
         } else if (this.hasHyriPlus() && this.rank.getPlayerType() == HyriPlayerRankType.EPIC) {
-            return prefix + this.hyriPlus.getPlusColor() + "+";
+            return prefix + this.settings.getHyriPlusColor() + "+";
         }
         return prefix;
     }
@@ -201,37 +206,20 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public HyriPlus getHyriPlus() {
-        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
-            final long currentTime = System.currentTimeMillis();
+        if (!this.hyriPlus.hasExpire()) {
+            return this.hyriPlus;
+        } else if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
+            this.hyriPlus.setDuration(1000L);
+            this.hyriPlus.enable();
 
-            return new HyriPlus(currentTime, currentTime + 2592000000L);
-        } else if (this.hyriPlus != null && this.hyriPlus.hasExpire()) {
-            this.hyriPlus = null;
-            return null;
-        } else  {
-            final List<HyriTransaction> transactions = this.getTransactions(HyriPlus.TRANSACTION_TYPE);
-
-            if (transactions != null) {
-                for (HyriTransaction transaction : transactions) {
-                    final HyriPlus hyriPlus = transaction.content(HyriPlus.class);
-
-                    if (hyriPlus != null && !hyriPlus.hasExpire()) {
-                        this.hyriPlus = hyriPlus;
-                    }
-                }
-            }
+            return this.hyriPlus;
         }
-        return this.hyriPlus;
-    }
-
-    @Override
-    public void setHyriPlus(HyriPlus hyriPlus) {
-        this.hyriPlus = hyriPlus;
+        return null;
     }
 
     @Override
     public boolean hasHyriPlus() {
-        return this.getHyriPlus() != null;
+        return this.hyriPlus.hasExpire();
     }
 
     @Override

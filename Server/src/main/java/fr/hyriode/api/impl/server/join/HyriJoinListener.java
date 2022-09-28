@@ -13,6 +13,7 @@ import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.event.PlayerQuitServerEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,7 +53,7 @@ public class HyriJoinListener implements Listener {
             final UUID uuid = event.getUniqueId();
 
             if (playerManager.getPlayer(uuid) == null) {
-                playerManager.createPlayer(true, uuid, event.getName());
+                playerManager.createPlayer(Bukkit.getServer().getOnlineMode(), true, uuid, event.getName());
             }
 
             this.joinManager.onLogin(event);
@@ -87,8 +88,6 @@ public class HyriJoinListener implements Listener {
             account.setLastLoginDate(new Date(System.currentTimeMillis()));
 
             playerManager.setPlayerId(account.getName(), playerId);
-
-            this.friendManager.saveFriendsInCache(this.friendManager.createHandler(playerId));
 
             account.setLastServer(account.getCurrentServer());
             account.setOnline(true);
@@ -138,12 +137,6 @@ public class HyriJoinListener implements Listener {
             }
 
             account.update();
-
-            this.friendManager.updateFriends(this.friendManager.createHandler(playerId));
-            this.friendManager.removeCachedFriends(playerId);
-
-            playerManager.removeCachedPlayer(playerId);
-            playerManager.updatePlayer(account);
 
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
         }

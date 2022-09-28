@@ -162,8 +162,7 @@ public class HyriQueueManager implements IHyriQueueManager {
 
     private QueueGroup createGroupFromParty(IHyriParty party) {
         final UUID leader = party.getLeader();
-        final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final QueuePlayer queueLeader = new QueuePlayer(leader, playerManager.getPlayer(leader).getPriority());
+        final QueuePlayer queueLeader = new QueuePlayer(leader, IHyriPlayer.get(leader).getPriority());
         final List<QueuePlayer> players = new ArrayList<>();
 
         for (UUID member : party.getMembers().keySet()) {
@@ -171,7 +170,7 @@ public class HyriQueueManager implements IHyriQueueManager {
                 continue;
             }
 
-            players.add(new QueuePlayer(member, playerManager.getPlayer(member).getPriority()));
+            players.add(new QueuePlayer(member, IHyriPlayer.get(member).getPriority()));
         }
         return new QueueGroup(party.getId(), queueLeader, players);
     }

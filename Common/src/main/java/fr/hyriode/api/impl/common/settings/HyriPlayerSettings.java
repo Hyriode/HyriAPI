@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.settings;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.HyriLanguageUpdatedEvent;
 import fr.hyriode.api.settings.HyriSettingsLevel;
@@ -26,6 +27,7 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     private HyriLanguage language = HyriLanguage.FR;
     private boolean autoQueueEnabled = true;
     private String chatChannel = HyriChatChannel.GLOBAL.getChannel();
+    private HyriChatColor hyriPlusColor = HyriChatColor.LIGHT_PURPLE;
 
     private transient UUID playerId;
 
@@ -149,6 +151,16 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     @Override
     public void setChatChannel(String chatChannel) {
         this.chatChannel = chatChannel;
+    }
+
+    @Override
+    public HyriChatColor getHyriPlusColor() {
+        return this.hyriPlusColor == null ? HyriChatColor.LIGHT_PURPLE : this.hyriPlusColor;
+    }
+
+    @Override
+    public void setHyriPlusColor(HyriChatColor color) {
+        this.hyriPlusColor = color;
     }
 
 }

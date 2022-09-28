@@ -30,6 +30,9 @@ public class MessageUtil {
     public static final BaseComponent[] PROFILE_ERROR = createKickMessage(new ComponentBuilder("Impossible de charger votre profil !").color(ChatColor.RED)
             .create(), true);
 
+    public static final BaseComponent[] RANDOM_ERROR = createKickMessage(new ComponentBuilder("Une erreur s'est produite durant la connexion !").color(ChatColor.RED)
+            .create(), true);
+
     public static final BaseComponent[] ALREADY_ONLINE = createKickMessage(new ComponentBuilder("Vous êtes déjà connecté sur le serveur !").color(ChatColor.RED)
             .create(), true);
 
