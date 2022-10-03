@@ -110,8 +110,6 @@ public class HyriJoinListener implements Listener {
             final IHyriPlayer account = IHyriPlayer.get(playerId);
             final IHyriMaintenance maintenance = network.getMaintenance();
 
-            System.out.println(HyriAPI.GSON.toJson(account));
-
             event.setCancelled(true);
 
             if (account.getRank().isSuperior(HyriStaffRankType.DESIGNER) || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {

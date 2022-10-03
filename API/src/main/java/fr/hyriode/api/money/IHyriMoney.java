@@ -63,16 +63,6 @@ public interface IHyriMoney {
     HyriChatColor getColor();
 
     /**
-     * Apply a multiplier on an amount of money for a given player
-     *
-     * @param currentAmount The amount to multiply
-     * @return The new multiplied amount
-     */
-    default long applyMultiplier(long currentAmount) {
-        return currentAmount;
-    }
-
-    /**
      * Get the money multiplier for a given account
      *
      * @param account The account of the player

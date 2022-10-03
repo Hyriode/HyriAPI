@@ -15,18 +15,15 @@ public class HyriBooster implements IHyriBooster {
     private final UUID identifier;
     private final String type;
     private final double multiplier;
-    private final UUID purchaser;
-    private final long purchaseDate;
+    private final UUID owner;
+    private final long duration;
 
-    private long expirationDate;
-    private long activatedDate;
-
-    public HyriBooster(String type, double multiplier, UUID purchaser, long purchaseDate) {
+    public HyriBooster(String type, double multiplier, UUID owner, long duration) {
         this.identifier = UUID.randomUUID();
         this.type = type;
         this.multiplier = multiplier;
-        this.purchaser = purchaser;
-        this.purchaseDate = purchaseDate;
+        this.owner = owner;
+        this.duration = duration;
     }
 
     @Override
@@ -45,36 +42,13 @@ public class HyriBooster implements IHyriBooster {
     }
 
     @Override
-    public UUID getPurchaser() {
-        return this.purchaser;
+    public UUID getOwner() {
+        return this.owner;
     }
 
     @Override
-    public Date getPurchaseDate() {
-        return new Date(this.purchaseDate);
-    }
-
-    @Override
-    public Date getActivatedDate() {
-        return new Date(this.activatedDate);
-    }
-
-    void setActivatedDate(long activatedDate) {
-        this.activatedDate = activatedDate;
-    }
-
-    @Override
-    public Date getExpirationDate() {
-        return new Date(this.expirationDate);
-    }
-
-    void setExpirationDate(long expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
-    @Override
-    public boolean isActive() {
-        return this.expirationDate <= this.activatedDate;
+    public long getDuration() {
+        return this.duration;
     }
 
 }

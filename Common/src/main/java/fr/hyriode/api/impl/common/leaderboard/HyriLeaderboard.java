@@ -4,12 +4,11 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.leaderboard.HyriLeaderboardScope;
 import fr.hyriode.api.leaderboard.HyriLeaderboardScore;
 import fr.hyriode.api.leaderboard.IHyriLeaderboard;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.resps.Tuple;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by AstFaster
@@ -97,22 +96,54 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public void setScore(HyriLeaderboardScope scope, UUID id, double score) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zadd(this.getKey(scope), score, id.toString()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final String key = this.getKey(scope);
+
+            jedis.zadd(key, score, id.toString());
+
+            this.checkExpiration(key, scope, jedis);
+        });
     }
 
     @Override
     public void incrementScore(HyriLeaderboardScope scope, UUID id, double score) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zincrby(this.getKey(scope), score, id.toString()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final String key = this.getKey(scope);
+
+            jedis.zincrby(key, score, id.toString());
+
+            this.checkExpiration(key, scope, jedis);
+        });
     }
 
     @Override
     public void removeScore(HyriLeaderboardScope scope, UUID id) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zrem(this.getKey(scope), id.toString()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final String key = this.getKey(scope);
+
+            jedis.zrem(key, id.toString());
+
+            this.checkExpiration(key, scope, jedis);
+        });
     }
 
     @Override
     public void clear(HyriLeaderboardScope scope) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getKey(scope)));
+    }
+
+    private void checkExpiration(String key, HyriLeaderboardScope scope, Jedis jedis) {
+        final long nextReset = scope.nextReset();
+
+        if (nextReset < 0) {
+            return;
+        }
+
+        final long ttl = jedis.ttl(key);
+
+        if (ttl == -1) {
+            jedis.expire(key, nextReset * 1000L);
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 package fr.hyriode.api.booster;
 
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -34,38 +33,17 @@ public interface IHyriBooster {
     double getMultiplier();
 
     /**
-     * Get the unique id of the purchaser of the booster
+     * Get the unique id of the booster's owner
      *
      * @return A player {@link UUID}
      */
-    UUID getPurchaser();
+    UUID getOwner();
 
     /**
-     * Get the date when the booster has been bought
+     * Get the duration of the booster
      *
-     * @return A {@link Date}
+     * @return A duration in seconds
      */
-    Date getPurchaseDate();
-
-    /**
-     * Get the date when the booster has been activated
-     *
-     * @return A {@link Date}
-     */
-    Date getActivatedDate();
-
-    /**
-     * Get the expiration date of a booster
-     *
-     * @return A {@link Date}
-     */
-    Date getExpirationDate();
-
-    /**
-     * Check if the booster is currently active
-     *
-     * @return <code>true</code> if the booster is active
-     */
-    boolean isActive();
+    long getDuration();
 
 }

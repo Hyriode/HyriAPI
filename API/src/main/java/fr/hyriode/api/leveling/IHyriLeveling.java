@@ -1,5 +1,7 @@
 package fr.hyriode.api.leveling;
 
+import java.util.Set;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -87,6 +89,20 @@ public interface IHyriLeveling {
     default double applyMultiplier(double experience) {
         return experience;
     }
+
+    /**
+     * Claim a reward of a level
+     *
+     * @param level The level to claim the reward
+     */
+    void claimReward(int level);
+
+    /**
+     * Get all claimed level's rewards
+     *
+     * @return A set of level number
+     */
+    Set<Integer> getClaimedRewards();
 
     /**
      * The interface that represents a leveling algorithm

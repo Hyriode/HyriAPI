@@ -69,7 +69,8 @@ public class HyriPlayerLoader {
 
                 HyriAPI.get().getRedisProcessor().process(jedis -> {
                     jedis.set(key, HyriAPI.GSON.toJson(profile));
-                    jedis.expire(key, 60 * 60L);
+                    // Save the fetched profile for 24 hours
+                    jedis.expire(key, 24 * 60 * 60L);
                 });
 
                 return profile;

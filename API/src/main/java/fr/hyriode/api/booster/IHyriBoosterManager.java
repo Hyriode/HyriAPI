@@ -10,32 +10,32 @@ import java.util.UUID;
  */
 public interface IHyriBoosterManager {
 
+    String GLOBAL_TYPE = "global";
+
     /**
      * Enable a booster on the network
      *
      * @param type The booster type
      * @param multiplier The multiplier of the booster
-     * @param purchaser The uuid of the player who purchased the booster
-     * @param purchaseDate The date when the booster was purchased
      * @param duration The duration of the booster (in seconds)
      * @return The created {@link IHyriBooster}
      */
-    IHyriBooster enableBooster(String type, double multiplier, UUID purchaser, long purchaseDate, int duration);
+    IHyriBooster enableBooster(String type, double multiplier, UUID owner, long duration);
 
     /**
      * Get all actives boosters on the network
      *
      * @return A list of {@link IHyriBooster}
      */
-    List<IHyriBooster> getActiveBoosters();
+    List<IHyriBooster> getBoosters();
 
     /**
      * Get all actives boosters with a given type on the network
      *
-     * @param type A booster type (ex: ALL, BEDWARS, THE_RUNNER, etc)
+     * @param type A booster type (ex: {@link IHyriBoosterManager#GLOBAL_TYPE}, bedwars, therunner, etc)
      * @return A list of {@link IHyriBooster}
      */
-    List<IHyriBooster> getActiveBoosters(String type);
+    List<IHyriBooster> getBoosters(String type);
 
     /**
      * Get an active booster by its identifier
@@ -44,29 +44,5 @@ public interface IHyriBoosterManager {
      * @return The {@link IHyriBooster} linked to the identifier
      */
     IHyriBooster getBooster(UUID identifier);
-
-    /**
-     * Add an active booster on the network.<br>
-     * Warning: the booster needs to be active before adding it!
-     *
-     * @param booster The booster to add on the network
-     */
-    void addBooster(IHyriBooster booster);
-
-    /**
-     * Remove a booster from the network by giving its identifier
-     *
-     * @param identifier The identifier of the booster
-     */
-    void removeBooster(UUID identifier);
-
-    /**
-     * Remove a booster from the network
-     *
-     * @param booster The booster to remove
-     */
-    default void removeBooster(IHyriBooster booster) {
-        this.removeBooster(booster.getIdentifier());
-    }
 
 }

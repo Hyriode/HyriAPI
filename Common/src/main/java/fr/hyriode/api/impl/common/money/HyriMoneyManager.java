@@ -1,12 +1,17 @@
 package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.booster.IHyriBooster;
+import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 
+import java.util.List;
 import java.util.UUID;
+
+import static fr.hyriode.api.money.IHyriMoneyAction.*;
 
 /**
  * Project: HyriAPI
@@ -18,17 +23,34 @@ public class HyriMoneyManager implements IHyriMoneyManager {
     @Override
     public long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
         final IHyriPlayer player = IHyriPlayer.get(playerId);
-        final IHyriMoneyAction.Type type = action.getType();
-        final long initial = action.getAmount();
-        final long amount = type == IHyriMoneyAction.Type.ADD ? (action.isMultiplier() ? money.applyMultiplier(initial) : initial) : initial;
+        final Type type = action.getType();
+
+        long amount = action.getAmount();
+        double multipliers = 1.0D;
+
+        if (action.isMultiplier() && action.getType() == Type.ADD) {
+            multipliers = money.getMultiplier(player);
+
+            // Fetching boosters to apply multipliers
+            final IHyriBoosterManager boosterManager = HyriAPI.get().getBoosterManager();
+            final List<IHyriBooster> boosters = boosterManager.getBoosters(HyriAPI.get().getServer().getType());
+
+            boosters.addAll(boosterManager.getBoosters(IHyriBoosterManager.GLOBAL_TYPE));
+
+            for (IHyriBooster booster : boosters) {
+                multipliers *= booster.getMultiplier();
+            }
+
+            amount = (long) (amount * multipliers);
+        }
 
         if (amount <= 0) {
             return amount;
         }
 
-        if (type == IHyriMoneyAction.Type.ADD) {
+        if (type == Type.ADD) {
             money.setAmount(money.getAmount() + amount);
-        } else if (type == IHyriMoneyAction.Type.REMOVE) {
+        } else if (type == Type.REMOVE) {
             final long newAmount = money.getAmount() - amount;
 
             if (newAmount >= 0) {
@@ -39,7 +61,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         }
 
         if (action.isMessage()) {
-            final String message = this.getMoneyMessage(player, action, amount, money);
+            final String message = this.getMoneyMessage(action, amount, multipliers, money);
 
             HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
         }
@@ -49,31 +71,17 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         return amount;
     }
 
-    @Override
-    public String getMoneyMessage(IHyriPlayer player, IHyriMoneyAction action, long finalAmount, IHyriMoney money) {
-        final IHyriMoneyAction.Type type = action.getType();
+    private String getMoneyMessage(IHyriMoneyAction action, long finalAmount, double multipliers, IHyriMoney money) {
+        final Type type = action.getType();
         final String reason = action.getReason();
+        final String sign = type == Type.ADD ? "+" : "-";
+        final boolean withMultipliers = type == Type.ADD && action.isMultiplier() && multipliers > 1.0D;
 
-        String sign = "";
-        if (type == IHyriMoneyAction.Type.ADD) {
-            sign = "+";
-        } else if (type == IHyriMoneyAction.Type.REMOVE) {
-            sign = "-";
-        }
-
-        final boolean isMultiplier = action.isMultiplier();
-        final int multiplier = (int) money.getMultiplier(player) * 100;
-        String content = isMultiplier || reason != null ? " (%s)" : null;
-
-        if (isMultiplier && reason != null) {
-            content = content.replace("%s", "+" + multiplier + "% ┃ " + reason);
-        } else if (isMultiplier) {
-            content = content.replace("%s", "+" + multiplier + "%");
-        } else if (reason != null) {
-            content = content.replace("%s", reason);
-        }
-
-        return money.getColor() + sign + finalAmount + " " + money.getName() + content;
+        return money.getColor() +
+                sign +
+                finalAmount + " " +
+                money.getName() + (withMultipliers ? ("+" + (int) (multipliers * 100)) + "%" + (reason != null ? " ┃ " + reason + ")" : ")") : "") +
+                (!withMultipliers && reason != null ? "(" + reason + ")" : "");
     }
 
 }

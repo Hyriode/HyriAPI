@@ -1,7 +1,5 @@
 package fr.hyriode.api.money;
 
-import fr.hyriode.api.player.IHyriPlayer;
-
 import java.util.UUID;
 
 /**
@@ -20,16 +18,5 @@ public interface IHyriMoneyManager {
      * @return The added/removed money
      */
     long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money);
-
-    /**
-     * Get a message to send to player when a reason is given
-     *
-     * @param player The player that will receive the message
-     * @param action The action done on the money
-     * @param money {@link IHyriMoney}
-     * @param finalAmount The final amount added/removed
-     * @return A formatted message
-     */
-    String getMoneyMessage(IHyriPlayer player, IHyriMoneyAction action, long finalAmount, IHyriMoney money);
 
 }
