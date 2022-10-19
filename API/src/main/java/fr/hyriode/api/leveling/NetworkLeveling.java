@@ -1,4 +1,4 @@
-package fr.hyriode.api.impl.common.leveling;
+package fr.hyriode.api.leveling;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.HyriBoosterTransaction;
@@ -207,7 +207,7 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_5(5, player -> {
-            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
+            HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.ONE_STAR);
         }),
         LEVEL_6(6, player -> {
             // TODO Give a cosmetic
@@ -225,7 +225,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_10(10, player -> {
             for (int i = 0; i < 2; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.ONE_STAR);
             }
         }),
         LEVEL_11(11, player -> {
@@ -247,7 +247,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_16(16, player -> {
             for (int i = 0; i < 4; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.ONE_STAR);
             }
         }),
         LEVEL_17(17, player -> {
@@ -268,7 +268,7 @@ public class NetworkLeveling implements IHyriLeveling {
             player.getHyriPlus().addColor(HyriChatColor.RED);
         }),
         LEVEL_22(22, player -> {
-            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
+            HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.TWO_STARS);
         }),
         LEVEL_23(23, player -> {
 
@@ -292,7 +292,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_29(29, player -> {
             for (int i = 0; i < 2; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.TWO_STARS);
             }
         }),
         LEVEL_30(30, player -> {
@@ -322,7 +322,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_37(37, player -> {
             for (int i = 0; i < 4; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.TWO_STARS);
             }
         }),
         LEVEL_38(38, player -> {
@@ -343,7 +343,7 @@ public class NetworkLeveling implements IHyriLeveling {
             player.getHyriPlus().addColor(HyriChatColor.YELLOW);
         }),
         LEVEL_43(43, player -> {
-            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
+            HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.THREE_STARS);
         }),
         LEVEL_44(44, player -> {
             HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
@@ -367,7 +367,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_50(50, player -> {
             for (int i = 0; i < 2; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.THREE_STARS);
             }
         }),
         LEVEL_51(51, player -> {
@@ -386,7 +386,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_55(55, player -> {
             for (int i = 0; i < 4; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.THREE_STARS);
             }
         }),
         LEVEL_56(56, player -> {
@@ -407,7 +407,7 @@ public class NetworkLeveling implements IHyriLeveling {
 
         }),
         LEVEL_61(61, player -> {
-            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
+            HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FOUR_STARS);
         }),
         LEVEL_62(62, player -> {
             player.getHyris().add(10000)
@@ -433,7 +433,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_68(68, player -> {
             for (int i = 0; i < 2; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FOUR_STARS);
             }
         }),
         LEVEL_69(69, player -> {
@@ -458,7 +458,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_75(75, player -> {
             for (int i = 0; i < 4; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FOUR_STARS);
             }
         }),
         LEVEL_76(76, player -> {
@@ -484,7 +484,7 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_82(82, player -> {
-            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
+            HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FIVE_STARS);
         }),
         LEVEL_83(83, player -> {
             player.getHyriPlus().addColor(HyriChatColor.DARK_AQUA);
@@ -505,7 +505,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_88(88, player -> {
             for (int i = 0; i < 2; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FIVE_STARS);
             }
         }),
         LEVEL_89(89, player -> {
@@ -530,7 +530,7 @@ public class NetworkLeveling implements IHyriLeveling {
         }),
         LEVEL_95(95, player -> {
             for (int i = 0; i < 4; i++) {
-                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
+                HyriAPI.get().getLootboxManager().giveLootbox(player, HyriLootboxRarity.FIVE_STARS);
             }
         }),
         LEVEL_96(96, player -> {

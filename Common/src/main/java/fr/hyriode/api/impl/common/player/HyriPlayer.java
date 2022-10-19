@@ -9,7 +9,7 @@ import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.impl.common.transaction.HyriTransaction;
 import fr.hyriode.api.leveling.IHyriLeveling;
-import fr.hyriode.api.impl.common.leveling.NetworkLeveling;
+import fr.hyriode.api.leveling.NetworkLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
 import fr.hyriode.api.player.IHyriPlayer;

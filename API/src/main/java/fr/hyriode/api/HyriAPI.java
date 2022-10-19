@@ -12,6 +12,7 @@ import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
+import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IHyriMongoDB;
 import fr.hyriode.api.network.IHyriNetworkManager;
@@ -284,6 +285,13 @@ public abstract class HyriAPI {
      * @return The {@link IHostConfigManager} instance
      */
     public abstract IHostConfigManager getHostConfigManager();
+
+    /**
+     * Get the {@link IHyriLootboxManager} instance
+     *
+     * @return The {@link IHyriLootboxManager} instance
+     */
+    public abstract IHyriLootboxManager getLootboxManager();
 
     /**
      * Get the instance of {@link HyriAPI}

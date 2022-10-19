@@ -39,6 +39,14 @@ public interface IHyriBoosterManager {
     void giveBooster(IHyriPlayer player, String type, double multiplier, long duration);
 
     /**
+     * Get the owned boosters of a player
+     *
+     * @param player The player
+     * @return A list of {@link HyriBoosterTransaction}
+     */
+    List<HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player);
+
+    /**
      * Get all actives boosters on the network
      *
      * @return A list of {@link IHyriBooster}

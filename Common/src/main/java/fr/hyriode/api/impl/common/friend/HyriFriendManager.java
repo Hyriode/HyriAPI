@@ -32,7 +32,7 @@ public class HyriFriendManager implements IHyriFriendManager {
             if (json != null) {
                 return HyriAPI.GSON.fromJson(json, HyriFriends.class).getFriends();
             }
-            return null;
+            return new ArrayList<>();
         });
     }
 
