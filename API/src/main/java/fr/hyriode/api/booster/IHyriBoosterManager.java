@@ -1,5 +1,7 @@
 package fr.hyriode.api.booster;
 
+import fr.hyriode.api.player.IHyriPlayer;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -10,17 +12,31 @@ import java.util.UUID;
  */
 public interface IHyriBoosterManager {
 
+    /** The booster will be applied multiplier over all games */
     String GLOBAL_TYPE = "global";
+    /** The booster type will be selected at the activation */
+    String SELECTABLE_TYPE = "selectable";
 
     /**
      * Enable a booster on the network
      *
+     * @param owner The owner of the booster
      * @param type The booster type
      * @param multiplier The multiplier of the booster
      * @param duration The duration of the booster (in seconds)
      * @return The created {@link IHyriBooster}
      */
-    IHyriBooster enableBooster(String type, double multiplier, UUID owner, long duration);
+    IHyriBooster enableBooster(UUID owner, String type, double multiplier, long duration);
+
+    /**
+     * Give a booster to a given player
+     *
+     * @param player The player account
+     * @param type The type of the booster to give
+     * @param multiplier The multiplier of the booster
+     * @param duration The duration of the booster (in seconds)
+     */
+    void giveBooster(IHyriPlayer player, String type, double multiplier, long duration);
 
     /**
      * Get all actives boosters on the network

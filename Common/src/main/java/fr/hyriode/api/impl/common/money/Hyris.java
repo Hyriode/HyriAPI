@@ -28,11 +28,6 @@ public class Hyris extends HyriMoney {
     }
 
     @Override
-    public long applyMultiplier(long currentAmount) {
-        return (int) (currentAmount * this.getMultiplier(IHyriPlayer.get(this.playerUUID)));
-    }
-
-    @Override
     public double getMultiplier(IHyriPlayer account) {
         final Multiplier multiplier = Multiplier.getByPlayer(account);
 

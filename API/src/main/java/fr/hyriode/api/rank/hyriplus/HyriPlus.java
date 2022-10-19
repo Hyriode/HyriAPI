@@ -1,9 +1,10 @@
 package fr.hyriode.api.rank.hyriplus;
 
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.transaction.IHyriTransactionContent;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Project: HyriAPI
@@ -22,11 +23,52 @@ public class HyriPlus {
     /** The timestamp when the Hyri+ has been enabled */
     private long enabledDate = -1;
 
+    /** The color of the Hyri+ */
+    private HyriChatColor color = HyriChatColor.LIGHT_PURPLE;
+    /** The colors possessed by the player */
+    private final List<HyriChatColor> colors = new ArrayList<>(Collections.singletonList(HyriChatColor.LIGHT_PURPLE));
+
     /**
      * Enabled the Hyri+
      */
     public void enable() {
         this.enabledDate = System.currentTimeMillis();
+    }
+
+    /**
+     * Get the color of the Hyri+
+     *
+     * @return The {@link HyriChatColor} of the Hyri+
+     */
+    public HyriChatColor getColor() {
+        return this.color;
+    }
+
+    /**
+     * Set the color of the Hyri+
+     *
+     * @param color The new color of the Hyri+
+     */
+    public void setColor(HyriChatColor color) {
+        this.color = color;
+    }
+
+    /**
+     * Get the list of unlocked colors
+     *
+     * @return A list of {@link HyriChatColor}
+     */
+    public List<HyriChatColor> getColors() {
+        return this.colors;
+    }
+
+    /**
+     * Add an unlocked color
+     *
+     * @param color A {@link HyriChatColor} to add
+     */
+    public void addColor(HyriChatColor color) {
+        this.colors.add(color);
     }
 
     /**

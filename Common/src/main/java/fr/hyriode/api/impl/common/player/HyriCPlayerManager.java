@@ -25,6 +25,8 @@ import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -35,7 +37,7 @@ import java.util.function.Function;
  */
 public class HyriCPlayerManager implements IHyriPlayerManager {
 
-    private static final Function<UUID, String> PLAYERS_KEY = uuid -> "players:" + uuid.toString();
+    private static final Function<String, String> PLAYERS_KEY = uuid -> "players:" + uuid;
     private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
     private static final Function<UUID, String> PREFIX_KEY = uuid -> "players-prefix:" + uuid.toString();
     private static final Function<UUID, Bson> ACCOUNTS_FILTER = uuid -> Filters.eq("uuid", uuid.toString());
@@ -115,19 +117,41 @@ public class HyriCPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void updatePlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId()), HyriAPI.GSON.toJson(player)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId().toString()), HyriAPI.GSON.toJson(player)));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
         this.accountsCollection.deleteOne(ACCOUNTS_FILTER.apply(uuid)).subscribe(new OperationSubscriber<>());
 
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid.toString())));
     }
 
     @Override
     public IHyriPlayer getCachedPlayer(UUID uuid) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(PLAYERS_KEY.apply(uuid)), HyriPlayer.class));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(PLAYERS_KEY.apply(uuid.toString())), HyriPlayer.class));
+    }
+
+    @Override
+    public List<IHyriPlayer> getPlayers() {
+        final List<IHyriPlayer> players = new ArrayList<>();
+
+        for (UUID playerId : this.getPlayersId()) {
+            players.add(this.getPlayer(playerId));
+        }
+        return players;
+    }
+
+    @Override
+    public List<UUID> getPlayersId() {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final List<UUID> uuids = new ArrayList<>();
+
+            for (String key : jedis.keys(PLAYERS_KEY.apply("*"))) {
+                uuids.add(UUID.fromString(key.split(":")[1]));
+            }
+            return uuids;
+        });
     }
 
     @Override

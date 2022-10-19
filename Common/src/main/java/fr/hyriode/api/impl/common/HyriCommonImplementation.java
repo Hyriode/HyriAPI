@@ -40,6 +40,7 @@ import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
 import fr.hyriode.hylios.api.HyliosAPI;
+import fr.hyriode.hyreos.api.HyreosAPI;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
@@ -70,6 +71,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     protected HyggdrasilManager hyggdrasilManager;
     protected IHystiaAPI hystiaAPI;
     protected HyliosAPI hyliosAPI;
+    protected HyreosAPI hyreosAPI;
 
     protected HyriNetworkManager networkManager;
     protected HyriCServerManager serverManager;
@@ -105,6 +107,7 @@ public abstract class HyriCommonImplementation extends HyriAPI {
 
         log("Registered " + this.getClass().getName() + " as an implementation of " + NAME + ".");
 
+        this.scheduler = new HyriScheduler();
         this.hyggdrasilManager = new HyggdrasilManager(logger, () -> this, environment);
         this.redisConnection = new HyriRedisConnection(this);
         this.proxyManager = new HyriProxyManager(this);
@@ -117,9 +120,9 @@ public abstract class HyriCommonImplementation extends HyriAPI {
         this.mongoDB.startConnection();
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.scheduler = new HyriScheduler();
         this.hystiaAPI = new Hystia(this.mongoDB.getClient());
         this.hyliosAPI = new HyliosAPI();
+        this.hyreosAPI = new HyreosAPI(this.pubSub.getRedisConnection().getPool());
         this.networkManager = new HyriNetworkManager();
         this.queueManager = new HyriQueueManager();
         this.gameManager = new HyriGameManager();
@@ -156,6 +159,8 @@ public abstract class HyriCommonImplementation extends HyriAPI {
             this.redisProcessor.stop();
             this.redisConnection.stop();
         }
+
+        this.hyreosAPI.stop();
         this.mongoDB.stopConnection();
         this.scheduler.stop();
         this.hyggdrasilManager.stop();
@@ -224,6 +229,11 @@ public abstract class HyriCommonImplementation extends HyriAPI {
     @Override
     public HyliosAPI getHyliosAPI() {
         return this.hyliosAPI;
+    }
+
+    @Override
+    public HyreosAPI getHyreosAPI() {
+        return null;
     }
 
     @Override

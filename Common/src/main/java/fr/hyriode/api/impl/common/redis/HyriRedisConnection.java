@@ -8,7 +8,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -48,7 +47,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
         this.connect();
 
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+        HyriAPI.get().getScheduler().schedule(() -> {
             try {
                 this.getResource().close();
             } catch (Exception e) {

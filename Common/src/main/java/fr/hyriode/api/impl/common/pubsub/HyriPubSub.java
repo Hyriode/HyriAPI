@@ -10,6 +10,7 @@ import fr.hyriode.api.packet.event.HyriPacketSendEvent;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.redis.IHyriRedisConnection;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.HashMap;
@@ -34,14 +35,14 @@ public class HyriPubSub implements IHyriPubSub {
     private boolean running;
 
     private final Sender sender;
-    private final HyriPubSubSubscriber subscriber;
+    private final Subscriber subscriber;
 
     private final IHyriRedisConnection redisConnection;
 
     public HyriPubSub() {
         this.redisConnection = HyriAPI.get().getRedisConnection().clone();
         this.sender = new Sender();
-        this.subscriber = new HyriPubSubSubscriber();
+        this.subscriber = new Subscriber();
 
         this.start();
     }
@@ -56,11 +57,7 @@ public class HyriPubSub implements IHyriPubSub {
 
         this.subscriberThread = new Thread(() -> {
             while (this.running) {
-                try (final Jedis jedis = this.redisConnection.getResource()) {
-                    jedis.psubscribe(this.subscriber, CHANNEL_PREFIX + "*");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                HyriAPI.get().getRedisProcessor().process(jedis -> jedis.psubscribe(this.subscriber, CHANNEL_PREFIX + "*"));
             }
         });
         this.subscriberThread.start();
@@ -68,6 +65,11 @@ public class HyriPubSub implements IHyriPubSub {
 
     public void stop() {
         HyriCommonImplementation.log("Stopping Redis PubSub...");
+
+        final JedisPool pool = this.redisConnection.getPool();
+
+        pool.close();
+        pool.destroy();
 
         this.sender.running = this.running = false;
 
@@ -102,6 +104,10 @@ public class HyriPubSub implements IHyriPubSub {
     @Override
     public void send(String channel, HyriPacket packet) {
         this.send(channel, packet, null);
+    }
+
+    public IHyriRedisConnection getRedisConnection() {
+        return this.redisConnection;
     }
 
     private class Sender implements Runnable {
@@ -168,7 +174,7 @@ public class HyriPubSub implements IHyriPubSub {
 
     }
 
-    private static class HyriPubSubSubscriber extends JedisPubSub {
+    private static class Subscriber extends JedisPubSub {
 
         private final Map<String, Set<IHyriPacketReceiver>> receivers = new HashMap<>();
 
@@ -196,7 +202,7 @@ public class HyriPubSub implements IHyriPubSub {
                 return;
             }
 
-            final Set<IHyriPacketReceiver> receivers = this.receivers.get(event.getChannel());
+            final Set<IHyriPacketReceiver> receivers = this.receivers.get(channel);
 
             if (receivers != null) {
                 receivers.forEach(receiver -> receiver.receive(event.getChannel(), event.getPacket()));

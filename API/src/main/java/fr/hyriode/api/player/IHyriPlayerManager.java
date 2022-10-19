@@ -3,6 +3,7 @@ package fr.hyriode.api.player;
 import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -99,6 +100,22 @@ public interface IHyriPlayerManager {
 
         return playerId == null ? null : this.getCachedPlayer(playerId);
     }
+
+    /**
+     * Get all registered players on the network.<br>
+     * Warning: This method is extremely costly in performance. Indeed, it will query the database of each player account and deserialize them.
+     *
+     * @return A list of {@link IHyriPlayer}
+     */
+    List<IHyriPlayer> getPlayers();
+
+    /**
+     * Get all registered players' {@link UUID} on the network.<br>
+     * Warning: This method is extremely costly in performance. Indeed, it will query the database each player {@link UUID}.
+     *
+     * @return A list of {@link UUID}
+     */
+    List<UUID> getPlayersId();
 
     /**
      * Kick a player from network with a given reason

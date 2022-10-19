@@ -26,6 +26,16 @@ repositories {
             password System.getenv('TOKEN')
         }
     }
+
+    maven {
+        name = 'Hyreos_maven'
+        url = 'https://maven.pkg.github.com/Hyriode/Hyreos/'
+
+        credentials {
+            username System.getenv('USERNAME')
+            password System.getenv('TOKEN')
+        }
+    }
 }
 
 shadowJar {
@@ -67,6 +77,7 @@ publishing {
 dependencies {
     api 'fr.hyriode:hylios-api:1.0.3'
     api 'fr.hyriode:hystia-api:1.0.8'
+    api 'fr.hyriode:hyreos-api:1.0.0'
     api 'org.slf4j:slf4j-nop:2.0.1'
     api 'com.google.guava:guava:31.1-jre'
     api 'org.mongodb:mongodb-driver-reactivestreams:4.7.1'

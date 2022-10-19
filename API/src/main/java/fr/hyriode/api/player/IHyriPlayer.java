@@ -524,6 +524,17 @@ public interface IHyriPlayer {
     boolean addTransaction(String type, String name, IHyriTransactionContent content);
 
     /**
+     * Add a transaction to the player account but with an auto-generated name
+     *
+     * @param type The type of transaction to add
+     * @param content The content of the transaction
+     * @return <code>true</code> if the transaction has been added and doesn't already exist
+     */
+    default boolean addTransaction(String type, IHyriTransactionContent content) {
+        return this.addTransaction(type, UUID.randomUUID().toString().split("-")[0], content);
+    }
+
+    /**
      * Remove a transaction by giving its type and name
      *
      * @param type The type of the transaction to remove

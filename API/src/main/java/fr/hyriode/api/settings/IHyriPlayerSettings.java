@@ -150,18 +150,4 @@ public interface IHyriPlayerSettings {
      */
     void setChatChannel(String chatChannel);
 
-    /**
-     * Get the color of the Hyri+ prefix
-     *
-     * @return A {@link HyriChatColor}
-     */
-    HyriChatColor getHyriPlusColor();
-
-    /**
-     * Set the color of the Hyri+ prefix
-     *
-     * @param color The new {@link HyriChatColor}
-     */
-    void setHyriPlusColor(HyriChatColor color);
-
 }

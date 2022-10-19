@@ -29,6 +29,7 @@ import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
 import fr.hyriode.hylios.api.HyliosAPI;
+import fr.hyriode.hyreos.api.HyreosAPI;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
@@ -171,6 +172,13 @@ public abstract class HyriAPI {
      * @return The {@link HyliosAPI} instance
      */
     public abstract HyliosAPI getHyliosAPI();
+
+    /**
+     * Get the Hyreos API instance
+     *
+     * @return The {@link HyreosAPI} instance
+     */
+    public abstract HyreosAPI getHyreosAPI();
 
     /**
      * Get the class that can be used to get or edit information of the network

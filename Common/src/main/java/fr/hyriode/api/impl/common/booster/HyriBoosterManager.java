@@ -2,15 +2,16 @@ package fr.hyriode.api.impl.common.booster;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.HyriBoosterEvent;
+import fr.hyriode.api.booster.HyriBoosterTransaction;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
+import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Project: HyriAPI
@@ -23,7 +24,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     private static final BiFunction<String, UUID, String> KEY_FORMATTER = (type, uuid) -> type + KEY + uuid.toString();
 
     @Override
-    public IHyriBooster enableBooster(String type, double multiplier, UUID owner, long duration) {
+    public IHyriBooster enableBooster(UUID owner, String type, double multiplier, long duration) {
         final IHyriBooster booster = new HyriBooster(type, multiplier, owner, duration);
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
@@ -36,6 +37,12 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriBoosterEvent(booster));
 
         return booster;
+    }
+
+    @Override
+    public void giveBooster(IHyriPlayer player, String type, double multiplier, long duration) {
+        player.addTransaction(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(type, multiplier, duration));
+        player.update();
     }
 
     @Override

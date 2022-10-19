@@ -1,11 +1,17 @@
 package fr.hyriode.api.impl.common.leveling;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.booster.HyriBoosterTransaction;
+import fr.hyriode.api.booster.IHyriBoosterManager;
+import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.leveling.event.HyriGainLevelEvent;
 import fr.hyriode.api.leveling.event.HyriGainXPEvent;
+import fr.hyriode.api.lootbox.HyriLootboxRarity;
+import fr.hyriode.api.lootbox.HyriLootboxTransaction;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.rank.hyriplus.HyriPlusTransaction;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 
 import java.util.HashSet;
@@ -112,7 +118,13 @@ public class NetworkLeveling implements IHyriLeveling {
     public void claimReward(int level) {
         this.claimedRewards.add(level);
 
-        Reward.get(level).claim(IHyriPlayer.get(this.playerId));
+        final Reward reward = Reward.get(level);
+
+        if (reward == null) {
+            return;
+        }
+
+        reward.claim(IHyriPlayer.get(this.playerId));
     }
 
     @Override
@@ -195,16 +207,16 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_5(5, player -> {
-            // TODO Give a 1 star lootbox
+            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
         }),
         LEVEL_6(6, player -> {
             // TODO Give a cosmetic
         }),
         LEVEL_7(7, player -> {
-            // TODO Give Aqua + color
+            player.getHyriPlus().addColor(HyriChatColor.AQUA);
         }),
         LEVEL_8(8, player -> {
-            // TODO Give a cosmetic
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_9(9, player -> {
             player.getHyris().add(2000)
@@ -212,19 +224,21 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_10(10, player -> {
-            // TODO Give 2 1 star lootbox
+            for (int i = 0; i < 2; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
+            }
         }),
         LEVEL_11(11, player -> {
 
         }),
         LEVEL_12(12, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_13(13, player -> {
 
         }),
         LEVEL_14(14, player -> {
-            // TODO Give White + color
+            player.getHyriPlus().addColor(HyriChatColor.WHITE);
         }),
         LEVEL_15(15, player -> {
             player.getHyris().add(1500)
@@ -232,10 +246,12 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_16(16, player -> {
-            // TODO Give 4 1 star lootbox
+            for (int i = 0; i < 4; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.ONE_STAR));
+            }
         }),
         LEVEL_17(17, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_18(18, player -> {
             // TODO Give a cosmetic
@@ -246,19 +262,19 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_20(20, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_21(21, player -> {
-            // TODO Give Red + color
+            player.getHyriPlus().addColor(HyriChatColor.RED);
         }),
         LEVEL_22(22, player -> {
-            // TODO Give a 2 star lootbox
+            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
         }),
         LEVEL_23(23, player -> {
 
         }),
         LEVEL_24(24, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_25(25, player -> {
             player.getHyris().add(5000)
@@ -272,13 +288,15 @@ public class NetworkLeveling implements IHyriLeveling {
             // TODO Give a cosmetic
         }),
         LEVEL_28(28, player -> {
-            // TODO Give Gray + color
+            player.getHyriPlus().addColor(HyriChatColor.GRAY);
         }),
         LEVEL_29(29, player -> {
-            // TODO Give 2 2 star lootbox
+            for (int i = 0; i < 2; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
+            }
         }),
         LEVEL_30(30, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 1.75D, 3600);
         }),
         LEVEL_31(31, player -> {
             player.getHyris().add(6000)
@@ -292,10 +310,10 @@ public class NetworkLeveling implements IHyriLeveling {
 
         }),
         LEVEL_34(34, player -> {
-            // TODO Give a global booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.GLOBAL_TYPE, 1.75D, 3600);
         }),
         LEVEL_35(35, player -> {
-            // TODO Give Blue + color
+            player.getHyriPlus().addColor(HyriChatColor.BLUE);
         }),
         LEVEL_36(36, player -> {
             player.getHyris().add(7000)
@@ -303,13 +321,15 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_37(37, player -> {
-            // TODO Give 4 2 star lootbox
+            for (int i = 0; i < 4; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.TWO_STARS));
+            }
         }),
         LEVEL_38(38, player -> {
             // TODO Give a cosmetic
         }),
         LEVEL_39(39, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_40(40, player -> {
             player.setAvailableHosts(player.getAvailableHosts() + 1);
@@ -320,13 +340,13 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_42(42, player -> {
-            // TODO Give Yellow + color
+            player.getHyriPlus().addColor(HyriChatColor.YELLOW);
         }),
         LEVEL_43(43, player -> {
-            // TODO Give a 3 star lootbox
+            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
         }),
         LEVEL_44(44, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_45(45, player -> {
 
@@ -340,13 +360,15 @@ public class NetworkLeveling implements IHyriLeveling {
             // TODO Give a cosmetic
         }),
         LEVEL_48(48, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_49(49, player -> {
-            // TODO Give DarkGray + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_GRAY);
         }),
         LEVEL_50(50, player -> {
-            // TODO Give 2 3 star lootbox
+            for (int i = 0; i < 2; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
+            }
         }),
         LEVEL_51(51, player -> {
 
@@ -357,16 +379,18 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_53(53, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_54(54, player -> {
 
         }),
         LEVEL_55(55, player -> {
-            // TODO Give 4 3 star lootbox
+            for (int i = 0; i < 4; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.THREE_STARS));
+            }
         }),
         LEVEL_56(56, player -> {
-            // TODO Give Green + color
+            player.getHyriPlus().addColor(HyriChatColor.GREEN);
         }),
         LEVEL_57(57, player -> {
             player.getHyris().add(10000)
@@ -374,7 +398,7 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_58(58, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_59(59, player -> {
             // TODO Give a cosmetic
@@ -383,7 +407,7 @@ public class NetworkLeveling implements IHyriLeveling {
 
         }),
         LEVEL_61(61, player -> {
-            // TODO Give a 4 star lootbox
+            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
         }),
         LEVEL_62(62, player -> {
             player.getHyris().add(10000)
@@ -391,10 +415,10 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_63(63, player -> {
-            // TODO Give a DarkRed + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_RED);
         }),
         LEVEL_64(64, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.25D, 3600);
         }),
         LEVEL_65(65, player -> {
             player.setAvailableHosts(player.getAvailableHosts() + 1);
@@ -408,13 +432,15 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_68(68, player -> {
-            // TODO Give 2 4 star lootbox
+            for (int i = 0; i < 2; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
+            }
         }),
         LEVEL_69(69, player -> {
-            // TODO Give DarkBlue + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_BLUE);
         }),
         LEVEL_70(70, player -> {
-            // TODO Give a global booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.GLOBAL_TYPE, 2.25D, 3600);
         }),
         LEVEL_71(71, player -> {
             // TODO Give a cosmetic
@@ -428,13 +454,15 @@ public class NetworkLeveling implements IHyriLeveling {
 
         }),
         LEVEL_74(74, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.75D, 3600);
         }),
         LEVEL_75(75, player -> {
-            // TODO Give 4 4 star lootbox
+            for (int i = 0; i < 4; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FOUR_STARS));
+            }
         }),
         LEVEL_76(76, player -> {
-            // TODO Give DarkGreen + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_GREEN);
         }),
         LEVEL_77(77, player -> {
             player.getHyris().add(12500)
@@ -445,7 +473,7 @@ public class NetworkLeveling implements IHyriLeveling {
             // TODO Give a cosmetic
         }),
         LEVEL_79(79, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.75D, 3600);
         }),
         LEVEL_80(80, player -> {
 
@@ -456,16 +484,16 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_82(82, player -> {
-            // TODO Give a 5 star lootbox
+            player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
         }),
         LEVEL_83(83, player -> {
-            // TODO Give DarkAqua + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_AQUA);
         }),
         LEVEL_84(84, player -> {
 
         }),
         LEVEL_85(85, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.75D, 3600);
         }),
         LEVEL_86(86, player -> {
             player.setAvailableHosts(player.getAvailableHosts() + 1);
@@ -476,13 +504,15 @@ public class NetworkLeveling implements IHyriLeveling {
                     .exec();
         }),
         LEVEL_88(88, player -> {
-            // TODO Give 2 5 star lootbox
+            for (int i = 0; i < 2; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
+            }
         }),
         LEVEL_89(89, player -> {
-            // TODO Give Dark + color
+            player.getHyriPlus().addColor(HyriChatColor.BLACK);
         }),
         LEVEL_90(90, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.SELECTABLE_TYPE, 2.75D, 3600);
         }),
         LEVEL_91(91, player -> {
             // TODO Give a cosmetic
@@ -496,13 +526,15 @@ public class NetworkLeveling implements IHyriLeveling {
 
         }),
         LEVEL_94(94, player -> {
-            // Give Purple + color
+            player.getHyriPlus().addColor(HyriChatColor.DARK_PURPLE);
         }),
         LEVEL_95(95, player -> {
-            // TODO Give 4 5 star lootbox
+            for (int i = 0; i < 4; i++) {
+                player.addTransaction(HyriLootboxTransaction.TYPE, new HyriLootboxTransaction(HyriLootboxRarity.FIVE_STARS));
+            }
         }),
         LEVEL_96(96, player -> {
-            // TODO Give a selectable booster
+            HyriAPI.get().getBoosterManager().giveBooster(player, IHyriBoosterManager.GLOBAL_TYPE, 2.75D, 3600);
         }),
         LEVEL_97(97, player -> {
             player.getHyris().add(25000)
@@ -513,7 +545,7 @@ public class NetworkLeveling implements IHyriLeveling {
             // TODO Give a cosmetic
         }),
         LEVEL_99(99, player -> {
-            // TODO Give Gold + color
+            player.getHyriPlus().addColor(HyriChatColor.GOLD);
         }),
         LEVEL_100(100, player -> {
 
