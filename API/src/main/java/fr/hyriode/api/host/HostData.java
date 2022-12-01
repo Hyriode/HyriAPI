@@ -111,7 +111,7 @@ public class HostData {
     /**
      * Define whether spectators are allowed on the host.
      *
-     * @param spectatorsAllowed code>true</code> to allow spectators to connect
+     * @param spectatorsAllowed <code>true</code> to allow spectators to connect
      */
     public void setSpectatorsAllowed(boolean spectatorsAllowed) {
         this.spectatorsAllowed = spectatorsAllowed;
