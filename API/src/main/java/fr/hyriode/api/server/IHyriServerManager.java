@@ -1,13 +1,10 @@
 package fr.hyriode.api.server;
 
-import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import fr.hyriode.hyggdrasil.api.server.HyggServerRequest;
-import fr.hyriode.hyggdrasil.api.server.HyggServerState;
+import fr.hyriode.hyggdrasil.api.server.HyggServerCreationInfo;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -19,19 +16,11 @@ import java.util.function.Consumer;
 public interface IHyriServerManager {
 
     /**
-     * Broadcast a message on all servers
-     *
-     * @param sender The message to broadcast (it's a text component)
-     * @param component The message to broadcast (it's a text component)
-     */
-    void broadcastMessage(UUID sender, String component);
-
-    /**
      * Get the collection of all servers currently running
      *
      * @return A list of {@link HyggServer}
      */
-    Collection<HyggServer> getServers();
+    Set<HyggServer> getServers();
 
     /**
      * Get the collection of all servers currently running with a given type
@@ -40,7 +29,7 @@ public interface IHyriServerManager {
      * @param type The type of the servers
      * @return A collection of {@link HyggServer}
      */
-    Collection<HyggServer> getServers(String type);
+    Set<HyggServer> getServers(String type);
 
     /**
      * Get the server object from its name
@@ -51,27 +40,6 @@ public interface IHyriServerManager {
     HyggServer getServer(String name);
 
     /**
-     * Get the actual best lobby server
-     *
-     * @return A {@link HyggServer}
-     */
-    HyggServer getLobby();
-
-    /**
-     * Get all the lobbies servers
-     *
-     * @return A list of {@link HyggServer}
-     */
-    List<HyggServer> getLobbies();
-
-    /**
-     * Send a player to a lobby
-     *
-     * @param playerUUID The {@link UUID} of a given player
-     */
-    void sendPlayerToLobby(UUID playerUUID);
-
-    /**
      * Send a player to a given server
      *
      * @param playerUUID The {@link UUID} of a given player
@@ -80,43 +48,12 @@ public interface IHyriServerManager {
     void sendPlayerToServer(UUID playerUUID, String serverName);
 
     /**
-     * Send a spectator to a given server
-     *
-     * @param playerId The {@link UUID} of the spectator to send
-     * @param serverName A {@link String} which represents the name of a server
-     */
-    void sendSpectatorToServer(UUID playerId, String serverName);
-
-    /**
-     * Send a party to a lobby
-     *
-     * @param partyId The {@link UUID} of the party
-     */
-    void sendPartyToLobby(UUID partyId);
-
-    /**
-     * Send a party to a given server
-     *
-     * @param partyId The {@link UUID} of the party
-     * @param serverName A {@link String} which represents the name of a server
-     */
-    void sendPartyToServer(UUID partyId, String serverName);
-
-    /**
-     * Evacuate all players that are on a given server to another server
-     *
-     * @param from The server to evacuate
-     * @param destination The destination server
-     */
-    void evacuateServer(String from, String destination);
-
-    /**
      * Create a server with a given type
      *
-     * @param serverRequest The request to send to create the server
+     * @param serverInfo The information of the server to create
      * @param onCreated The {@link Consumer} to call when the server will be created
      */
-    void createServer(HyggServerRequest serverRequest, Consumer<HyggServer> onCreated);
+    void createServer(HyggServerCreationInfo serverInfo, Consumer<HyggServer> onCreated);
 
     /**
      * Remove a server by giving its name
@@ -133,7 +70,7 @@ public interface IHyriServerManager {
      * @param state The state to wait for
      * @param callback The callback to fire when the server has the good state
      */
-    void waitForState(String serverName, HyggServerState state, Consumer<HyggServer> callback);
+    void waitForState(String serverName, HyggServer.State state, Consumer<HyggServer> callback);
 
     /**
      * Wait for a server to have a given amount of players
@@ -143,13 +80,6 @@ public interface IHyriServerManager {
      * @param callback The callback to fire when the server has the good state
      */
     void waitForPlayers(String serverName, int players, Consumer<HyggServer> callback);
-
-    /**
-     * Get the join manager instance
-     *
-     * @return the {@link IHyriJoinManager} instance
-     */
-    IHyriJoinManager getJoinManager();
 
     /**
      * Get the reconnection handler instance

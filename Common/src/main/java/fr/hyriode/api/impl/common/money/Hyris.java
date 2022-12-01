@@ -40,10 +40,10 @@ public class Hyris extends HyriMoney {
     public enum Multiplier {
 
         PLAYER(HyriPlayerRankType.PLAYER, 1.0D),
-        VIP(HyriPlayerRankType.VIP, 1.15D),
-        VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.5D),
-        EPIC(HyriPlayerRankType.EPIC, 2.0D),
-        HYRI_PLUS(HyriPlayerRankType.EPIC, 3.0D);
+        VIP(HyriPlayerRankType.VIP, 1.20D),
+        VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.50D),
+        EPIC(HyriPlayerRankType.EPIC, 1.80D),
+        HYRI_PLUS(HyriPlayerRankType.EPIC, 2.25D);
 
         private final HyriPlayerRankType rank;
         private final double amount;
@@ -65,6 +65,7 @@ public class Hyris extends HyriMoney {
             if (account.hasHyriPlus()) {
                 return HYRI_PLUS;
             }
+
             for (Multiplier multiplier : values()) {
                 if (multiplier.getRank() == account.getRank().getPlayerType()) {
                     return multiplier;

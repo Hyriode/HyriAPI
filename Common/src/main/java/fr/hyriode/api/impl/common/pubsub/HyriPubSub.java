@@ -1,14 +1,13 @@
 package fr.hyriode.api.impl.common.pubsub;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.event.HyriPacketEvent;
 import fr.hyriode.api.packet.event.HyriPacketReceiveEvent;
 import fr.hyriode.api.packet.event.HyriPacketSendEvent;
 import fr.hyriode.api.pubsub.IHyriPubSub;
-import fr.hyriode.api.redis.IHyriRedisConnection;
+import fr.hyriode.api.redis.IRedis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
@@ -37,7 +36,7 @@ public class HyriPubSub implements IHyriPubSub {
     private final Sender sender;
     private final Subscriber subscriber;
 
-    private final IHyriRedisConnection redisConnection;
+    private final IRedis redisConnection;
 
     public HyriPubSub() {
         this.redisConnection = HyriAPI.get().getRedisConnection().clone();
@@ -48,7 +47,7 @@ public class HyriPubSub implements IHyriPubSub {
     }
 
     private void start() {
-        HyriCommonImplementation.log("Starting Redis PubSub...");
+        HyriAPI.get().log("Starting Redis PubSub...");
 
         this.running = true;
 
@@ -64,7 +63,7 @@ public class HyriPubSub implements IHyriPubSub {
     }
 
     public void stop() {
-        HyriCommonImplementation.log("Stopping Redis PubSub...");
+        HyriAPI.get().log("Stopping Redis PubSub...");
 
         final JedisPool pool = this.redisConnection.getPool();
 
@@ -83,7 +82,7 @@ public class HyriPubSub implements IHyriPubSub {
 
     @Override
     public void subscribe(String channel, IHyriPacketReceiver receiver) {
-        HyriCommonImplementation.log("Subscribing '" + receiver.getClass().getSimpleName() + "' on " + channel);
+        HyriAPI.get().log("Subscribing '" + receiver.getClass().getSimpleName() + "' on " + channel);
 
         this.subscriber.registerReceiver(CHANNEL_PREFIX + channel, receiver);
     }
@@ -106,7 +105,7 @@ public class HyriPubSub implements IHyriPubSub {
         this.send(channel, packet, null);
     }
 
-    public IHyriRedisConnection getRedisConnection() {
+    public IRedis getRedisConnection() {
         return this.redisConnection;
     }
 
@@ -160,7 +159,7 @@ public class HyriPubSub implements IHyriPubSub {
             try {
                 this.jedis = redisConnection.getResource();
             } catch (Exception e) {
-                HyriCommonImplementation.log(Level.SEVERE, "[" + this.getClass().getSimpleName() + "] Couldn't connect to Redis server. Error: " + e.getMessage() + ". Recheck in 5 seconds.");
+                HyriAPI.get().log(Level.SEVERE, "[" + this.getClass().getSimpleName() + "] Couldn't connect to Redis server. Error: " + e.getMessage() + ". Recheck in 5 seconds.");
 
                 try {
                     Thread.sleep(5000);
@@ -188,25 +187,27 @@ public class HyriPubSub implements IHyriPubSub {
 
         @Override
         public void onPMessage(String pattern, String channel, String message) {
-            final HyriPacket packet = HyriAPI.GSON.fromJson(message, HyriPacket.class);
+            try {
+                final HyriPacket packet = HyriAPI.GSON.fromJson(message, HyriPacket.class);
 
-            if (packet == null) {
-                return;
-            }
+                if (packet == null) {
+                    return;
+                }
 
-            final HyriPacketEvent event = new HyriPacketReceiveEvent(packet, channel);
+                final HyriPacketEvent event = new HyriPacketReceiveEvent(packet, channel);
 
-            HyriAPI.get().getEventBus().publish(event);
+                HyriAPI.get().getEventBus().publish(event);
 
-            if (event.isCancelled() || event.getPacket() == null || event.getChannel() == null) {
-                return;
-            }
+                if (event.isCancelled() || event.getPacket() == null || event.getChannel() == null) {
+                    return;
+                }
 
-            final Set<IHyriPacketReceiver> receivers = this.receivers.get(channel);
+                final Set<IHyriPacketReceiver> receivers = this.receivers.get(channel);
 
-            if (receivers != null) {
-                receivers.forEach(receiver -> receiver.receive(event.getChannel(), event.getPacket()));
-            }
+                if (receivers != null) {
+                    receivers.forEach(receiver -> receiver.receive(event.getChannel(), event.getPacket()));
+                }
+            } catch (Exception ignored) {}
         }
 
     }

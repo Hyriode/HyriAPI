@@ -2,11 +2,11 @@ package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.event.*;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.player.IHyriPlayerSession;
 
 import java.util.*;
 
@@ -24,26 +24,25 @@ public class HyriParty implements IHyriParty {
 
     private final long creationDate;
 
-    private String server;
-
     private boolean privateParty;
     private boolean chatEnabled;
 
-    public HyriParty(UUID leader, String server) {
+    public HyriParty(UUID leader) {
         this.id = UUID.randomUUID();
         this.leader = leader;
         this.members = new HashMap<>();
         this.creationDate = System.currentTimeMillis();
-        this.server = server;
         this.privateParty = true;
         this.chatEnabled = true;
 
         this.members.put(this.leader, HyriPartyRank.LEADER);
 
-        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(this.leader);
+        final IHyriPlayerSession session = IHyriPlayerSession.get(this.leader);
 
-        account.setParty(this.id);
-        account.update();
+        if (session != null) {
+            session.setParty(this.id);
+            session.update();
+        }
     }
 
     @Override
@@ -69,7 +68,6 @@ public class HyriParty implements IHyriParty {
             this.members.put(oldLeader, HyriPartyRank.OFFICER);
 
             this.update();
-            this.updateQueue();
 
             this.triggerEvent(new HyriPartyLeaderEvent(this, this.leader, oldRank, HyriPartyRank.LEADER, oldLeader));
         }
@@ -109,16 +107,17 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public void addMember(UUID uuid, HyriPartyRank rank) {
-        if (this.members.get(uuid) == null) {
+        if (!this.hasMember(uuid)) {
             this.members.putIfAbsent(uuid, rank);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
+            final IHyriPlayerSession session = IHyriPlayerSession.get(uuid);
 
-            account.setParty(this.id);
-            account.update();
+            if (session != null) {
+                session.setParty(this.id);
+                session.update();
+            }
 
             this.update();
-            this.updateQueue();
 
             this.triggerEvent(new HyriPartyJoinEvent(this, uuid));
         }
@@ -161,34 +160,36 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public void removeMember(UUID uuid) {
-        if (this.members.get(uuid) != null) {
+    public void removeMember(UUID uuid, RemoveReason reason) {
+        if (this.hasMember(uuid)) {
             this.members.remove(uuid);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
+            final IHyriPlayerSession session = IHyriPlayerSession.get(uuid);
 
-            account.setParty(null);
-            account.update();
+            if (session != null) {
+                session.setParty(null);
+                session.update();
+            }
 
             this.update();
-            this.updateQueue();
 
-            this.triggerEvent(new HyriPartyLeaveEvent(this, uuid));
+            this.triggerEvent(new HyriPartyLeaveEvent(this, uuid, reason));
         }
     }
 
     @Override
     public void kickMember(UUID uuid, UUID kicker) {
-        if (this.members.get(uuid) != null) {
+        if (this.hasMember(uuid)) {
             this.members.remove(uuid);
 
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(uuid);
+            final IHyriPlayerSession session = IHyriPlayerSession.get(uuid);
 
-            account.setParty(null);
-            account.update();
+            if (session != null) {
+                session.setParty(null);
+                session.update();
+            }
 
             this.update();
-            this.updateQueue();
 
             this.triggerEvent(new HyriPartyKickEvent(this, uuid, kicker));
         }
@@ -219,22 +220,6 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public String getServer() {
-        return this.server;
-    }
-
-    @Override
-    public void setServer(String server) {
-        final String oldServer = this.server;
-
-        this.server = server;
-
-        this.update();
-
-        this.triggerEvent(new HyriPartyServerEvent(this, oldServer, this.server));
-    }
-
-    @Override
     public boolean isChatEnabled() {
         return this.chatEnabled;
     }
@@ -249,42 +234,39 @@ public class HyriParty implements IHyriParty {
     }
 
     @Override
-    public void sendMessage(UUID sender, String message) {
-        HyriAPI.get().getChatChannelManager().sendMessage(HyriChatChannel.PARTY.getChannel(), message, sender);
+    public void sendMessage(UUID sender, String message, boolean component) {
+        HyriAPI.get().getChatChannelManager().sendMessage(HyriChatChannel.PARTY, sender, message, component);
     }
 
     @Override
-    public void sendComponent(String component) {
-        HyriAPI.get().getChatChannelManager().sendComponent(HyriChatChannel.PARTY.getChannel(), component);
-    }
-
-    @Override
-    public void disband(HyriPartyDisbandReason reason) {
-        HyriAPI.get().getQueueManager().removePartyFromQueue(this.id);
-
+    public void disband(DisbandReason reason) {
         for (UUID member : this.members.keySet()) {
-            final IHyriPlayer account = HyriAPI.get().getPlayerManager().getCachedPlayer(member);
+            final IHyriPlayerSession session = IHyriPlayerSession.get(member);
 
-            if (account == null) {
-                continue;
+            if (session != null) {
+                session.setParty(null);
+                session.update();
             }
-
-            account.setParty(null);
-            account.update();
         }
 
         this.triggerEvent(new HyriPartyDisbandEvent(this, reason));
     }
 
     @Override
-    public void warp(String server) {
-        HyriAPI.get().getServerManager().sendPartyToServer(this.id, server);
+    public void teleport(UUID player, UUID target) {
+        if (!this.hasMember(player) || !this.hasMember(target)) {
+            return;
+        }
 
-        this.triggerEvent(new HyriPartyWarpEvent(this, server));
-    }
+        final IHyriPlayerSession targetSession = IHyriPlayerSession.get(target);
 
-    private void updateQueue() {
-        HyriAPI.get().getQueueManager().updatePartyInQueue(this);
+        if (targetSession == null) {
+            return;
+        }
+
+        HyriAPI.get().getServerManager().sendPlayerToServer(player, targetSession.getServer());
+
+        this.triggerEvent(new HyriPartyTeleportEvent(this, player, target));
     }
 
     private void triggerEvent(HyriPartyEvent event) {

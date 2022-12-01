@@ -4,17 +4,44 @@ plugins {
 
 archivesBaseName = 'HyriAPI-Proxy'
 
-repositories {
-    maven { url "https://hub.spigotmc.org/nexus/content/repositories/public/" }
-}
-
 shadowJar {
-    configurations = [project.configurations.shadow]
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow project(':Common')
+    compileOnly fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':Common')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+            artifact tasks.shadowJar
+
+            pom {
+                groupId = project.group
+                artifactId = 'hyriapi-proxy'
+                version = project.version
+                name = 'HyriAPI'
+                description = 'Project with the proxy implementation of HyriAPI'
+                url = 'https://github.com/Hyriode/HyriAPI'
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username System.getenv('USERNAME')
+                password System.getenv('TOKEN')
+            }
+            name = "HyriAPI_maven"
+            url = "https://maven.pkg.github.com/Hyriode/HyriAPI"
+        }
+    }
 }
 
 processResources {

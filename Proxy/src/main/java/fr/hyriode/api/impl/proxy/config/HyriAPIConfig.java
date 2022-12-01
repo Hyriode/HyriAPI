@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.proxy.config;
 
-import fr.hyriode.api.config.HyriMongoDBConfig;
-import fr.hyriode.api.config.HyriRedisConfig;
+import fr.hyriode.api.config.MongoDBConfig;
+import fr.hyriode.api.config.RedisConfig;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -23,13 +23,13 @@ public class HyriAPIConfig implements IHyriAPIConfig {
 
     private final boolean devEnvironment;
     private final boolean hyggdrasil;
-    private final HyriRedisConfig redisConfig;
-    private final HyriMongoDBConfig mongoDBConfig;
+    private final RedisConfig redisConfig;
+    private final MongoDBConfig mongoDBConfig;
     private final String serverIcon;
     private final int slots;
     private final String motd;
 
-    public HyriAPIConfig(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfig redisConfig, HyriMongoDBConfig mongoDBConfig, String serverIcon, int slots, String motd) {
+    public HyriAPIConfig(boolean devEnvironment, boolean hyggdrasil, RedisConfig redisConfig, MongoDBConfig mongoDBConfig, String serverIcon, int slots, String motd) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.redisConfig = redisConfig;
@@ -50,12 +50,12 @@ public class HyriAPIConfig implements IHyriAPIConfig {
     }
 
     @Override
-    public HyriRedisConfig getRedisConfig() {
+    public RedisConfig getRedisConfig() {
         return this.redisConfig;
     }
 
     @Override
-    public HyriMongoDBConfig getMongoDBConfig() {
+    public MongoDBConfig getMongoDBConfig() {
         return this.mongoDBConfig;
     }
 
@@ -118,21 +118,21 @@ public class HyriAPIConfig implements IHyriAPIConfig {
             return null;
         }
 
-        private static HyriRedisConfig loadRedisConfig(Configuration section) {
+        private static RedisConfig loadRedisConfig(Configuration section) {
             final String hostname = section.getString(REDIS_HOSTNAME);
             final int port = section.getInt(REDIS_PORT);
             final String password = section.getString(REDIS_PASSWORD);
 
-            return new HyriRedisConfig(hostname, port, password);
+            return new RedisConfig(hostname, port, password);
         }
 
-        private static HyriMongoDBConfig loadMongoDBConfig(Configuration section) {
+        private static MongoDBConfig loadMongoDBConfig(Configuration section) {
             final String username = section.getString(MONGODB_USERNAME);
             final String password = section.getString(MONGODB_PASSWORD);
             final String hostname = section.getString(MONGODB_HOSTNAME);
             final int port = section.getInt(MONGODB_PORT);
 
-            return new HyriMongoDBConfig(username, password, hostname, port);
+            return new MongoDBConfig(username, password, hostname, port);
         }
 
     }

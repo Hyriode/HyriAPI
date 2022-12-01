@@ -1,11 +1,13 @@
 package fr.hyriode.api.impl.proxy;
 
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.proxy.IHyriProxy;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
-import net.md_5.bungee.api.ProxyServer;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
+import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -18,24 +20,36 @@ import java.util.UUID;
 public class HyriProxy implements IHyriProxy {
 
     private final String name;
-    private final long startedTime;
-
-    private State state;
-    private Runnable stopHandler;
-
-    private final Set<UUID> players;
-
-    private final HyggdrasilManager hyggdrasilManager;
 
     private final HyggData data;
+    private HyggProxy.State state;
+    private final Set<UUID> players;
 
-    public HyriProxy(HyggdrasilManager hyggdrasilManager, String name, long startedTime, HyggData data) {
-        this.hyggdrasilManager = hyggdrasilManager;
-        this.name = name;
-        this.players = new HashSet<>();
-        this.startedTime = startedTime;
-        this.state = State.STARTING;
-        this.data = data;
+    private final int port;
+
+    private final long startedTime;
+
+    public HyriProxy(HyggApplication application) {
+        if (HyriAPI.get().getConfig().isDevEnvironment()) {
+            this.name = "dev-proxy";
+            this.data = new HyggData();
+            this.state = HyggProxy.State.STARTING;
+            this.players = new HashSet<>();
+            this.port = 25565;
+            this.startedTime = System.currentTimeMillis();
+            return;
+        }
+
+        final HyggProxy info = HyriAPI.get().getProxyManager().getProxy(application.getName());
+
+        this.name = info.getName();
+        this.data = info.getData();
+        this.state = HyggProxy.State.STARTING;
+        this.players = info.getPlayers();
+        this.port = info.getPort();
+        this.startedTime = info.getStartedTime();
+
+        this.update();
     }
 
     @Override
@@ -49,45 +63,52 @@ public class HyriProxy implements IHyriProxy {
     }
 
     @Override
-    public State getState() {
+    @NotNull
+    public HyggProxy.State getState() {
         return this.state;
     }
 
     @Override
-    public void setState(State state) {
+    public void setState(@NotNull HyggProxy.State state) {
         this.state = state;
 
-        HyriCommonImplementation.log("Changing state to " + this.state.name());
+        HyriAPI.get().log("Changing state to " + this.state.name());
 
-        this.hyggdrasilManager.sendData();
+        this.update();
     }
 
     @Override
-    public Runnable getStopHandler() {
-        return this.stopHandler;
+    public @NotNull Set<UUID> getPlayers() {
+        return Collections.unmodifiableSet(this.players);
     }
 
     @Override
-    public void setStopHandler(Runnable stopHandler) {
-        this.stopHandler = stopHandler;
-    }
-
-    @Override
-    public int getPlayers() {
-        return this.players.size();
-    }
-
-    public void addPlayer(UUID player) {
+    public void addPlayer(@NotNull UUID player) {
         this.players.add(player);
-    }
 
-    public void removePlayer(UUID player) {
-        this.players.remove(player);
+        this.update();
     }
 
     @Override
+    public void removePlayer(@NotNull UUID player) {
+        this.players.remove(player);
+
+        this.update();
+    }
+
+    @Override
+    @NotNull
     public HyggData getData() {
         return this.data;
+    }
+
+    @Override
+    public int getPort() {
+        return this.port;
+    }
+
+    private void update() {
+        HyriAPI.get().getHyggdrasilManager().sendData();
     }
 
 }

@@ -15,5 +15,9 @@ public class HyriChannel {
     public static final String JOIN = "join";
     /** The channel used to send information to the servers */
     public static final String SERVERS = "servers";
+    /** The channel used by queue system */
+    public static final String QUEUES = "queues";
+    /** The channel used by party communication */
+    public static final String PARTIES = "parties";
 
 }

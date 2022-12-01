@@ -6,11 +6,9 @@ import fr.hyriode.api.booster.HyriBoosterTransaction;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.transaction.IHyriTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
@@ -43,6 +41,21 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     public void giveBooster(IHyriPlayer player, String type, double multiplier, long duration) {
         player.addTransaction(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(type, multiplier, duration));
         player.update();
+    }
+
+    @Override
+    public Map<String, HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player) {
+        final Map<String, HyriBoosterTransaction> boosters = new HashMap<>();
+        final List<? extends IHyriTransaction> transactions = player.getTransactions(HyriBoosterTransaction.TRANSACTIONS_TYPE);
+
+        if (transactions == null) {
+            return boosters;
+        }
+
+        for (IHyriTransaction transaction : transactions) {
+            boosters.put(transaction.name(), transaction.content(HyriBoosterTransaction.class));
+        }
+        return boosters;
     }
 
     @Override

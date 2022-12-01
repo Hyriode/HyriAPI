@@ -30,7 +30,7 @@ public class MessageUtil {
     public static final BaseComponent[] PROFILE_ERROR = createKickMessage(new ComponentBuilder("Impossible de charger votre profil !").color(ChatColor.RED)
             .create(), true);
 
-    public static final BaseComponent[] RANDOM_ERROR = createKickMessage(new ComponentBuilder("Une erreur s'est produite durant la connexion !").color(ChatColor.RED)
+    public static final BaseComponent[] PROFILE_TAKEN = createKickMessage(new ComponentBuilder("Votre pseudo appartient désormais à un joueur Premium !\n" + "Votre compte peut être transféré depuis notre Discord (/transferaccount).").color(ChatColor.RED)
             .create(), true);
 
     public static final BaseComponent[] ALREADY_ONLINE = createKickMessage(new ComponentBuilder("Vous êtes déjà connecté sur le serveur !").color(ChatColor.RED)
@@ -59,8 +59,8 @@ public class MessageUtil {
         return createKickMessage(new ComponentBuilder("Une maintenance est actuellement en cours." + (reason != null ? reason : "")).color(ChatColor.RED).create(), true);
     }
 
-    public static TextComponent deserializeComponent(String json) {
-        return new TextComponent(ComponentSerializer.parse(json));
+    public static BaseComponent[] deserializeComponent(String json) {
+        return ComponentSerializer.parse(json);
     }
 
 }

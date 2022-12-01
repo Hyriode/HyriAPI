@@ -24,15 +24,15 @@ public interface IHyriAPIConfig {
     /**
      * Get the Redis configuration
      *
-     * @return The {@link HyriRedisConfig} object
+     * @return The {@link RedisConfig} object
      */
-    HyriRedisConfig getRedisConfig();
+    RedisConfig getRedisConfig();
 
     /**
      * Get the MongoDB configuration
      *
-     * @return The {@linkplain HyriMongoDBConfig MongoDB config} object
+     * @return The {@linkplain MongoDBConfig MongoDB config} object
      */
-    HyriMongoDBConfig getMongoDBConfig();
+    MongoDBConfig getMongoDBConfig();
 
 }

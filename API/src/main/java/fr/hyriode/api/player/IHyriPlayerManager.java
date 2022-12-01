@@ -2,6 +2,8 @@ package fr.hyriode.api.player;
 
 import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,12 +42,11 @@ public interface IHyriPlayerManager {
      * Create a player with a given {@link UUID}
      *
      * @param premium Set whether the player is a premium player
-     * @param online Set if the player is currently connected on the network
      * @param uuid Player {@link UUID}
      * @param name Player name
      * @return The created player
      */
-    IHyriPlayer createPlayer(boolean premium, boolean online, UUID uuid, String name);
+    IHyriPlayer createPlayer(boolean premium, UUID uuid, String name);
 
     /**
      * Get a player with a given {@link UUID}
@@ -82,28 +83,8 @@ public interface IHyriPlayerManager {
     void removePlayer(UUID uuid);
 
     /**
-     * Get a player with a given {@link UUID} from cache
-     *
-     * @param uuid The {@linkplain UUID unique id} of the player
-     * @return The {@link IHyriPlayer} object or <code>null</code> if the player is not in cache
-     */
-    IHyriPlayer getCachedPlayer(UUID uuid);
-
-    /**
-     * Get a player with a given name from cache
-     *
-     * @param name The name of the player
-     * @return The {@link IHyriPlayer} object or <code>null</code> if the player is not in cache
-     */
-    default IHyriPlayer getCachedPlayer(String name) {
-        final UUID playerId = this.getPlayerId(name);
-
-        return playerId == null ? null : this.getCachedPlayer(playerId);
-    }
-
-    /**
      * Get all registered players on the network.<br>
-     * Warning: This method is extremely costly in performance. Indeed, it will query the database of each player account and deserialize them.
+     * Warning: This method is extremely costly in performance. Indeed, it will query the database for each player account and deserialize them.
      *
      * @return A list of {@link IHyriPlayer}
      */
@@ -111,11 +92,51 @@ public interface IHyriPlayerManager {
 
     /**
      * Get all registered players' {@link UUID} on the network.<br>
-     * Warning: This method is extremely costly in performance. Indeed, it will query the database each player {@link UUID}.
+     * Warning: This method is extremely costly in performance. Indeed, it will query the database for each player {@link UUID}.
      *
      * @return A list of {@link UUID}
      */
     List<UUID> getPlayersId();
+
+    /**
+     * Check whether a player is online or not.
+     *
+     * @param playerId The {@link UUID} of the player
+     * @return <code>true</code> if the player is online
+     */
+    default boolean isOnline(UUID playerId) {
+        return this.getSession(playerId) != null;
+    }
+
+    /**
+     * Get a player session from cache.
+     *
+     * @param playerId The {@link UUID} of the player
+     * @return The found {@link IHyriPlayerSession}
+     */
+    @Nullable IHyriPlayerSession getSession(UUID playerId);
+
+    /**
+     * Update a player session in cache
+     *
+     * @param session The {@link IHyriPlayerSession} to update
+     */
+    void updateSession(@NotNull IHyriPlayerSession session);
+
+    /**
+     * Delete the session of a given player
+     *
+     * @param playerId The {@link UUID} of the player
+     */
+    void deleteSession(@NotNull UUID playerId);
+
+    /**
+     * Get all the registered player sessions on the network
+     * Warning: This method is extremely costly in performance. Indeed, it will query the database for each player session and deserialize them.
+     *
+     * @return A list of {@link IHyriPlayerSession}
+     */
+    List<IHyriPlayerSession> getSessions();
 
     /**
      * Kick a player from network with a given reason
@@ -134,20 +155,40 @@ public interface IHyriPlayerManager {
     void connectPlayer(UUID uuid, String server);
 
     /**
-     * Send a message to a player with a given {@link UUID}
+     * Broadcast a message on all servers
+     *
+     * @param message The message to broadcast
+     * @param component Is the message a serialized TextComponent or a simple {@link String}
+     */
+    void broadcastMessage(String message, boolean component);
+
+    /**
+     * Broadcast a message on all servers
+     *
+     * @param message The message to broadcast
+     */
+    default void broadcastMessage(String message) {
+        this.broadcastMessage(message, false);
+    }
+
+    /**
+     * Send a message to a player
+     *
+     * @param uuid Player {@link UUID}
+     * @param message Message to send
+     * @param component Is the message a serialized TextComponent or a simple {@link String}
+     */
+    void sendMessage(UUID uuid, String message, boolean component);
+
+    /**
+     * Send a message to a player
      *
      * @param uuid Player {@link UUID}
      * @param message Message to send
      */
-    void sendMessage(UUID uuid, String message);
-
-    /**
-     * Send a message component to a given
-     *
-     * @param uuid The unique id of the player
-     * @param component The serialized component
-     */
-    void sendComponent(UUID uuid, String component);
+    default void sendMessage(UUID uuid, String message) {
+        this.sendMessage(uuid, message, false);
+    }
 
     /**
      * Send a title to a player
@@ -179,30 +220,6 @@ public interface IHyriPlayerManager {
      * @return Player ping
      */
     int getPing(UUID uuid);
-
-    /**
-     * Get the prefix of a player from cache
-     *
-     * @param playerId The unique id of the player
-     * @return His cached prefix
-     */
-    String getCachedPrefix(UUID playerId);
-
-    /**
-     * Get the prefix of a player (it will first check in cache before getting it from his account)
-     *
-     * @param playerId The unique id of the player
-     * @return His prefix
-     */
-    String getPrefix(UUID playerId);
-
-    /**
-     * Save the prefix of a player in cache
-     *
-     * @param playerId The unique id of the player
-     * @param prefix The prefix to save
-     */
-    void savePrefix(UUID playerId, String prefix);
 
     /**
      * Get the nickname manager

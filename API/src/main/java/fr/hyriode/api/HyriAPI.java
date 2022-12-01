@@ -2,6 +2,7 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.config.IHyriAPIConfig;
@@ -9,12 +10,13 @@ import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.host.IHostConfigManager;
+import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
-import fr.hyriode.api.mongodb.IHyriMongoDB;
+import fr.hyriode.api.mongodb.IMongoDB;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
@@ -23,25 +25,30 @@ import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.proxy.IHyriProxyManager;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.queue.IHyriQueueManager;
-import fr.hyriode.api.redis.IHyriRedisConnection;
-import fr.hyriode.api.redis.IHyriRedisProcessor;
+import fr.hyriode.api.redis.IRedis;
+import fr.hyriode.api.redis.IRedisProcessor;
 import fr.hyriode.api.scheduler.IHyriScheduler;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
-import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
-import fr.hyriode.hylios.api.HyliosAPI;
+import fr.hyriode.api.server.ILobbyAPI;
+import fr.hyriode.api.server.join.IHyriJoinManager;
+import fr.hyriode.api.settings.IHyriSettingsManager;
+import fr.hyriode.api.util.ClassSerializer;
+import fr.hyriode.api.util.HyriAPIException;
+import fr.hyriode.api.world.generation.IWorldGenerationAPI;
 import fr.hyriode.hyreos.api.HyreosAPI;
 import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
+
+import java.util.logging.Level;
 
 public abstract class HyriAPI {
 
     /** {@link Gson} instance with adapters */
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeHierarchyAdapter(HyriPacket.class, new HyriPacket.Serializer())
+            .registerTypeHierarchyAdapter(HyriPacket.class, new ClassSerializer<HyriPacket>())
+            .registerTypeHierarchyAdapter(IHyriBooster.class, new ClassSerializer<IHyriBooster>())
             .create();
-    /** A default {@link Gson} instance */
-    public static final Gson NORMAL_GSON = new Gson();
 
     /** ASCII header lines */
     public static final String[] HEADER_LINES = new String[]{
@@ -59,10 +66,34 @@ public abstract class HyriAPI {
     private static HyriAPI instance;
 
     /**
-     * Empty constructor of {@link HyriAPI}
+     * Register the implementation of {@link HyriAPI}
+     *
+     * @param implementation The {@link HyriAPI} instance
+     * @param <I> The type of the implementation to register
      */
-    public HyriAPI() {
-        instance = this;
+    public static <I extends HyriAPI> void register(I implementation) {
+        if (instance != null) {
+            throw new HyriAPIException("HyriAPI implementation is already registered!");
+        }
+
+        instance = implementation;
+    }
+
+    /**
+     * Log a message as HyriAPI.
+     *
+     * @param level The level of the message to log
+     * @param message The message to log
+     */
+    public abstract void log(Level level, String message);
+
+    /**
+     * Log a message as HyriAPI.
+     *
+     * @param message The message to log
+     */
+    public void log(String message) {
+        this.log(Level.INFO, message);
     }
 
     /**
@@ -114,23 +145,23 @@ public abstract class HyriAPI {
     /**
      * Get the Redis connection
      *
-     * @return {@link IHyriRedisConnection}
+     * @return {@link IRedis}
      */
-    public abstract IHyriRedisConnection getRedisConnection();
+    public abstract IRedis getRedisConnection();
 
     /**
      * Get the Redis processor
      *
-     * @return {@link IHyriRedisProcessor}
+     * @return {@link IRedisProcessor}
      */
-    public abstract IHyriRedisProcessor getRedisProcessor();
+    public abstract IRedisProcessor getRedisProcessor();
 
     /**
      * Get the MongoDB database instance manager
      *
-     * @return The {@link IHyriMongoDB} instance
+     * @return The {@link IMongoDB} instance
      */
-    public abstract IHyriMongoDB getMongoDB();
+    public abstract IMongoDB getMongoDB();
 
     /**
      * Get the default event bus
@@ -168,13 +199,6 @@ public abstract class HyriAPI {
     public abstract IHystiaAPI getHystiaAPI();
 
     /**
-     * Get the Hylios API instance
-     *
-     * @return The {@link HyliosAPI} instance
-     */
-    public abstract HyliosAPI getHyliosAPI();
-
-    /**
      * Get the Hyreos API instance
      *
      * @return The {@link HyreosAPI} instance
@@ -191,9 +215,30 @@ public abstract class HyriAPI {
     /**
      * Get the server manager
      *
-     * @return {@link IHyriServerManager}
+     * @return The {@link IHyriServerManager} instance
      */
     public abstract IHyriServerManager getServerManager();
+
+    /**
+     * Get the join manager instance
+     *
+     * @return The {@link IHyriJoinManager} instance
+     */
+    public abstract IHyriJoinManager getJoinManager();
+
+    /**
+     * Get the API related to lobby's system.
+     *
+     * @return The {@link ILobbyAPI} instance
+     */
+    public abstract ILobbyAPI getLobbyAPI();
+
+    /**
+     * Get the API related to the world generation system.
+     *
+     * @return The {@link IWorldGenerationAPI} instance
+     */
+    public abstract IWorldGenerationAPI getWorldGenerationAPI();
 
     /**
      * Get the proxy manager instance
@@ -226,9 +271,9 @@ public abstract class HyriAPI {
     /**
      * Get the player settings manager
      *
-     * @return {@link IHyriPlayerSettingsManager}
+     * @return {@link IHyriSettingsManager}
      */
-    public abstract IHyriPlayerSettingsManager getPlayerSettingsManager();
+    public abstract IHyriSettingsManager getPlayerSettingsManager();
 
     /**
      * Get the language manager instance; it contains all languages-API methods
@@ -280,6 +325,13 @@ public abstract class HyriAPI {
     public abstract IHyriLeaderboardProvider getLeaderboardProvider();
 
     /**
+     * Get the host manager instance
+     *
+     * @return The {@link IHostManager} instance
+     */
+    public abstract IHostManager getHostManager();
+
+    /**
      * Get the {@link IHostConfigManager} instance
      *
      * @return The {@link IHostConfigManager} instance
@@ -305,7 +357,7 @@ public abstract class HyriAPI {
         return instance;
     }
 
-    private static final class NotRegisteredException extends IllegalStateException {
+    private static final class NotRegisteredException extends HyriAPIException {
 
         public NotRegisteredException() {
             super(NAME + " has not been registered yet!\n" +

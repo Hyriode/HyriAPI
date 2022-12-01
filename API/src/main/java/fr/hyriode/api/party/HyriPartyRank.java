@@ -1,33 +1,27 @@
 package fr.hyriode.api.party;
 
-import fr.hyriode.api.language.HyriLanguage;
-
 public enum HyriPartyRank {
 
-    LEADER(2, "Chef", "Leader", true, true, true, true, true, true),
-    OFFICER(1, "Officier", "Officer", true, false, false, false, true, true),
-    MEMBER(0, "Membre", "Member", false, false, false, false, false, false);
+    LEADER(2, "leader", true, true, true, true, true),
+    OFFICER(1, "officer", true, false, false, true, true),
+    MEMBER(0, "member", false, false, false, false, false);
 
     public static final HyriPartyRank[] VALUES = HyriPartyRank.values();
 
     private final int id;
-    private final String french;
-    private final String english;
+    private final String displayKey;
     private final boolean sendInvitations;
     private final boolean editRank;
     private final boolean disband;
-    private final boolean warp;
     private final boolean kick;
     private final boolean mute;
 
-    HyriPartyRank(int id, String french, String english, boolean sendInvitations, boolean editRank, boolean disband, boolean warp, boolean kick, boolean mute) {
+    HyriPartyRank(int id, String displayKey, boolean sendInvitations, boolean editRank, boolean disband, boolean kick, boolean mute) {
         this.id = id;
-        this.french = french;
-        this.english = english;
+        this.displayKey = displayKey;
         this.sendInvitations = sendInvitations;
         this.editRank = editRank;
         this.disband = disband;
-        this.warp = warp;
         this.kick = kick;
         this.mute = mute;
     }
@@ -56,16 +50,8 @@ public enum HyriPartyRank {
         return this.id;
     }
 
-    public String getFrench() {
-        return this.french;
-    }
-
-    public String getEnglish() {
-        return this.english;
-    }
-
-    public String getDisplay(HyriLanguage language) {
-        return language == HyriLanguage.FR ? this.french : this.english;
+    public String getDisplayKey() {
+        return this.displayKey;
     }
 
     public boolean canSendInvitations() {
@@ -78,10 +64,6 @@ public enum HyriPartyRank {
 
     public boolean canDisband() {
         return this.disband;
-    }
-
-    public boolean canWarp() {
-        return this.warp;
     }
 
     public boolean canKick() {

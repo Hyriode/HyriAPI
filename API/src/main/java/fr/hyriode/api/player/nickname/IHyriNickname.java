@@ -4,6 +4,8 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.util.Skin;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -70,9 +72,9 @@ public interface IHyriNickname {
     /**
      * Update the nickname of the player
      *
-     * @param player This player linked to nickname
+     * @param playerId The {@link UUID} of the player
      * @return This {@link IHyriNickname} instance
      */
-    IHyriNickname update(IHyriPlayer player);
+    IHyriNickname update(UUID playerId);
 
 }

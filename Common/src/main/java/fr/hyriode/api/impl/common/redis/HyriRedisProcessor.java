@@ -1,11 +1,9 @@
 package fr.hyriode.api.impl.common.redis;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.redis.IHyriRedisProcessor;
+import fr.hyriode.api.redis.IRedisProcessor;
 import redis.clients.jedis.Jedis;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,16 +15,16 @@ import java.util.function.Function;
  * Created by AstFaster
  * on 21/11/2021 at 17:40
  */
-public class HyriRedisProcessor implements IHyriRedisProcessor {
+public class HyriRedisProcessor implements IRedisProcessor {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public void stop() {
-        HyriCommonImplementation.log("Stopping Redis processor (waiting for last requests to be done)...");
+        HyriAPI.get().log("Stopping Redis processor (waiting for last requests to be done)...");
 
         try {
             if (!this.executorService.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
-                HyriCommonImplementation.log("Redis processor couldn't handle last Redis requests!");
+                HyriAPI.get().log("Redis processor couldn't handle last Redis requests!");
 
                 this.executorService.shutdownNow();
             }
@@ -57,11 +55,6 @@ public class HyriRedisProcessor implements IHyriRedisProcessor {
             }
         }
         return null;
-    }
-
-    @Override
-    public <R> CompletableFuture<R> getAsync(Function<Jedis, R> action) {
-        return CompletableFuture.supplyAsync(() -> get(action), this.executorService);
     }
 
 }

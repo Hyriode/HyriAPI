@@ -4,13 +4,10 @@ import com.google.gson.stream.JsonReader;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.event.HyriEventHandler;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
 import fr.hyriode.api.language.*;
-import fr.hyriode.hylios.api.lobby.LobbyAPI;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
@@ -22,34 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HyriLanguageManager implements IHyriLanguageManager {
 
-    private final Map<UUID, HyriLanguage> cachedPlayerLanguages;
-
     private final Set<HyriLanguageMessage> messages;
     private final Map<Class<?>, IHyriLanguageAdapter<?>> adapters;
 
     public HyriLanguageManager() {
         this.messages = ConcurrentHashMap.newKeySet();
         this.adapters = new HashMap<>();
-        this.cachedPlayerLanguages = new HashMap<>();
-
-        HyriAPI.get().getEventBus().register(this);
-    }
-
-    @HyriEventHandler
-    public void onLanguageUpdated(HyriLanguageUpdatedEvent event) {
-        this.cachedPlayerLanguages.put(event.getPlayerId(), event.getLanguage());
-    }
-
-    public void setCachedPlayerLanguage(UUID playerId, HyriLanguage language) {
-        this.cachedPlayerLanguages.put(playerId, language);
-    }
-
-    public void removeCachedPlayerLanguage(UUID playerId) {
-        this.cachedPlayerLanguages.remove(playerId);
-    }
-
-    public HyriLanguage getCachedPlayerLanguage(UUID playerId) {
-        return this.cachedPlayerLanguages.get(playerId);
     }
 
     @Override
@@ -79,7 +54,7 @@ public class HyriLanguageManager implements IHyriLanguageManager {
                 final JsonReader jsonReader = new JsonReader(reader);
                 final Map<String, String> map = HyriAPI.GSON.fromJson(jsonReader, Map.class);
 
-                HyriCommonImplementation.log("Loading " + language.getCode() + " language from " + fileName + "...");
+                HyriAPI.get().log("Loading " + language.getCode() + " language from " + fileName + "...");
 
                 for (Map.Entry<String, String> entry : map.entrySet()) {
                     final String key = entry.getKey();

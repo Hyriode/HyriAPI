@@ -3,7 +3,7 @@ package fr.hyriode.api.impl.common.settings;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.settings.IHyriPlayerSettingsManager;
+import fr.hyriode.api.settings.IHyriSettingsManager;
 
 import java.util.UUID;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriPlayerSettingsManager implements IHyriPlayerSettingsManager {
+public class HyriPlayerSettingsManager implements IHyriSettingsManager {
 
     @Override
     public IHyriPlayerSettings getPlayerSettings(UUID uuid) {

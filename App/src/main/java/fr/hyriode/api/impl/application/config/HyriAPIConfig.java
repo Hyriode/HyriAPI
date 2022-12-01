@@ -1,7 +1,7 @@
 package fr.hyriode.api.impl.application.config;
 
-import fr.hyriode.api.config.HyriMongoDBConfig;
-import fr.hyriode.api.config.HyriRedisConfig;
+import fr.hyriode.api.config.MongoDBConfig;
+import fr.hyriode.api.config.RedisConfig;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.hyggdrasil.api.util.builder.BuilderEntry;
 import fr.hyriode.hyggdrasil.api.util.builder.IBuilder;
@@ -14,10 +14,10 @@ public class HyriAPIConfig implements IHyriAPIConfig {
 
     private final boolean devEnvironment;
     private final boolean hyggdrasil;
-    private final HyriRedisConfig redisConfig;
-    private final HyriMongoDBConfig mongoDBConfig;
+    private final RedisConfig redisConfig;
+    private final MongoDBConfig mongoDBConfig;
 
-    public HyriAPIConfig(boolean devEnvironment, boolean hyggdrasil, HyriRedisConfig redisConfig, HyriMongoDBConfig mongoDBConfig) {
+    public HyriAPIConfig(boolean devEnvironment, boolean hyggdrasil, RedisConfig redisConfig, MongoDBConfig mongoDBConfig) {
         this.devEnvironment = devEnvironment;
         this.hyggdrasil = hyggdrasil;
         this.redisConfig = redisConfig;
@@ -35,12 +35,12 @@ public class HyriAPIConfig implements IHyriAPIConfig {
     }
 
     @Override
-    public HyriRedisConfig getRedisConfig() {
+    public RedisConfig getRedisConfig() {
         return this.redisConfig;
     }
 
     @Override
-    public HyriMongoDBConfig getMongoDBConfig() {
+    public MongoDBConfig getMongoDBConfig() {
         return this.mongoDBConfig;
     }
 
@@ -48,8 +48,8 @@ public class HyriAPIConfig implements IHyriAPIConfig {
 
         private final BuilderEntry<Boolean> devEnvironment = new BuilderEntry<>("Development environment", () -> true).required();
         private final BuilderEntry<Boolean> hyggdrasil = new BuilderEntry<>("Hyggdrasil", () -> false).required();
-        private final BuilderEntry<HyriRedisConfig> redisConfig = new BuilderEntry<>("Redis configuration", () -> new HyriRedisConfig("127.0.0.1", 6379, "")).required();
-        private final BuilderEntry<HyriMongoDBConfig> mongoDBConfig = new BuilderEntry<>("MongoDB configuration", () -> new HyriMongoDBConfig(null, null, "127.0.0.1", 27017)).required();
+        private final BuilderEntry<RedisConfig> redisConfig = new BuilderEntry<>("Redis configuration", () -> new RedisConfig("127.0.0.1", 6379, "")).required();
+        private final BuilderEntry<MongoDBConfig> mongoDBConfig = new BuilderEntry<>("MongoDB configuration", () -> new MongoDBConfig(null, null, "127.0.0.1", 27017)).required();
 
         public Builder withDevEnvironment(boolean devEnvironment) {
             this.devEnvironment.set(() -> devEnvironment);
@@ -61,12 +61,12 @@ public class HyriAPIConfig implements IHyriAPIConfig {
             return this;
         }
 
-        public Builder withRedisConfig(HyriRedisConfig redisConfig) {
+        public Builder withRedisConfig(RedisConfig redisConfig) {
             this.redisConfig.set(() -> redisConfig);
             return this;
         }
 
-        public Builder withMongoDBConfig(HyriMongoDBConfig mongoDBConfig) {
+        public Builder withMongoDBConfig(MongoDBConfig mongoDBConfig) {
             this.mongoDBConfig.set(() -> mongoDBConfig);
             return this;
         }

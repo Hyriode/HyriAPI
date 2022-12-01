@@ -1,6 +1,5 @@
 package fr.hyriode.api.party.event;
 
-import fr.hyriode.api.party.HyriPartyDisbandReason;
 import fr.hyriode.api.party.IHyriParty;
 
 /**
@@ -11,15 +10,15 @@ import fr.hyriode.api.party.IHyriParty;
 public class HyriPartyDisbandEvent extends HyriPartyEvent {
 
     /** The reason that triggered the event */
-    private final HyriPartyDisbandReason reason;
+    private final IHyriParty.DisbandReason reason;
 
     /**
      * Constructor of {@link HyriPartyDisbandEvent}
      *
      * @param party The {@link IHyriParty} object
-     * @param reason A {@link HyriPartyDisbandReason}
+     * @param reason A {@link IHyriParty.DisbandReason}
      */
-    public HyriPartyDisbandEvent(IHyriParty party, HyriPartyDisbandReason reason) {
+    public HyriPartyDisbandEvent(IHyriParty party, IHyriParty.DisbandReason reason) {
         super(party);
         this.reason = reason;
     }
@@ -27,9 +26,9 @@ public class HyriPartyDisbandEvent extends HyriPartyEvent {
     /**
      * Get the reason that triggered the event
      *
-     * @return A {@link HyriPartyDisbandReason}
+     * @return A {@link IHyriParty.DisbandReason}
      */
-    public HyriPartyDisbandReason getReason() {
+    public IHyriParty.DisbandReason getReason() {
         return this.reason;
     }
 

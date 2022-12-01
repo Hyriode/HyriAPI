@@ -8,10 +8,12 @@ public class PlayerMessagePacket extends HyriPacket {
 
     private final UUID player;
     private final String message;
+    private final boolean component;
 
-    public PlayerMessagePacket(UUID player, String message) {
+    public PlayerMessagePacket(UUID player, String message, boolean component) {
         this.player = player;
         this.message = message;
+        this.component = component;
     }
 
     public UUID getPlayer() {
@@ -20,6 +22,10 @@ public class PlayerMessagePacket extends HyriPacket {
 
     public String getMessage() {
         return this.message;
+    }
+
+    public boolean isComponent() {
+        return this.component;
     }
 
 }

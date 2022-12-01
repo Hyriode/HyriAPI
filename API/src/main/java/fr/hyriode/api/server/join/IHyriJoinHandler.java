@@ -13,28 +13,22 @@ public interface IHyriJoinHandler {
         return currentResponse;
     }
 
-    default HyriJoinResponse requestReconnect(UUID player, HyriJoinResponse currentResponse) {
-        return currentResponse;
-    }
-
-    default HyriJoinResponse requestSpectator(UUID player, HyriJoinResponse currentResponse) {
-        return currentResponse;
-    }
-
-    default HyriJoinResponse requestPartyJoin(UUID partyId, HyriJoinResponse currentResponse) {
-        return currentResponse;
-    }
-
     default String createResponseMessage(UUID playerId, HyriJoinResponse response) {
         return null;
     }
 
     default void onLogin(UUID player, String name) {}
 
-    default void onPlayerJoin(UUID player) {}
-
-    default void onModeratorJoin(UUID moderator) {}
+    default void onJoin(UUID player) {}
 
     default void onLogout(UUID player) {}
+
+    /**
+     * Check whether a player is expected to connect or no
+     *
+     * @param playerId The {@link UUID} of the player
+     * @return <code>true</code> if he is expected to join
+     */
+    boolean isExpected(UUID playerId);
 
 }

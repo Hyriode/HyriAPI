@@ -10,7 +10,7 @@ public enum HyriJoinResponse {
     ALLOW,
     DENY_OTHER,
     DENY_FULL,
-    DENY_SPACE,
+    DENY_SLOTS,
     DENY_STATE;
 
     public boolean isAllowed() {

@@ -1,9 +1,9 @@
 package fr.hyriode.api.impl.common.redis;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.config.HyriRedisConfig;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.redis.IHyriRedisConnection;
+import fr.hyriode.api.config.RedisConfig;
+import fr.hyriode.api.impl.common.CHyriAPIImpl;
+import fr.hyriode.api.redis.IRedis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -16,7 +16,7 @@ import java.util.logging.Level;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriRedisConnection implements IHyriRedisConnection {
+public class HyriRedisConnection implements IRedis {
 
     private boolean running;
 
@@ -28,12 +28,12 @@ public class HyriRedisConnection implements IHyriRedisConnection {
     private final int port;
     private final String password;
 
-    private final HyriCommonImplementation api;
+    private final CHyriAPIImpl api;
 
-    public HyriRedisConnection(HyriCommonImplementation api) {
+    public HyriRedisConnection(CHyriAPIImpl api) {
         this.api = api;
 
-        final HyriRedisConfig redisConfig = this.api.getConfig().getRedisConfig();
+        final RedisConfig redisConfig = this.api.getConfig().getRedisConfig();
 
         this.hostname = redisConfig.getHostname();
         this.port = redisConfig.getPort();
@@ -51,7 +51,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
             try {
                 this.getResource().close();
             } catch (Exception e) {
-                HyriCommonImplementation.log(Level.SEVERE, "An error occurred in Redis connection ! Trying to reconnect...");
+                HyriAPI.get().log(Level.SEVERE, "An error occurred in Redis connection ! Trying to reconnect...");
 
                 this.connect();
             }
@@ -71,10 +71,10 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
             this.connected = true;
 
-            HyriCommonImplementation.log("Connection set between " + HyriAPI.NAME + " and Redis");
+            HyriAPI.get().log("Connection set between " + HyriAPI.NAME + " and Redis");
         } catch (Exception e) {
-            HyriCommonImplementation.log(Level.SEVERE, "An error occurred while connecting to Redis! ");
-            HyriCommonImplementation.log(Level.SEVERE, "Try to fix it! Bukkit is now stopping...");
+            HyriAPI.get().log(Level.SEVERE, "An error occurred while connecting to Redis! ");
+            HyriAPI.get().log(Level.SEVERE, "Try to fix it! Bukkit is now stopping...");
             e.printStackTrace();
 
             System.exit(-1);
@@ -83,7 +83,7 @@ public class HyriRedisConnection implements IHyriRedisConnection {
 
     public void stop() {
         if (this.running) {
-            HyriCommonImplementation.log("Stopping Redis connection...");
+            HyriAPI.get().log("Stopping Redis connection...");
 
             this.running = false;
 

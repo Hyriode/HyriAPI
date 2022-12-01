@@ -1,8 +1,5 @@
 package fr.hyriode.api.server.join;
 
-import java.util.List;
-import java.util.UUID;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -10,18 +7,12 @@ import java.util.UUID;
  */
 public interface IHyriJoinManager {
 
+    /**
+     * Register a join handler instance
+     *
+     * @param priority The priority of the handler (lower priority will be called first)
+     * @param handler The handler to register
+     */
     void registerHandler(int priority, IHyriJoinHandler handler);
-
-    List<UUID> getExpectedPlayers();
-
-    void addExpectedPlayer(UUID playerId);
-
-    void removeExpectedPlayer(UUID playerId);
-
-    List<UUID> getExpectedModerators();
-
-    void addExpectedModerator(UUID playerId);
-
-    void removeExpectedModerator(UUID playerId);
 
 }

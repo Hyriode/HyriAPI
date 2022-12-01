@@ -53,7 +53,9 @@ public class HyriNetworkEventPacket extends HyriPacket {
      * @return A {@link HyriEvent}
      */
     public HyriEvent getEvent() {
-        return (HyriEvent) HyriAPI.GSON.fromJson(this.event, this.getEventClass());
+        final Class<?> eventClass = this.getEventClass();
+
+        return eventClass == null ? null : (HyriEvent) HyriAPI.GSON.fromJson(this.event, eventClass);
     }
 
     /**

@@ -6,9 +6,8 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.config.HyriMongoDBConfig;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.mongodb.IHyriMongoDB;
+import fr.hyriode.api.config.MongoDBConfig;
+import fr.hyriode.api.mongodb.IMongoDB;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +16,16 @@ import java.util.logging.Logger;
  * Created by AstFaster
  * on 08/07/2022 at 09:57
  */
-public class HyriMongoDB implements IHyriMongoDB {
+public class HyriMongoDB implements IMongoDB {
 
     private boolean connected;
 
     private MongoClient client;
 
     public void startConnection() {
-        HyriCommonImplementation.log("Starting MongoDB connection...");
+        HyriAPI.get().log("Starting MongoDB connection...");
 
-        final HyriMongoDBConfig config = HyriAPI.get().getConfig().getMongoDBConfig();
+        final MongoDBConfig config = HyriAPI.get().getConfig().getMongoDBConfig();
         final ConnectionString connectionString = new ConnectionString(config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
@@ -41,7 +40,7 @@ public class HyriMongoDB implements IHyriMongoDB {
     }
 
     public void stopConnection() {
-        HyriCommonImplementation.log("Stopping MongoDB connection...");
+        HyriAPI.get().log("Stopping MongoDB connection...");
 
         this.client.close();
     }

@@ -1,9 +1,8 @@
 package fr.hyriode.api.proxy;
 
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
-import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -18,7 +17,7 @@ public interface IHyriProxyManager {
      *
      * @return A list of {@link HyggProxy}
      */
-    Collection<HyggProxy> getProxies();
+    Set<HyggProxy> getProxies();
 
     /**
      * Get the proxy object from its name
@@ -50,7 +49,7 @@ public interface IHyriProxyManager {
      * @param state The state to wait for
      * @param callback The callback to fire when the proxy has the good state
      */
-    void waitForState(String proxyName, HyggProxyState state, Consumer<HyggProxy> callback);
+    void waitForState(String proxyName, HyggProxy.State state, Consumer<HyggProxy> callback);
 
     /**
      * Wait for a proxy to have a given amount of players

@@ -1,6 +1,8 @@
 package fr.hyriode.api.party;
 
+import fr.hyriode.api.party.event.HyriPartyDisbandEvent;
 import fr.hyriode.api.player.IHyriPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -13,15 +15,13 @@ import java.util.UUID;
  */
 public interface IHyriPartyManager {
 
-    String REDIS_CHANNEL = "parties";
-
     /**
      * Get a party by giving his id
      *
      * @param uuid Party id
      * @return {@link IHyriParty}
      */
-    IHyriParty getParty(UUID uuid);
+    IHyriParty getParty(@NotNull UUID uuid);
 
     /**
      * Get a new party with the id of the leader
@@ -29,22 +29,22 @@ public interface IHyriPartyManager {
      * @param leader Leader {@link UUID}
      * @return {@link IHyriParty}
      */
-    IHyriParty createParty(UUID leader);
+    IHyriParty createParty(@NotNull UUID leader);
 
     /**
      * Send a party in Redis cache
      *
      * @param party {@link IHyriPlayer}
      */
-    void sendParty(IHyriParty party);
+    void updateParty(@NotNull IHyriParty party);
 
     /**
      * Remove a party with a given {@link UUID}.<br>
-     * Warning: this method doesn't call {@link fr.hyriode.api.party.event.HyriPartyDisbandEvent}. If you want to trigger it, please refer to {@link IHyriParty#disband(HyriPartyDisbandReason)}
+     * Warning: this method doesn't call {@link HyriPartyDisbandEvent}. If you want to trigger it, please refer to {@link IHyriParty#disband(IHyriParty.DisbandReason)}
      *
      * @param uuid Party {@link UUID}
      */
-    void removeParty(UUID uuid);
+    void removeParty(@NotNull UUID uuid);
 
     /**
      * Send a party's invitation to a given player
@@ -87,29 +87,5 @@ public interface IHyriPartyManager {
      * @return {@link IHyriParty}
      */
     IHyriParty getPlayerParty(UUID playerUUID);
-
-    /**
-     * Get the current server of a party by giving his id
-     *
-     * @param uuid - Party id
-     * @return Current party server
-     */
-    String getPartyServer(UUID uuid);
-
-    /**
-     * Get the current leader of a party by giving his id
-     *
-     * @param uuid - Party id
-     * @return Current leader id
-     */
-    UUID getPartyLeader(UUID uuid);
-
-    /**
-     * Get the list of members at a party by giving his id
-     *
-     * @param uuid Party id
-     * @return A list of member {@link UUID} with his rank
-     */
-    Map<UUID, HyriPartyRank> getMembersInParty(UUID uuid);
 
 }

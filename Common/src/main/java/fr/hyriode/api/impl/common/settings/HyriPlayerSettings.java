@@ -2,10 +2,9 @@ package fr.hyriode.api.impl.common.settings;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.HyriLanguageUpdatedEvent;
-import fr.hyriode.api.settings.HyriSettingsLevel;
+import fr.hyriode.api.settings.SettingsLevel;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 
 import java.util.UUID;
@@ -19,14 +18,15 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
 
     private boolean friendRequestsEnabled = true;
     private boolean friendConnectionNotificationEnabled = true;
-    private HyriSettingsLevel partyRequestsLevel = HyriSettingsLevel.ALL;
-    private HyriSettingsLevel privateMessagesLevel = HyriSettingsLevel.ALL;
-    private HyriSettingsLevel privateMessagesSoundLevel = HyriSettingsLevel.ALL;
-    private HyriSettingsLevel playersVisibilityLevel = HyriSettingsLevel.ALL;
-    private HyriSettingsLevel globalChatLevel = HyriSettingsLevel.ALL;
+    private SettingsLevel partyRequestsLevel = SettingsLevel.ALL;
+    private SettingsLevel privateMessagesLevel = SettingsLevel.ALL;
+    private SettingsLevel privateMessagesSoundLevel = SettingsLevel.ALL;
+    private SettingsLevel playersVisibilityLevel = SettingsLevel.ALL;
+    private SettingsLevel globalChatLevel = SettingsLevel.ALL;
     private HyriLanguage language = HyriLanguage.FR;
     private boolean autoQueueEnabled = true;
-    private String chatChannel = HyriChatChannel.GLOBAL.getChannel();
+    private boolean followPartyEnabled = true;
+    private HyriChatChannel chatChannel = HyriChatChannel.GLOBAL;
 
     private transient UUID playerId;
 
@@ -55,13 +55,13 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public HyriSettingsLevel getPartyRequestsLevel() {
+    public SettingsLevel getPartyRequestsLevel() {
         return this.partyRequestsLevel;
     }
 
     @Override
-    public void setPartyRequestsLevel(HyriSettingsLevel partyRequestsLevel) {
-        if (partyRequestsLevel == HyriSettingsLevel.PARTY) {
+    public void setPartyRequestsLevel(SettingsLevel partyRequestsLevel) {
+        if (partyRequestsLevel == SettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -69,13 +69,13 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public HyriSettingsLevel getPrivateMessagesLevel() {
+    public SettingsLevel getPrivateMessagesLevel() {
         return this.privateMessagesLevel;
     }
 
     @Override
-    public void setPrivateMessagesLevel(HyriSettingsLevel privateMessagesLevel) {
-        if (privateMessagesLevel == HyriSettingsLevel.PARTY) {
+    public void setPrivateMessagesLevel(SettingsLevel privateMessagesLevel) {
+        if (privateMessagesLevel == SettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -83,13 +83,13 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public HyriSettingsLevel getPrivateMessagesSoundLevel() {
+    public SettingsLevel getPrivateMessagesSoundLevel() {
         return this.privateMessagesSoundLevel;
     }
 
     @Override
-    public void setPrivateMessagesSoundLevel(HyriSettingsLevel privateMessagesSoundLevel) {
-        if (privateMessagesSoundLevel == HyriSettingsLevel.PARTY) {
+    public void setPrivateMessagesSoundLevel(SettingsLevel privateMessagesSoundLevel) {
+        if (privateMessagesSoundLevel == SettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -97,23 +97,23 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public HyriSettingsLevel getPlayersVisibilityLevel() {
+    public SettingsLevel getPlayersVisibilityLevel() {
         return this.playersVisibilityLevel;
     }
 
     @Override
-    public void setPlayersVisibilityLevel(HyriSettingsLevel playersVisibilityLevel) {
+    public void setPlayersVisibilityLevel(SettingsLevel playersVisibilityLevel) {
         this.playersVisibilityLevel = playersVisibilityLevel;
     }
 
     @Override
-    public HyriSettingsLevel getGlobalChatLevel() {
+    public SettingsLevel getGlobalChatLevel() {
         return this.globalChatLevel;
     }
 
     @Override
-    public void setGlobalChatLevel(HyriSettingsLevel globalChatLevel) {
-        if (globalChatLevel == HyriSettingsLevel.PARTY) {
+    public void setGlobalChatLevel(SettingsLevel globalChatLevel) {
+        if (globalChatLevel == SettingsLevel.PARTY) {
             throw new IllegalArgumentException();
         }
 
@@ -143,12 +143,22 @@ public class HyriPlayerSettings implements IHyriPlayerSettings {
     }
 
     @Override
-    public String getChatChannel() {
+    public boolean isFollowPartyEnabled() {
+        return this.followPartyEnabled;
+    }
+
+    @Override
+    public void setFollowPartyEnabled(boolean followPartyEnabled) {
+        this.followPartyEnabled = followPartyEnabled;
+    }
+
+    @Override
+    public HyriChatChannel getChatChannel() {
         return this.chatChannel;
     }
 
     @Override
-    public void setChatChannel(String chatChannel) {
+    public void setChatChannel(HyriChatChannel chatChannel) {
         this.chatChannel = chatChannel;
     }
 

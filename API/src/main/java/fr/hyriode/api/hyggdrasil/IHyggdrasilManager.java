@@ -1,8 +1,8 @@
 package fr.hyriode.api.hyggdrasil;
 
 import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 
 /**
  * Project: HyriAPI
@@ -28,9 +28,9 @@ public interface IHyggdrasilManager {
     /**
      * Get the environment provided by Hyggdrasil before starting the server/proxy
      *
-     * @return A {@link HyggEnvironment} object
+     * @return A {@link HyggEnv} object
      */
-    HyggEnvironment getEnvironment();
+    HyggEnv getEnvironment();
 
     /**
      * Get the application object of the current server/proxy

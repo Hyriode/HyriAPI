@@ -11,7 +11,7 @@ import fr.hyriode.api.player.IHyriPlayer;
 import java.util.List;
 import java.util.UUID;
 
-import static fr.hyriode.api.money.IHyriMoneyAction.*;
+import static fr.hyriode.api.money.IHyriMoneyAction.Type;
 
 /**
  * Project: HyriAPI
@@ -19,6 +19,26 @@ import static fr.hyriode.api.money.IHyriMoneyAction.*;
  * on 12/02/2022 at 15:54
  */
 public class HyriMoneyManager implements IHyriMoneyManager {
+
+    @Override
+    public long applyBoosters(UUID playerId, IHyriMoney money, long amount) {
+        return (long) (amount * this.getMultipliers(playerId, money));
+    }
+
+    @Override
+    public double getMultipliers(UUID playerId, IHyriMoney money) {
+        double multipliers = money.getMultiplier(IHyriPlayer.get(playerId));
+
+        // Fetching boosters to apply multipliers
+        final IHyriBoosterManager boosterManager = HyriAPI.get().getBoosterManager();
+        final List<IHyriBooster> boosters = boosterManager.getBoosters(HyriAPI.get().getServer().getType());
+
+        for (IHyriBooster booster : boosters) {
+            multipliers *= booster.getMultiplier();
+        }
+
+        return multipliers;
+    }
 
     @Override
     public long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
@@ -29,18 +49,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         double multipliers = 1.0D;
 
         if (action.isMultiplier() && action.getType() == Type.ADD) {
-            multipliers = money.getMultiplier(player);
-
-            // Fetching boosters to apply multipliers
-            final IHyriBoosterManager boosterManager = HyriAPI.get().getBoosterManager();
-            final List<IHyriBooster> boosters = boosterManager.getBoosters(HyriAPI.get().getServer().getType());
-
-            boosters.addAll(boosterManager.getBoosters(IHyriBoosterManager.GLOBAL_TYPE));
-
-            for (IHyriBooster booster : boosters) {
-                multipliers *= booster.getMultiplier();
-            }
-
+            multipliers = this.getMultipliers(playerId, money);
             amount = (long) (amount * multipliers);
         }
 

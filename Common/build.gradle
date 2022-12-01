@@ -1,31 +1,15 @@
-plugins {
-    id "com.github.johnrengelman.shadow"
-}
-
-apply plugin: 'maven-publish'
-
 archivesBaseName = 'HyriAPI-Common'
 
 repositories {
-    maven {
-        name = 'Hydrion_maven'
-        url = 'https://maven.pkg.github.com/Hyriode/Hydrion/'
 
-        credentials {
-            username System.getenv('USERNAME')
-            password System.getenv('TOKEN')
-        }
-    }
-}
-
-shadowJar {
-    configurations = [project.configurations.runtimeClasspath]
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
             from components.java
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
 
             pom {
                 groupId = project.group

@@ -1,6 +1,6 @@
 package fr.hyriode.api.settings;
 
-import fr.hyriode.api.color.HyriChatColor;
+import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.language.HyriLanguage;
 
 /**
@@ -41,72 +41,72 @@ public interface IHyriPlayerSettings {
     /**
      * Get the party requests level
      *
-     * @return A {@linkplain HyriSettingsLevel level}
+     * @return A {@linkplain SettingsLevel level}
      */
-    HyriSettingsLevel getPartyRequestsLevel();
+    SettingsLevel getPartyRequestsLevel();
 
     /**
      * Set the party requests level
      *
-     * @param level A {@linkplain HyriSettingsLevel level}
+     * @param level A {@linkplain SettingsLevel level}
      */
-    void setPartyRequestsLevel(HyriSettingsLevel level);
+    void setPartyRequestsLevel(SettingsLevel level);
 
     /**
      * Get private messages level
      *
-     * @return {@link HyriSettingsLevel}
+     * @return {@link SettingsLevel}
      */
-    HyriSettingsLevel getPrivateMessagesLevel();
+    SettingsLevel getPrivateMessagesLevel();
 
     /**
      * Set private messages level
      *
-     * @param level {@link HyriSettingsLevel}
+     * @param level {@link SettingsLevel}
      */
-    void setPrivateMessagesLevel(HyriSettingsLevel level);
+    void setPrivateMessagesLevel(SettingsLevel level);
 
     /**
      * Get the private messages sound level
      *
-     * @return A {@linkplain HyriSettingsLevel level}
+     * @return A {@linkplain SettingsLevel level}
      */
-    HyriSettingsLevel getPrivateMessagesSoundLevel();
+    SettingsLevel getPrivateMessagesSoundLevel();
 
     /**
      * Set the private messages sound level
      *
-     * @param level A {@linkplain HyriSettingsLevel level}
+     * @param level A {@linkplain SettingsLevel level}
      */
-    void setPrivateMessagesSoundLevel(HyriSettingsLevel level);
+    void setPrivateMessagesSoundLevel(SettingsLevel level);
 
     /**
      * Get players visibility level
      *
-     * @return {@link HyriSettingsLevel}
+     * @return {@link SettingsLevel}
      */
-    HyriSettingsLevel getPlayersVisibilityLevel();
+    SettingsLevel getPlayersVisibilityLevel();
 
     /**
      * Set players visibility level
      *
-     * @param level {@link HyriSettingsLevel}
+     * @param level {@link SettingsLevel}
      */
-    void setPlayersVisibilityLevel(HyriSettingsLevel level);
+    void setPlayersVisibilityLevel(SettingsLevel level);
 
     /**
      * Get the global chat messages visibility level
      *
-     * @return A {@linkplain HyriSettingsLevel level}
+     * @return A {@linkplain SettingsLevel level}
      */
-    HyriSettingsLevel getGlobalChatLevel();
+    SettingsLevel getGlobalChatLevel();
 
     /**
      * Set the global chat messages visibility level
      *
-     * @param level A {@linkplain HyriSettingsLevel level}
+     * @param level A {@linkplain SettingsLevel level}
      */
-    void setGlobalChatLevel(HyriSettingsLevel level);
+    void setGlobalChatLevel(SettingsLevel level);
 
     /**
      * Get player language
@@ -137,17 +137,31 @@ public interface IHyriPlayerSettings {
     void setAutoQueueEnabled(boolean autoQueueEnabled);
 
     /**
+     * Check whether the player is following his party
+     *
+     * @return <code>true</code> if yes
+     */
+    boolean isFollowPartyEnabled();
+
+    /**
+     * Set whether the player will follow his group
+     *
+     * @param followPartyEnabled New value
+     */
+    void setFollowPartyEnabled(boolean followPartyEnabled);
+
+    /**
      * Get the player chat channel
      *
      * @return The player chat channel
      */
-    String getChatChannel();
+    HyriChatChannel getChatChannel();
 
     /**
      * Set the player chat channel
      *
      * @param chatChannel String
      */
-    void setChatChannel(String chatChannel);
+    void setChatChannel(HyriChatChannel chatChannel);
 
 }

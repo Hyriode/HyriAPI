@@ -7,6 +7,12 @@ package fr.hyriode.api.whitelist;
  */
 public interface IHyriWhitelistManager {
 
+    /**
+     * Whitelist a player on the network
+     *
+     * @param name Th
+     * @param seconds
+     */
     void whitelistPlayer(String name, int seconds);
 
     default void whitelistPlayer(String name) {

@@ -101,8 +101,9 @@ public interface IHyriParty {
      * Remove a member of the party by giving his {@link UUID}
      *
      * @param uuid Member {@link UUID}
+     * @param reason The reason why the player need to be removed
      */
-    void removeMember(UUID uuid);
+    void removeMember(UUID uuid, RemoveReason reason);
 
     /**
      * Kick a player from the party
@@ -143,20 +144,6 @@ public interface IHyriParty {
     void setPrivate(boolean value);
 
     /**
-     * Get the current server of the party
-     *
-     * @return A server id
-     */
-    String getServer();
-
-    /**
-     * Set the current server of the party
-     *
-     * @param server New server id
-     */
-    void setServer(String server);
-
-    /**
      * Check if the party chat is enabled for party members
      *
      * @return <code>true</code> if yes
@@ -175,35 +162,40 @@ public interface IHyriParty {
      *
      * @param sender The sender of the message
      * @param message The message to send
+     * @param component Is the message a serialized TextComponent or a {@link String}
      */
-    void sendMessage(UUID sender, String message);
+    void sendMessage(UUID sender, String message, boolean component);
 
     /**
-     * Send a message component to all the members of the party
+     * Send a message to all the members of the party
      *
-     * @param component The component as json
+     * @param sender The sender of the message
+     * @param message The message to send
      */
-    void sendComponent(String component);
+    default void sendMessage(UUID sender, String message) {
+        this.sendMessage(sender, message, false);
+    }
 
     /**
      * Disband the party
      *
      * @param reason The reason of why the party need to be disbanded
      */
-    void disband(HyriPartyDisbandReason reason);
+    void disband(DisbandReason reason);
 
     /**
-     * Warp a party on a given server
+     * Warp a party member to another party member
      *
-     * @param server The server where the party will be sent
+     * @param player The player to teleport
+     * @param target The targeted player of the teleportation
      */
-    void warp(String server);
+    void teleport(UUID player, UUID target);
 
     /**
      * Update a player in Redis
      */
     default void update() {
-        HyriAPI.get().getPartyManager().sendParty(this);
+        HyriAPI.get().getPartyManager().updateParty(this);
     }
 
     /**
@@ -214,6 +206,26 @@ public interface IHyriParty {
      */
     static IHyriParty get(UUID partyId) {
         return HyriAPI.get().getPartyManager().getParty(partyId);
+    }
+
+    /** All the reasons of why a party can be disbanded. */
+    enum DisbandReason {
+
+        /** The party was disbanded normally */
+        NORMAL,
+        /** The leader was offline for too long */
+        LEADER_DISCONNECT_TIMEOUT
+
+    }
+
+    /** All the reasons of why a member can be removed */
+    enum RemoveReason {
+
+        /** The player left by himself */
+        MANUAL,
+        /** The player was offline for too long */
+        DISCONNECT_TIMEOUT
+
     }
 
 }

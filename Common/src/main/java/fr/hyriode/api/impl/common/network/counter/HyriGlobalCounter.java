@@ -15,7 +15,7 @@ public class HyriGlobalCounter implements IHyriGlobalCounter {
     public int getPlayers() {
         int players = 0;
         for (HyggProxy proxy : HyriAPI.get().getProxyManager().getProxies()) {
-            players += proxy.getPlayers();
+            players += proxy.getPlayers().size();
         }
         return players;
     }

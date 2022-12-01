@@ -4,23 +4,16 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
 import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
 import fr.hyriode.api.impl.proxy.config.HyriAPIConfig;
-import fr.hyriode.api.impl.proxy.listener.HyriJoinListener;
-import fr.hyriode.api.impl.proxy.listener.HyriNetworkListener;
-import fr.hyriode.api.impl.proxy.listener.HyriProxyListener;
-import fr.hyriode.api.impl.proxy.player.HyriPlayerLoader;
-import fr.hyriode.api.impl.proxy.task.HyriOnlinePlayersTask;
-import fr.hyriode.api.proxy.IHyriProxy;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import fr.hyriode.api.impl.proxy.listener.JoinListener;
+import fr.hyriode.api.impl.proxy.listener.NetworkListener;
+import fr.hyriode.api.impl.proxy.listener.ProxyListener;
+import fr.hyriode.api.impl.proxy.player.PlayerLoader;
+import fr.hyriode.api.impl.proxy.task.OnlinePlayersTask;
+import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.net.InetSocketAddress;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Project: HyriAPI
@@ -30,30 +23,27 @@ import java.util.logging.Level;
 public class HyriAPIPlugin extends Plugin  {
 
     private HyriAPIConfig configuration;
-    private HyriAPIImplementation api;
+    private PHyriAPIImpl api;
 
-    private HyriPlayerLoader playerLoader;
+    private PlayerLoader playerLoader;
 
-    private HyriOnlinePlayersTask onlinePlayersTask;
+    private OnlinePlayersTask onlinePlayersTask;
 
     private ClientSupportManager clientSupportManager;
 
     @Override
     public void onEnable() {
         this.configuration = HyriAPIConfig.Loader.load(this);
-        this.api = new HyriAPIImplementation(this);
-
-        this.playerLoader = new HyriPlayerLoader(this);
-
-        this.onlinePlayersTask = new HyriOnlinePlayersTask();
+        this.api = new PHyriAPIImpl(this);
+        this.playerLoader = new PlayerLoader();
+        this.onlinePlayersTask = new OnlinePlayersTask();
         this.onlinePlayersTask.start(this);
-
         this.clientSupportManager = new ClientSupportManager();
         this.clientSupportManager.registerSupport(new AZLauncherSupport(this));
 
         this.registerListeners();
 
-        HyriAPI.get().getProxy().setState(IHyriProxy.State.READY);
+        HyriAPI.get().getProxy().setState(HyggProxy.State.READY);
     }
 
     @Override
@@ -61,61 +51,31 @@ public class HyriAPIPlugin extends Plugin  {
         this.api.stop();
         this.onlinePlayersTask.stop();
 
-        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-            this.playerLoader.handleDisconnection(player);
-        }
-
-        log(HyriAPI.NAME + " is now disabled. See you soon!");
-    }
-
-    public void createServerInfo(String serverName, int serverPort) {
-        final ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(serverName, new InetSocketAddress(serverName, serverPort), "", false);
-
-        ProxyServer.getInstance().getServers().put(serverName, serverInfo);
-
-        HyriAPIPlugin.log("Added '" + serverName + "' server.");
-    }
-
-    public static void log(Level level, String message) {
-        String prefix = ChatColor.DARK_AQUA + "[" + HyriAPI.NAME + "] ";
-
-        if (level == Level.SEVERE) {
-            prefix += ChatColor.RED;
-        } else if (level == Level.WARNING) {
-            prefix += ChatColor.YELLOW;
-        } else {
-            prefix += ChatColor.RESET;
-        }
-
-        ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(prefix + message));
-    }
-
-    public static void log(String message) {
-        log(Level.INFO, message);
+        HyriAPI.get().log(HyriAPI.NAME + " is now disabled. See you soon!");
     }
 
     private void registerListeners() {
         final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
 
-        register.accept(new HyriProxyListener(this.configuration));
-        register.accept(new HyriJoinListener(this));
+        register.accept(new ProxyListener(this.configuration));
+        register.accept(new JoinListener(this));
 
-        HyriAPI.get().getNetworkManager().getEventBus().register(new HyriNetworkListener());
+        HyriAPI.get().getNetworkManager().getEventBus().register(new NetworkListener());
     }
 
     public HyriAPIConfig getConfiguration() {
         return this.configuration;
     }
 
-    public HyriAPIImplementation getAPI() {
+    public PHyriAPIImpl getAPI() {
         return this.api;
     }
 
-    public HyriPlayerLoader getPlayerLoader() {
+    public PlayerLoader getPlayerLoader() {
         return this.playerLoader;
     }
 
-    public HyriOnlinePlayersTask getOnlinePlayersTask() {
+    public OnlinePlayersTask getOnlinePlayersTask() {
         return this.onlinePlayersTask;
     }
 

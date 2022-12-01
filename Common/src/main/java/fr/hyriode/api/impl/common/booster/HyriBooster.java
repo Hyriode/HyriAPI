@@ -2,7 +2,6 @@ package fr.hyriode.api.impl.common.booster;
 
 import fr.hyriode.api.booster.IHyriBooster;
 
-import java.util.Date;
 import java.util.UUID;
 
 /**

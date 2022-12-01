@@ -1,6 +1,6 @@
 package fr.hyriode.api.impl.proxy.clientsupport;
 
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
+import fr.hyriode.api.HyriAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ClientSupportManager {
 
         this.supports.add(support);
 
-        HyriCommonImplementation.log("Registered '" + supportName + "' client support.");
+        HyriAPI.get().log("Registered '" + supportName + "' client support.");
     }
 
     public boolean unregisterSupport(String name) {

@@ -3,6 +3,8 @@ package fr.hyriode.api.player.nickname;
 import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.player.IHyriPlayer;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -10,16 +12,16 @@ import fr.hyriode.api.player.IHyriPlayer;
  */
 public class HyriNicknameUpdatedEvent extends HyriEvent {
 
-    private final IHyriPlayer player;
+    private final UUID playerId;
     private final IHyriNickname nickname;
 
-    public HyriNicknameUpdatedEvent(IHyriPlayer player, IHyriNickname nickname) {
-        this.player = player;
+    public HyriNicknameUpdatedEvent(UUID playerId, IHyriNickname nickname) {
+        this.playerId = playerId;
         this.nickname = nickname;
     }
 
-    public IHyriPlayer getPlayer() {
-        return this.player;
+    public UUID getPlayerId() {
+        return this.playerId;
     }
 
     public IHyriNickname getNickname() {

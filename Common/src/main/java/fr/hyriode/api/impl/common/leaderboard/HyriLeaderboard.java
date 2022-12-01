@@ -7,8 +7,10 @@ import fr.hyriode.api.leaderboard.IHyriLeaderboard;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.resps.Tuple;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by AstFaster

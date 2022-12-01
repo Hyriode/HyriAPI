@@ -41,6 +41,10 @@ public class HyriNetworkEventBus extends HyriEventBus implements IHyriPacketRece
             final HyriNetworkEventPacket eventPacket = (HyriNetworkEventPacket) packet;
             final HyriEvent event = eventPacket.getEvent();
 
+            if (event == null) {
+                return;
+            }
+
             if (eventPacket.isAsyncEvent()) {
                 super.publishAsync(event);
             } else {

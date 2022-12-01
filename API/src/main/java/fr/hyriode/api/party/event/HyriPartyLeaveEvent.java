@@ -1,6 +1,7 @@
 package fr.hyriode.api.party.event;
 
 import fr.hyriode.api.party.IHyriParty;
+import fr.hyriode.api.party.IHyriParty.RemoveReason;
 
 import java.util.UUID;
 
@@ -11,15 +12,20 @@ import java.util.UUID;
  */
 public class HyriPartyLeaveEvent extends HyriPartyMemberEvent {
 
+    /** The reason why the player left the party */
+    private final IHyriParty.RemoveReason reason;
+
     /**
      * Constructor of {@link HyriPartyLeaveEvent}.<br>
      * This event is triggered when a member of a party left the network or the party.
      *
-     * @param party  The {@link IHyriParty} object
+     * @param party The {@link IHyriParty} object
      * @param member The {@link UUID} of the member
+     * @param reason The reason why the player left the party
      */
-    public HyriPartyLeaveEvent(IHyriParty party, UUID member) {
+    public HyriPartyLeaveEvent(IHyriParty party, UUID member, IHyriParty.RemoveReason reason) {
         super(party, member);
+        this.reason = reason;
     }
 
     /**
@@ -29,6 +35,15 @@ public class HyriPartyLeaveEvent extends HyriPartyMemberEvent {
      */
     public boolean isLeader() {
         return this.getParty().getLeader() == this.member;
+    }
+
+    /**
+     * Get the reason why the player left the party
+     *
+     * @return A {@link RemoveReason}
+     */
+    public IHyriParty.RemoveReason getReason() {
+        return this.reason;
     }
 
 }

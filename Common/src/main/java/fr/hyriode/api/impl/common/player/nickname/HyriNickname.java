@@ -7,6 +7,8 @@ import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.util.Skin;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -67,8 +69,8 @@ public class HyriNickname implements IHyriNickname {
     }
 
     @Override
-    public IHyriNickname update(IHyriPlayer player) {
-        HyriAPI.get().getEventBus().publishAsync(new HyriNicknameUpdatedEvent(player, this));
+    public IHyriNickname update(UUID playerId) {
+        HyriAPI.get().getEventBus().publishAsync(new HyriNicknameUpdatedEvent(playerId, this));
         return this;
     }
 

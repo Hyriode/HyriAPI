@@ -1,8 +1,6 @@
 package fr.hyriode.api.impl.common.server.reconnection;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.server.join.packet.HyriPlayerReconnectPacket;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
@@ -29,7 +27,7 @@ public class HyriReconnectionHandler implements IHyriReconnectionHandler {
 
         this.remove(playerId);
 
-        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new HyriPlayerReconnectPacket(server.getName(), playerId));
+        HyriAPI.get().getServerManager().sendPlayerToServer(playerId, server.getName());
     }
 
     @Override

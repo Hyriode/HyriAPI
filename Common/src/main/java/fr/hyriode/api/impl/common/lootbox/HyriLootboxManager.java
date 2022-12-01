@@ -1,6 +1,5 @@
 package fr.hyriode.api.impl.common.lootbox;
 
-import fr.hyriode.api.impl.common.transaction.HyriTransaction;
 import fr.hyriode.api.lootbox.HyriLootboxRarity;
 import fr.hyriode.api.lootbox.HyriLootboxTransaction;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;

@@ -5,7 +5,7 @@ plugins {
 archivesBaseName = 'HyriAPI-Server'
 
 shadowJar {
-    configurations = [project.configurations.shadow]
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 repositories {
@@ -21,9 +21,40 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    shadow 'fr.hyriode:hystia-spigot:1.0.8'
-    shadow project(':Common')
+    compileOnly fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'fr.hyriode:hystia-spigot:1.0.8'
+    implementation project(':Common')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+            artifact tasks.shadowJar
+
+            pom {
+                groupId = project.group
+                artifactId = 'hyriapi-server'
+                version = project.version
+                name = 'HyriAPI'
+                description = 'Project with the server implementation of HyriAPI'
+                url = 'https://github.com/Hyriode/HyriAPI'
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username System.getenv('USERNAME')
+                password System.getenv('TOKEN')
+            }
+            name = "HyriAPI_maven"
+            url = "https://maven.pkg.github.com/Hyriode/HyriAPI"
+        }
+    }
 }
 
 processResources {

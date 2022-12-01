@@ -17,6 +17,8 @@ public class HyriBoosterTransaction implements IHyriTransactionContent {
     private final double multiplier;
     /** The duration of the booster */
     private final long duration;
+    /** Define whether the booster of the transaction has been used or not */
+    private boolean used;
 
     public HyriBoosterTransaction(String type, double multiplier, long duration) {
         this.type = type;
@@ -34,6 +36,14 @@ public class HyriBoosterTransaction implements IHyriTransactionContent {
 
     public long getDuration() {
         return this.duration;
+    }
+
+    public boolean isUsed() {
+        return this.used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
 }

@@ -1,6 +1,6 @@
 package fr.hyriode.api.impl.proxy.player;
 
-import fr.hyriode.api.impl.common.player.HyriCPlayerManager;
+import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/02/2022 at 15:30
  */
-public class HyriPlayerManager extends HyriCPlayerManager {
+public class HyriPlayerManager extends CHyriPlayerManager {
 
     @Override
     public UUID getPlayerId(String name) {
@@ -38,26 +38,18 @@ public class HyriPlayerManager extends HyriCPlayerManager {
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
+    public void sendMessage(UUID uuid, String message, boolean component) {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
         if (player != null) {
-            player.sendMessage(TextComponent.fromLegacyText(message));
+            if (component) {
+                player.sendMessage(MessageUtil.deserializeComponent(message));
+            } else {
+                player.sendMessage(TextComponent.fromLegacyText(message));
+            }
             return;
         }
         super.sendMessage(uuid, message);
-    }
-
-
-    @Override
-    public void sendComponent(UUID uuid, String component) {
-        final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
-
-        if (player != null) {
-            player.sendMessage(MessageUtil.deserializeComponent(component));
-            return;
-        }
-        super.sendComponent(uuid, component);
     }
 
     @Override

@@ -10,6 +10,25 @@ import java.util.UUID;
 public interface IHyriMoneyManager {
 
     /**
+     * Apply boosters multipliers on a given amount of money
+     *
+     * @param playerId The player concerned by the multipliers
+     * @param money The type of money
+     * @param amount The amount to multiply
+     * @return The amount with boosters applied
+     */
+    long applyBoosters(UUID playerId, IHyriMoney money, long amount);
+
+    /**
+     * Get the multipliers for a player
+     *
+     * @param playerId The player
+     * @param money The concerned money
+     * @return The multipliers to apply to a money amount
+     */
+    double getMultipliers(UUID playerId, IHyriMoney money);
+
+    /**
      * Make action on money when add/remove/set
      *
      * @param playerId The unique id of the player

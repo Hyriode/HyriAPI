@@ -3,6 +3,7 @@ package fr.hyriode.api.booster;
 import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -12,8 +13,6 @@ import java.util.UUID;
  */
 public interface IHyriBoosterManager {
 
-    /** The booster will be applied multiplier over all games */
-    String GLOBAL_TYPE = "global";
     /** The booster type will be selected at the activation */
     String SELECTABLE_TYPE = "selectable";
 
@@ -42,9 +41,9 @@ public interface IHyriBoosterManager {
      * Get the owned boosters of a player
      *
      * @param player The player
-     * @return A list of {@link HyriBoosterTransaction}
+     * @return A map of {@link HyriBoosterTransaction} linked to their name
      */
-    List<HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player);
+    Map<String, HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player);
 
     /**
      * Get all actives boosters on the network
@@ -56,7 +55,7 @@ public interface IHyriBoosterManager {
     /**
      * Get all actives boosters with a given type on the network
      *
-     * @param type A booster type (ex: {@link IHyriBoosterManager#GLOBAL_TYPE}, bedwars, therunner, etc)
+     * @param type A booster type (ex: bedwars, therunner, etc)
      * @return A list of {@link IHyriBooster}
      */
     List<IHyriBooster> getBoosters(String type);

@@ -1,31 +1,25 @@
 package fr.hyriode.api.impl.common.hyggdrasil;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.host.HostData;
+import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
-import fr.hyriode.api.impl.common.HyriCommonImplementation;
-import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriProxiesListener;
-import fr.hyriode.api.impl.common.hyggdrasil.listener.HyriServersListener;
+import fr.hyriode.api.impl.common.hyggdrasil.listener.ProxiesListener;
+import fr.hyriode.api.impl.common.hyggdrasil.listener.ServersListener;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
-import fr.hyriode.hyggdrasil.api.event.model.HyggStartedEvent;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggApplication;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggData;
-import fr.hyriode.hyggdrasil.api.protocol.environment.HyggEnvironment;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
+import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
-import fr.hyriode.hyggdrasil.api.proxy.HyggProxyState;
+import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
 import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyInfoPacket;
-import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
-import fr.hyriode.hyggdrasil.api.server.HyggServerState;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
-import fr.hyriode.hylios.api.host.HostAPI;
-import fr.hyriode.hylios.api.host.HostData;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -35,14 +29,9 @@ import java.util.logging.Logger;
 public class HyggdrasilManager implements IHyggdrasilManager {
 
     private HyggdrasilAPI hyggdrasilAPI;
-    private HyggEnvironment environment;
+    private HyggEnv environment;
 
-    private final Logger logger;
-    private final Supplier<HyriCommonImplementation> implementation;
-
-    public HyggdrasilManager(Logger logger, Supplier<HyriCommonImplementation> implementation, HyggEnvironment environment) {
-        this.logger = logger;
-        this.implementation = implementation;
+    public HyggdrasilManager(HyggEnv environment) {
         this.environment = environment;
 
         if (this.environment == null) {
@@ -52,24 +41,23 @@ public class HyggdrasilManager implements IHyggdrasilManager {
 
     private void load() {
         if (this.withHyggdrasil()) {
-            HyriCommonImplementation.log("Loading Hyggdrasil manager...");
+            HyriAPI.get().log("Loading Hyggdrasil manager...");
 
-            this.environment = HyggEnvironment.loadFromEnvironmentVariables();
+            this.environment = HyggEnv.loadFromEnvironmentVariables();
         }
     }
 
     public void start() {
         if (this.withHyggdrasil()) {
-            HyriCommonImplementation.log("Starting Hyggdrasil manager...");
+            HyriAPI.get().log("Starting Hyggdrasil manager...");
 
             this.hyggdrasilAPI = new HyggdrasilAPI.Builder()
-                    .withLogger(this.logger)
                     .withJedisPool(HyriAPI.get().getRedisConnection().clone().getPool())
                     .withEnvironment(this.environment)
                     .build();
             this.hyggdrasilAPI.start();
 
-            this.hyggdrasilAPI.getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
+            HyriAPI.get().getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
 
             this.registerListeners();
         }
@@ -80,7 +68,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
             return;
         }
 
-        HyriCommonImplementation.log("Stopping Hyggdrasil manager...");
+        HyriAPI.get().log("Stopping Hyggdrasil manager...");
 
         this.hyggdrasilAPI.stop();
     }
@@ -94,25 +82,30 @@ public class HyggdrasilManager implements IHyggdrasilManager {
             if (type == HyggApplication.Type.PROXY) {
                 final IHyriProxy proxy = HyriAPI.get().getProxy();
 
-                packetProcessor.request(HyggChannel.PROXIES, new HyggProxyInfoPacket(HyggProxyState.valueOf(proxy.getState().name()), proxy.getPlayers(), proxy.getStartedTime())).exec();
+                packetProcessor.request(HyggChannel.PROXIES, new HyggProxyInfoPacket(new HyggProxy(proxy.getName(), proxy.getData(), proxy.getState(), proxy.getPlayers(), proxy.getPort(), proxy.getStartedTime()))).exec();
             } else if (type == HyggApplication.Type.SERVER) {
                 final IHyriServer server = HyriAPI.get().getServer();
-                final HyggData data = server.getData();
+                final HostData hostData = server.getHostData();
 
-                if (server.isHost()) {
-                    data.add(HostAPI.DATA_KEY, HyriAPI.GSON.toJson(server.getHostData()));
+                if (hostData != null) {
+                    server.getData().addObject(IHostManager.DATA_KEY, hostData);
                 }
 
-                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(HyggServerState.valueOf(server.getState().name()), server.getPlayers(), server.getPlayersPlaying(), server.getStartedTime(), new HyggServerOptions(), data, server.getSlots(), server.isAccessible())).exec();
+                final HyggServer info = new HyggServer(
+                        server.getName(), server.getType(), server.getGameType(),
+                        server.getMap(), server.getAccessibility(), server.getProcess(),
+                        server.getState(), server.getMinecraftOptions(), server.getData(),
+                        server.getPlayers(), server.getPlayersPlaying(), server.getSlots(),
+                        server.getStartedTime());
+
+                packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(info)).exec();
             }
         }
     }
 
     private void registerListeners() {
-        new HyriServersListener(this.implementation.get()).register();
-        new HyriProxiesListener(this.implementation.get()).register();
-
-        this.hyggdrasilAPI.getEventBus().subscribe(HyggStartedEvent.class, event -> this.sendData());
+        new ServersListener().register();
+        new ProxiesListener().register();
     }
 
     public String generateDevApplicationName() {
@@ -121,7 +114,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
 
     @Override
     public boolean withHyggdrasil() {
-        return this.implementation.get().getConfig().withHyggdrasil();
+        return HyriAPI.get().getConfig().withHyggdrasil();
     }
 
     @Override
@@ -130,7 +123,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     }
 
     @Override
-    public HyggEnvironment getEnvironment() {
+    public HyggEnv getEnvironment() {
         return this.environment;
     }
 
