@@ -1,0 +1,46 @@
+name: (Dev) Upload To Azure Blob Storage
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build shaded Jar
+        run: ./gradlew shadowJar
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Upload Server Jar
+        uses: azure/CLI@v1
+        env:
+          CONNECTION_STRING: ${{ secrets.AZURE_CONNECTION_STRING }}
+          CONTAINER_NAME: ${{ secrets.DEV_SERVER_CONTAINER }}
+        with:
+          inlineScript: az storage blob upload-batch --connection-string $CONNECTION_STRING --source Server/build/libs --destination $CONTAINER_NAME --destination-path hyriapi --overwrite
+
+      - name: Upload Proxy Jar
+        uses: azure/CLI@v1
+        env:
+          CONNECTION_STRING: ${{ secrets.AZURE_CONNECTION_STRING }}
+          CONTAINER_NAME: ${{ secrets.DEV_PROXY_CONTAINER }}
+        with:
+          inlineScript: az storage blob upload-batch --connection-string $CONNECTION_STRING --source Proxy/build/libs --destination $CONTAINER_NAME --destination-path hyriapi --overwrite
