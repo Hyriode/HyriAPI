@@ -2,7 +2,7 @@ name: (Dev) Upload To Azure Blob Storage
 on:
   push:
     branches:
-      - dev
+      - develop
 
 jobs:
   upload:
