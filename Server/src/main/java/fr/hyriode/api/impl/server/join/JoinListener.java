@@ -114,7 +114,7 @@ public class JoinListener implements Listener {
         if (account != null && HyriAPI.get().getConfig().isDevEnvironment()) {
             final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
 
-            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
             account.update();
 
             if (session != null) {

@@ -1,12 +1,11 @@
 package fr.hyriode.api.impl.common.player;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.impl.common.money.Gems;
 import fr.hyriode.api.impl.common.money.Hyris;
-import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
 import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
 import fr.hyriode.api.impl.common.transaction.HyriTransaction;
 import fr.hyriode.api.leveling.IHyriLeveling;
@@ -15,7 +14,6 @@ import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.HyriRankUpdatedEvent;
@@ -26,7 +24,6 @@ import fr.hyriode.api.transaction.IHyriTransaction;
 import fr.hyriode.api.transaction.IHyriTransactionContent;
 import fr.hyriode.api.util.Skin;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -36,52 +33,47 @@ import java.util.*;
  */
 public class HyriPlayer implements IHyriPlayer {
 
-    private boolean premium;
+    private UUID uuid;
 
     private String name;
-    private final UUID uuid;
+    private boolean premium = true;
 
-    private long lastLoginDate;
-    private final long firstLoginDate;
-    private long playTime;
+    private final long firstLoginDate = System.currentTimeMillis();
+    private long lastLoginDate = this.firstLoginDate;
+    private long playTime = 0;
 
-    private HyriRank rank;
+    private HyriRank rank = new HyriRank();
     private HyriPlus hyriPlus = new HyriPlus();
 
-    private int availableHosts;
-    private List<UUID> playersBannedFromHost = new ArrayList<>();
-    private List<String> favoriteHostConfigs = new ArrayList<>();
+    private int availableHosts = 0;
+    private final List<UUID> playersBannedFromHost = new ArrayList<>();
+    private final List<String> favoriteHostConfigs = new ArrayList<>();
 
-    private final Hyris hyris;
-    private final Gems gems;
+    private final Hyris hyris = new Hyris(this.uuid);
+    private final Gems gems = new Gems(this.uuid);
 
-    private HyriPlayerSettings settings;
+    private final NetworkLeveling networkLeveling = new NetworkLeveling(this.uuid);
 
-    private Map<String, JsonElement> statistics = new HashMap<>();
-    private Map<String, JsonElement> data = new HashMap<>();
+    private HyriPlayerSettings settings = new HyriPlayerSettings();
 
-    private Map<String, List<HyriTransaction>> transactions = new HashMap<>();
+    private final Map<String, JsonElement> statistics = new HashMap<>();
+    private final Map<String, JsonElement> data = new HashMap<>();
 
-    private final NetworkLeveling networkLeveling;
+    private final Map<String, List<HyriTransaction>> transactions = new HashMap<>();
+
+    /**
+     * Json serialization constructor.
+     */
+    private HyriPlayer() {}
 
     public HyriPlayer(boolean premium, String name, UUID uuid) {
         this.premium = premium;
         this.name = name;
         this.uuid = uuid;
-        this.firstLoginDate = System.currentTimeMillis();
-        this.lastLoginDate = this.firstLoginDate;
-        this.rank = new HyriRank(HyriPlayerRankType.PLAYER);
-        this.hyris = new Hyris(this.uuid);
-        this.gems = new Gems(this.uuid);
-        this.settings = new HyriPlayerSettings();
-        this.networkLeveling = new NetworkLeveling(this.uuid);
     }
 
     @Override
     public boolean isPremium() {
-        if (!this.premium && this.firstLoginDate < 1664386495000L) { // Check old accounts
-            this.premium = true;
-        }
         return this.premium;
     }
 
@@ -143,13 +135,13 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public Date getFirstLoginDate() {
-        return new Date(this.firstLoginDate);
+    public long getFirstLoginDate() {
+        return this.firstLoginDate;
     }
 
     @Override
-    public Date getLastLoginDate() {
-        return new Date(this.lastLoginDate);
+    public long getLastLoginDate() {
+        return this.lastLoginDate;
     }
 
     @Override
@@ -212,32 +204,32 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public List<UUID> getPlayersBannedFromHost() {
-        return this.playersBannedFromHost == null ? this.playersBannedFromHost = new ArrayList<>() : this.playersBannedFromHost;
+        return this.playersBannedFromHost;
     }
 
     @Override
     public void addPlayerBannedFromHost(UUID playerId) {
-        this.getPlayersBannedFromHost().add(playerId);
+        this.playersBannedFromHost.add(playerId);
     }
 
     @Override
     public void removePlayerBannedFromHost(UUID playerId) {
-        this.getPlayersBannedFromHost().remove(playerId);
+        this.playersBannedFromHost.remove(playerId);
     }
 
     @Override
     public List<String> getFavoriteHostConfigs() {
-        return this.favoriteHostConfigs == null ? this.favoriteHostConfigs = new ArrayList<>() : this.favoriteHostConfigs;
+        return this.favoriteHostConfigs;
     }
 
     @Override
     public void addFavoriteHostConfig(String configId) {
-        this.getFavoriteHostConfigs().add(configId);
+        this.favoriteHostConfigs.add(configId);
     }
 
     @Override
     public void removeFavoriteHostConfig(String configId) {
-        this.getFavoriteHostConfigs().remove(configId);
+        this.favoriteHostConfigs.remove(configId);
     }
 
     @Override
@@ -265,6 +257,13 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
+    public IHyriLeveling getNetworkLeveling() {
+        this.networkLeveling.setPlayerId(this.uuid);
+
+        return this.networkLeveling;
+    }
+
+    @Override
     public UUID getParty() {
         return IHyriPlayerSession.get(this.uuid).getParty();
     }
@@ -277,6 +276,22 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public boolean hasParty() {
         return this.getParty() != null;
+    }
+
+    @Override
+    public int getPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getPriority();
+        }
+        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
+    }
+
+    @Override
+    public int getTabListPriority() {
+        if (this.rank.isStaff()) {
+            return this.rank.getTabListPriority();
+        }
+        return this.hasHyriPlus() ? HyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
     }
 
     @Override
@@ -348,16 +363,12 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public List<String> getStatistics() {
-        return new ArrayList<>(this.statistics.keySet());
-    }
-
-    private Map<String, JsonElement> getStatisticsMap() {
-        return this.statistics == null ? this.statistics = new HashMap<>() : this.statistics;
+        return Collections.unmodifiableList(new ArrayList<>(this.statistics.keySet()));
     }
 
     @Override
     public <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass) {
-        final JsonElement serialized = this.getStatisticsMap().get(key);
+        final JsonElement serialized = this.statistics.get(key);
 
         if (serialized != null) {
             return HyriAPI.GSON.fromJson(serialized, statisticsClass);
@@ -367,31 +378,27 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public void addStatistics(String key, HyriPlayerData statistics) {
-        this.getStatisticsMap().put(key, HyriAPI.GSON.toJsonTree(statistics));
+        this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
     }
 
     @Override
     public void removeStatistics(String key) {
-        this.getStatisticsMap().remove(key);
+        this.statistics.remove(key);
     }
 
     @Override
     public boolean hasStatistics(String key) {
-        return this.getStatisticsMap().containsKey(key);
+        return this.statistics.containsKey(key);
     }
 
     @Override
     public List<String> getData() {
-        return new ArrayList<>(this.getDataMap().keySet());
-    }
-
-    private Map<String, JsonElement> getDataMap() {
-        return this.data == null ? this.data = new HashMap<>() : this.data;
+        return Collections.unmodifiableList(new ArrayList<>(this.data.keySet()));
     }
 
     @Override
     public <T extends HyriPlayerData> T getData(String key, Class<T> dataClass) {
-        final JsonElement serialized = this.getDataMap().get(key);
+        final JsonElement serialized = this.data.get(key);
 
         if (serialized != null) {
             return HyriAPI.GSON.fromJson(serialized, dataClass);
@@ -401,40 +408,17 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public void addData(String key, HyriPlayerData data) {
-        this.getDataMap().put(key, HyriAPI.GSON.toJsonTree(data));
+        this.data.put(key, HyriAPI.GSON.toJsonTree(data));
     }
 
     @Override
     public void removeData(String key) {
-        this.getDataMap().remove(key);
+        this.data.remove(key);
     }
 
     @Override
     public boolean hasData(String key) {
-        return this.getDataMap().containsKey(key);
-    }
-
-    @Override
-    public IHyriLeveling getNetworkLeveling() {
-        this.networkLeveling.setPlayerId(this.uuid);
-
-        return this.networkLeveling;
-    }
-
-    @Override
-    public int getPriority() {
-        if (this.rank.isStaff()) {
-            return this.rank.getPriority();
-        }
-        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
-    }
-
-    @Override
-    public int getTabListPriority() {
-        if (this.rank.isStaff()) {
-            return this.rank.getTabListPriority();
-        }
-        return this.hasHyriPlus() ? HyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
+        return this.data.containsKey(key);
     }
 
     @Override
@@ -443,7 +427,7 @@ public class HyriPlayer implements IHyriPlayer {
             return false;
         }
 
-        final List<HyriTransaction> transactions = this.getTransactions().getOrDefault(type, new ArrayList<>());
+        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
 
         transactions.add(new HyriTransaction(name, System.currentTimeMillis(), content));
 
@@ -454,7 +438,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean removeTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.getTransactions().getOrDefault(type, new ArrayList<>());
+        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
 
         if (transactions == null) {
             return false;
@@ -475,7 +459,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public HyriTransaction getTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.getTransactions().get(type);
+        final List<HyriTransaction> transactions = this.transactions.get(type);
 
         if (transactions == null) {
             return null;
@@ -491,7 +475,7 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public boolean hasTransaction(String type, String name) {
-        final List<? extends IHyriTransaction> transactions = this.getTransactions().get(type);
+        final List<? extends IHyriTransaction> transactions = this.transactions.get(type);
 
         if (transactions == null) {
             return false;
@@ -507,31 +491,17 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public List<HyriTransaction> getTransactions(String type) {
-        return this.getTransactions().get(type);
+        return this.transactions.get(type);
     }
 
     @Override
     public Map<String, List<HyriTransaction>> getTransactions() {
-        return this.transactions == null ? this.transactions = new HashMap<>() : this.transactions;
+        return Collections.unmodifiableMap(this.transactions);
     }
 
     @Override
     public List<String> getTransactionsTypes() {
-        return new ArrayList<>(this.getTransactions().keySet());
-    }
-
-    public static class Serializer implements JsonSerializer<HyriPlayer>, JsonDeserializer<HyriPlayer> {
-
-        @Override
-        public JsonElement serialize(HyriPlayer player, Type type, JsonSerializationContext ctx) {
-            return null;
-        }
-
-        @Override
-        public HyriPlayer deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-            return null;
-        }
-
+        return Collections.unmodifiableList(new ArrayList<>(this.transactions.keySet()));
     }
 
 }

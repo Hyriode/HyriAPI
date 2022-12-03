@@ -119,7 +119,7 @@ public class PlayerLoader {
         if (account != null) {
             HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
 
-            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate().getTime()));
+            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
             account.update();
         }
     }

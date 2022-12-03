@@ -28,11 +28,11 @@ import java.util.UUID;
 public interface IHyriPlayer {
 
     /**
-     * Check whether the player is premium or not
+     * Get player uuid
      *
-     * @return <code>true</code> if the player is premium
+     * @return Player {@link UUID}
      */
-    boolean isPremium();
+    UUID getUniqueId();
 
     /**
      * Check if the player is currently connected on the network
@@ -122,25 +122,25 @@ public interface IHyriPlayer {
     String getNameWithRank();
 
     /**
-     * Get player uuid
+     * Check whether the player is premium or not
      *
-     * @return Player {@link UUID}
+     * @return <code>true</code> if the player is premium
      */
-    UUID getUniqueId();
+    boolean isPremium();
 
     /**
-     * Get the first login {@link Date} of the player
+     * Get the first login date of the player
      *
-     * @return {@link Date}
+     * @return A timestamp (in milliseconds)
      */
-    Date getFirstLoginDate();
+    long getFirstLoginDate();
 
     /**
-     * Get the last login {@link Date} of the player
+     * Get the last login date of the player
      *
-     * @return {@link Date}
+     * @return A timestamp (in milliseconds)
      */
-    Date getLastLoginDate();
+    long getLastLoginDate();
 
     /**
      * Set the last login date of the player
@@ -302,6 +302,13 @@ public interface IHyriPlayer {
     IHyriMoney getGems();
 
     /**
+     * Get the player leveling on the network
+     *
+     * @return A {@link IHyriLeveling} instance
+     */
+    IHyriLeveling getNetworkLeveling();
+
+    /**
      * Get the party {@link UUID} of the player.<br>
      * Deprecated: see {@link IHyriPlayerSession#getParty()}
      *
@@ -327,6 +334,20 @@ public interface IHyriPlayer {
      */
     @Deprecated
     boolean hasParty();
+
+    /**
+     * Get the priority of the player in queues
+     *
+     * @return A number that represents a priority
+     */
+    int getPriority();
+
+    /**
+     * Get the priority of the rank in the tab list
+     *
+     * @return A number that represents a priority
+     */
+    int getTabListPriority();
 
     /**
      * Get the settings of the player
@@ -520,27 +541,6 @@ public interface IHyriPlayer {
      * @return <code>true</code> if the player has the data
      */
     boolean hasData(String key);
-
-    /**
-     * Get the player leveling on the network
-     *
-     * @return A {@link IHyriLeveling} instance
-     */
-    IHyriLeveling getNetworkLeveling();
-
-    /**
-     * Get the priority of the player in queues
-     *
-     * @return A number that represents a priority
-     */
-    int getPriority();
-
-    /**
-     * Get the priority of the rank in the tab list
-     *
-     * @return A number that represents a priority
-     */
-    int getTabListPriority();
 
     /**
      * Add a transaction to the player account

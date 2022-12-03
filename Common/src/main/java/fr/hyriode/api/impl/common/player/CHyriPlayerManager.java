@@ -70,7 +70,7 @@ public class CHyriPlayerManager implements IHyriPlayerManager {
         final HyriPlayer player = new HyriPlayer(premium,  name, uuid);
 
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
-            final HyriRank rank = new HyriRank(HyriPlayerRankType.PLAYER);
+            final HyriRank rank = new HyriRank();
 
             rank.setStaffType(HyriStaffRankType.ADMINISTRATOR);
 

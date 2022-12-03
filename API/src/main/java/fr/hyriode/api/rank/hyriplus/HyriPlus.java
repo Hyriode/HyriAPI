@@ -94,10 +94,10 @@ public class HyriPlus {
     /**
      * Get the date when the Hyri+ has been enabled
      *
-     * @return A {@link Date} or <code>null</code> if the Hyri+ is not enabled
+     * @return A timestamp (in milliseconds); or <code>null</code> if the Hyri+ isn't enabled.
      */
-    public Date getEnabledDate() {
-        return this.enabledDate == -1 ? null : new Date(this.enabledDate);
+    public long getEnabledDate() {
+        return this.enabledDate;
     }
 
     /**
@@ -112,7 +112,6 @@ public class HyriPlus {
             this.enabledDate = -1;
             this.duration = 0;
         }
-
         return result;
     }
 

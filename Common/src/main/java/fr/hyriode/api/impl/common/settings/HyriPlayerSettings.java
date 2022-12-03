@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.settings;
 
+import com.google.gson.Gson;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.language.HyriLanguage;

@@ -16,14 +16,14 @@ public class HyriRank {
     public static final String SEPARATOR = HyriChatColor.WHITE + "・";
 
     /** The prefix of the rank */
-    private String prefix;
+    private String prefix = null;
     /** The main color of the rank. This color will be used after the separator */
-    private HyriChatColor mainColor;
+    private HyriChatColor mainColor = null;
 
     /** The player type of the rank */
-    private HyriPlayerRankType playerType;
+    private HyriPlayerRankType playerType = HyriPlayerRankType.PLAYER;
     /** The staff type of the rank */
-    private HyriStaffRankType staffType;
+    private HyriStaffRankType staffType = null;
 
     /**
      * Constructor of {@link HyriRank}
@@ -41,14 +41,9 @@ public class HyriRank {
     }
 
     /**
-     * Constructor of {@link HyriRank}.<br>
-     * This constructor will create a rank from a player type
-     *
-     * @param playerType The {@link HyriPlayerRankType}
+     * Default constructor of a {@link HyriRank}
      */
-    public HyriRank(HyriPlayerRankType playerType) {
-        this(null, null, playerType, null);
-    }
+    public HyriRank() {}
 
     /**
      * Check if the rank is a given type
