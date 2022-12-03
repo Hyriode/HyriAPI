@@ -17,7 +17,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact tasks.shadowJar
 
             pom {
                 groupId = project.group
