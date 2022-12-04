@@ -15,6 +15,8 @@ public interface ILobbyAPI {
     String BALANCER_KEY = "lobby-balancer";
     /** The type of the lobby servers */
     String TYPE = "lobby";
+    /** The maximum amount of players that can handle a lobby. */
+    int MAX_PLAYERS = 80;
 
     /**
      * Get the current best lobby in terms of connected players.
@@ -36,5 +38,12 @@ public interface ILobbyAPI {
      * @param playerId The {@link UUID} of the player to send
      */
     void sendPlayerToLobby(UUID playerId);
+
+    /**
+     * Evacuate all players to lobbies
+     *
+     * @param server The name of the server to evacuate
+     */
+    void evacuateToLobby(String server);
 
 }

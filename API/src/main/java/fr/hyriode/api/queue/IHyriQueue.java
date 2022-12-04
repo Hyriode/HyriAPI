@@ -4,6 +4,8 @@ import fr.hyriode.api.party.IHyriParty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -66,9 +68,9 @@ public interface IHyriQueue {
      * Get all the players in queue.<br>
      * This method also calculate players in a {@linkplain IHyriParty party}.
      *
-     * @return A list of player {@link UUID}
+     * @return A list of player lists
      */
-    @NotNull Set<UUID> getTotalPlayers();
+    @NotNull Set<Set<UUID>> getTotalPlayers();
 
     /** All the available types of a queue */
     enum Type {

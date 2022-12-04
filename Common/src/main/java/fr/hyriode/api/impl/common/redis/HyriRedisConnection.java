@@ -64,7 +64,12 @@ public class HyriRedisConnection implements IRedis {
         config.setMaxTotal(-1);
         config.setJmxEnabled(false);
 
-        this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000, this.password);
+        if (this.password == null) {
+            this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000);
+        } else {
+            this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000, this.password);
+        }
+
 
         try {
             this.getResource().close();

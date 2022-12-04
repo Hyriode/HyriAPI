@@ -1,5 +1,8 @@
 package fr.hyriode.api.impl.common.queue;
 
+import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.party.IHyriParty;
+import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.queue.IHyriQueue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,9 +81,26 @@ public class HyriQueue implements IHyriQueue {
     }
 
     @Override
-    public @NotNull Set<UUID> getTotalPlayers() {
-        // TODO Calculate total players (with sessions)
-        return new HashSet<>();
+    public @NotNull Set<Set<UUID>> getTotalPlayers() {
+        final Set<Set<UUID>> totalPlayers = new HashSet<>();
+
+        for (UUID player : this.players) {
+            final Set<UUID> group = new HashSet<>();
+            final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(player);
+
+            for (UUID member : party.getMembers().keySet()) {
+                final IHyriPlayerSession session = IHyriPlayerSession.get(member);
+
+                if (session == null || session.isPlaying()) {
+                    continue;
+                }
+
+                group.add(member);
+            }
+
+            totalPlayers.add(group);
+        }
+        return totalPlayers;
     }
 
 }

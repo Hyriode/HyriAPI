@@ -5,6 +5,8 @@ import fr.hyriode.api.server.ILobbyAPI;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 /**
  * Created by AstFaster
@@ -48,6 +50,35 @@ public class LobbyAPI implements ILobbyAPI {
         }
 
         HyriAPI.get().getServerManager().sendPlayerToServer(playerId, bestLobby.getName());
+    }
+
+    @Override
+    public void evacuateToLobby(String serverName) {
+        final HyggServer server = HyriAPI.get().getServerManager().getServer(serverName);
+
+        if (server == null) {
+            return;
+        }
+
+        final Set<HyggServer> lobbies = this.getLobbies();
+        final Queue<UUID> players = new LinkedBlockingQueue<>(server.getPlayers()); // Create a queue of players to evacuate
+
+        for (HyggServer lobby : lobbies.stream().sorted(Comparator.comparingInt(o -> o.getPlayers().size())).collect(Collectors.toList())) { // Sort lobbies by lower to greater amount of players
+            if (server.getName().equals(lobby.getName()) || lobby.getState() != HyggServer.State.READY) {
+                continue;
+            }
+
+            for (int i = 0; i < server.getSlots() - server.getPlayingPlayers().size(); i++) { // For-each the available slots of the lobby
+                if (players.size() == 0) { // No more players to evacuate
+                    return;
+                }
+
+                final UUID player = players.poll(); // Remove a player from the queue (declared as evacuated)
+
+                // Finally, evacuate the player
+                HyriAPI.get().getServerManager().sendPlayerToServer(player, serverName);
+            }
+        }
     }
 
 }

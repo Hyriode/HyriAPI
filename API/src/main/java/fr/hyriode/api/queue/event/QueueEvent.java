@@ -1,7 +1,10 @@
 package fr.hyriode.api.queue.event;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.queue.IHyriQueue;
+
+import java.util.UUID;
 
 /**
  * Created by AstFaster
@@ -11,14 +14,18 @@ import fr.hyriode.api.queue.IHyriQueue;
  */
 public abstract class QueueEvent extends HyriEvent {
 
-    private final IHyriQueue queue;
+    private final UUID queueId;
 
     public QueueEvent(IHyriQueue queue) {
-        this.queue = queue;
+        this.queueId = queue.getId();
     }
 
     public IHyriQueue getQueue() {
-        return this.queue;
+        return HyriAPI.get().getQueueManager().getQueue(this.queueId);
+    }
+
+    public UUID getQueueId() {
+        return this.queueId;
     }
 
 }
