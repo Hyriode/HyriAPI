@@ -9,10 +9,11 @@ import fr.hyriode.api.color.HyriChatColor;
  */
 public enum HyriStaffRankType implements IHyriRankType {
 
-    HELPER(0, "helper", 6, "Helper", HyriChatColor.DARK_PURPLE),
-    DESIGNER(1, "designer", 5, "Designer", HyriChatColor.GREEN),
-    BUILDER(2, "builder", 4, "Builder", HyriChatColor.GREEN),
-    MODERATOR(3, "moderator", 3, "Mod", HyriChatColor.DARK_AQUA),
+    HELPER(0, "helper", 7, "Helper", HyriChatColor.DARK_PURPLE),
+    DESIGNER(1, "designer", 6, "Designer", HyriChatColor.GREEN),
+    BUILDER(2, "builder", 5, "Builder", HyriChatColor.GREEN),
+    MODERATOR(3, "moderator", 4, "Mod", HyriChatColor.DARK_AQUA),
+    MODERATOR_PLUS(3, "moderator+", 3, "Mod+", HyriChatColor.DARK_AQUA),
     DEVELOPER(4, "developer", 2, "Dev", HyriChatColor.DARK_GREEN),
     MANAGER(5, "manager", 1, "Manager", HyriChatColor.BLUE),
     ADMINISTRATOR(6, "administrator", 0, "Admin", HyriChatColor.RED);

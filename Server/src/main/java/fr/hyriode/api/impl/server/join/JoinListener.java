@@ -59,7 +59,7 @@ public class JoinListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final UUID playerId = player.getUniqueId();
@@ -95,10 +95,10 @@ public class JoinListener implements Listener {
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
 
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinServerEvent(playerId, HyriAPI.get().getServer().getName()));
-
+        this.hyriAPI.getLanguageManager().setCache(playerId, account.getSettings().getLanguage());
         this.joinManager.onJoin(player);
 
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinServerEvent(playerId, HyriAPI.get().getServer().getName()));
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
     }
 
@@ -130,10 +130,10 @@ public class JoinListener implements Listener {
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
         }
 
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitServerEvent(playerId, HyriAPI.get().getServer().getName()));
-
+        this.hyriAPI.getLanguageManager().removeCache(playerId);
         this.joinManager.onLogout(player);
 
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitServerEvent(playerId, HyriAPI.get().getServer().getName()));
         HyriAPI.get().getServer().removePlayer(playerId);
     }
 

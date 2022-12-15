@@ -1,6 +1,7 @@
 package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 
 import java.util.function.Predicate;
@@ -13,7 +14,11 @@ public enum HyriChatChannel {
     /** The global channel accessible by all players */
     GLOBAL(false, player -> true),
     /** The channel only accessible by party members */
-    PARTY(true, player -> true),
+    PARTY(true, player -> {
+        final IHyriPlayerSession session = IHyriPlayerSession.get(player.getUniqueId());
+
+        return session != null && session.hasParty();
+    }),
     /** The channel accessible by staff members */
     STAFF(true, player -> player.getRank().isStaff()),
     /** The channel accessible by {@link HyriPlayerRankType#PARTNER} */

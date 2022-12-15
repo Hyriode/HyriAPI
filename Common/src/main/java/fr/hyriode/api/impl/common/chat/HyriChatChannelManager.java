@@ -1,10 +1,7 @@
 package fr.hyriode.api.impl.common.chat;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.chat.channel.ChatChannelPacket;
-import fr.hyriode.api.chat.channel.HyriChatChannel;
-import fr.hyriode.api.chat.channel.IHyriChatChannelHandler;
-import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
+import fr.hyriode.api.chat.channel.*;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
@@ -39,6 +36,14 @@ public class HyriChatChannelManager implements IHyriChatChannelManager {
 
     @Override
     public void sendMessage(@NotNull HyriChatChannel channel, @NotNull UUID sender, @NotNull String message, boolean component) {
+        final ChatChannelMessageEvent event = new ChatChannelMessageEvent(channel, sender, message, component);
+
+        HyriAPI.get().getEventBus().publish(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!channel.isAcrossNetwork()) {
             final IHyriChatChannelHandler handler = this.getHandler(channel);
 

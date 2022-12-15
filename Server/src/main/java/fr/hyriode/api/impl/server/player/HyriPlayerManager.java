@@ -41,7 +41,7 @@ public class HyriPlayerManager extends CHyriPlayerManager {
             }
             return;
         }
-        super.sendMessage(uuid, message);
+        super.sendMessage(uuid, message, component);
     }
 
     @Override

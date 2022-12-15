@@ -39,6 +39,7 @@ import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IMongoDB;
+import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -50,7 +51,11 @@ import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -129,6 +134,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.pubSub = new HyriPubSub();
         this.hystiaAPI = new Hystia(this.mongoDB.getClient());
         this.hyreosAPI = new HyreosAPI(this.pubSub.getRedisConnection().getPool());
+        this.hyreosAPI.start();
 
         // Hyggdrasil and servers/proxies management
         this.hyggdrasilManager = new HyggdrasilManager(environment);
@@ -158,7 +164,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     protected void postInit() {
         this.languageManager.registerAdapter(IHyriPlayer.class, (message, account) -> message.getValue(account.getSettings().getLanguage()));
-        this.languageManager.registerAdapter(UUID.class, (message, uuid) -> message.getValue(IHyriPlayer.get(uuid)));
+        this.languageManager.registerAdapter(UUID.class, (message, uuid) -> {
+            final HyriLanguage cachedLanguage = this.languageManager.getCache(uuid);
+
+            return cachedLanguage != null ? message.getValue(cachedLanguage) : message.getValue(IHyriPlayer.get(uuid));
+        });
     }
 
     public void stop() {

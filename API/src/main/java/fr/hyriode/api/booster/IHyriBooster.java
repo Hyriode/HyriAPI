@@ -17,12 +17,18 @@ public interface IHyriBooster {
     UUID getIdentifier();
 
     /**
-     * Get the type of the booster.<br>
-     * It can be a game name or ALL
+     * Get the unique id of the booster's owner
+     *
+     * @return A player {@link UUID}
+     */
+    UUID getOwner();
+
+    /**
+     * Get the game boosted by the booster.
      *
      * @return A type
      */
-    String getType();
+    String getGame();
 
     /**
      * Get the multiplier of the booster.<br>
@@ -33,17 +39,24 @@ public interface IHyriBooster {
     double getMultiplier();
 
     /**
-     * Get the unique id of the booster's owner
-     *
-     * @return A player {@link UUID}
-     */
-    UUID getOwner();
-
-    /**
      * Get the duration of the booster
      *
      * @return A duration in seconds
      */
     long getDuration();
+
+    /**
+     * Get the time when the booster has been enabled.
+     *
+     * @return A timestamp (in milliseconds)
+     */
+    long getEnabledDate();
+
+    /**
+     * Get the time when the booster will be disabled.
+     *
+     * @return A timestamp (in milliseconds)
+     */
+    long getDisabledDate();
 
 }

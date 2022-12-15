@@ -34,7 +34,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         final List<IHyriBooster> boosters = boosterManager.getBoosters(HyriAPI.get().getServer().getType());
 
         for (IHyriBooster booster : boosters) {
-            multipliers *= booster.getMultiplier();
+            multipliers += booster.getMultiplier();
         }
 
         return multipliers;
@@ -42,7 +42,6 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
     @Override
     public long creditMoney(UUID playerId, IHyriMoneyAction action, IHyriMoney money) {
-        final IHyriPlayer player = IHyriPlayer.get(playerId);
         final Type type = action.getType();
 
         long amount = action.getAmount();
@@ -74,8 +73,6 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
             HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
         }
-
-        player.update();
 
         return amount;
     }

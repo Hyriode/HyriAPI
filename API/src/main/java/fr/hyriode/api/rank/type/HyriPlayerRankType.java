@@ -10,13 +10,13 @@ import fr.hyriode.api.color.HyriChatColor;
 public enum HyriPlayerRankType implements IHyriRankType {
 
     /** Default ranks */
-    PLAYER(0, "player", 10, 12, "", HyriChatColor.GRAY, false),
-    VIP(1, "vip", 9, 11, "VIP", HyriChatColor.YELLOW),
-    VIP_PLUS(2, "vip+", 8, 10, "VIP+", HyriChatColor.GREEN),
-    EPIC(3, "epic", 7, 9, "Epic", HyriChatColor.AQUA),
+    PLAYER(0, "player", 10, 13, "", HyriChatColor.GRAY, false),
+    VIP(1, "vip", 9, 12, "VIP", HyriChatColor.YELLOW),
+    VIP_PLUS(2, "vip+", 8, 11, "VIP+", HyriChatColor.GREEN),
+    EPIC(3, "epic", 7, 10, "Epic", HyriChatColor.AQUA),
 
     /** Content creator */
-    PARTNER(4, "partner", 5, 7, "Partner", HyriChatColor.GOLD);
+    PARTNER(4, "partner", 5, 8, "Partner", HyriChatColor.GOLD);
 
     private final int id;
     private final String name;

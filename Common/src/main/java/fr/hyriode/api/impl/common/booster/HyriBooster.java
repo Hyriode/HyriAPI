@@ -12,14 +12,16 @@ import java.util.UUID;
 public class HyriBooster implements IHyriBooster {
 
     private final UUID identifier;
-    private final String type;
-    private final double multiplier;
     private final UUID owner;
+    private final String game;
+    private final double multiplier;
     private final long duration;
+    private final long enabledDate;
 
-    public HyriBooster(String type, double multiplier, UUID owner, long duration) {
+    public HyriBooster(String game, double multiplier, UUID owner, long duration, long enabledDate) {
+        this.enabledDate = enabledDate;
         this.identifier = UUID.randomUUID();
-        this.type = type;
+        this.game = game;
         this.multiplier = multiplier;
         this.owner = owner;
         this.duration = duration;
@@ -31,8 +33,8 @@ public class HyriBooster implements IHyriBooster {
     }
 
     @Override
-    public String getType() {
-        return this.type;
+    public String getGame() {
+        return this.game;
     }
 
     @Override
@@ -48,6 +50,16 @@ public class HyriBooster implements IHyriBooster {
     @Override
     public long getDuration() {
         return this.duration;
+    }
+
+    @Override
+    public long getEnabledDate() {
+        return this.enabledDate;
+    }
+
+    @Override
+    public long getDisabledDate() {
+        return this.enabledDate + this.duration * 1000;
     }
 
 }

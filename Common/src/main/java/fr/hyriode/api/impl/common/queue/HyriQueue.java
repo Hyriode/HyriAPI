@@ -91,7 +91,7 @@ public class HyriQueue implements IHyriQueue {
             for (UUID member : party.getMembers().keySet()) {
                 final IHyriPlayerSession session = IHyriPlayerSession.get(member);
 
-                if (session == null || session.isPlaying()) {
+                if (session == null || session.isPlaying() || session.isModerating()) {
                     continue;
                 }
 

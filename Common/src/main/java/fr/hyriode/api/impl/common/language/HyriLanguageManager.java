@@ -19,12 +19,33 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HyriLanguageManager implements IHyriLanguageManager {
 
+    private final Map<UUID, HyriLanguage> languageCache = new HashMap<>();
+
     private final Set<HyriLanguageMessage> messages;
     private final Map<Class<?>, IHyriLanguageAdapter<?>> adapters;
 
     public HyriLanguageManager() {
         this.messages = ConcurrentHashMap.newKeySet();
         this.adapters = new HashMap<>();
+
+        HyriAPI.get().getEventBus().register(this);
+    }
+
+    @HyriEventHandler
+    public void onLanguageUpdated(HyriLanguageUpdatedEvent event) {
+        this.languageCache.put(event.getPlayerId(), event.getLanguage());
+    }
+
+    public void setCache(UUID player, HyriLanguage language) {
+        this.languageCache.put(player, language);
+    }
+
+    public void removeCache(UUID player) {
+        this.languageCache.remove(player);
+    }
+
+    public HyriLanguage getCache(UUID player) {
+        return this.languageCache.get(player);
     }
 
     @Override

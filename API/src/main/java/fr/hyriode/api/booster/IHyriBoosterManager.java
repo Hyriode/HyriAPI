@@ -4,6 +4,7 @@ import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -13,29 +14,25 @@ import java.util.UUID;
  */
 public interface IHyriBoosterManager {
 
-    /** The booster type will be selected at the activation */
-    String SELECTABLE_TYPE = "selectable";
-
     /**
      * Enable a booster on the network
      *
      * @param owner The owner of the booster
-     * @param type The booster type
+     * @param game The game that will be boosted
      * @param multiplier The multiplier of the booster
      * @param duration The duration of the booster (in seconds)
      * @return The created {@link IHyriBooster}
      */
-    IHyriBooster enableBooster(UUID owner, String type, double multiplier, long duration);
+    IHyriBooster enableBooster(UUID owner, String game, double multiplier, long duration);
 
     /**
      * Give a booster to a given player
      *
      * @param player The player account
-     * @param type The type of the booster to give
      * @param multiplier The multiplier of the booster
      * @param duration The duration of the booster (in seconds)
      */
-    void giveBooster(IHyriPlayer player, String type, double multiplier, long duration);
+    void giveBooster(IHyriPlayer player, double multiplier, long duration);
 
     /**
      * Get the owned boosters of a player
@@ -53,12 +50,12 @@ public interface IHyriBoosterManager {
     List<IHyriBooster> getBoosters();
 
     /**
-     * Get all actives boosters with a given type on the network
+     * Get all actives boosters on a given game
      *
-     * @param type A booster type (ex: bedwars, therunner, etc)
+     * @param game A game name (E.g bedwars, therunner)
      * @return A list of {@link IHyriBooster}
      */
-    List<IHyriBooster> getBoosters(String type);
+    List<IHyriBooster> getBoosters(String game);
 
     /**
      * Get an active booster by its identifier
@@ -67,5 +64,30 @@ public interface IHyriBoosterManager {
      * @return The {@link IHyriBooster} linked to the identifier
      */
     IHyriBooster getBooster(UUID identifier);
+
+    /**
+     * Get all the players that thanked a given booster
+     *
+     * @param booster The {@link UUID} of the booster
+     * @return A list of player {@link UUID}
+     */
+    Set<UUID> getThanks(UUID booster);
+
+    /**
+     * Add a player to those who thanked a booster
+     *
+     * @param booster The {@link UUID} of the booster
+     * @param player The {@link UUID} of the player
+     */
+    void addThank(UUID booster, UUID player);
+
+    /**
+     * Check whether a player has thanked a given booster
+     *
+     * @param booster The {@link UUID} of the booster
+     * @param player The {@link UUID} of the player
+     * @return <code>true</code> if yes
+     */
+    boolean hasThanked(UUID booster, UUID player);
 
 }

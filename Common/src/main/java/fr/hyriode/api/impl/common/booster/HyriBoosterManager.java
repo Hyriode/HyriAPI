@@ -19,14 +19,15 @@ import java.util.function.BiFunction;
 public class HyriBoosterManager implements IHyriBoosterManager {
 
     private static final String KEY = "boosters:";
-    private static final BiFunction<String, UUID, String> KEY_FORMATTER = (type, uuid) -> type + KEY + uuid.toString();
+    private static final String THANKS_KEY = "boosters-thanks:";
+    private static final BiFunction<String, UUID, String> KEY_FORMATTER = (game, uuid) -> KEY + game + ":" + uuid.toString();
 
     @Override
-    public IHyriBooster enableBooster(UUID owner, String type, double multiplier, long duration) {
-        final IHyriBooster booster = new HyriBooster(type, multiplier, owner, duration);
+    public IHyriBooster enableBooster(UUID owner, String game, double multiplier, long duration) {
+        final IHyriBooster booster = new HyriBooster(game, multiplier, owner, duration, System.currentTimeMillis());
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
-            final String key = KEY_FORMATTER.apply(booster.getType(), booster.getIdentifier());
+            final String key = KEY_FORMATTER.apply(booster.getGame(), booster.getIdentifier());
 
             jedis.set(key, HyriAPI.GSON.toJson(booster));
             jedis.expire(key, duration);
@@ -38,8 +39,8 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     }
 
     @Override
-    public void giveBooster(IHyriPlayer player, String type, double multiplier, long duration) {
-        player.addTransaction(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(type, multiplier, duration));
+    public void giveBooster(IHyriPlayer player, double multiplier, long duration) {
+        player.addTransaction(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(multiplier, duration));
         player.update();
     }
 
@@ -71,11 +72,11 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     }
 
     @Override
-    public List<IHyriBooster> getBoosters(String type) {
+    public List<IHyriBooster> getBoosters(String game) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final List<IHyriBooster> boosters = new ArrayList<>();
 
-            for (String key : jedis.keys(KEY + type + ":*")) {
+            for (String key : jedis.keys(KEY + game + ":*")) {
                 boosters.add(HyriAPI.GSON.fromJson(jedis.get(key), HyriBooster.class));
             }
             return boosters;
@@ -94,6 +95,41 @@ public class HyriBoosterManager implements IHyriBoosterManager {
             }
             return null;
         });
+    }
+
+    @Override
+    public Set<UUID> getThanks(UUID booster) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final Set<UUID> result = new HashSet<>();
+            final Set<String> thanks = jedis.smembers(THANKS_KEY + booster.toString());
+
+            if (thanks == null) {
+                return result;
+            }
+
+            for (String playerId : thanks) {
+                result.add(UUID.fromString(playerId));
+            }
+            return result;
+        });
+    }
+
+    @Override
+    public void addThank(UUID booster, UUID player) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final boolean exists = jedis.exists(THANKS_KEY + booster.toString());
+
+            jedis.sadd(THANKS_KEY + booster, player.toString());
+
+            if (!exists) {
+                jedis.expire(THANKS_KEY + booster, (this.getBooster(booster).getDisabledDate() - System.currentTimeMillis()) / 1000);
+            }
+        });
+    }
+
+    @Override
+    public boolean hasThanked(UUID booster, UUID player) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.sismember(THANKS_KEY + booster.toString(), player.toString()));
     }
 
 }
