@@ -47,7 +47,6 @@ public abstract class HyriAPI {
     /** {@link Gson} instance with adapters */
     public static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(HyriPacket.class, new ClassSerializer<HyriPacket>())
-            .registerTypeHierarchyAdapter(IHyriBooster.class, new ClassSerializer<IHyriBooster>())
             .create();
 
     /** ASCII header lines */

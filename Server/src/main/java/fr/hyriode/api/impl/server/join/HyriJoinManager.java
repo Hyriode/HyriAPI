@@ -61,10 +61,10 @@ public class HyriJoinManager implements IHyriJoinManager {
     }
 
     String requestPlayerJoin(UUID playerId, boolean connect) {
-        final HyriJoinResponse response = HyriJoinResponse.ALLOW;
+        HyriJoinResponse response = HyriJoinResponse.ALLOW;
 
         for (IHyriJoinHandler handler : this.handlers.values()) {
-            handler.requestJoin(playerId, response);
+            response = handler.requestJoin(playerId, response);
 
             if (!response.isAllowed()) {
                 return handler.createResponseMessage(playerId, response);

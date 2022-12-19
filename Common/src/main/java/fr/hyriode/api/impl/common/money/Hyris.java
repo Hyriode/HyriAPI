@@ -40,10 +40,10 @@ public class Hyris extends HyriMoney {
     public enum Multiplier {
 
         PLAYER(HyriPlayerRankType.PLAYER, 1.0D),
-        VIP(HyriPlayerRankType.VIP, 1.20D),
-        VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.50D),
-        EPIC(HyriPlayerRankType.EPIC, 1.80D),
-        HYRI_PLUS(HyriPlayerRankType.EPIC, 2.25D);
+        VIP(HyriPlayerRankType.VIP, 1.50D),
+        VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.75D),
+        EPIC(HyriPlayerRankType.EPIC, 2.0D),
+        HYRI_PLUS(HyriPlayerRankType.EPIC, 2.50D);
 
         private final HyriPlayerRankType rank;
         private final double amount;
