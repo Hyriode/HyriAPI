@@ -13,14 +13,18 @@ public class PlayerQuitNetworkEvent extends HyriEvent {
 
     /** The unique id of the player that quit the network */
     private final UUID playerId;
+    /** The unique id of the last party of the player */
+    private final UUID lastParty;
 
     /**
      * The constructor of {@link  PlayerQuitNetworkEvent}
      *
      * @param playerId The player's id
+     * @param lastParty The last party id
      */
-    public PlayerQuitNetworkEvent(UUID playerId) {
+    public PlayerQuitNetworkEvent(UUID playerId, UUID lastParty) {
         this.playerId = playerId;
+        this.lastParty = lastParty;
     }
 
     /**
@@ -30,6 +34,15 @@ public class PlayerQuitNetworkEvent extends HyriEvent {
      */
     public UUID getPlayerId() {
         return this.playerId;
+    }
+
+    /**
+     * Get the id of the last party
+     *
+     * @return A party id
+     */
+    public UUID getLastParty() {
+        return this.lastParty;
     }
 
     /**

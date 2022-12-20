@@ -3,8 +3,6 @@ package fr.hyriode.api.impl.proxy.player;
 import com.google.gson.JsonObject;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.player.HyriPlayerSession;
-import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
-import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
@@ -20,7 +18,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -94,16 +91,8 @@ public class PlayerLoader {
 
     public void handleDisconnection(ProxiedPlayer player) {
         final UUID playerId = player.getUniqueId();
-
-        this.unloadPlayerAccount(playerId);
-
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId));
-        HyriAPI.get().getProxy().removePlayer(playerId);
-    }
-
-    private void unloadPlayerAccount(UUID uuid) {
-        final IHyriPlayer account = IHyriPlayer.get(uuid);
-        final IHyriPlayerSession session = IHyriPlayerSession.get(uuid);
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
+        final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
         final IHyriPlayerManager pm = HyriAPI.get().getPlayerManager();
 
         if (session != null) {
@@ -113,15 +102,18 @@ public class PlayerLoader {
                 pm.getNicknameManager().removeUsedNickname(nickname.getName());
             }
 
-            pm.deleteSession(uuid);
+            pm.deleteSession(playerId);
         }
 
         if (account != null) {
-            HyriAPI.get().getQueueManager().removePlayerFromQueue(uuid);
+            HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
 
             account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
             account.update();
         }
+
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId, session == null ? null : session.getParty()));
+        HyriAPI.get().getProxy().removePlayer(playerId);
     }
 
     public static class MojangProfile {
