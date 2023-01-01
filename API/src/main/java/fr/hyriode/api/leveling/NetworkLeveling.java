@@ -10,7 +10,6 @@ import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * Project: HyriAPI
@@ -121,21 +120,19 @@ public class NetworkLeveling implements IHyriLeveling {
 
         @Override
         public int experienceToLevel(double experience) {
-            final double tolerance = 1e-100; // Define a tolerance for the solution
-            double x0 = 1; // Define the initial guess for the solution
+            int level = 0;
 
-            while (true) { // Use Newton's method to find the root of the equation; f(g(x)) - x = 0
-                final double x1 = x0 - ((Math.ceil(180 * x0 * Math.sqrt(x0) + 300)) - experience) / (180 * Math.sqrt(x0));
-
-                if (Math.abs(x1 - x0) < tolerance) {
-                    return (int) Math.ceil(x1);
-                }
-                x0 = x1;
+            while (this.levelToExperience(level + 1) <= experience) {
+                level++;
             }
+            return level;
         }
 
         @Override
         public double levelToExperience(int level) {
+            if (level == 0) {
+                return 0.0D;
+            }
             return Math.ceil(180 * level * Math.sqrt(level) + 300);
         }
 

@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'fr.hyriode:hystia-spigot:1.0.8'
+    implementation 'fr.hyriode:hystia-spigot:1.0.9'
     implementation project(':Common')
 }
 

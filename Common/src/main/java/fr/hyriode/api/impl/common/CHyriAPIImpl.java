@@ -20,7 +20,7 @@ import fr.hyriode.api.impl.common.language.HyriLanguageManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
 import fr.hyriode.api.impl.common.lootbox.HyriLootboxManager;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
-import fr.hyriode.api.impl.common.mongodb.HyriMongoDB;
+import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
@@ -39,7 +39,6 @@ import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IMongoDB;
-import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
@@ -51,11 +50,7 @@ import fr.hyriode.hystia.api.IHystiaAPI;
 import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -69,7 +64,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     protected HyriRedisConnection redisConnection;
     protected HyriRedisProcessor redisProcessor;
 
-    protected HyriMongoDB mongoDB;
+    protected MongoDB mongoDB;
 
     protected IHyriEventBus eventBus;
     protected HyriPubSub pubSub;
@@ -126,7 +121,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         // Databases connections
         this.redisConnection = new HyriRedisConnection(this);
         this.redisProcessor = new HyriRedisProcessor();
-        this.mongoDB = new HyriMongoDB();
+        this.mongoDB = new MongoDB();
         this.mongoDB.startConnection();
 
         // Internal systems

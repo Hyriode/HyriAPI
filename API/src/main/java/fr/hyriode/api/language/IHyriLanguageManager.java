@@ -1,6 +1,7 @@
 package fr.hyriode.api.language;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,7 @@ public interface IHyriLanguageManager {
      * @param folder The folder that contains language files
      * @return The list of all messages loaded
      */
-    List<HyriLanguageMessage> loadLanguagesMessages(File folder);
+    Collection<HyriLanguageMessage> loadLanguagesMessages(File folder);
 
     /**
      * Register an adapter for a given object class
@@ -63,7 +64,7 @@ public interface IHyriLanguageManager {
      *
      * @return A {@link Set} of messages
      */
-    Set<HyriLanguageMessage> getMessages();
+    Collection<HyriLanguageMessage> getMessages();
 
     /**
      * Get an adapter instance by its linked class

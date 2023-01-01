@@ -34,5 +34,5 @@ publishing {
 
 dependencies {
     api project(':API')
-    api 'fr.hyriode:hystia-impl:1.0.8'
+    api 'fr.hyriode:hystia-impl:1.0.9'
 }

@@ -21,11 +21,11 @@ public class HyriLanguageManager implements IHyriLanguageManager {
 
     private final Map<UUID, HyriLanguage> languageCache = new HashMap<>();
 
-    private final Set<HyriLanguageMessage> messages;
+    private final Map<String, HyriLanguageMessage> messages;
     private final Map<Class<?>, IHyriLanguageAdapter<?>> adapters;
 
     public HyriLanguageManager() {
-        this.messages = ConcurrentHashMap.newKeySet();
+        this.messages = new ConcurrentHashMap<>();
         this.adapters = new HashMap<>();
 
         HyriAPI.get().getEventBus().register(this);
@@ -49,12 +49,12 @@ public class HyriLanguageManager implements IHyriLanguageManager {
     }
 
     @Override
-    public List<HyriLanguageMessage> loadLanguagesMessages(File folder) {
-        final List<HyriLanguageMessage> messages = new ArrayList<>();
+    public Collection<HyriLanguageMessage> loadLanguagesMessages(File folder) {
+        final Map<String, HyriLanguageMessage> messages = new HashMap<>();
         final File[] files = folder.listFiles();
 
         if (files == null) {
-            return messages;
+            return messages.values();
         }
 
         for (HyriLanguage language : HyriLanguage.values()) {
@@ -81,26 +81,22 @@ public class HyriLanguageManager implements IHyriLanguageManager {
                     final String key = entry.getKey();
                     final String value = HyriChatColor.translateAlternateColorCodes('&', entry.getValue());
 
-                    HyriLanguageMessage message = this.getMessage(key);
-
+                    HyriLanguageMessage message = messages.get(key);
                     if (message == null) {
                         message = new HyriLanguageMessage(key);
-                    } else {
-                        this.messages.remove(message);
                     }
 
                     message.addValue(language, value);
-
-                    this.messages.add(message);
-
-                    messages.remove(message);
-                    messages.add(message);
+                    messages.put(key, message);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
-        return messages;
+
+        this.messages.putAll(messages); // Finally, add all loaded messages
+
+        return messages.values();
     }
 
     @Override
@@ -116,32 +112,27 @@ public class HyriLanguageManager implements IHyriLanguageManager {
             throw new IllegalStateException("A message with the key '" + key + "' already exists!");
         }
 
-        this.messages.add(message);
+        this.messages.put(message.getKey(), message);
     }
 
     @Override
     public void removeMessage(HyriLanguageMessage message) {
-        this.messages.remove(message);
+        this.removeMessage(message.getKey());
     }
 
     @Override
     public void removeMessage(String key) {
-        this.messages.remove(this.getMessage(key));
+        this.messages.remove(key);
     }
 
     @Override
     public HyriLanguageMessage getMessage(String key) {
-        for (HyriLanguageMessage message : this.messages) {
-            if (message.getKey().equalsIgnoreCase(key)) {
-                return message;
-            }
-        }
-        return null;
+        return this.messages.getOrDefault(key, HyriLanguageMessage.from(key)); // By default, Return a blank message (to avoid errors)
     }
 
     @Override
-    public Set<HyriLanguageMessage> getMessages() {
-        return this.messages;
+    public Collection<HyriLanguageMessage> getMessages() {
+        return this.messages.values();
     }
 
     @SuppressWarnings("unchecked")

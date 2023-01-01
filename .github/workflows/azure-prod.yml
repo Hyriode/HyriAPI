@@ -18,6 +18,14 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
 
+      - name: Download Spigot Jar
+        uses: wei/curl@v1
+        with:
+          args: https://cdn.getbukkit.org/spigot/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar --create-dirs -o Server/libs/spigot.jar
+
+      - name: Edit libraries folder permissions
+        run: sudo chmod -R 777 Server/libs/
+
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
 
@@ -29,6 +37,11 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Rename Jars
+        run: |
+          mv Server/build/libs/HyriAPI-Server-*.jar Server/build/libs/HyriAPI-Server.jar
+          mv Proxy/build/libs/HyriAPI-Proxy-*.jar Proxy/build/libs/HyriAPI-Proxy.jar
 
       - name: Upload Server Jar
         uses: azure/CLI@v1

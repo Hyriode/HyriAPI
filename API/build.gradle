@@ -29,7 +29,7 @@ publishing {
 }
 
 dependencies {
-    api 'fr.hyriode:hystia-api:1.0.8'
+    api 'fr.hyriode:hystia-api:1.0.9'
     api 'fr.hyriode:hyreos-api:1.0.0'
     api 'org.slf4j:slf4j-nop:2.0.3'
     api 'com.google.guava:guava:31.1-jre'
