@@ -11,10 +11,10 @@ public class HyriChannel {
     public static final String PROXIES = "proxies";
     /** The channel used to send message packets to the server */
     public static final String CHAT = "chat";
-    /** The channel used to send join requests */
-    public static final String JOIN = "join";
-    /** The channel used to send information to the servers */
+    /** The channel used to send information to servers */
     public static final String SERVERS = "servers";
+    /** The channel used to send information to limbos */
+    public static final String LIMBOS = "limbos";
     /** The channel used by queue system */
     public static final String QUEUES = "queues";
     /** The channel used by party communication */

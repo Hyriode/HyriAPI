@@ -128,6 +128,14 @@ public interface IHyriLeaderboard {
     void removeScore(HyriLeaderboardScope scope, UUID id);
 
     /**
+     * Get the total size of a leaderbaord with a precise scope
+     *
+     * @param scope The scope to use
+     * @return The size of the leaderboard
+     */
+    long getSize(HyriLeaderboardScope scope);
+
+    /**
      * Clear all the scores of a given scope
      *
      * @param scope The scope to use

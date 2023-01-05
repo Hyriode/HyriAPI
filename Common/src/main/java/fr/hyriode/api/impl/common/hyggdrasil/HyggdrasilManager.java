@@ -4,11 +4,15 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.host.HostData;
 import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
+import fr.hyriode.api.impl.common.hyggdrasil.listener.LimbosListener;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.ProxiesListener;
 import fr.hyriode.api.impl.common.hyggdrasil.listener.ServersListener;
+import fr.hyriode.api.limbo.IHyriLimbo;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
+import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
+import fr.hyriode.hyggdrasil.api.limbo.packet.HyggLimboInfoPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
@@ -94,11 +98,16 @@ public class HyggdrasilManager implements IHyggdrasilManager {
                 final HyggServer info = new HyggServer(
                         server.getName(), server.getType(), server.getGameType(),
                         server.getMap(), server.getAccessibility(), server.getProcess(),
-                        server.getState(), server.getMinecraftOptions(), server.getData(),
-                        server.getPlayers(), server.getPlayersPlaying(), server.getSlots(),
-                        server.getStartedTime());
+                        server.getState(), server.getData(), server.getPlayers(),
+                        server.getPlayersPlaying(), server.getSlots(), server.getStartedTime());
 
                 packetProcessor.request(HyggChannel.SERVERS, new HyggServerInfoPacket(info)).exec();
+            } else if (type == HyggApplication.Type.LIMBO) {
+                final IHyriLimbo limbo = HyriAPI.get().getLimbo();
+
+                final HyggLimbo info = new HyggLimbo(limbo.getName(), limbo.getData(), limbo.getState(), limbo.getPlayers(), limbo.getStartedTime());
+
+                packetProcessor.request(HyggChannel.LIMBOS, new HyggLimboInfoPacket(info)).exec();
             }
         }
     }
@@ -106,10 +115,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
     private void registerListeners() {
         new ServersListener().register();
         new ProxiesListener().register();
-    }
-
-    public String generateDevApplicationName() {
-        return "dev-" + UUID.randomUUID().toString().substring(0, 5);
+        new LimbosListener().register();
     }
 
     @Override

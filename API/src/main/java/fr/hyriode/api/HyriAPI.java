@@ -14,6 +14,8 @@ import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
+import fr.hyriode.api.limbo.IHyriLimbo;
+import fr.hyriode.api.limbo.IHyriLimboManager;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IMongoDB;
@@ -125,6 +127,22 @@ public abstract class HyriAPI {
      */
     public boolean isProxy() {
         return this.getProxy() != null;
+    }
+
+    /**
+     * Get the current limbo where HyriAPI is running
+     *
+     * @return The current {@link IHyriLimbo} instance
+     */
+    public abstract IHyriLimbo getLimbo();
+
+    /**
+     * Check whether HyriAPI is running on a limbo
+     *
+     * @return <code>true</code> if yes, <code>false</code> otherwise
+     */
+    public boolean isLimbo() {
+        return this.getLimbo() != null;
     }
 
     /**
@@ -245,6 +263,13 @@ public abstract class HyriAPI {
      * @return The {@link IHyriProxyManager} instance
      */
     public abstract IHyriProxyManager getProxyManager();
+
+    /**
+     * Get the limbo manager instance
+     *
+     * @return The {@link IHyriLimboManager} instance
+     */
+    public abstract IHyriLimboManager getLimboManager();
 
     /**
      * Get the queue manager

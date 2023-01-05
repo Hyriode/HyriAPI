@@ -18,6 +18,7 @@ import fr.hyriode.api.impl.common.host.HostManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.language.HyriLanguageManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
+import fr.hyriode.api.impl.common.limbo.HyriLimboManager;
 import fr.hyriode.api.impl.common.lootbox.HyriLootboxManager;
 import fr.hyriode.api.impl.common.money.HyriMoneyManager;
 import fr.hyriode.api.impl.common.mongodb.MongoDB;
@@ -36,6 +37,7 @@ import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
 import fr.hyriode.api.impl.common.world.generation.WorldGenerationAPI;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
+import fr.hyriode.api.limbo.IHyriLimbo;
 import fr.hyriode.api.lootbox.IHyriLootboxManager;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.mongodb.IMongoDB;
@@ -76,6 +78,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     protected HyriNetworkManager networkManager;
     protected HyriProxyManager proxyManager;
+    protected HyriLimboManager limboManager;
     protected HyriServerManager serverManager;
     protected LobbyAPI lobbyAPI;
     protected WorldGenerationAPI worldGenerationAPI;
@@ -135,6 +138,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.hyggdrasilManager = new HyggdrasilManager(environment);
         this.hyggdrasilManager.start();
         this.proxyManager = new HyriProxyManager();
+        this.limboManager = new HyriLimboManager();
         this.serverManager = new HyriServerManager();
         this.lobbyAPI = new LobbyAPI();
         this.worldGenerationAPI = new WorldGenerationAPI();
@@ -191,6 +195,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     @Override
     public IHyriProxy getProxy() {
+        return null;
+    }
+
+    @Override
+    public IHyriLimbo getLimbo() {
         return null;
     }
 
@@ -262,6 +271,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public WorldGenerationAPI getWorldGenerationAPI() {
         return this.worldGenerationAPI;
+    }
+
+    @Override
+    public HyriLimboManager getLimboManager() {
+        return this.limboManager;
     }
 
     @Override

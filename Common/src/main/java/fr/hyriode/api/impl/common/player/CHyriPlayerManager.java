@@ -10,13 +10,12 @@ import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.title.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
+import fr.hyriode.api.packet.model.PlayerServerSendPacket;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.rank.HyriRank;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import org.jetbrains.annotations.NotNull;
@@ -161,7 +160,7 @@ public class CHyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void connectPlayer(UUID uuid, String server) {
-        HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new HyriSendPlayerPacket(uuid, server));
+        HyriAPI.get().getPubSub().send(HyriChannel.PROXIES, new PlayerServerSendPacket(uuid, server));
     }
 
     @Override

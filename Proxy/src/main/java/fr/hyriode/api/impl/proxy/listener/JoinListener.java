@@ -1,22 +1,22 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.PlayerLoader;
 import fr.hyriode.api.impl.proxy.task.OnlinePlayersTask;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
-import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
 import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
+import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -38,7 +38,9 @@ import java.util.UUID;
  */
 public class JoinListener implements Listener {
 
-    private final List<UUID> reconnections;
+    private final List<UUID> reconnections = new ArrayList<>();
+    private final List<UUID> firstLogins = new ArrayList<>();
+
 
     private final PlayerLoader playerLoader;
     private final OnlinePlayersTask onlineTask;
@@ -46,7 +48,6 @@ public class JoinListener implements Listener {
     public JoinListener(HyriAPIPlugin plugin) {
         this.playerLoader = plugin.getPlayerLoader();
         this.onlineTask = plugin.getOnlinePlayersTask();
-        this.reconnections = new ArrayList<>();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -80,6 +81,8 @@ public class JoinListener implements Listener {
 
                 playerId = mojangProfile.getPlayerId();
                 account = playerManager.createPlayer(mojangProfile.isPremium(), playerId, name);
+
+                this.firstLogins.add(playerId);
             }
 
             this.playerLoader.loadPlayerAccount(account, name);
@@ -106,7 +109,7 @@ public class JoinListener implements Listener {
             event.setCancelled(true);
 
             if (account.getRank().isSuperior(HyriStaffRankType.DESIGNER) || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {
-                this.connectToLobby(player, event);
+                this.connectToNetwork(player, account, event);
                 return;
             }
 
@@ -115,7 +118,7 @@ public class JoinListener implements Listener {
             } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && account.getRank().isDefault()) {
                 player.disconnect(MessageUtil.SERVER_FULL_MESSAGE);
             } else {
-                this.connectToLobby(player, event);
+                this.connectToNetwork(player, account, event);
             }
         }
     }
@@ -152,26 +155,41 @@ public class JoinListener implements Listener {
         this.playerLoader.handleDisconnection(event.getPlayer());
     }
 
-    private void connectToLobby(ProxiedPlayer player, ServerConnectEvent event) {
+    private void connectToNetwork(ProxiedPlayer player, IHyriPlayer account, ServerConnectEvent event) {
         final UUID playerId = player.getUniqueId();
-        final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
-        if (lobby == null) {
-            player.disconnect(MessageUtil.NO_LOBBY_MESSAGE);
-        } else {
-            // Load reconnection (if exists) before sending player to the lobby
-            final IHyriReconnectionData reconnectionData = HyriAPI.get().getServerManager().getReconnectionHandler().get(playerId);
+        ServerInfo serverInfo = null;
+        if (account.isPremium()) { // If he is premium, connect him directly to a lobby
+            final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
-            if (reconnectionData != null) {
-                this.reconnections.add(playerId);
+            if (lobby != null) {
+                // Load reconnection (if exists) before sending player to the lobby
+                final IHyriReconnectionData reconnectionData = HyriAPI.get().getServerManager().getReconnectionHandler().get(playerId);
+
+                if (reconnectionData != null) {
+                    this.reconnections.add(playerId);
+                }
+
+                serverInfo = ProxyServer.getInstance().getServerInfo(lobby.getName());
             }
+        } else { // If he is crack, connect him first to a limbo to authenticate
+            final HyggLimbo limbo = HyriAPI.get().getLimboManager().getBestLimbo(HyggLimbo.Type.LOGIN);
 
-            event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
-            event.setCancelled(false);
-
-            HyriAPI.get().getProxy().addPlayer(playerId);
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
+            if (limbo != null) {
+                serverInfo = ProxyServer.getInstance().getServerInfo(limbo.getName());
+            }
         }
+
+        if (serverInfo == null) {
+            player.disconnect(MessageUtil.NO_SERVER_MESSAGE);
+            return;
+        }
+
+        event.setTarget(serverInfo);
+        event.setCancelled(false);
+
+        HyriAPI.get().getProxy().addPlayer(playerId);
+        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
     }
 
 }

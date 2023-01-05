@@ -9,7 +9,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 16/02/2022 at 23:20
  */
-public class HyriSendPlayerPacket extends HyriPacket {
+public class PlayerServerSendPacket extends HyriPacket {
 
     /** The unique id of the player to send */
     private final UUID playerUUID;
@@ -17,12 +17,12 @@ public class HyriSendPlayerPacket extends HyriPacket {
     private final String serverName;
 
     /**
-     * Constructor of {@link HyriSendPlayerPacket}
+     * Constructor of {@link PlayerServerSendPacket}
      *
      * @param playerUUID The player's {@link UUID}
      * @param serverName The name of the concerned server
      */
-    public HyriSendPlayerPacket(UUID playerUUID, String serverName) {
+    public PlayerServerSendPacket(UUID playerUUID, String serverName) {
         this.playerUUID = playerUUID;
         this.serverName = serverName;
     }

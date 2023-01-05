@@ -23,7 +23,7 @@ public class HyriJoinManager implements IHyriJoinManager {
     public HyriJoinManager() {
         this.handlers = new TreeMap<>();
 
-        HyriAPI.get().getPubSub().subscribe(HyriChannel.JOIN, new JoinReceiver(this));
+        HyriAPI.get().getPubSub().subscribe(HyriChannel.SERVERS, new JoinReceiver(this));
     }
 
     @Override

@@ -130,6 +130,15 @@ public class HyriLeaderboard implements IHyriLeaderboard {
     }
 
     @Override
+    public long getSize(HyriLeaderboardScope scope) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String key = this.getKey(scope);
+
+            return jedis.zcount(key, "-inf", "+inf");
+        });
+    }
+
+    @Override
     public void clear(HyriLeaderboardScope scope) {
         HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getKey(scope)));
     }

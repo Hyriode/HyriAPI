@@ -67,7 +67,7 @@ public class HyriServerManager implements IHyriServerManager {
 
     @Override
     public void sendPlayerToServer(UUID playerUUID, String serverName) {
-        HyriAPI.get().getPubSub().send(HyriChannel.JOIN, new PlayerJoinPacket(serverName, playerUUID));
+        HyriAPI.get().getPubSub().send(HyriChannel.SERVERS, new PlayerJoinPacket(serverName, playerUUID));
     }
 
     @Override

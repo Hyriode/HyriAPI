@@ -39,7 +39,7 @@ public class ProxyListener implements Listener {
         if (network.getMaintenance().isActive()) {
             ping.setVersion(new ServerPing.Protocol(ChatColor.DARK_AQUA + "Maintenance" + ChatColor.WHITE + " - " + ChatColor.GRAY + players + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + slots, -1));
         } else {
-            ping.setVersion(new ServerPing.Protocol(ChatColor.DARK_RED + "Hyriode 1.8-1.18", Math.max(protocolNumber, 47)));
+            ping.setVersion(new ServerPing.Protocol(ChatColor.DARK_RED + "Hyriode 1.8-1.19", Math.max(protocolNumber, 47)));
         }
 
         ping.setFavicon(this.favicon);

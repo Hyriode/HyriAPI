@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
+import fr.hyriode.api.impl.proxy.listener.LimbosListener;
 import fr.hyriode.api.impl.proxy.listener.ServersListener;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.ChatReceiver;
@@ -76,6 +77,7 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
             processor.registerReceiver(HyggChannel.PROXIES, new StopReceiver());
 
             new ServersListener().register();
+            new LimbosListener().register();
         }
 
         final IHyriPubSub pubSub = HyriAPI.get().getPubSub();

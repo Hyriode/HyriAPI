@@ -4,7 +4,6 @@ import fr.hyriode.api.application.IHyriApplication;
 import fr.hyriode.api.host.HostData;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
 import fr.hyriode.hystia.api.config.IConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,14 +77,6 @@ public interface IHyriServer extends IHyriApplication<HyggServer.State> {
      * @param process The new {@link HyggServer.Process}
      */
     void setProcess(@NotNull HyggServer.Process process);
-
-    /**
-     * Get the Minecraft options of the server
-     *
-     * @return The {@link HyggServerOptions} object
-     */
-    @NotNull
-    HyggServerOptions getMinecraftOptions();
 
     /**
      * Get the data provided by Hyggdrasil

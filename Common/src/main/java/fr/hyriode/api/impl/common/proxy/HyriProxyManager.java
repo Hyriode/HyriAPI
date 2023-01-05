@@ -46,12 +46,7 @@ public class HyriProxyManager implements IHyriProxyManager {
 
     @Override
     public HyggProxy getProxy(String name) {
-        for (HyggProxy proxy : this.proxies.values()) {
-            if (proxy.getName().equals(name)) {
-                return proxy;
-            }
-        }
-        return null;
+        return this.proxies.get(name);
     }
 
     @Override

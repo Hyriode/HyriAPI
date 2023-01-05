@@ -24,7 +24,7 @@ public class MessageUtil {
             .append("Boutique: ").append(HyriConstants.STORE_WEBSITE_URL).color(ChatColor.AQUA)
             .create(), false);
 
-    public static final BaseComponent[] NO_LOBBY_MESSAGE = createKickMessage(new ComponentBuilder("Aucun lobby n'est actuellement démarré !").color(ChatColor.RED)
+    public static final BaseComponent[] NO_SERVER_MESSAGE = createKickMessage(new ComponentBuilder("Aucun serveur n'est actuellement démarré !").color(ChatColor.RED)
             .create(), true);
 
     public static final BaseComponent[] PROFILE_ERROR = createKickMessage(new ComponentBuilder("Impossible de charger votre profil !").color(ChatColor.RED)

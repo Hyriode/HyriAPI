@@ -7,7 +7,8 @@ import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
-import fr.hyriode.api.packet.model.HyriSendPlayerPacket;
+import fr.hyriode.api.packet.model.PlayerLimboSendPacket;
+import fr.hyriode.api.packet.model.PlayerServerSendPacket;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -36,10 +37,14 @@ public class PlayerReceiver implements IHyriPacketReceiver {
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                 HyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
             }
-        } else if (packet instanceof HyriSendPlayerPacket) {
-            final HyriSendPlayerPacket sendPacket = (HyriSendPlayerPacket) packet;
+        } else if (packet instanceof PlayerServerSendPacket) {
+            final PlayerServerSendPacket sendPacket = (PlayerServerSendPacket) packet;
 
             this.connectPlayer(sendPacket.getPlayerUUID(), sendPacket.getServerName());
+        } else if (packet instanceof PlayerLimboSendPacket) {
+            final PlayerLimboSendPacket sendPacket = (PlayerLimboSendPacket) packet;
+
+            this.connectPlayer(sendPacket.getPlayerId(), sendPacket.getLimboName());
         } else if (packet instanceof PlayerKickPacket) {
             final PlayerKickPacket kickPacket = (PlayerKickPacket) packet;
             final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(kickPacket.getPlayerId());
