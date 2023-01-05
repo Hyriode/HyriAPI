@@ -105,7 +105,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
             } else if (type == HyggApplication.Type.LIMBO) {
                 final IHyriLimbo limbo = HyriAPI.get().getLimbo();
 
-                final HyggLimbo info = new HyggLimbo(limbo.getName(), limbo.getData(), limbo.getState(), limbo.getPlayers(), limbo.getStartedTime());
+                final HyggLimbo info = new HyggLimbo(limbo.getName(), limbo.getData(), limbo.getType(), limbo.getState(), limbo.getPlayers(), limbo.getStartedTime());
 
                 packetProcessor.request(HyggChannel.LIMBOS, new HyggLimboInfoPacket(info)).exec();
             }

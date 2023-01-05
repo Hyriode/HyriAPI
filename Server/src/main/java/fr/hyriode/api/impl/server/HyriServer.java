@@ -6,7 +6,6 @@ import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import fr.hyriode.hyggdrasil.api.server.HyggServerOptions;
 import fr.hyriode.hystia.api.config.IConfig;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +33,6 @@ public class HyriServer implements IHyriServer {
     private HyggServer.Process process;
 
     private HyggServer.State state;
-    private final HyggServerOptions options;
     private final HyggData data;
     private HostData hostData;
 
@@ -55,7 +53,6 @@ public class HyriServer implements IHyriServer {
             this.accessibility = HyggServer.Accessibility.PUBLIC;
             this.process = HyggServer.Process.TEMPORARY;
             this.state = HyggServer.State.STARTING;
-            this.options = new HyggServerOptions();
             this.data = new HyggData();
             this.hostData = null;
             this.players = new HashSet<>();
@@ -74,7 +71,6 @@ public class HyriServer implements IHyriServer {
         this.accessibility = handle.getAccessibility();
         this.process = handle.getProcess();
         this.state = HyggServer.State.STARTING;
-        this.options = handle.getOptions();
         this.data = handle.getData();
         this.hostData = HyriAPI.get().getHostManager().getHostData(handle);
         this.players = handle.getPlayers();
@@ -148,11 +144,6 @@ public class HyriServer implements IHyriServer {
         HyriAPI.get().log("State changed to " + state.name() + ".");
 
         this.update();
-    }
-
-    @Override
-    public @NotNull HyggServerOptions getMinecraftOptions() {
-        return this.options;
     }
 
     @Override
