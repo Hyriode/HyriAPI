@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.proxy.config;
 
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.config.MongoDBConfig;
 import fr.hyriode.api.config.RedisConfig;
-import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;

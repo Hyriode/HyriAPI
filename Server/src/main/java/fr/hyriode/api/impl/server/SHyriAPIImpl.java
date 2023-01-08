@@ -8,7 +8,6 @@ import fr.hyriode.api.impl.server.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.SoundReceiver;
 import fr.hyriode.api.impl.server.receiver.StopReceiver;
 import fr.hyriode.api.language.HyriLanguage;
-import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;

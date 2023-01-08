@@ -22,7 +22,6 @@ import fr.hyriode.hyggdrasil.api.proxy.packet.HyggProxyInfoPacket;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**

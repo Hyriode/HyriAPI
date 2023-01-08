@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;

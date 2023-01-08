@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.application.config;
 
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.config.MongoDBConfig;
 import fr.hyriode.api.config.RedisConfig;
-import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.hyggdrasil.api.util.builder.BuilderEntry;
 import fr.hyriode.hyggdrasil.api.util.builder.IBuilder;
 

@@ -2,7 +2,6 @@ package fr.hyriode.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.config.IHyriAPIConfig;
@@ -23,6 +22,7 @@ import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
+import fr.hyriode.api.player.auth.IHyriAuthManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.proxy.IHyriProxyManager;
 import fr.hyriode.api.pubsub.IHyriPubSub;
@@ -298,6 +298,13 @@ public abstract class HyriAPI {
      * @return {@link IHyriSettingsManager}
      */
     public abstract IHyriSettingsManager getPlayerSettingsManager();
+
+    /**
+     * Get the player's authentication manager
+     *
+     * @return The {@link IHyriAuthManager} instance
+     */
+    public abstract IHyriAuthManager getAuthManager();
 
     /**
      * Get the language manager instance; it contains all languages-API methods

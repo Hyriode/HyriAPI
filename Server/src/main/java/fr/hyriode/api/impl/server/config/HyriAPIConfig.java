@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.server.config;
 
+import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.config.MongoDBConfig;
 import fr.hyriode.api.config.RedisConfig;
-import fr.hyriode.api.config.IHyriAPIConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

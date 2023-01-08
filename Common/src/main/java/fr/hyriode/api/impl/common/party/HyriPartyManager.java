@@ -3,16 +3,16 @@ package fr.hyriode.api.impl.common.party;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.party.HyriPartyInvitation;
-import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.party.event.HyriPartyCreatedEvent;
-import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

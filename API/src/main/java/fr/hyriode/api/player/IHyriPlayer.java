@@ -4,7 +4,6 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.leveling.IHyriLeveling;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.hyriplus.HyriPlus;
@@ -13,9 +12,7 @@ import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 import fr.hyriode.api.transaction.IHyriTransaction;
 import fr.hyriode.api.transaction.IHyriTransactionContent;
-import fr.hyriode.api.util.Skin;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,23 +30,6 @@ public interface IHyriPlayer {
      * @return Player {@link UUID}
      */
     UUID getUniqueId();
-
-    /**
-     * Check if the player is currently connected on the network
-     * Deprecated: see {@link IHyriPlayerManager#isOnline(UUID)}
-     *
-     * @return <code>true</code> if he is connected
-     */
-    @Deprecated
-    boolean isOnline();
-
-    /**
-     * Set if the player is connected or not
-     *
-     * @param online New online state
-     */
-    @Deprecated
-    void setOnline(boolean online);
 
     /**
      * Get the prefix of the player
@@ -72,47 +52,6 @@ public interface IHyriPlayer {
      * @param name Player's name
      */
     void setName(String name);
-
-    /**
-     * Get the current nickname of the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getNickname()}
-     *
-     * @return A {@link IHyriNickname}
-     */
-    @Deprecated
-    IHyriNickname getNickname();
-
-    /**
-     * Create a nickname for the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#createNickname(String, String, Skin)}
-     *
-     * @param name The name to use as a nickname
-     * @param skinOwner The owner of the skin that will be used
-     * @param skin The skin that will be used
-     * @return The created {@link IHyriNickname}
-     */
-    @Deprecated
-    IHyriNickname createNickname(String name, String skinOwner, Skin skin);
-
-    /**
-     * Set the current player nickname.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setNickname(IHyriNickname)}
-     *
-     * @param nickname The new {@link IHyriNickname}
-     */
-    @Deprecated
-    void setNickname(IHyriNickname nickname);
-
-    /**
-     * Check if the player has a nickname.<br>
-     * Deprecated: see {@link IHyriPlayerSession#hasNickname()}
-     *
-     * @return <code>true</code> if yes
-     */
-    @Deprecated
-    default boolean hasNickname() {
-        return this.getNickname() != null;
-    }
 
     /**
      * Get the player name with the rank prefix
@@ -270,24 +209,6 @@ public interface IHyriPlayer {
     void removeFavoriteHostConfig(String configId);
 
     /**
-     * Get the {@link UUID} of the last player which this player talks with in private chat.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getPrivateMessageTarget()}
-     *
-     * @return {@link UUID}
-     */
-    @Deprecated
-    UUID getLastPrivateMessagePlayer();
-
-    /**
-     * Set the {@link UUID} of the last player which this player talks with in private chat.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setPrivateMessageTarget(UUID)} ()}
-     *
-     * @param player {@link UUID}
-     */
-    @Deprecated
-    void setLastPrivateMessagePlayer(UUID player);
-
-    /**
      * Get player Hyris money
      *
      * @return A {@link IHyriMoney} instance
@@ -307,33 +228,6 @@ public interface IHyriPlayer {
      * @return A {@link IHyriLeveling} instance
      */
     IHyriLeveling getNetworkLeveling();
-
-    /**
-     * Get the party {@link UUID} of the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getParty()}
-     *
-     * @return Player party
-     */
-    @Deprecated
-    UUID getParty();
-
-    /**
-     * Set the party {@link UUID} of the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setParty(UUID)} ()}
-     *
-     * @param party Party {@link UUID}
-     */
-    @Deprecated
-    void setParty(UUID party);
-
-    /**
-     * Check if the player is in a member of a party.<br>
-     * Deprecated: see {@link IHyriPlayerSession#hasParty()}
-     *
-     * @return <code>true</code> if player has one
-     */
-    @Deprecated
-    boolean hasParty();
 
     /**
      * Get the priority of the player in queues
@@ -364,103 +258,11 @@ public interface IHyriPlayer {
     void setSettings(IHyriPlayerSettings settings);
 
     /**
-     * Get the name of the current server where the player is.<br>
-     * Warning: if the player is not connected, it will return <code>null</code>.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getServer()}
-     *
-     * @return A server name
-     */
-    @Deprecated
-    String getCurrentServer();
-
-    /**
-     * Set the current server where the player is connected.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setServer(String)}
-     *
-     * @param currentServer The name of the server
-     */
-    @Deprecated
-    void setCurrentServer(String currentServer);
-
-    /**
-     * Get the last server where the player was.<br>
-     * Warning: if the player is connected on a server it will return the old one not the current. To get the current server use {@link #getCurrentServer()}.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getLastServer()}
-     *
-     * @return A server name
-     */
-    @Deprecated
-    String getLastServer();
-
-    /**
-     * Set the last server where the player was connected.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setLastServer(String)}
-     *
-     * @param lastServer The name of the server
-     */
-    @Deprecated
-    void setLastServer(String lastServer);
-
-    /**
-     * Get the name of the proxy that manages the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#getProxy()}
-     *
-     * @return A proxy name
-     */
-    @Deprecated
-    String getCurrentProxy();
-
-    /**
-     * Set the current proxy that manages the player.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setProxy(String)}
-     *
-     * @param currentProxy A proxy name
-     */
-    @Deprecated
-    void setCurrentProxy(String currentProxy);
-
-    /**
      * Get the handler of player's friends
      *
      * @return A {@link IHyriFriendHandler} instance
      */
     IHyriFriendHandler getFriendHandler();
-
-    /**
-     * Get if the player is in moderation mode.<br>
-     * Deprecated: see {@link IHyriPlayerSession#isModerating()}
-     *
-     * @return <code>true</code> if the player is in the moderation mode
-     */
-    @Deprecated
-    boolean isInModerationMode();
-
-    /**
-     * Set if the player is in moderation mode.<br>
-     * Deprecated: see {@link IHyriPlayerSession#setModerating(boolean)}
-     *
-     * @param moderationMode <code>true</code> if the player is in the moderation mode
-     */
-    @Deprecated
-    void setInModerationMode(boolean moderationMode);
-
-    /**
-     * Get if the player is in vanish mode.<br>
-     * Deprecated: see {@link IHyriPlayerSession#isVanished()}
-     *
-     * @return <code>true</code> if the player is in the vanish mode
-     */
-    @Deprecated
-    boolean isInVanishMode();
-
-    /**
-     * Set if the player is in vanish mode.<br>
-     * Deprecated: see {@link IHyriPlayerSession#isVanished()}
-     *
-     * @param vanishMode <code>true</code> if the player is in the vanish mode
-     */
-    @Deprecated
-    void setInVanishMode(boolean vanishMode);
 
     /**
      * Get all the statistics key linked to the player account

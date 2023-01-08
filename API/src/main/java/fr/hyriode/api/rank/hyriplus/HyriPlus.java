@@ -5,7 +5,6 @@ import fr.hyriode.api.rank.type.HyriPlayerRankType;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**

@@ -25,6 +25,7 @@ import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
+import fr.hyriode.api.impl.common.player.auth.HyriAuthManager;
 import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
@@ -45,6 +46,7 @@ import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
+import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.settings.IHyriSettingsManager;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyreos.api.HyreosAPI;
@@ -86,7 +88,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     protected HyriGameManager gameManager;
 
     protected CHyriPlayerManager playerManager;
-    protected IHyriSettingsManager playerSettingsManager;
+    protected HyriPlayerSettingsManager playerSettingsManager;
+    protected HyriAuthManager authManager;
     protected HyriLanguageManager languageManager;
 
     protected IHyriBoosterManager boosterManager;
@@ -149,6 +152,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.gameManager = new HyriGameManager();
         this.playerManager = new CHyriPlayerManager();
         this.playerSettingsManager = new HyriPlayerSettingsManager();
+        this.authManager = new HyriAuthManager();
         this.languageManager = new HyriLanguageManager();
         this.boosterManager = new HyriBoosterManager();
         this.moneyManager = new HyriMoneyManager();
@@ -304,6 +308,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     }
 
     @Override
+    public HyriAuthManager getAuthManager() {
+        return this.authManager;
+    }
+
+    @Override
     public HyriLanguageManager getLanguageManager() {
         return this.languageManager;
     }
@@ -351,6 +360,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public IHyriLootboxManager getLootboxManager() {
         return this.lootboxManager;
+    }
+
+    @Override
+    public IHyriJoinManager getJoinManager() {
+        return null;
     }
 
 }

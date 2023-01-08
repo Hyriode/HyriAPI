@@ -1,12 +1,11 @@
 package fr.hyriode.api.impl.common.settings;
 
-import com.google.gson.Gson;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.language.HyriLanguageUpdatedEvent;
-import fr.hyriode.api.settings.SettingsLevel;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
+import fr.hyriode.api.settings.SettingsLevel;
 
 import java.util.UUID;
 

@@ -4,8 +4,6 @@ import fr.hyriode.api.party.IHyriParty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 

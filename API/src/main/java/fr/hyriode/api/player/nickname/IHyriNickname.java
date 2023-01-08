@@ -1,6 +1,5 @@
 package fr.hyriode.api.player.nickname;
 
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.util.Skin;
 

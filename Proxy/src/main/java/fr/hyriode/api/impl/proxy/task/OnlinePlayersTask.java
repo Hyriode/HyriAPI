@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.proxy.task;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;

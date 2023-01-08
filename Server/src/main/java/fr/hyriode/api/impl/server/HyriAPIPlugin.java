@@ -3,16 +3,13 @@ package fr.hyriode.api.impl.server;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.server.config.HyriAPIConfig;
-import fr.hyriode.api.impl.server.join.JoinListener;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hystia.api.world.IWorldManager;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Project: HyriAPI

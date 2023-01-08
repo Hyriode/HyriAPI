@@ -1,7 +1,6 @@
 package fr.hyriode.api.chat;
 
 import fr.hyriode.api.event.HyriCancellableEvent;
-import fr.hyriode.api.event.HyriEvent;
 
 import java.util.UUID;
 

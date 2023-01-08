@@ -1,7 +1,6 @@
 package fr.hyriode.api.impl.common.player.nickname;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
 import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;

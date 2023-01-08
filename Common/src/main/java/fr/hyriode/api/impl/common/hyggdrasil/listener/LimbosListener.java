@@ -2,14 +2,10 @@ package fr.hyriode.api.impl.common.hyggdrasil.listener;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.limbo.HyriLimboManager;
-import fr.hyriode.api.impl.common.server.HyriServerManager;
 import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboStoppedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboUpdatedEvent;
-import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
-import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;
-import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
 
 /**
  * Project: HyriAPI

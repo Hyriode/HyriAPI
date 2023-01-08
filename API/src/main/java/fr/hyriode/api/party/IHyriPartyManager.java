@@ -5,7 +5,6 @@ import fr.hyriode.api.player.IHyriPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**

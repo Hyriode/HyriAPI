@@ -13,8 +13,6 @@ import fr.hyriode.api.leveling.NetworkLeveling;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.player.HyriPlayerData;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.player.nickname.IHyriNickname;
 import fr.hyriode.api.rank.HyriRank;
 import fr.hyriode.api.rank.HyriRankUpdatedEvent;
 import fr.hyriode.api.rank.hyriplus.HyriPlus;
@@ -22,7 +20,6 @@ import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.api.settings.IHyriPlayerSettings;
 import fr.hyriode.api.transaction.IHyriTransaction;
 import fr.hyriode.api.transaction.IHyriTransactionContent;
-import fr.hyriode.api.util.Skin;
 
 import java.util.*;
 
@@ -78,14 +75,6 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public boolean isOnline() {
-        return IHyriPlayerSession.get(this.uuid) != null;
-    }
-
-    @Override
-    public void setOnline(boolean online) {}
-
-    @Override
     public String getPrefix() {
         final String prefix = this.rank.getPrefix();
 
@@ -107,21 +96,6 @@ public class HyriPlayer implements IHyriPlayer {
     @Override
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public IHyriNickname getNickname() {
-        return IHyriPlayerSession.get(this.uuid).getNickname();
-    }
-
-    @Override
-    public IHyriNickname createNickname(String name, String skinOwner, Skin skin) {
-        return IHyriPlayerSession.get(this.uuid).createNickname(name, skinOwner, skin);
-    }
-
-    @Override
-    public void setNickname(IHyriNickname nickname) {
-        IHyriPlayerSession.get(this.uuid).setNickname(nickname);
     }
 
     @Override
@@ -233,16 +207,6 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public UUID getLastPrivateMessagePlayer() {
-        return IHyriPlayerSession.get(this.uuid).getPrivateMessageTarget();
-    }
-
-    @Override
-    public void setLastPrivateMessagePlayer(UUID player) {
-        IHyriPlayerSession.get(this.uuid).setPrivateMessageTarget(player);
-    }
-
-    @Override
     public IHyriMoney getHyris() {
         this.hyris.setPlayerUUID(this.uuid);
 
@@ -261,21 +225,6 @@ public class HyriPlayer implements IHyriPlayer {
         this.networkLeveling.setPlayerId(this.uuid);
 
         return this.networkLeveling;
-    }
-
-    @Override
-    public UUID getParty() {
-        return IHyriPlayerSession.get(this.uuid).getParty();
-    }
-
-    @Override
-    public void setParty(UUID party) {
-        IHyriPlayerSession.get(this.uuid).setParty(party);
-    }
-
-    @Override
-    public boolean hasParty() {
-        return this.getParty() != null;
     }
 
     @Override
@@ -307,58 +256,8 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public String getCurrentServer() {
-        return IHyriPlayerSession.get(this.uuid).getServer();
-    }
-
-    @Override
-    public void setCurrentServer(String currentServer) {
-        IHyriPlayerSession.get(this.uuid).setServer(currentServer);
-    }
-
-    @Override
-    public String getLastServer() {
-        return IHyriPlayerSession.get(this.uuid).getLastServer();
-    }
-
-    @Override
-    public void setLastServer(String lastServer) {
-        IHyriPlayerSession.get(this.uuid).setLastServer(lastServer);
-    }
-
-    @Override
-    public String getCurrentProxy() {
-        return IHyriPlayerSession.get(this.uuid).getProxy();
-    }
-
-    @Override
-    public void setCurrentProxy(String currentProxy) {
-        IHyriPlayerSession.get(this.uuid).setProxy(currentProxy);
-    }
-
-    @Override
     public IHyriFriendHandler getFriendHandler() {
         return HyriAPI.get().getFriendManager().createHandler(this.uuid);
-    }
-
-    @Override
-    public boolean isInModerationMode() {
-        return IHyriPlayerSession.get(this.uuid).isModerating();
-    }
-
-    @Override
-    public void setInModerationMode(boolean moderationMode) {
-        IHyriPlayerSession.get(this.uuid).setModerating(moderationMode);
-    }
-
-    @Override
-    public boolean isInVanishMode() {
-        return IHyriPlayerSession.get(this.uuid).isVanished();
-    }
-
-    @Override
-    public void setInVanishMode(boolean vanishMode) {
-        IHyriPlayerSession.get(this.uuid).setVanished(vanishMode);
     }
 
     @Override

@@ -1,8 +1,6 @@
 archivesBaseName = 'HyriAPI-Common'
 
-repositories {
-
-}
+repositories {}
 
 publishing {
     publications {
@@ -35,4 +33,5 @@ publishing {
 dependencies {
     api project(':API')
     api 'fr.hyriode:hystia-impl:1.0.9'
+    api 'org.mindrot:jbcrypt:0.4'
 }

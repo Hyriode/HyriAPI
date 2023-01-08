@@ -2,8 +2,6 @@ package fr.hyriode.api.chat.packet;
 
 import fr.hyriode.api.packet.HyriPacket;
 
-import java.util.UUID;
-
 public class BroadcastMessagePacket extends HyriPacket {
 
     private final String message;

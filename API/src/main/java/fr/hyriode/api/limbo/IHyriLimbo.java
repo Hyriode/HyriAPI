@@ -1,14 +1,14 @@
 package fr.hyriode.api.limbo;
 
 import fr.hyriode.api.application.IHyriApplication;
-import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
 
-import static fr.hyriode.hyggdrasil.api.limbo.HyggLimbo.*;
+import static fr.hyriode.hyggdrasil.api.limbo.HyggLimbo.State;
+import static fr.hyriode.hyggdrasil.api.limbo.HyggLimbo.Type;
 
 /**
  * Created by AstFaster
