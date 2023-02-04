@@ -2,8 +2,7 @@ package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
-import fr.hyriode.api.impl.proxy.listener.LimbosListener;
-import fr.hyriode.api.impl.proxy.listener.ServersListener;
+import fr.hyriode.api.impl.proxy.listener.*;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.ChatReceiver;
 import fr.hyriode.api.impl.proxy.receiver.PlayerReceiver;
@@ -15,12 +14,16 @@ import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Listener;
 
+import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -38,13 +41,13 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
         this.plugin = plugin;
 
         this.preInit();
-        this.init(null);
+        this.init(null, plugin.getLogger());
         this.postInit();
     }
 
     @Override
-    protected void init(HyggEnv environment) {
-        super.init(environment);
+    protected void init(HyggEnv environment, Logger logger) {
+        super.init(environment, logger);
 
         this.proxy = new HyriProxy(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
         this.playerManager = new HyriPlayerManager();
@@ -84,6 +87,13 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
 
         pubSub.subscribe(HyriChannel.PROXIES, new PlayerReceiver());
         pubSub.subscribe(HyriChannel.CHAT, new ChatReceiver());
+
+        final Consumer<Listener> register = listener -> this.plugin.getProxy().getPluginManager().registerListener(this.plugin, listener);
+
+        register.accept(new ProxyListener(this.plugin.getConfiguration()));
+        register.accept(new JoinListener(this.plugin));
+
+        HyriAPI.get().getNetworkManager().getEventBus().register(new NetworkListener());
     }
 
     @Override

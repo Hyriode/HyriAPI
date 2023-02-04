@@ -4,6 +4,8 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;
+import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -15,25 +17,38 @@ import java.net.InetSocketAddress;
  */
 public class ServersListener {
 
-    @SuppressWarnings("deprecation")
     public void register() {
         final HyggEventBus eventBus = HyriAPI.get().getHyggdrasilManager().getHyggdrasilAPI().getEventBus();
 
-        eventBus.subscribe(HyggServerStartedEvent.class, event -> {
-            final String serverName = event.getServer().getName();
-            final ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(serverName, new InetSocketAddress(serverName, 25565), "", false);
+        for (HyggServer server : HyriAPI.get().getServerManager().getServers()) {
+            this.addServer(server.getName());
+        }
 
-            ProxyServer.getInstance().getServers().put(serverName, serverInfo);
-
-            HyriAPI.get().log("Added '" + serverName + "' server");
-        });
-        eventBus.subscribe(HyggServerStoppedEvent.class, event -> {
+        eventBus.subscribe(HyggServerStartedEvent.class, event -> this.addServer(event.getServer().getName()));
+        eventBus.subscribe(HyggServerUpdatedEvent.class, event -> {
             final String serverName = event.getServer().getName();
 
-            ProxyServer.getInstance().getServers().remove(serverName);
-
-            HyriAPI.get().log("Removed '" + serverName + "' server");
+            if (ProxyServer.getInstance().getServerInfo(serverName) == null) {
+                this.addServer(serverName);
+            }
         });
+        eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.removeServer(event.getServer().getName()));
+    }
+
+    @SuppressWarnings("deprecation")
+    private void addServer(String server) {
+        final ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(server, new InetSocketAddress(server, 25565), "", false);
+
+        ProxyServer.getInstance().getServers().put(server, serverInfo);
+
+        HyriAPI.get().log("Added '" + server + "' server");
+    }
+
+    @SuppressWarnings("deprecation")
+    private void removeServer(String server) {
+        ProxyServer.getInstance().getServers().remove(server);
+
+        HyriAPI.get().log("Removed '" + server + "' server");
     }
 
 }

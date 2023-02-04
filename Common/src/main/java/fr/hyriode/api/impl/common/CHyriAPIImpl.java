@@ -29,8 +29,8 @@ import fr.hyriode.api.impl.common.player.auth.HyriAuthManager;
 import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
-import fr.hyriode.api.impl.common.redis.HyriRedisConnection;
-import fr.hyriode.api.impl.common.redis.HyriRedisProcessor;
+import fr.hyriode.api.impl.common.redis.Redis;
+import fr.hyriode.api.impl.common.redis.RedisProcessor;
 import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
 import fr.hyriode.api.impl.common.server.HyriServerManager;
 import fr.hyriode.api.impl.common.server.LobbyAPI;
@@ -55,6 +55,7 @@ import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -65,8 +66,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     protected IHyriAPIConfig configuration;
 
-    protected HyriRedisConnection redisConnection;
-    protected HyriRedisProcessor redisProcessor;
+    protected Redis redisConnection;
+    protected RedisProcessor redisProcessor;
 
     protected MongoDB mongoDB;
 
@@ -121,12 +122,12 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.log("Registered " + this.getClass().getName() + " as an implementation of " + NAME + ".");
     }
 
-    protected void init(HyggEnv environment) {
+    protected void init(HyggEnv environment, Logger logger) {
         this.scheduler = new HyriScheduler();
 
         // Databases connections
-        this.redisConnection = new HyriRedisConnection(this);
-        this.redisProcessor = new HyriRedisProcessor();
+        this.redisConnection = new Redis(this);
+        this.redisProcessor = new RedisProcessor();
         this.mongoDB = new MongoDB();
         this.mongoDB.startConnection();
 
@@ -139,7 +140,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
         // Hyggdrasil and servers/proxies management
         this.hyggdrasilManager = new HyggdrasilManager(environment);
-        this.hyggdrasilManager.start();
+        this.hyggdrasilManager.start(logger);
         this.proxyManager = new HyriProxyManager();
         this.limboManager = new HyriLimboManager();
         this.serverManager = new HyriServerManager();
@@ -166,12 +167,14 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     }
 
     protected void postInit() {
+        this.hyggdrasilManager.registerListeners();
         this.languageManager.registerAdapter(IHyriPlayer.class, (message, account) -> message.getValue(account.getSettings().getLanguage()));
         this.languageManager.registerAdapter(UUID.class, (message, uuid) -> {
             final HyriLanguage cachedLanguage = this.languageManager.getCache(uuid);
 
             return cachedLanguage != null ? message.getValue(cachedLanguage) : message.getValue(IHyriPlayer.get(uuid));
         });
+        this.hyggdrasilManager.sendData();
     }
 
     public void stop() {
@@ -213,12 +216,12 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     }
 
     @Override
-    public HyriRedisConnection getRedisConnection() {
+    public Redis getRedisConnection() {
         return this.redisConnection;
     }
 
     @Override
-    public HyriRedisProcessor getRedisProcessor() {
+    public RedisProcessor getRedisProcessor() {
         return this.redisProcessor;
     }
 

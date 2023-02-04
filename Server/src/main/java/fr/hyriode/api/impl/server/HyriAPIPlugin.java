@@ -63,6 +63,10 @@ public class HyriAPIPlugin extends JavaPlugin {
                         HyriAPI.get().log("Loaded '" + mapName + "' map for the server (" + serverType + "#" + gameType + ").");
 
                         worldManager.loadWorld(new File("world"), serverType, gameType, mapName);
+                    } else {
+                        HyriAPI.get().log("Loaded '" + mapName + "' map for the server (" + serverType + ").");
+
+                        worldManager.loadWorld(new File("world"), serverType, "default", mapName);
                     }
                 }
             }

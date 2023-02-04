@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Project: HyriAPI
@@ -27,10 +28,15 @@ import java.util.UUID;
  */
 public class PlayerLoader {
 
+    private static final Pattern NOTCHIAN_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
     private static final String PROFILES_CACHE_KEY = "proxy-mojang-profiles:";
 
+    public boolean isNameValid(String name) {
+        return NOTCHIAN_NAME_PATTERN.matcher(name).find();
+    }
+
     public MojangProfile fetchMojangProfile(String playerName) {
-        final String key = PROFILES_CACHE_KEY + playerName;
+        final String key = PROFILES_CACHE_KEY + playerName.toLowerCase();
         final MojangProfile cachedProfile = HyriAPI.get().getRedisProcessor().get(jedis -> {
             final String json = jedis.get(key);
 
@@ -46,7 +52,7 @@ public class PlayerLoader {
             final HttpResponse response = client.execute(request);
             final int statusCode = response.getStatusLine().getStatusCode();
 
-            if (statusCode == 200 || statusCode == 204) {
+            if (statusCode == 200 || statusCode == 204 || statusCode == 404) {
                 final boolean premium = statusCode == 200;
 
                 MojangProfile profile;
@@ -73,8 +79,7 @@ public class PlayerLoader {
         }
     }
 
-    public void loadPlayerAccount(IHyriPlayer account, String name) {
-        final UUID playerId = account.getUniqueId();
+    public void loadPlayerAccount(UUID playerId, IHyriPlayer account, String name) {
         final long loginTime = System.currentTimeMillis();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayerSession session = new HyriPlayerSession(playerId, loginTime);
@@ -82,14 +87,16 @@ public class PlayerLoader {
         session.setProxy(HyriAPI.get().getProxy().getName());
         session.update();
 
-        account.setName(name);
-        account.setLastLoginDate(loginTime);
-        account.update();
+        if (account != null) { // Might be null if the player is crack and doesn't have an account yet
+            account.setName(name);
+            account.setLastLoginDate(loginTime);
+            account.update();
+        }
 
-        playerManager.setPlayerId(name, account.getUniqueId());
+        playerManager.setPlayerId(name, playerId);
     }
 
-    public void handleDisconnection(ProxiedPlayer player) {
+    public void handleDisconnection(ProxiedPlayer player, boolean login) {
         final UUID playerId = player.getUniqueId();
         final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
@@ -105,15 +112,17 @@ public class PlayerLoader {
             pm.deleteSession(playerId);
         }
 
-        if (account != null) {
-            HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
+        if (!login) { // All this stuff doesn't have to be done if the player has been kicked while logging in
+            if (account != null) {
+                HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
 
-            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
-            account.update();
+                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
+                account.update();
+            }
+
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId, session == null ? null : session.getParty()));
+            HyriAPI.get().getProxy().removePlayer(playerId);
         }
-
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId, session == null ? null : session.getParty()));
-        HyriAPI.get().getProxy().removePlayer(playerId);
     }
 
     public static class MojangProfile {

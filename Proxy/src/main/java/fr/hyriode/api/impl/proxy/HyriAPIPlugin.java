@@ -25,23 +25,14 @@ public class HyriAPIPlugin extends Plugin  {
     private HyriAPIConfig configuration;
     private PHyriAPIImpl api;
 
-    private PlayerLoader playerLoader;
-
-    private OnlinePlayersTask onlinePlayersTask;
-
     private ClientSupportManager clientSupportManager;
 
     @Override
     public void onEnable() {
         this.configuration = HyriAPIConfig.Loader.load(this);
         this.api = new PHyriAPIImpl(this);
-        this.playerLoader = new PlayerLoader();
-        this.onlinePlayersTask = new OnlinePlayersTask();
-        this.onlinePlayersTask.start(this);
         this.clientSupportManager = new ClientSupportManager();
         this.clientSupportManager.registerSupport(new AZLauncherSupport(this));
-
-        this.registerListeners();
 
         HyriAPI.get().getProxy().setState(HyggProxy.State.READY);
     }
@@ -49,18 +40,8 @@ public class HyriAPIPlugin extends Plugin  {
     @Override
     public void onDisable() {
         this.api.stop();
-        this.onlinePlayersTask.stop();
 
         HyriAPI.get().log(HyriAPI.NAME + " is now disabled. See you soon!");
-    }
-
-    private void registerListeners() {
-        final Consumer<Listener> register = listener -> this.getProxy().getPluginManager().registerListener(this, listener);
-
-        register.accept(new ProxyListener(this.configuration));
-        register.accept(new JoinListener(this));
-
-        HyriAPI.get().getNetworkManager().getEventBus().register(new NetworkListener());
     }
 
     public HyriAPIConfig getConfiguration() {
@@ -69,14 +50,6 @@ public class HyriAPIPlugin extends Plugin  {
 
     public PHyriAPIImpl getAPI() {
         return this.api;
-    }
-
-    public PlayerLoader getPlayerLoader() {
-        return this.playerLoader;
-    }
-
-    public OnlinePlayersTask getOnlinePlayersTask() {
-        return this.onlinePlayersTask;
     }
 
     public ClientSupportManager getClientSupportManager() {

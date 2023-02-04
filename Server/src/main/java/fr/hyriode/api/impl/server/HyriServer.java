@@ -77,8 +77,6 @@ public class HyriServer implements IHyriServer {
         this.playingPlayers = handle.getPlayingPlayers();
         this.slots = handle.getSlots();
         this.startedTime = handle.getStartedTime();
-
-        this.update();
     }
 
     @Override

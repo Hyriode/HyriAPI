@@ -16,7 +16,7 @@ import java.util.logging.Level;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriRedisConnection implements IRedis {
+public class Redis implements IRedis {
 
     private boolean running;
 
@@ -30,7 +30,7 @@ public class HyriRedisConnection implements IRedis {
 
     private final CHyriAPIImpl api;
 
-    public HyriRedisConnection(CHyriAPIImpl api) {
+    public Redis(CHyriAPIImpl api) {
         this.api = api;
 
         final RedisConfig redisConfig = this.api.getConfig().getRedisConfig();
@@ -63,13 +63,13 @@ public class HyriRedisConnection implements IRedis {
 
         config.setMaxTotal(-1);
         config.setJmxEnabled(false);
+        config.setMaxIdle(0);
 
         if (this.password == null) {
             this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000);
         } else {
             this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000, this.password);
         }
-
 
         try {
             this.getResource().close();
@@ -113,8 +113,8 @@ public class HyriRedisConnection implements IRedis {
     }
 
     @Override
-    public HyriRedisConnection clone() {
-        return new HyriRedisConnection(this.api);
+    public Redis clone() {
+        return new Redis(this.api);
     }
 
 }

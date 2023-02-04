@@ -8,7 +8,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class OnlinePlayersTask implements Runnable {
 
-    private final List<UUID> players = new CopyOnWriteArrayList<>();
+    private final Set<UUID> players = ConcurrentHashMap.newKeySet();
 
     private ScheduledTask task;
 
@@ -30,12 +32,6 @@ public class OnlinePlayersTask implements Runnable {
         HyriAPI.get().log("Starting online players checking task...");
 
         this.task = ProxyServer.getInstance().getScheduler().schedule(plugin, this, 0, 3, TimeUnit.SECONDS);
-    }
-
-    public void stop() {
-        if (this.task != null) {
-            this.task.cancel();
-        }
     }
 
     @Override

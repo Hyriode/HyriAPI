@@ -15,7 +15,7 @@ import java.util.function.Function;
  * Created by AstFaster
  * on 21/11/2021 at 17:40
  */
-public class HyriRedisProcessor implements IRedisProcessor {
+public class RedisProcessor implements IRedisProcessor {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 

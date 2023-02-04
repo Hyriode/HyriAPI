@@ -99,7 +99,7 @@ public class JoinListener implements Listener {
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final UUID playerId = player.getUniqueId();

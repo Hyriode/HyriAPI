@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -42,13 +43,13 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         this.plugin = plugin;
 
         this.preInit();
-        this.init(null);
+        this.init(null, plugin.getLogger());
         this.postInit();
     }
 
     @Override
-    protected void init(HyggEnv environment) {
-        super.init(environment);
+    protected void init(HyggEnv environment, Logger logger) {
+        super.init(environment, logger);
 
         this.server = new HyriServer(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
         this.playerManager = new HyriPlayerManager();

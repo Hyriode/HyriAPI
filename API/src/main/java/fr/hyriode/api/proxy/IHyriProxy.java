@@ -45,11 +45,4 @@ public interface IHyriProxy extends IHyriApplication<HyggProxy.State> {
     @NotNull
     HyggData getData();
 
-    /**
-     * Get the port of the running proxy
-     *
-     * @return A port
-     */
-    int getPort();
-
 }

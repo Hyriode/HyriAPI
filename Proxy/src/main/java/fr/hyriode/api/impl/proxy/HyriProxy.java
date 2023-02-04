@@ -25,8 +25,6 @@ public class HyriProxy implements IHyriProxy {
     private HyggProxy.State state;
     private final Set<UUID> players;
 
-    private final int port;
-
     private final long startedTime;
 
     public HyriProxy(HyggApplication application) {
@@ -35,7 +33,6 @@ public class HyriProxy implements IHyriProxy {
             this.data = new HyggData();
             this.state = HyggProxy.State.STARTING;
             this.players = new HashSet<>();
-            this.port = 25565;
             this.startedTime = System.currentTimeMillis();
             return;
         }
@@ -46,10 +43,7 @@ public class HyriProxy implements IHyriProxy {
         this.data = info.getData();
         this.state = HyggProxy.State.STARTING;
         this.players = info.getPlayers();
-        this.port = info.getPort();
         this.startedTime = info.getStartedTime();
-
-        this.update();
     }
 
     @Override
@@ -100,11 +94,6 @@ public class HyriProxy implements IHyriProxy {
     @NotNull
     public HyggData getData() {
         return this.data;
-    }
-
-    @Override
-    public int getPort() {
-        return this.port;
     }
 
     private void update() {

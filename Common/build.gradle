@@ -1,4 +1,12 @@
+plugins {
+    id "com.github.johnrengelman.shadow"
+}
+
 archivesBaseName = 'HyriAPI-Common'
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
+}
 
 repositories {}
 
@@ -32,6 +40,8 @@ publishing {
 
 dependencies {
     api project(':API')
-    api 'fr.hyriode:hystia-impl:1.0.9'
+    api ('fr.hyriode:hystia-impl:1.0.10') {
+        exclude module: 'gson'
+    }
     api 'org.mindrot:jbcrypt:0.4'
 }

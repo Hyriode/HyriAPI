@@ -27,9 +27,10 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -38,16 +39,15 @@ import java.util.UUID;
  */
 public class JoinListener implements Listener {
 
-    private final List<UUID> reconnections = new ArrayList<>();
-    private final List<UUID> firstLogins = new ArrayList<>();
-
+    private final Set<UUID> reconnections = ConcurrentHashMap.newKeySet();
 
     private final PlayerLoader playerLoader;
     private final OnlinePlayersTask onlineTask;
 
     public JoinListener(HyriAPIPlugin plugin) {
-        this.playerLoader = plugin.getPlayerLoader();
-        this.onlineTask = plugin.getOnlinePlayersTask();
+        this.playerLoader = new PlayerLoader();
+        this.onlineTask = new OnlinePlayersTask();
+        this.onlineTask.start(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -57,7 +57,14 @@ public class JoinListener implements Listener {
             final String name = connection.getName();
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
-            UUID playerId = connection.getUniqueId();
+            UUID playerId = playerManager.getPlayerId(name);
+            PlayerLoader.MojangProfile mojangProfile = null;
+
+            if (playerId == null) {
+                mojangProfile = this.playerLoader.fetchMojangProfile(name);
+                playerId = mojangProfile.getPlayerId();
+            }
+
             IHyriPlayer account = IHyriPlayer.get(playerId);
 
             if (account != null) {
@@ -68,26 +75,40 @@ public class JoinListener implements Listener {
                     event.setCancelReason(MessageUtil.ALREADY_ONLINE);
                     return;
                 } else if (!account.isPremium()) { // Player is not premium but his name might have been taken
-                    final PlayerLoader.MojangProfile mojangProfile = this.playerLoader.fetchMojangProfile(name);
+                    if (mojangProfile == null) {
+                        mojangProfile = this.playerLoader.fetchMojangProfile(name);
+                    }
 
-                    if (mojangProfile.isPremium()) { // Mojang tells the queried name is now owned by a premium user. The crack player must transfer his account.
+                    if (mojangProfile.isPremium()) { // Mojang tells the queried name is now owned by a premium user. The crack player must transfer his account. And we will create a new account for the premium player.
+                        HyriAPI.get().getPlayerManager().setPlayerId(name, mojangProfile.getPlayerId());
+
                         event.setCancelled(true);
                         event.setCancelReason(MessageUtil.PROFILE_TAKEN);
                         return;
                     }
                 }
-            } else { // Player doesn't exist so a new account need to be created
-                final PlayerLoader.MojangProfile mojangProfile = this.playerLoader.fetchMojangProfile(name); // Queries Mojang to check if the player is premium
-
-                playerId = mojangProfile.getPlayerId();
-                account = playerManager.createPlayer(mojangProfile.isPremium(), playerId, name);
-
-                this.firstLogins.add(playerId);
             }
 
-            this.playerLoader.loadPlayerAccount(account, name);
+            if (account == null) { // Player doesn't exist so a new account need to be created
+                if (!this.playerLoader.isNameValid(name)) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.INVALID_NAME);
+                    return;
+                }
 
-            event.setEncrypting(account.isPremium());
+                if (mojangProfile == null) {
+                    mojangProfile = this.playerLoader.fetchMojangProfile(name); // Queries Mojang to check if the player is premium
+                    playerId = mojangProfile.getPlayerId();
+                }
+
+                if (mojangProfile.isPremium()) { // Only create the account if the player is premium! (for crack users it will be after being registered)
+                    account = playerManager.createPlayer(true, playerId, name);
+                }
+            }
+
+            this.playerLoader.loadPlayerAccount(playerId, account, name);
+
+            event.setEncrypting(account != null && account.isPremium());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -108,14 +129,14 @@ public class JoinListener implements Listener {
 
             event.setCancelled(true);
 
-            if (account.getRank().isSuperior(HyriStaffRankType.DESIGNER) || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName())) {
+            if (account != null && (account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName()))) {
                 this.connectToNetwork(player, account, event);
                 return;
             }
 
             if (maintenance.isActive()) {
                 player.disconnect(MessageUtil.createMaintenanceMessage(maintenance));
-            } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && account.getRank().isDefault()) {
+            } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && (account == null || account.getRank().isDefault())) {
                 player.disconnect(MessageUtil.SERVER_FULL_MESSAGE);
             } else {
                 this.connectToNetwork(player, account, event);
@@ -152,14 +173,14 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
-        this.playerLoader.handleDisconnection(event.getPlayer());
+        this.playerLoader.handleDisconnection(event.getPlayer(), false);
     }
 
     private void connectToNetwork(ProxiedPlayer player, IHyriPlayer account, ServerConnectEvent event) {
         final UUID playerId = player.getUniqueId();
 
         ServerInfo serverInfo = null;
-        if (account.isPremium()) { // If he is premium, connect him directly to a lobby
+        if (account != null && account.isPremium()) { // If he is premium, connect him directly to a lobby
             final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
             if (lobby != null) {
@@ -171,6 +192,10 @@ public class JoinListener implements Listener {
                 }
 
                 serverInfo = ProxyServer.getInstance().getServerInfo(lobby.getName());
+
+                if (serverInfo != null) {
+                    HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
+                }
             }
         } else { // If he is crack, connect him first to a limbo to authenticate
             final HyggLimbo limbo = HyriAPI.get().getLimboManager().getBestLimbo(HyggLimbo.Type.LOGIN);
@@ -181,6 +206,8 @@ public class JoinListener implements Listener {
         }
 
         if (serverInfo == null) {
+            this.playerLoader.handleDisconnection(player, true);
+
             player.disconnect(MessageUtil.NO_SERVER_MESSAGE);
             return;
         }
@@ -189,7 +216,6 @@ public class JoinListener implements Listener {
         event.setCancelled(false);
 
         HyriAPI.get().getProxy().addPlayer(playerId);
-        HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
     }
 
 }

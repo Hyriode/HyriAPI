@@ -20,7 +20,7 @@ public class HyriAPIImpl extends CHyriAPIImpl {
         this.log("Starting HyriAPI for '" + applicationName + "'.");
 
         this.preInit();
-        this.init( new HyggEnv(new HyggApplication(HyggApplication.Type.OTHER, applicationName, System.currentTimeMillis())));
+        this.init(new HyggEnv(new HyggApplication(HyggApplication.Type.OTHER, applicationName, System.currentTimeMillis())), null);
         this.postInit();
     }
 

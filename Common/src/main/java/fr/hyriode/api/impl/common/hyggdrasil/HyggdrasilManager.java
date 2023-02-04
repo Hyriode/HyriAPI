@@ -23,6 +23,7 @@ import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import fr.hyriode.hyggdrasil.api.server.packet.HyggServerInfoPacket;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * Project: HyriAPI
@@ -50,19 +51,18 @@ public class HyggdrasilManager implements IHyggdrasilManager {
         }
     }
 
-    public void start() {
+    public void start(Logger logger) {
         if (this.withHyggdrasil()) {
             HyriAPI.get().log("Starting Hyggdrasil manager...");
 
             this.hyggdrasilAPI = new HyggdrasilAPI.Builder()
-                    .withJedisPool(HyriAPI.get().getRedisConnection().clone().getPool())
+                    .withJedisPool(HyriAPI.get().getRedisConnection().getPool())
                     .withEnvironment(this.environment)
+                    .withLogger(logger)
                     .build();
             this.hyggdrasilAPI.start();
 
             HyriAPI.get().getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
-
-            this.registerListeners();
         }
     }
 
@@ -85,7 +85,7 @@ public class HyggdrasilManager implements IHyggdrasilManager {
             if (type == HyggApplication.Type.PROXY) {
                 final IHyriProxy proxy = HyriAPI.get().getProxy();
 
-                packetProcessor.request(HyggChannel.PROXIES, new HyggProxyInfoPacket(new HyggProxy(proxy.getName(), proxy.getData(), proxy.getState(), proxy.getPlayers(), proxy.getPort(), proxy.getStartedTime()))).exec();
+                packetProcessor.request(HyggChannel.PROXIES, new HyggProxyInfoPacket(new HyggProxy(proxy.getName(), proxy.getData(), proxy.getState(), proxy.getPlayers(), proxy.getStartedTime()))).exec();
             } else if (type == HyggApplication.Type.SERVER) {
                 final IHyriServer server = HyriAPI.get().getServer();
                 final HostData hostData = server.getHostData();
@@ -111,10 +111,12 @@ public class HyggdrasilManager implements IHyggdrasilManager {
         }
     }
 
-    private void registerListeners() {
-        new ServersListener().register();
-        new ProxiesListener().register();
-        new LimbosListener().register();
+    public void registerListeners() {
+        if (this.withHyggdrasil()) {
+            new ServersListener().register();
+            new ProxiesListener().register();
+            new LimbosListener().register();
+        }
     }
 
     @Override
