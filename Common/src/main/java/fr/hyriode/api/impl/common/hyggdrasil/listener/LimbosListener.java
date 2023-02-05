@@ -6,6 +6,7 @@ import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboStoppedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.limbo.HyggLimboUpdatedEvent;
+import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 
 /**
  * Project: HyriAPI
@@ -24,7 +25,11 @@ public class LimbosListener {
 
     public void register() {
         this.eventBus.subscribe(HyggLimboStartedEvent.class, event -> this.limboManager.addLimbo(event.getLimbo()));
-        this.eventBus.subscribe(HyggLimboUpdatedEvent.class, event -> this.limboManager.addLimbo(event.getLimbo()));
+        this.eventBus.subscribe(HyggLimboUpdatedEvent.class, event -> {
+            if (event.getLimbo().getState() != HyggLimbo.State.SHUTDOWN) {
+                this.limboManager.addLimbo(event.getLimbo());
+            }
+        });
         this.eventBus.subscribe(HyggLimboStoppedEvent.class, event -> this.limboManager.removeLimbo(event.getLimbo().getName()));
     }
 

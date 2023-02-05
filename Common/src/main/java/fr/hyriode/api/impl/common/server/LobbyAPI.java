@@ -28,17 +28,7 @@ public class LobbyAPI implements ILobbyAPI {
 
     @Override
     public Set<HyggServer> getLobbies() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final Set<HyggServer> result = new HashSet<>();
-            final List<String> lobbies = jedis.zrange(BALANCER_KEY, 0, -1);
-
-            if (lobbies != null) {
-                for (String lobby : lobbies) {
-                    result.add(HyriAPI.get().getServerManager().getServer(lobby));
-                }
-            }
-            return Collections.unmodifiableSet(result);
-        });
+        return HyriAPI.get().getServerManager().getServers(TYPE);
     }
 
     @Override

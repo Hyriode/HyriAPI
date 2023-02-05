@@ -37,5 +37,5 @@ dependencies {
     api 'org.slf4j:slf4j-nop:2.0.5'
     api 'com.google.guava:guava:31.1-jre'
     api 'org.mongodb:mongodb-driver-reactivestreams:4.8.2'
-    api 'fr.hyriode:hyggdrasil-api:1.4.6'
+    api 'fr.hyriode:hyggdrasil-api:1.4.7'
 }

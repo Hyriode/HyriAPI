@@ -6,6 +6,7 @@ import fr.hyriode.hyggdrasil.api.event.HyggEventBus;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStartedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerStoppedEvent;
 import fr.hyriode.hyggdrasil.api.event.model.server.HyggServerUpdatedEvent;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 
 /**
  * Project: HyriAPI
@@ -24,7 +25,11 @@ public class ServersListener {
 
     public void register() {
         this.eventBus.subscribe(HyggServerStartedEvent.class, event -> this.serverManager.addServer(event.getServer()));
-        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> this.serverManager.addServer(event.getServer()));
+        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> {
+            if (event.getServer().getState() != HyggServer.State.SHUTDOWN) {
+                this.serverManager.addServer(event.getServer());
+            }
+        });
         this.eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.serverManager.removeServer(event.getServer().getName()));
     }
 
