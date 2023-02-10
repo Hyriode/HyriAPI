@@ -153,7 +153,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
         final long ttl = jedis.ttl(key);
 
         if (ttl == -1) {
-            jedis.expire(key, nextReset * 1000L);
+            jedis.expire(key, nextReset / 1000L);
         }
     }
 
