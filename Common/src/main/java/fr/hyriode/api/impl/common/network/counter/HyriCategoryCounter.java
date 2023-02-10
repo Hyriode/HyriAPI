@@ -1,7 +1,9 @@
 package fr.hyriode.api.impl.common.network.counter;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.limbo.IHyriLimboManager;
 import fr.hyriode.api.network.counter.IHyriCategoryCounter;
+import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 
 /**
@@ -19,8 +21,15 @@ public class HyriCategoryCounter implements IHyriCategoryCounter {
     @Override
     public int getPlayers() {
         int players = 0;
-        for (HyggServer server : HyriAPI.get().getServerManager().getServers(this.name)) {
-            players += server.getPlayingPlayers().size();
+
+        if (this.name.equals(IHyriLimboManager.LIMBOS_ID)) {
+            for (HyggLimbo limbo : HyriAPI.get().getLimboManager().getLimbos()) {
+                players += limbo.getPlayers().size();
+            }
+        } else {
+            for (HyggServer server : HyriAPI.get().getServerManager().getServers(this.name)) {
+                players += server.getPlayingPlayers().size();
+            }
         }
         return players;
     }
@@ -28,11 +37,17 @@ public class HyriCategoryCounter implements IHyriCategoryCounter {
     @Override
     public int getPlayers(String type) {
         int players = 0;
-        for (HyggServer server : HyriAPI.get().getServerManager().getServers(this.name)) {
-            final String gameType = server.getGameType();
+        if (this.name.equals(IHyriLimboManager.LIMBOS_ID)) {
+            for (HyggLimbo limbo : HyriAPI.get().getLimboManager().getLimbos(HyggLimbo.Type.valueOf(type))) {
+                players += limbo.getPlayers().size();
+            }
+        } else {
+            for (HyggServer server : HyriAPI.get().getServerManager().getServers(this.name)) {
+                final String gameType = server.getGameType();
 
-            if (gameType != null && gameType.equals(type)) {
-                players += server.getPlayingPlayers().size();
+                if (gameType != null && gameType.equals(type)) {
+                    players += server.getPlayingPlayers().size();
+                }
             }
         }
         return players;

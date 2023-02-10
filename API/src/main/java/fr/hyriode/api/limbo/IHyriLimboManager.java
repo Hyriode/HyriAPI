@@ -17,6 +17,9 @@ import java.util.function.Consumer;
  */
 public interface IHyriLimboManager {
 
+    /** The identifier of the limbos */
+    String LIMBOS_ID = "limbo";
+
     /**
      * Get all the limbos started on the network
      *

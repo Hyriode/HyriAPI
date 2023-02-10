@@ -2,6 +2,7 @@ package fr.hyriode.api.leveling;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.IHyriEventBus;
+import fr.hyriode.api.leaderboard.IHyriLeaderboard;
 import fr.hyriode.api.leveling.event.HyriGainLevelEvent;
 import fr.hyriode.api.leveling.event.HyriGainXPEvent;
 import fr.hyriode.api.player.IHyriPlayer;
@@ -10,6 +11,7 @@ import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Project: HyriAPI
@@ -20,6 +22,8 @@ public class NetworkLeveling implements IHyriLeveling {
 
     public static final String LEADERBOARD_TYPE = "network-leveling";
     public static final String LEADERBOARD_NAME = "experience";
+
+    public static final Supplier<IHyriLeaderboard> LEADERBOARD = () -> HyriAPI.get().getLeaderboardProvider().getLeaderboard(LEADERBOARD_TYPE, LEADERBOARD_NAME);
 
     public static final Algorithm ALGORITHM = new Algo();
 
@@ -81,11 +85,11 @@ public class NetworkLeveling implements IHyriLeveling {
         action.run();
 
         final int newLevel = this.getLevel();
-        final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(this.playerId);
+        final IHyriPlayer account = IHyriPlayer.get(this.playerId);
         final IHyriEventBus eventBus = HyriAPI.get().getNetworkManager().getEventBus();
 
         if (oldExperience != this.experience) {
-            HyriAPI.get().getLeaderboardProvider().getLeaderboard(LEADERBOARD_TYPE, LEADERBOARD_NAME).setScore(this.playerId, this.experience);
+            LEADERBOARD.get().setScore(this.playerId, this.experience);
 
             eventBus.publish(new HyriGainXPEvent(account.getUniqueId(), this.name, oldExperience, this.experience));
         }
