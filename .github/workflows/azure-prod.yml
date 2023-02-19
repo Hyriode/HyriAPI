@@ -33,10 +33,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build shaded Jar
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJar -PbuildNumber=${{ github.run_number }} -PcommitSha=${{ github_sha::7}}
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Rename Jars
         run: |

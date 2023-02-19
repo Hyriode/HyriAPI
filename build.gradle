@@ -8,7 +8,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group = 'fr.hyriode'
-    version = '1.4.4'
+    version = '1.5.4-SNAPSHOT'
 
     java {
         withSourcesJar()
@@ -32,8 +32,8 @@ allprojects {
             url = 'https://maven.pkg.github.com/Hyriode/Hystia/'
 
             credentials {
-                username System.getenv('USERNAME')
-                password System.getenv('TOKEN')
+                username System.getenv('GITHUB_USERNAME')
+                password System.getenv('GITHUB_TOKEN')
             }
         }
 
@@ -42,8 +42,8 @@ allprojects {
             url = 'https://maven.pkg.github.com/Hyriode/Hyreos/'
 
             credentials {
-                username System.getenv('USERNAME')
-                password System.getenv('TOKEN')
+                username System.getenv('GITHUB_USERNAME')
+                password System.getenv('GITHUB_TOKEN')
             }
         }
 
@@ -52,14 +52,21 @@ allprojects {
             url = 'https://maven.pkg.github.com/Hyriode/Hyggdrasil/'
 
             credentials {
-                username System.getenv('USERNAME')
-                password System.getenv('TOKEN')
+                username System.getenv('GITHUB_USERNAME')
+                password System.getenv('GITHUB_TOKEN')
             }
         }
     }
 
     tasks.withType(Javadoc) {
         options.encoding = 'UTF-8'
+    }
+
+    jar {
+        manifest {
+            attributes 'Specific-Version': project.version
+            attributes 'Implementation-Version': "${ project.version }-${ commitSha }-${ buildNumber }"
+        }
     }
 
 }

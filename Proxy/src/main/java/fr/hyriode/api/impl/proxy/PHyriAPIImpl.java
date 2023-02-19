@@ -14,7 +14,6 @@ import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
-import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -91,7 +90,7 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
         final Consumer<Listener> register = listener -> this.plugin.getProxy().getPluginManager().registerListener(this.plugin, listener);
 
         register.accept(new ProxyListener(this.plugin.getConfiguration()));
-        register.accept(new JoinListener(this.plugin));
+        register.accept(new JoinListener());
 
         HyriAPI.get().getNetworkManager().getEventBus().register(new NetworkListener());
     }

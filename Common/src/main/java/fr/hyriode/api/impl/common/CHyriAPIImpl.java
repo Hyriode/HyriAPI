@@ -6,13 +6,12 @@ import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.HyriEventBus;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.impl.common.booster.HyriBoosterManager;
 import fr.hyriode.api.impl.common.chat.HyriChatChannelManager;
-import fr.hyriode.api.impl.common.friend.HyriFriendManager;
 import fr.hyriode.api.impl.common.game.HyriGameManager;
+import fr.hyriode.api.impl.common.guild.HyriGuildManager;
 import fr.hyriode.api.impl.common.host.HostConfigManager;
 import fr.hyriode.api.impl.common.host.HostManager;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
@@ -25,16 +24,15 @@ import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.impl.common.network.HyriNetworkManager;
 import fr.hyriode.api.impl.common.party.HyriPartyManager;
 import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
-import fr.hyriode.api.impl.common.player.auth.HyriAuthManager;
 import fr.hyriode.api.impl.common.proxy.HyriProxyManager;
 import fr.hyriode.api.impl.common.pubsub.HyriPubSub;
 import fr.hyriode.api.impl.common.queue.HyriQueueManager;
 import fr.hyriode.api.impl.common.redis.Redis;
 import fr.hyriode.api.impl.common.redis.RedisProcessor;
 import fr.hyriode.api.impl.common.scheduler.HyriScheduler;
+import fr.hyriode.api.impl.common.serialization.DataSerializerImpl;
 import fr.hyriode.api.impl.common.server.HyriServerManager;
 import fr.hyriode.api.impl.common.server.LobbyAPI;
-import fr.hyriode.api.impl.common.settings.HyriPlayerSettingsManager;
 import fr.hyriode.api.impl.common.world.generation.WorldGenerationAPI;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
@@ -45,13 +43,12 @@ import fr.hyriode.api.mongodb.IMongoDB;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.proxy.IHyriProxy;
+import fr.hyriode.api.serialization.DataSerializer;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.join.IHyriJoinManager;
-import fr.hyriode.api.settings.IHyriSettingsManager;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyreos.api.HyreosAPI;
 import fr.hyriode.hystia.api.IHystiaAPI;
-import fr.hyriode.hystia.impl.Hystia;
 import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
@@ -71,6 +68,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     protected MongoDB mongoDB;
 
+    protected DataSerializer dataSerializer;
+
     protected IHyriEventBus eventBus;
     protected HyriPubSub pubSub;
     protected HyriScheduler scheduler;
@@ -89,15 +88,13 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     protected HyriGameManager gameManager;
 
     protected CHyriPlayerManager playerManager;
-    protected HyriPlayerSettingsManager playerSettingsManager;
-    protected HyriAuthManager authManager;
+    protected HyriGuildManager guildManager;
     protected HyriLanguageManager languageManager;
 
     protected IHyriBoosterManager boosterManager;
     protected IHyriMoneyManager moneyManager;
 
     protected IHyriPartyManager partyManager;
-    protected IHyriFriendManager friendManager;
 
     protected IHyriChatChannelManager chatChannelManager;
 
@@ -131,10 +128,13 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.mongoDB = new MongoDB();
         this.mongoDB.startConnection();
 
+        // Data storage
+        this.dataSerializer = new DataSerializerImpl();
+
         // Internal systems
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.hystiaAPI = new Hystia(this.mongoDB.getClient());
+//        this.hystiaAPI = new Hystia(this.mongoDB.getClient()); // TODO
         this.hyreosAPI = new HyreosAPI(this.pubSub.getRedisConnection().getPool());
         this.hyreosAPI.start();
 
@@ -152,13 +152,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.queueManager = new HyriQueueManager();
         this.gameManager = new HyriGameManager();
         this.playerManager = new CHyriPlayerManager();
-        this.playerSettingsManager = new HyriPlayerSettingsManager();
-        this.authManager = new HyriAuthManager();
+        this.guildManager = new HyriGuildManager();
         this.languageManager = new HyriLanguageManager();
         this.boosterManager = new HyriBoosterManager();
         this.moneyManager = new HyriMoneyManager();
         this.partyManager = new HyriPartyManager();
-        this.friendManager = new HyriFriendManager();
         this.chatChannelManager = new HyriChatChannelManager();
         this.leaderboardProvider = new HyriLeaderboardProvider();
         this.hostManager = new HostManager();
@@ -228,6 +226,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public IMongoDB getMongoDB() {
         return this.mongoDB;
+    }
+
+    @Override
+    public DataSerializer getDataSerializer() {
+        return this.dataSerializer;
     }
 
     @Override
@@ -306,13 +309,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     }
 
     @Override
-    public IHyriSettingsManager getPlayerSettingsManager() {
-        return this.playerSettingsManager;
-    }
-
-    @Override
-    public HyriAuthManager getAuthManager() {
-        return this.authManager;
+    public HyriGuildManager getGuildManager() {
+        return this.guildManager;
     }
 
     @Override
@@ -333,11 +331,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public IHyriPartyManager getPartyManager() {
         return this.partyManager;
-    }
-
-    @Override
-    public IHyriFriendManager getFriendManager() {
-        return this.friendManager;
     }
 
     @Override

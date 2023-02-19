@@ -2,19 +2,21 @@ package fr.hyriode.api.impl.common.party;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.packet.HyriChannel;
-import fr.hyriode.api.party.HyriPartyInvitation;
+import fr.hyriode.api.party.HyriPartyRequest;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.party.event.HyriPartyCreatedEvent;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import org.jetbrains.annotations.NotNull;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -24,15 +26,14 @@ import java.util.function.Function;
 public class HyriPartyManager implements IHyriPartyManager {
 
     public static final String REDIS_KEY = "parties:";
-    public static final Function<UUID, String> INVITATIONS_KEY = playerId -> REDIS_KEY + "invitations:" + playerId.toString();
-    public static final BiFunction<UUID, UUID, String> INVITATIONS_KEY_GETTER = (playerId, partyId) -> INVITATIONS_KEY.apply(playerId) + ":" + partyId.toString();
+    public static final String INVITATIONS_KEY = "parties-requests";
 
     @Override
     public IHyriParty getParty(@NotNull UUID uuid) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String json = jedis.get(REDIS_KEY + uuid);
+            final byte[] bytes = jedis.get((REDIS_KEY + uuid).getBytes(StandardCharsets.UTF_8));
 
-            return json != null ? HyriAPI.GSON.fromJson(json, HyriParty.class) : null;
+            return bytes != null ? HyriAPI.get().getDataSerializer().deserialize(new HyriParty(), bytes) : null;
         });
     }
 
@@ -56,7 +57,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void updateParty(@NotNull IHyriParty party) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(REDIS_KEY + party.getId(), HyriAPI.GSON.toJson(party)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set((REDIS_KEY + party.getId()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriParty) party)));
     }
 
     @Override
@@ -80,39 +81,46 @@ public class HyriPartyManager implements IHyriPartyManager {
     }
 
     @Override
-    public void sendInvitation(UUID partyId, UUID sender, UUID player) {
-        final HyriPartyInvitation invitation = new HyriPartyInvitation(partyId, sender, player);
+    public void sendRequest(UUID partyId, UUID sender, UUID target) {
+        final HyriPartyRequestImpl invitation = new HyriPartyRequestImpl(partyId, sender, target);
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
-            final String key = INVITATIONS_KEY_GETTER.apply(player, partyId);
+            final Pipeline pipeline = jedis.pipelined();
+            final byte[] key = (INVITATIONS_KEY + target.toString() + ":" + partyId.toString()).getBytes(StandardCharsets.UTF_8);
 
-            jedis.set(key, HyriAPI.GSON.toJson(invitation));
-            jedis.expire(key, 60);
+            pipeline.set(key, HyriAPI.get().getDataSerializer().serialize(invitation));
+            pipeline.expire(key, 60);
+            pipeline.sync();
         });
 
-        HyriAPI.get().getPubSub().send(HyriChannel.PARTIES, new HyriPartyInvitation.Packet(invitation));
+        HyriAPI.get().getPubSub().send(HyriChannel.PARTIES, invitation);
     }
 
     @Override
-    public void removeInvitation(UUID partyId, UUID playerId) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(INVITATIONS_KEY_GETTER.apply(playerId, partyId)));
+    public void removeRequest(UUID partyId, UUID playerId) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(INVITATIONS_KEY + playerId.toString() + ":" + partyId.toString()));
     }
 
     @Override
-    public boolean hasInvitation(UUID partyId, UUID playerId) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(INVITATIONS_KEY_GETTER.apply(playerId, partyId)) != null);
+    public boolean hasRequest(UUID partyId, UUID playerId) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.exists(INVITATIONS_KEY + playerId.toString() + ":" + partyId.toString()));
     }
 
     @Override
-    public List<HyriPartyInvitation> getInvitations(UUID player) {
+    public List<HyriPartyRequest> getRequests(UUID player) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final List<HyriPartyInvitation> invitations = new ArrayList<>();
-            final Set<String> keys = jedis.keys(INVITATIONS_KEY.apply(player) + ":*");
+            final Set<String> keys = jedis.keys(INVITATIONS_KEY + player.toString() + ":*");
+            final List<Response<byte[]>> responses = new ArrayList<>();
+
+            final Pipeline pipeline = jedis.pipelined();
 
             for (String key : keys) {
-                invitations.add(HyriAPI.GSON.fromJson(jedis.get(key), HyriPartyInvitation.class));
+                responses.add(pipeline.get(key.getBytes(StandardCharsets.UTF_8)));
             }
-            return invitations;
+
+            pipeline.sync();
+
+            return responses.stream().map(response -> HyriAPI.get().getDataSerializer().deserialize(new HyriPartyRequestImpl(), response.get())).collect(Collectors.toList());
         });
     }
 

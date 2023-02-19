@@ -2,7 +2,7 @@ package fr.hyriode.api.chat.channel;
 
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.rank.PlayerRank;
 
 import java.util.function.Predicate;
 
@@ -21,8 +21,8 @@ public enum HyriChatChannel {
     }),
     /** The channel accessible by staff members */
     STAFF(true, player -> player.getRank().isStaff()),
-    /** The channel accessible by {@link HyriPlayerRankType#PARTNER} */
-    PARTNER(true, player -> player.getRank().is(HyriPlayerRankType.PARTNER) || player.getRank().isStaff());
+    /** The channel accessible by {@link PlayerRank#PARTNER} */
+    PARTNER(true, player -> player.getRank().is(PlayerRank.PARTNER) || player.getRank().isStaff());
 
     /** Defines whether messages sent on the channel are sent across the network or only on server. */
     private final boolean acrossNetwork;

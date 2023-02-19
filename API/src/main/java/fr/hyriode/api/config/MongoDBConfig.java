@@ -37,15 +37,15 @@ public class MongoDBConfig {
     public String toURL() {
         String url = "mongodb://";
 
-        if (this.username != null) {
+        if (this.username != null && !this.username.equals("")) {
             url += this.username;
         }
 
-        if (this.password != null) {
+        if (this.password != null && !this.password.equals("")) {
             url += ":" + this.password;
         }
 
-        if (this.username != null || this.password != null) {
+        if ((this.username != null && !this.username.equals("")) || (this.password != null && !this.password.equals(""))) {
             url += "@";
         }
 

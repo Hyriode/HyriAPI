@@ -6,10 +6,11 @@ import fr.hyriode.api.booster.HyriBoosterTransaction;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.transaction.IHyriTransaction;
+import fr.hyriode.api.player.model.IHyriTransaction;
+import redis.clients.jedis.Pipeline;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.BiFunction;
 
 /**
  * Project: HyriAPI
@@ -20,17 +21,18 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     private static final String KEY = "boosters:";
     private static final String THANKS_KEY = "boosters-thanks:";
-    private static final BiFunction<String, UUID, String> KEY_FORMATTER = (game, uuid) -> KEY + game + ":" + uuid.toString();
 
     @Override
     public IHyriBooster enableBooster(UUID owner, String game, double multiplier, long duration) {
-        final IHyriBooster booster = new HyriBooster(game, multiplier, owner, duration, System.currentTimeMillis());
+        final HyriBooster booster = new HyriBooster(game, multiplier, owner, duration, System.currentTimeMillis());
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
-            final String key = KEY_FORMATTER.apply(booster.getGame(), booster.getIdentifier());
+            final byte[] key = (KEY + game + ":" + booster.getIdentifier().toString()).getBytes(StandardCharsets.UTF_8);
+            final Pipeline pipeline = jedis.pipelined();
 
-            jedis.set(key, HyriAPI.GSON.toJson(booster));
-            jedis.expire(key, duration);
+            pipeline.set(key, HyriAPI.get().getDataSerializer().serialize(booster));
+            pipeline.expire(key, duration);
+            pipeline.sync();
         });
 
         HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriBoosterEvent(booster));
@@ -40,21 +42,21 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     @Override
     public void giveBooster(IHyriPlayer player, double multiplier, long duration) {
-        player.addTransaction(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(multiplier, duration));
+        player.getTransactions().add(HyriBoosterTransaction.TRANSACTIONS_TYPE, new HyriBoosterTransaction(multiplier, duration));
         player.update();
     }
 
     @Override
     public Map<String, HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player) {
         final Map<String, HyriBoosterTransaction> boosters = new HashMap<>();
-        final List<? extends IHyriTransaction> transactions = player.getTransactions(HyriBoosterTransaction.TRANSACTIONS_TYPE);
+        final List<IHyriTransaction> transactions = player.getTransactions().getAll(HyriBoosterTransaction.TRANSACTIONS_TYPE);
 
         if (transactions == null) {
             return boosters;
         }
 
         for (IHyriTransaction transaction : transactions) {
-            boosters.put(transaction.name(), transaction.content(HyriBoosterTransaction.class));
+            boosters.put(transaction.name(), transaction.loadContent(new HyriBoosterTransaction()));
         }
         return boosters;
     }
@@ -64,8 +66,8 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final List<IHyriBooster> boosters = new ArrayList<>();
 
-            for (String key : jedis.keys(KEY + "*")) {
-                boosters.add(HyriAPI.GSON.fromJson(jedis.get(key), HyriBooster.class));
+            for (byte[] key : jedis.keys((KEY + "*").getBytes(StandardCharsets.UTF_8))) {
+                boosters.add(HyriAPI.get().getDataSerializer().deserialize(new HyriBooster(), jedis.get(key)));
             }
             return boosters;
         });
@@ -76,8 +78,8 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
             final List<IHyriBooster> boosters = new ArrayList<>();
 
-            for (String key : jedis.keys(KEY + game + ":*")) {
-                boosters.add(HyriAPI.GSON.fromJson(jedis.get(key), HyriBooster.class));
+            for (byte[] key : jedis.keys((KEY + game + ":*").getBytes(StandardCharsets.UTF_8))) {
+                boosters.add(HyriAPI.get().getDataSerializer().deserialize(new HyriBooster(), jedis.get(key)));
             }
             return boosters;
         });
@@ -91,7 +93,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
             if (keys != null && keys.size() > 0) {
                 final String key = new ArrayList<>(keys).get(0);
 
-                return HyriAPI.GSON.fromJson(jedis.get(key), HyriBooster.class);
+                return HyriAPI.get().getDataSerializer().deserialize(new HyriBooster(), jedis.get(key.getBytes(StandardCharsets.UTF_8)));
             }
             return null;
         });

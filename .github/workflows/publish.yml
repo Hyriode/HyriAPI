@@ -28,11 +28,11 @@ jobs:
       - name: Build with Gradle
         run: gradle build
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Publish to GitHub Packages
-        run: gradle publish
+        run: gradle publish -PbuildNumber=${{ github.run_number }} -PcommitSha=${{ github_sha::7}}
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}

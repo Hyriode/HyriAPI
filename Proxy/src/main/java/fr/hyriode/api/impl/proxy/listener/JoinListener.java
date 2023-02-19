@@ -1,9 +1,7 @@
 package fr.hyriode.api.impl.proxy.listener;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.impl.proxy.HyriAPIPlugin;
 import fr.hyriode.api.impl.proxy.player.PlayerLoader;
-import fr.hyriode.api.impl.proxy.task.OnlinePlayersTask;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
@@ -11,7 +9,6 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
 import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
@@ -27,10 +24,9 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.util.*;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -42,12 +38,9 @@ public class JoinListener implements Listener {
     private final Set<UUID> reconnections = ConcurrentHashMap.newKeySet();
 
     private final PlayerLoader playerLoader;
-    private final OnlinePlayersTask onlineTask;
 
-    public JoinListener(HyriAPIPlugin plugin) {
+    public JoinListener() {
         this.playerLoader = new PlayerLoader();
-        this.onlineTask = new OnlinePlayersTask();
-        this.onlineTask.start(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -68,19 +61,17 @@ public class JoinListener implements Listener {
             IHyriPlayer account = IHyriPlayer.get(playerId);
 
             if (account != null) {
-                if (playerManager.isOnline(playerId)) { // Player is already online (but we are still checking)
-                    this.onlineTask.addPlayerToCheck(playerId);
-
+                if (this.playerLoader.isOnline(playerId)) { // Check if the player is not online
                     event.setCancelled(true);
                     event.setCancelReason(MessageUtil.ALREADY_ONLINE);
                     return;
-                } else if (!account.isPremium()) { // Player is not premium but his name might have been taken
+                } else if (!account.getAuth().isPremium()) { // Player is not premium but his name might have been taken
                     if (mojangProfile == null) {
                         mojangProfile = this.playerLoader.fetchMojangProfile(name);
                     }
 
                     if (mojangProfile.isPremium()) { // Mojang tells the queried name is now owned by a premium user. The crack player must transfer his account. And we will create a new account for the premium player.
-                        HyriAPI.get().getPlayerManager().setPlayerId(name, mojangProfile.getPlayerId());
+                        HyriAPI.get().getPlayerManager().savePlayerId(name, mojangProfile.getPlayerId());
 
                         event.setCancelled(true);
                         event.setCancelReason(MessageUtil.PROFILE_TAKEN);
@@ -108,7 +99,7 @@ public class JoinListener implements Listener {
 
             this.playerLoader.loadPlayerAccount(playerId, account, name);
 
-            event.setEncrypting(account != null && account.isPremium());
+            event.setEncrypting(account != null && account.getAuth().isPremium());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -180,7 +171,7 @@ public class JoinListener implements Listener {
         final UUID playerId = player.getUniqueId();
 
         ServerInfo serverInfo = null;
-        if (account != null && account.isPremium()) { // If he is premium, connect him directly to a lobby
+        if (account != null && account.getAuth().isPremium()) { // If he is premium, connect him directly to a lobby
             final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
             if (lobby != null) {

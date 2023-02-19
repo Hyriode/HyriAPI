@@ -2,9 +2,9 @@ package fr.hyriode.api.impl.common.mongodb;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.MongoDBConfig;
 import fr.hyriode.api.mongodb.IMongoDB;

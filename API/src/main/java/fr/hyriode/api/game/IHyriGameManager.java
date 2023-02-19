@@ -38,9 +38,9 @@ public interface IHyriGameManager {
     /**
      * Delete a game info
      *
-     * @param gameName The name of the game info to delete
+     * @param name The name of the game info to delete
      */
-    void deleteGameInfo(String gameName);
+    void deleteGameInfo(String name);
 
     /**
      * Get all the game info
@@ -48,15 +48,6 @@ public interface IHyriGameManager {
      * @return A list of {@link IHyriGameInfo}
      */
     List<IHyriGameInfo> getGamesInfo();
-
-    /**
-     * Get all maps of a game with a specific game type
-     *
-     * @param game The name of the game
-     * @param gameType The type of the game
-     * @return A list of map name
-     */
-    List<String> getMaps(String game, String gameType);
 
     /**
      * Get the {@linkplain IHyriRotatingGameManager rotating game manager} instance

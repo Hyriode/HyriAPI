@@ -73,7 +73,6 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
             HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
         }
-
         return amount;
     }
 
