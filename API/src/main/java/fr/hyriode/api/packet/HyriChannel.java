@@ -19,5 +19,7 @@ public class HyriChannel {
     public static final String QUEUES = "queues";
     /** The channel used by party communication */
     public static final String PARTIES = "parties";
+    /** The channel used by friends system */
+    public static final String FRIENDS = "friends";
 
 }

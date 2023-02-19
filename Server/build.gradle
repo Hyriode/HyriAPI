@@ -14,16 +14,16 @@ repositories {
         url = 'https://maven.pkg.github.com/Hyriode/Hystia/'
 
         credentials {
-            username System.getenv('USERNAME')
-            password System.getenv('TOKEN')
+            username System.getenv('GITHUB_USERNAME')
+            password System.getenv('GITHUB_TOKEN')
         }
     }
 }
 
 dependencies {
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'fr.hyriode:hystia-spigot:1.0.9'
-    implementation project(':Common')
+    api 'fr.hyriode:hystia-spigot:1.0.9'
+    api project(':Common')
 }
 
 publishing {
@@ -45,8 +45,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                username System.getenv('USERNAME')
-                password System.getenv('TOKEN')
+                username System.getenv('GITHUB_USERNAME')
+                password System.getenv('GITHUB_TOKEN')
             }
             name = "HyriAPI_maven"
             url = "https://maven.pkg.github.com/Hyriode/HyriAPI"
@@ -56,6 +56,6 @@ publishing {
 
 processResources {
     filter {
-        it.replace('@version@', project.version)
+        it.replace('@version@', "${ project.version }-${ commitSha }-${ buildNumber }")
     }
 }

@@ -1,9 +1,9 @@
 package fr.hyriode.api.impl.common.money;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
-
-import java.util.UUID;
+import fr.hyriode.api.player.IHyriPlayer;
 
 /**
  * Project: HyriAPI
@@ -12,25 +12,23 @@ import java.util.UUID;
  */
 public abstract class HyriMoney implements IHyriMoney {
 
+    @Expose
     protected long amount;
-    protected transient UUID playerUUID;
 
-    public HyriMoney(UUID playerUUID) {
-        this.playerUUID = playerUUID;
-    }
+    protected IHyriPlayer player;
 
-    public void setPlayerUUID(UUID playerUUID) {
-        this.playerUUID = playerUUID;
+    public HyriMoney(IHyriPlayer player) {
+        this.player = player;
     }
 
     @Override
     public IHyriMoneyAction add(long amount) {
-        return new HyriMoneyAction(IHyriMoneyAction.Type.ADD, this.playerUUID, amount, this);
+        return new HyriMoneyAction(IHyriMoneyAction.Type.ADD, this.player.getUniqueId(), amount, this);
     }
 
     @Override
     public IHyriMoneyAction remove(long amount) {
-        return new HyriMoneyAction(IHyriMoneyAction.Type.REMOVE, this.playerUUID, amount, this);
+        return new HyriMoneyAction(IHyriMoneyAction.Type.REMOVE, this.player.getUniqueId(), amount, this);
     }
 
     @Override

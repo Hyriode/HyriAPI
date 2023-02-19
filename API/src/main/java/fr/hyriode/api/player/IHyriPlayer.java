@@ -1,20 +1,17 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.leveling.IHyriLeveling;
+import fr.hyriode.api.leveling.NetworkLeveling;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.rank.HyriRank;
-import fr.hyriode.api.rank.HyriRankUpdatedEvent;
-import fr.hyriode.api.rank.hyriplus.HyriPlus;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
-import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.transaction.IHyriTransaction;
-import fr.hyriode.api.transaction.IHyriTransactionContent;
+import fr.hyriode.api.player.model.IHyriPlayerSettings;
+import fr.hyriode.api.player.model.IHyriPlus;
+import fr.hyriode.api.player.model.modules.*;
+import fr.hyriode.api.rank.IHyriRank;
+import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -32,13 +29,6 @@ public interface IHyriPlayer {
     UUID getUniqueId();
 
     /**
-     * Get the prefix of the player
-     *
-     * @return A prefix
-     */
-    String getPrefix();
-
-    /**
      * Get default player name
      *
      * @return Default name
@@ -54,18 +44,25 @@ public interface IHyriPlayer {
     void setName(String name);
 
     /**
+     * Get the history of the player's names
+     *
+     * @return A list of name
+     */
+    Set<String> getNameHistory();
+
+    /**
+     * Get the prefix of the player
+     *
+     * @return A prefix
+     */
+    String getPrefix();
+
+    /**
      * Get the player name with the rank prefix
      *
      * @return Player names with the rank prefix
      */
     String getNameWithRank();
-
-    /**
-     * Check whether the player is premium or not
-     *
-     * @return <code>true</code> if the player is premium
-     */
-    boolean isPremium();
 
     /**
      * Get the first login date of the player
@@ -89,124 +86,32 @@ public interface IHyriPlayer {
     void setLastLoginDate(long date);
 
     /**
-     * Get player play time on the network
+     * Get the last IP address of the player
      *
-     * @return Player play time
+     * @return An IP address
      */
-    long getPlayTime();
+    @NotNull String getLastIP();
 
     /**
-     * Set player play time on the network
+     * Set the last IP address of the player
      *
-     * @param time New player play time
+     * @param ip A new IP address
      */
-    void setPlayTime(long time);
+    void setLastIP(@NotNull String ip);
 
     /**
-     * Get player rank
+     * Get the rank of the player
      *
-     * @return {@link HyriRank}
+     * @return The {@linkplain IHyriRank rank} object
      */
-    HyriRank getRank();
+    @NotNull IHyriRank getRank();
 
     /**
-     * Set player rank
+     * Get the Hyri+ offer
      *
-     * @param rank {@link HyriRank}
+     * @return The {@link IHyriPlus} offer instance
      */
-    void setRank(HyriRank rank);
-
-    /**
-     * Set the player rank of the player
-     *
-     * @param playerRankType A {@link HyriPlayerRankType}
-     */
-    default void setPlayerRank(HyriPlayerRankType playerRankType) {
-        this.getRank().setPlayerType(playerRankType);
-
-        HyriAPI.get().getEventBus().publish(new HyriRankUpdatedEvent(this.getUniqueId()));
-    }
-
-    /**
-     * Set the staff rank of the player
-     *
-     * @param staffRankType A {@link HyriStaffRankType}
-     */
-    default void setStaffRank(HyriStaffRankType staffRankType) {
-        this.getRank().setStaffType(staffRankType);
-
-        HyriAPI.get().getEventBus().publish(new HyriRankUpdatedEvent(this.getUniqueId()));
-    }
-
-    /**
-     * Get Hyri+ offer
-     *
-     * @return The {@link HyriPlus} offer instance
-     */
-    HyriPlus getHyriPlus();
-
-    /**
-     * Check if the player has Hyri+ offer
-     *
-     * @return <code>true</code> if the player has Hyri+
-     */
-    boolean hasHyriPlus();
-
-    /**
-     * Get the available hosts of the player
-     *
-     * @return A number between 0 and {@link Integer#MAX_VALUE}
-     */
-    int getAvailableHosts();
-
-    /**
-     * Set the available hosts of the player
-     *
-     * @param availableHosts A number between 0 and {@link Integer#MAX_VALUE}
-     */
-    void setAvailableHosts(int availableHosts);
-
-    /**
-     * Get all the players banned from player host
-     *
-     * @return A list of player {@link UUID}
-     */
-    List<UUID> getPlayersBannedFromHost();
-
-    /**
-     * Add a player banned from player host
-     *
-     * @param playerId The {@link UUID} of the player
-     */
-    void addPlayerBannedFromHost(UUID playerId);
-
-    /**
-     * Remove a player banned from player host
-     *
-     * @param playerId The {@link UUID} of the player
-     */
-    void removePlayerBannedFromHost(UUID playerId);
-
-    /**
-     * Get the favorite host configs of the player
-     *
-     * @return A list of config id
-     */
-    List<String> getFavoriteHostConfigs();
-
-    /**
-     * Add a favorite host config to the player account
-     *
-     * @param configId The identifier of the config to add
-     */
-    void addFavoriteHostConfig(String configId);
-
-    /**
-     * Remove a favorite host config from the player account
-     *
-     * @param configId The identifier of the config to remove
-     */
-    void removeFavoriteHostConfig(String configId);
+    IHyriPlus getHyriPlus();
 
     /**
      * Get player Hyris money
@@ -227,7 +132,7 @@ public interface IHyriPlayer {
      *
      * @return A {@link IHyriLeveling} instance
      */
-    IHyriLeveling getNetworkLeveling();
+    NetworkLeveling getNetworkLeveling();
 
     /**
      * Get the priority of the player in queues
@@ -258,167 +163,59 @@ public interface IHyriPlayer {
     void setSettings(IHyriPlayerSettings settings);
 
     /**
-     * Get the handler of player's friends
+     * Get the guild of the player
      *
-     * @return A {@link IHyriFriendHandler} instance
+     * @return THe id of the guild
      */
-    IHyriFriendHandler getFriendHandler();
+    @NotNull ObjectId getGuild();
 
     /**
-     * Get all the statistics key linked to the player account
+     * Set the guild of the player
      *
-     * @return A list of key
+     * @param guild The id of the guild
      */
-    List<String> getStatistics();
+    void setGuild(@NotNull ObjectId guild);
 
     /**
-     * Get statistics from its key
+     * Get the friends module of the player
      *
-     * @param key The key of the statistics
-     * @param statisticsClass The class used to deserialize statistics
-     * @param <T> The type of {@link HyriPlayerData} to return
-     * @return A {@link HyriPlayerData} object
+     * @return The {@link IHyriFriendsModule} instance
      */
-    <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass);
+    @NotNull IHyriFriendsModule getFriends();
 
     /**
-     * Add a statistics in player account
+     * Get the authentication module of the player
      *
-     * @param key The key of the statistics
-     * @param statistics The statistics to add
+     * @return The {@link IHyriAuthModule} instance
      */
-    void addStatistics(String key, HyriPlayerData statistics);
+    @NotNull IHyriAuthModule getAuth();
 
     /**
-     * Remove a statistics from player account
+     * Get the statistics handler of the player
      *
-     * @param key The key of the statistics to get
+     * @return The {@linkplain IHyriStatisticsModule} instance
      */
-    void removeStatistics(String key);
+    @NotNull IHyriStatisticsModule getStatistics();
 
     /**
-     * Check if the player has a statistics
+     * Get the data handler of the player
      *
-     * @param key The key of the statistics
-     * @return <code>true</code> if the player has the statistics
+     * @return The {@linkplain IHyriPlayerDataModule} instance
      */
-    boolean hasStatistics(String key);
+    @NotNull IHyriPlayerDataModule getData();
 
     /**
-     * Get all the data key linked to the player account
+     * Get the transactions handler of the player
      *
-     * @return A list of key
+     * @return The {@linkplain IHyriTransactionsModule} instance
      */
-    List<String> getData();
-
-    /**
-     * Get data from its key
-     *
-     * @param key The key of the data
-     * @param dataClass The class used to deserialize data
-     * @param <T> The type of {@link HyriPlayerData} to return
-     * @return A {@link HyriPlayerData} object
-     */
-    <T extends HyriPlayerData> T getData(String key, Class<T> dataClass);
-
-    /**
-     * Add a data in player account
-     *
-     * @param key The key of the data
-     * @param data The data to add
-     */
-    void addData(String key, HyriPlayerData data);
-
-    /**
-     * Remove a data from player account
-     *
-     * @param key The key of the data to get
-     */
-    void removeData(String key);
-
-    /**
-     * Check if the player has a data
-     *
-     * @param key The key of the data
-     * @return <code>true</code> if the player has the data
-     */
-    boolean hasData(String key);
-
-    /**
-     * Add a transaction to the player account
-     *
-     * @param type The type of transaction to add
-     * @param name The name of the transaction to add
-     * @param content The content of the transaction
-     * @return <code>true</code> if the transaction has been added and doesn't already exist
-     */
-    boolean addTransaction(String type, String name, IHyriTransactionContent content);
-
-    /**
-     * Add a transaction to the player account but with an auto-generated name
-     *
-     * @param type The type of transaction to add
-     * @param content The content of the transaction
-     * @return <code>true</code> if the transaction has been added and doesn't already exist
-     */
-    default boolean addTransaction(String type, IHyriTransactionContent content) {
-        return this.addTransaction(type, UUID.randomUUID().toString().split("-")[0], content);
-    }
-
-    /**
-     * Remove a transaction by giving its type and name
-     *
-     * @param type The type of the transaction to remove
-     * @param name The name of the transaction to remove
-     * @return <code>true</code> if the transaction existed and has been removed
-     */
-    boolean removeTransaction(String type, String name);
-
-    /**
-     * Get a transaction by giving its type and name
-     *
-     * @param type The type of the transaction to get
-     * @param name The name of the transaction to get
-     * @return The {@linkplain  IHyriTransaction found transaction}; or <code>null</code> if the transaction doesn't exist
-     */
-    IHyriTransaction getTransaction(String type, String name);
-
-    /**
-     * Check if the player has done a transaction
-     *
-     * @param type The type of the transaction to check
-     * @param name The name of the transaction to check
-     * @return <code>true</code> if the player has done the transaction
-     */
-    boolean hasTransaction(String type, String name);
-
-    /**
-     * Get all the transactions of a given type
-     *
-     * @param type The type of the transactions to get
-     * @return A list of {@linkplain IHyriTransaction transaction}
-     */
-    List<? extends IHyriTransaction> getTransactions(String type);
-
-    /**
-     * Get all the transactions the player has done
-     *
-     * @return A map linking lists of {@linkplain IHyriTransaction transactions} to their type
-     */
-    Map<String, ? extends List<? extends IHyriTransaction>> getTransactions();
-
-    /**
-     * Get all the existing transactions types
-     *
-     * @return A list of type
-     */
-    List<String> getTransactionsTypes();
+    @NotNull IHyriTransactionsModule getTransactions();
 
     /**
      * Update the player account in cache
      */
     default void update() {
-        HyriAPI.get().getPlayerManager().updatePlayer(this);
+        HyriAPI.get().getPlayerManager().savePlayer(this);
     }
 
     /**

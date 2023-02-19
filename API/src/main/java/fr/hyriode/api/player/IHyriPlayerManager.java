@@ -1,6 +1,5 @@
 package fr.hyriode.api.player;
 
-import fr.hyriode.api.player.nickname.IHyriNicknameManager;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,19 +23,19 @@ public interface IHyriPlayerManager {
     UUID getPlayerId(String name);
 
     /**
-     * Set player's id
+     * Save the {@link UUID} of a player in cache
      *
      * @param name Player's name
      * @param uuid Player's id
      */
-    void setPlayerId(String name, UUID uuid);
+    void savePlayerId(String name, UUID uuid);
 
     /**
-     * Remove player's id
+     * Delete the {@link UUID} of a player from the cache
      *
      * @param name Player's name
      */
-    void removePlayerId(String name);
+    void deletePlayerId(String name);
 
     /**
      * Create a player with a given {@link UUID}
@@ -69,11 +68,11 @@ public interface IHyriPlayerManager {
     }
 
     /**
-     * Update a player's account
+     * Save a player's account
      *
      * @param player The {@link IHyriPlayer} object
      */
-    void updatePlayer(IHyriPlayer player);
+    void savePlayer(IHyriPlayer player);
 
     /**
      * Remove a player with a given {@link UUID}
@@ -89,14 +88,6 @@ public interface IHyriPlayerManager {
      * @return A list of {@link IHyriPlayer}
      */
     List<IHyriPlayer> getPlayers();
-
-    /**
-     * Get all registered players' {@link UUID} on the network.<br>
-     * Warning: This method is extremely costly in performance. Indeed, it will query the database for each player {@link UUID}.
-     *
-     * @return A list of {@link UUID}
-     */
-    List<UUID> getPlayersId();
 
     /**
      * Check whether a player is online or not.
@@ -129,14 +120,6 @@ public interface IHyriPlayerManager {
      * @param playerId The {@link UUID} of the player
      */
     void deleteSession(@NotNull UUID playerId);
-
-    /**
-     * Get all the registered player sessions on the network
-     * Warning: This method is extremely costly in performance. Indeed, it will query the database for each player session and deserialize them.
-     *
-     * @return A list of {@link IHyriPlayerSession}
-     */
-    List<IHyriPlayerSession> getSessions();
 
     /**
      * Kick a player from network with a given reason

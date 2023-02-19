@@ -4,6 +4,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionHandler;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
+import redis.clients.jedis.Pipeline;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -48,8 +49,11 @@ public class HyriReconnectionHandler implements IHyriReconnectionHandler {
         final String key = KEY.apply(playerId);
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.set(key, serverName);
-            jedis.expire(key, ttl);
+            final Pipeline pipeline = jedis.pipelined();
+
+            pipeline.set(key, serverName);
+            pipeline.expire(key, ttl);
+            pipeline.sync();
         });
     }
 

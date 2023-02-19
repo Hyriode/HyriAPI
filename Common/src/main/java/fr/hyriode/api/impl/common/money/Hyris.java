@@ -2,9 +2,7 @@ package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
-
-import java.util.UUID;
+import fr.hyriode.api.rank.PlayerRank;
 
 /**
  * Project: HyriAPI
@@ -13,8 +11,8 @@ import java.util.UUID;
  */
 public class Hyris extends HyriMoney {
 
-    public Hyris(UUID playerUUID) {
-        super(playerUUID);
+    public Hyris(IHyriPlayer player) {
+        super(player);
     }
 
     @Override
@@ -39,21 +37,21 @@ public class Hyris extends HyriMoney {
 
     public enum Multiplier {
 
-        PLAYER(HyriPlayerRankType.PLAYER, 1.0D),
-        VIP(HyriPlayerRankType.VIP, 1.50D),
-        VIP_PLUS(HyriPlayerRankType.VIP_PLUS, 1.75D),
-        EPIC(HyriPlayerRankType.EPIC, 2.0D),
-        HYRI_PLUS(HyriPlayerRankType.EPIC, 2.50D);
+        PLAYER(PlayerRank.PLAYER, 1.0D),
+        VIP(PlayerRank.VIP, 1.50D),
+        VIP_PLUS(PlayerRank.VIP_PLUS, 1.75D),
+        EPIC(PlayerRank.EPIC, 2.0D),
+        HYRI_PLUS(PlayerRank.EPIC, 2.50D);
 
-        private final HyriPlayerRankType rank;
+        private final PlayerRank rank;
         private final double amount;
 
-        Multiplier(HyriPlayerRankType rank, double amount) {
+        Multiplier(PlayerRank rank, double amount) {
             this.rank = rank;
             this.amount = amount;
         }
 
-        public HyriPlayerRankType getRank() {
+        public PlayerRank getRank() {
             return this.rank;
         }
 
@@ -62,7 +60,7 @@ public class Hyris extends HyriMoney {
         }
 
         public static Multiplier getByPlayer(IHyriPlayer account) {
-            if (account.hasHyriPlus()) {
+            if (account.getHyriPlus().has()) {
                 return HYRI_PLUS;
             }
 

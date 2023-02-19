@@ -11,6 +11,7 @@ import fr.hyriode.api.queue.packet.QueuePacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,11 +25,9 @@ public class HyriQueueManager implements IHyriQueueManager {
 
     private static final String REDIS_KEY = "queues:";
 
-    private final List<IHyriQueueHandler> handlers;
+    private final List<IHyriQueueHandler> handlers = new ArrayList<>();
 
     public HyriQueueManager() {
-        this.handlers = new ArrayList<>();
-
         HyriAPI.get().getNetworkManager().getEventBus().register(new QueueListener(this));
     }
 
@@ -60,20 +59,20 @@ public class HyriQueueManager implements IHyriQueueManager {
     @Override
     public @Nullable IHyriQueue getQueue(UUID queueId) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String json = jedis.get(REDIS_KEY + queueId.toString());
+            final byte[] bytes = jedis.get((REDIS_KEY + queueId.toString()).getBytes(StandardCharsets.UTF_8));
 
-            return json == null ? null : HyriAPI.GSON.fromJson(json, HyriQueue.class);
+            return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriQueue(), bytes);
         });
     }
 
     @Override
     public void updateQueue(@NotNull IHyriQueue queue) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(REDIS_KEY + queue.getId().toString(), HyriAPI.GSON.toJson(queue)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set((REDIS_KEY + queue.getId().toString()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriQueue) queue)));
     }
 
     @Override
     public void deleteQueue(@NotNull UUID queueId) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(REDIS_KEY + queueId));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del((REDIS_KEY + queueId).getBytes(StandardCharsets.UTF_8)));
     }
 
     private void sendQueuePacket(QueuePacket packet) {

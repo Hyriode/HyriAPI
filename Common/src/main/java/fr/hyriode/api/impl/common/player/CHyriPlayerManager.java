@@ -1,30 +1,36 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.packet.BroadcastMessagePacket;
 import fr.hyriode.api.chat.packet.PlayerMessagePacket;
-import fr.hyriode.api.event.model.HyriAccountCreatedEvent;
-import fr.hyriode.api.impl.common.player.nickname.HyriNicknameManager;
 import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
-import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
-import fr.hyriode.api.impl.common.player.title.TitlePacket;
+import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
+import fr.hyriode.api.impl.common.player.packet.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
+import fr.hyriode.api.mongodb.MongoDocument;
+import fr.hyriode.api.mongodb.MongoSerializer;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.model.PlayerServerSendPacket;
+import fr.hyriode.api.player.IHyriNicknameManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.player.nickname.IHyriNicknameManager;
-import fr.hyriode.api.rank.HyriRank;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.api.rank.StaffRank;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
+import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import redis.clients.jedis.Pipeline;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Project: HyriAPI
@@ -33,35 +39,80 @@ import java.util.function.Function;
  */
 public class CHyriPlayerManager implements IHyriPlayerManager {
 
-    private static final Function<String, String> PLAYERS_KEY = uuid -> "players:" + uuid;
-    private static final Function<String, String> PLAYERS_SESSIONS_KEY = uuid -> "players-sessions:" + uuid;
-    private static final Function<String, String> IDS_KEY = name -> "uuid:" + name.toLowerCase();
+    private static final long TTL = TimeUnit.HOURS.toSeconds(48);
+
+    // The key for primary indexing: uuid -> accounts
+    private static final String PLAYERS_KEY = "players:";
+    // The key for secondary indexing: name -> uuid
+    private static final String IDS_KEY = "uuid:";
+    // The key for players sessions
+    private static final String SESSIONS_KEY = "players-sessions:";
 
     private final IHyriNicknameManager nicknameManager;
     private final IHyriWhitelistManager whitelistManager;
 
+    private final MongoCollection<Document> accountsCollection;
+
     public CHyriPlayerManager() {
         this.nicknameManager = new HyriNicknameManager();
         this.whitelistManager = new HyriWhitelistManager();
+        this.accountsCollection = HyriAPI.get().getMongoDB().getDatabase("players").getCollection("accounts");
     }
 
-    @Override
-    public UUID getPlayerId(String name) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String result = jedis.get(IDS_KEY.apply(name));
+    private void cachePlayer(HyriPlayer player) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final Pipeline pipeline = jedis.pipelined();
+            final byte[] key = (PLAYERS_KEY + player.getUniqueId().toString()).getBytes(StandardCharsets.UTF_8);
 
-            return result != null ? UUID.fromString(result) : null;
+            pipeline.set(key, HyriAPI.get().getDataSerializer().serialize(player));
+            pipeline.expire(key, TTL);
+            pipeline.sync();
         });
     }
 
     @Override
-    public void setPlayerId(String name, UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(IDS_KEY.apply(name), uuid.toString()));
+    public UUID getPlayerId(String name) {
+        final UUID cachedId = HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final String result = jedis.get(IDS_KEY + name.toLowerCase());
+
+            return result != null ? UUID.fromString(result) : null;
+        });
+
+        if (cachedId != null) {
+            return cachedId;
+        }
+
+        // Player id wasn't found in cache, let's query MongoDB
+        final Document document = this.accountsCollection.find(Filters.eq("name", name))
+                .projection(Projections.fields(Projections.include("_id")))
+                .first();
+
+        if (document == null) {
+            return null;
+        }
+
+        final UUID uuid = UUID.fromString(document.getString("_id"));
+
+        this.savePlayerId(name, uuid);
+
+        return uuid;
     }
 
     @Override
-    public void removePlayerId(String name) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(IDS_KEY.apply(name)));
+    public void savePlayerId(String name, UUID uuid) {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+            final Pipeline pipeline = jedis.pipelined();
+            final String key = IDS_KEY + name.toLowerCase();
+
+            pipeline.set(key, uuid.toString());
+            pipeline.expire(key, TTL);
+            pipeline.sync();
+        });
+    }
+
+    @Override
+    public void deletePlayerId(String name) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(IDS_KEY + name.toLowerCase()));
     }
 
     @Override
@@ -69,88 +120,102 @@ public class CHyriPlayerManager implements IHyriPlayerManager {
         final HyriPlayer player = new HyriPlayer(premium,  name, uuid);
 
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
-            final HyriRank rank = new HyriRank();
-
-            rank.setStaffType(HyriStaffRankType.ADMINISTRATOR);
-
-            player.setRank(rank);
+            player.getRank().setStaffType(StaffRank.ADMINISTRATOR);
         }
 
-        player.update();
-
-        this.setPlayerId(name, uuid);
-
-        HyriAPI.get().getEventBus().publishAsync(new HyriAccountCreatedEvent(player));
+        this.accountsCollection.insertOne(MongoSerializer.serialize(player));
+        this.cachePlayer(player);
 
         return player;
     }
 
     @Override
     public IHyriPlayer getPlayer(UUID uuid) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(PLAYERS_KEY.apply(uuid.toString())), HyriPlayer.class));
+        final IHyriPlayer cachedPlayer = HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final byte[] key = (PLAYERS_KEY + uuid.toString()).getBytes(StandardCharsets.UTF_8);
+            final byte[] bytes = jedis.get(key);
+
+            return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriPlayer(), bytes);
+        });
+
+        if (cachedPlayer != null) {
+            return cachedPlayer;
+        }
+
+        // Player wasn't found in cache, let's query MongoDB
+        final Document document = this.accountsCollection.find(Filters.eq("_id", uuid.toString())).first();
+
+        if (document == null) {
+            return null;
+        }
+
+        final HyriPlayer player = new HyriPlayer();
+
+        player.load(MongoDocument.of(document));
+
+        // Add it in cache for next times
+        this.cachePlayer(player);
+
+        return player;
     }
 
     @Override
-    public void updatePlayer(IHyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_KEY.apply(player.getUniqueId().toString()), HyriAPI.GSON.toJson(player)));
+    public void savePlayer(IHyriPlayer in) {
+        final HyriPlayer player = (HyriPlayer) in;
+
+        // Save it in cache
+        this.cachePlayer(player);
+        // Replace the document in MongoDB
+        this.accountsCollection.replaceOne(Filters.eq("_id", player.getUniqueId().toString()), MongoSerializer.serialize(player));
     }
 
     @Override
     public void removePlayer(UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY.apply(uuid.toString())));
+        // Delete it from cache
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_KEY + uuid.toString()));
+
+        // Delete if from MongoDB
+        this.accountsCollection.deleteOne(Filters.eq("_id", uuid.toString()));
     }
 
     @Override
     public List<IHyriPlayer> getPlayers() {
         final List<IHyriPlayer> players = new ArrayList<>();
 
-        for (UUID playerId : this.getPlayersId()) {
-            players.add(this.getPlayer(playerId));
+        try (final MongoCursor<Document> iterator =  this.accountsCollection.find().iterator()) {
+            while (iterator.hasNext()) {
+                final HyriPlayer player = new HyriPlayer();
+
+                player.load(MongoDocument.of(iterator.next()));
+
+                players.add(player);
+            }
         }
         return players;
     }
 
     @Override
-    public List<UUID> getPlayersId() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final List<UUID> uuids = new ArrayList<>();
-
-            for (String key : jedis.keys(PLAYERS_KEY.apply("*"))) {
-                uuids.add(UUID.fromString(key.split(":")[1]));
-            }
-            return uuids;
-        });
-    }
-
-    @Override
     public @Nullable IHyriPlayerSession getSession(UUID playerId) {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String json = jedis.get(PLAYERS_SESSIONS_KEY.apply(playerId.toString()));
+            final byte[] key = (SESSIONS_KEY + playerId.toString()).getBytes(StandardCharsets.UTF_8);
+            final byte[] data = jedis.get(key);
 
-            return json == null ? null : HyriAPI.GSON.fromJson(json, HyriPlayerSession.class);
+            return data == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriPlayerSession(), data);
         });
     }
 
     @Override
     public void updateSession(@NotNull IHyriPlayerSession session) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(PLAYERS_SESSIONS_KEY.apply(session.getPlayerId().toString()), HyriAPI.GSON.toJson(session)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final byte[] key = (SESSIONS_KEY + session.getPlayerId().toString()).getBytes(StandardCharsets.UTF_8);
+
+            jedis.set(key, HyriAPI.get().getDataSerializer().serialize((HyriPlayerSession) session));
+        });
     }
 
     @Override
     public void deleteSession(@NotNull UUID playerId) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(PLAYERS_SESSIONS_KEY.apply(playerId.toString())));
-    }
-
-    @Override
-    public List<IHyriPlayerSession> getSessions() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final List<IHyriPlayerSession> sessions = new ArrayList<>();
-
-            for (String key : jedis.keys(PLAYERS_SESSIONS_KEY.apply("*"))) {
-                sessions.add(HyriAPI.GSON.fromJson(jedis.get(key), HyriPlayerSession.class));
-            }
-            return sessions;
-        });
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del((SESSIONS_KEY + playerId).getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override

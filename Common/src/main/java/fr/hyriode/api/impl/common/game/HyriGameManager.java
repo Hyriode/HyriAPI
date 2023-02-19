@@ -1,18 +1,19 @@
 package fr.hyriode.api.impl.common.game;
 
-import com.google.gson.reflect.TypeToken;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.game.rotating.IHyriRotatingGameManager;
 import fr.hyriode.api.impl.common.game.rotating.HyriRotatingGameManager;
 import fr.hyriode.hystia.api.world.IWorldManager;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -21,18 +22,15 @@ import java.util.function.Function;
  */
 public class HyriGameManager implements IHyriGameManager {
 
-    private static final String MAPS_KEY = "games-maps:";
-    private static final BiFunction<String, String, String> MAPS_KEY_FORMATTER = (game, gameType) -> MAPS_KEY + game + ":" + gameType;
-
     private static final String KEY = "games:";
-    private static final Function<String, String> KEY_FORMATTER = name -> KEY + name;
 
     private final IHyriRotatingGameManager rotatingGameManager;
     private final IWorldManager worldManager;
 
     public HyriGameManager() {
         this.rotatingGameManager = new HyriRotatingGameManager();
-        this.worldManager = HyriAPI.get().getHystiaAPI().getWorldManager();
+//        this.worldManager = HyriAPI.get().getHystiaAPI().getWorldManager(); TODO
+        this.worldManager = null;
     }
 
     @Override
@@ -42,59 +40,39 @@ public class HyriGameManager implements IHyriGameManager {
 
     @Override
     public IHyriGameInfo getGameInfo(String name) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(KEY_FORMATTER.apply(name)), HyriGameInfo.class));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final byte[] bytes =  jedis.get((KEY + name).getBytes(StandardCharsets.UTF_8));
+
+            return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriGameInfo(), bytes);
+        });
     }
 
     @Override
     public void saveGameInfo(IHyriGameInfo game) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY_FORMATTER.apply(game.getName()), HyriAPI.GSON.toJson(game)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set((KEY + game.getName()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriGameInfo) game)));
     }
 
     @Override
-    public void deleteGameInfo(String gameName) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY_FORMATTER.apply(gameName)));
+    public void deleteGameInfo(String name) {
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY + name));
     }
 
     @Override
     public List<IHyriGameInfo> getGamesInfo() {
-        final Set<String> keys = HyriAPI.get().getRedisProcessor().get(jedis -> jedis.keys(KEY + "*"));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final Set<String> keys = jedis.keys(KEY + "*");
+            final List<Response<byte[]>> responses = new ArrayList<>();
 
-        if (keys != null && keys.size() > 0) {
-            return HyriAPI.get().getRedisProcessor().get(jedis -> {
-                final List<IHyriGameInfo> gamesInfo = new ArrayList<>();
+            final Pipeline pipeline = jedis.pipelined();
 
-                for (String key : keys) {
-                    final String json = jedis.get(key);
+            for (String key : keys) {
+                responses.add(pipeline.get(key.getBytes(StandardCharsets.UTF_8)));
+            }
 
-                    if (json != null) {
-                        final IHyriGameInfo gameInfo = HyriAPI.GSON.fromJson(json, HyriGameInfo.class);
+            pipeline.sync();
 
-                        gamesInfo.add(gameInfo);
-                    }
-                }
-                return gamesInfo;
-            });
-        }
-        return null;
-    }
-
-    @Override
-    public List<String> getMaps(String game, String gameType) {
-        final String key = MAPS_KEY_FORMATTER.apply(game, gameType);
-        final String json = HyriAPI.get().getRedisProcessor().get(jedis -> jedis.get(key));
-
-        if (json != null) {
-            return HyriAPI.GSON.fromJson(json, new TypeToken<List<String>>() {}.getType());
-        }
-
-        final List<String> maps = this.worldManager.getWorlds(game, gameType);
-
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
-            jedis.set(key, HyriAPI.GSON.toJson(maps));
-            jedis.expire(key, 120);
+            return responses.stream().map(response -> HyriAPI.get().getDataSerializer().deserialize(new HyriGameInfo(), response.get())).collect(Collectors.toList());
         });
-
-        return maps;
     }
 
     @Override

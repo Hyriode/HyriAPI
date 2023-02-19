@@ -6,6 +6,7 @@ import fr.hyriode.api.game.rotating.IHyriRotatingGame;
 import fr.hyriode.api.game.rotating.IHyriRotatingGameManager;
 import fr.hyriode.api.game.rotating.RotatingGameChangedEvent;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,12 +23,9 @@ public class HyriRotatingGameManager implements IHyriRotatingGameManager {
     @Override
     public IHyriRotatingGame getRotatingGame() {
         return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final String json = jedis.get(CURRENT_GAME_KEY);
+            final byte[] bytes = jedis.get(CURRENT_GAME_KEY.getBytes(StandardCharsets.UTF_8));
 
-            if (json == null) {
-                return null;
-            }
-            return HyriAPI.GSON.fromJson(json, HyriRotatingGame.class);
+            return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriRotatingGame(), bytes);
         });
     }
 
@@ -69,7 +67,7 @@ public class HyriRotatingGameManager implements IHyriRotatingGameManager {
                 jedis.zadd(GAMES_KEY, Integer.MAX_VALUE - i, gameName);
 
                 if (i == 0 && (currentGame == null || !currentGame.getInfo().getName().equals(gameName))) {
-                    jedis.set(CURRENT_GAME_KEY, HyriAPI.GSON.toJson(new HyriRotatingGame(gameName, System.currentTimeMillis())));
+                    jedis.set(CURRENT_GAME_KEY.getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize(new HyriRotatingGame(gameName, System.currentTimeMillis())));
                 }
             }
         });
@@ -92,7 +90,7 @@ public class HyriRotatingGameManager implements IHyriRotatingGameManager {
                     jedis.zadd(GAMES_KEY, Integer.MAX_VALUE - games.size(), gameName);
                     continue;
                 } else if (i == 1 || games.size() == 1) {
-                    jedis.set(CURRENT_GAME_KEY, HyriAPI.GSON.toJson(new HyriRotatingGame(gameName, System.currentTimeMillis())));
+                    jedis.set(CURRENT_GAME_KEY.getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize(new HyriRotatingGame(gameName, System.currentTimeMillis())));
                     jedis.zadd(GAMES_KEY, Integer.MAX_VALUE, gameName);
                     continue;
                 }

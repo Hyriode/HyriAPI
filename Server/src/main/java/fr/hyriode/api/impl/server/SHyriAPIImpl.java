@@ -14,7 +14,6 @@ import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
 import fr.hyriode.hystia.api.IHystiaAPI;
-import fr.hyriode.hystia.spigot.HystiaSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -54,7 +53,7 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         this.server = new HyriServer(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
         this.playerManager = new HyriPlayerManager();
         this.joinManager = new HyriJoinManager();
-        this.hystiaAPI = new HystiaSpigot(this.plugin, this.getMongoDB().getClient());
+//        this.hystiaAPI = new HystiaSpigot(this.plugin, this.getMongoDB().getClient()); // TODO
     }
 
     @Override

@@ -63,7 +63,7 @@ public class Redis implements IRedis {
 
         config.setMaxTotal(-1);
         config.setJmxEnabled(false);
-        config.setMaxIdle(0);
+        config.setMaxIdle(-1);
 
         if (this.password == null) {
             this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000);
@@ -79,7 +79,7 @@ public class Redis implements IRedis {
             HyriAPI.get().log("Connection set between " + HyriAPI.NAME + " and Redis");
         } catch (Exception e) {
             HyriAPI.get().log(Level.SEVERE, "An error occurred while connecting to Redis! ");
-            HyriAPI.get().log(Level.SEVERE, "Try to fix it! Bukkit is now stopping...");
+            HyriAPI.get().log(Level.SEVERE, "Try to fix it! Application is now stopping...");
             e.printStackTrace();
 
             System.exit(-1);
