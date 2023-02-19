@@ -1,91 +1,213 @@
 package fr.hyriode.api.impl.common.player;
 
-import com.google.gson.JsonElement;
-import fr.hyriode.api.HyriAPI;
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.color.HyriChatColor;
-import fr.hyriode.api.friend.IHyriFriendHandler;
 import fr.hyriode.api.impl.common.money.Gems;
 import fr.hyriode.api.impl.common.money.Hyris;
-import fr.hyriode.api.impl.common.settings.HyriPlayerSettings;
-import fr.hyriode.api.impl.common.transaction.HyriTransaction;
-import fr.hyriode.api.leveling.IHyriLeveling;
+import fr.hyriode.api.impl.common.player.model.HyriPlayerSettings;
+import fr.hyriode.api.impl.common.player.model.HyriPlus;
+import fr.hyriode.api.impl.common.player.model.HyriRank;
+import fr.hyriode.api.impl.common.player.model.modules.*;
 import fr.hyriode.api.leveling.NetworkLeveling;
 import fr.hyriode.api.money.IHyriMoney;
-import fr.hyriode.api.player.HyriPlayerData;
+import fr.hyriode.api.mongodb.MongoDocument;
+import fr.hyriode.api.mongodb.MongoSerializable;
+import fr.hyriode.api.mongodb.MongoSerializer;
 import fr.hyriode.api.player.IHyriPlayer;
-import fr.hyriode.api.rank.HyriRank;
-import fr.hyriode.api.rank.HyriRankUpdatedEvent;
-import fr.hyriode.api.rank.hyriplus.HyriPlus;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
-import fr.hyriode.api.settings.IHyriPlayerSettings;
-import fr.hyriode.api.transaction.IHyriTransaction;
-import fr.hyriode.api.transaction.IHyriTransactionContent;
+import fr.hyriode.api.player.model.IHyriPlayerSettings;
+import fr.hyriode.api.player.model.IHyriPlus;
+import fr.hyriode.api.player.model.modules.*;
+import fr.hyriode.api.rank.IHyriRank;
+import fr.hyriode.api.rank.PlayerRank;
+import fr.hyriode.api.serialization.DataSerializable;
+import fr.hyriode.api.serialization.ObjectDataInput;
+import fr.hyriode.api.serialization.ObjectDataOutput;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriPlayer implements IHyriPlayer {
+public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializable {
 
+    @Expose
     private UUID uuid;
 
+    @Expose
     private String name;
-    private boolean premium = true;
+    @Expose
+    private final Set<String> nameHistory = new LinkedHashSet<>();
 
-    private final long firstLoginDate = System.currentTimeMillis();
-    private long lastLoginDate = this.firstLoginDate;
-    private long playTime = 0;
+    @Expose
+    private String lastIP;
 
-    private HyriRank rank = new HyriRank();
-    private HyriPlus hyriPlus = new HyriPlus();
+    @Expose
+    private long firstLoginDate;
+    @Expose
+    private long lastLoginDate;
 
-    private int availableHosts = 0;
-    private final List<UUID> playersBannedFromHost = new ArrayList<>();
-    private final List<String> favoriteHostConfigs = new ArrayList<>();
+    @Expose
+    private HyriRank rank = new HyriRank(this);
+    @Expose
+    private HyriPlus hyriPlus = new HyriPlus(this);
+    @Expose
+    private HyriPlayerSettings settings = new HyriPlayerSettings(this);
 
-    private final Hyris hyris = new Hyris(this.uuid);
-    private final Gems gems = new Gems(this.uuid);
+    @Expose
+    private final Hyris hyris = new Hyris(this);
+    @Expose
+    private final Gems gems = new Gems(this);
+    @Expose
+    private final NetworkLeveling networkLeveling = new NetworkLeveling(this);
 
-    private final NetworkLeveling networkLeveling = new NetworkLeveling(this.uuid);
+    @Expose
+    private ObjectId guild;
 
-    private HyriPlayerSettings settings = new HyriPlayerSettings();
+    @Expose
+    private final HyriFriendsModule friends = new HyriFriendsModule(this);
+    @Expose
+    private final HyriAuthModule auth = new HyriAuthModule();
+    @Expose
+    private final HyriStatisticsModule statistics = new HyriStatisticsModule();
+    @Expose
+    private final HyriPlayerDataModule data = new HyriPlayerDataModule();
+    @Expose
+    private final HyriTransactionsModule transactions = new HyriTransactionsModule();
 
-    private final Map<String, JsonElement> statistics = new HashMap<>();
-    private final Map<String, JsonElement> data = new HashMap<>();
-
-    private final Map<String, List<HyriTransaction>> transactions = new HashMap<>();
-
-    /**
-     * Json serialization constructor.
-     */
-    private HyriPlayer() {}
+    public HyriPlayer() {}
 
     public HyriPlayer(boolean premium, String name, UUID uuid) {
-        this.premium = premium;
         this.name = name;
         this.uuid = uuid;
+        this.firstLoginDate = System.currentTimeMillis();
+        this.nameHistory.add(name);
+        this.auth.setPremium(premium);
     }
 
     @Override
-    public boolean isPremium() {
-        return this.premium;
+    public void save(MongoDocument document) {
+        document.append("_id", this.uuid.toString());
+        document.append("name", this.name);
+        document.append("name_history", this.nameHistory);
+        document.append("last_ip", this.lastIP);
+        document.append("first_login_date", this.firstLoginDate);
+        document.append("last_login_date", this.lastLoginDate);
+        document.append("rank", MongoSerializer.serialize(this.rank));
+        document.append("hyri_plus", MongoSerializer.serialize(this.hyriPlus));
+        document.append("settings", MongoSerializer.serialize(this.settings));
+        document.append("hyris", this.hyris.getAmount());
+        document.append("gems", this.gems.getAmount());
+        document.append("network_leveling", MongoSerializer.serialize(this.networkLeveling));
+        document.append("guild", this.guild);
+
+        this.friends.save(document);
+
+        document.append("auth", MongoSerializer.serialize(this.auth));
+        document.append("statistics", MongoSerializer.serialize(this.statistics));
+
+        this.data.save(document);
+
+        document.append("transactions", MongoSerializer.serialize(this.transactions));
     }
 
     @Override
-    public String getPrefix() {
-        final String prefix = this.rank.getPrefix();
+    public void load(MongoDocument document) {
+        this.uuid = UUID.fromString(document.getString("_id"));
+        this.name = document.getString("name");
+        this.nameHistory.addAll(document.getList("name_history", String.class));
+        this.lastIP = document.getString("last_ip");
+        this.firstLoginDate = document.getLong("first_login_date");
+        this.lastLoginDate = document.getLong("last_login_date");
 
-        if (this.rank.hasCustomPrefix()) {
-            return prefix;
-        } else if (this.rank.isStaff()) {
-            return prefix;
-        } else if (this.hasHyriPlus() && this.rank.getPlayerType() == HyriPlayerRankType.EPIC) {
-            return prefix + this.hyriPlus.getColor() + "+";
+        this.rank.load(MongoDocument.of(document.get("rank", Document.class)));
+        this.hyriPlus.load(MongoDocument.of(document.get("hyri_plus", Document.class)));
+        this.settings.load(MongoDocument.of(document.get("settings", Document.class)));
+
+        this.hyris.setAmount(document.getLong("hyris"));
+        this.gems.setAmount(document.getLong("gems"));
+
+        this.networkLeveling.load(MongoDocument.of(document.get("settings", Document.class)));
+
+        this.guild = document.getObjectId("guild");
+
+        this.friends.load(document);
+        this.auth.load(MongoDocument.of(document.get("auth", Document.class)));
+        this.statistics.load(MongoDocument.of(document.get("statistics", Document.class)));
+        this.data.load(document);
+        this.transactions.load(MongoDocument.of(document.get("transactions", Document.class)));
+    }
+
+    @Override
+    public void write(ObjectDataOutput output) throws IOException {
+        output.writeUUID(this.uuid);
+        output.writeString(this.name);
+        output.writeInt(this.nameHistory.size());
+
+        for (String name : this.nameHistory) {
+            output.writeString(name);
         }
-        return prefix;
+
+        output.writeString(this.lastIP);
+        output.writeLong(this.firstLoginDate);
+        output.writeLong(this.lastLoginDate);
+
+        this.rank.write(output);
+        this.hyriPlus.write(output);
+        this.settings.write(output);
+
+        output.writeLong(this.hyris.getAmount());
+        output.writeLong(this.gems.getAmount());
+
+        this.networkLeveling.write(output);
+
+        output.writeString(this.guild == null ? null : this.guild.toHexString());
+
+        this.auth.write(output);
+        this.settings.write(output);
+        this.data.write(output);
+        this.transactions.write(output);
+    }
+
+    @Override
+    public void read(ObjectDataInput input) throws IOException {
+        this.uuid = input.readUUID();
+        this.name = input.readString();
+
+        final int size = input.readInt();
+
+        for (int i = 0; i < size; i++) {
+            this.nameHistory.add(input.readString());
+        }
+
+        this.lastIP = input.readString();
+        this.firstLoginDate = input.readLong();
+        this.lastLoginDate = input.readLong();
+
+        this.rank.read(input);
+        this.hyriPlus.read(input);
+        this.settings.read(input);
+
+        this.hyris.setAmount(input.readLong());
+        this.gems.setAmount(input.readLong());
+
+        this.networkLeveling.read(input);
+
+        final String guildId = input.readString();
+
+        this.guild = guildId == null ? null : new ObjectId(guildId);
+
+        this.auth.read(input);
+        this.settings.read(input);
+        this.data.read(input);
+        this.transactions.read(input);
     }
 
     @Override
@@ -95,7 +217,30 @@ public class HyriPlayer implements IHyriPlayer {
 
     @Override
     public void setName(String name) {
+        if (this.name.equals(name)) {
+            return;
+        }
+
         this.name = name;
+        this.nameHistory.add(this.name);
+    }
+
+    @Override
+    public Set<String> getNameHistory() {
+        if (this.nameHistory.size() == 0) {
+            this.nameHistory.add(this.name);
+        }
+        return this.nameHistory;
+    }
+
+    @Override
+    public String getPrefix() {
+        final String prefix = this.rank.getPrefix();
+
+        if (this.hyriPlus.has() && this.rank.getPlayerType() == PlayerRank.EPIC) {
+            return prefix + this.hyriPlus.getColor() + "+";
+        }
+        return prefix;
     }
 
     @Override
@@ -124,106 +269,37 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public long getPlayTime() {
-        return this.playTime;
+    public @NotNull String getLastIP() {
+        return this.lastIP;
     }
 
     @Override
-    public void setPlayTime(long playTime) {
-        this.playTime = playTime;
+    public void setLastIP(@NotNull String ip) {
+        this.lastIP = ip;
     }
 
     @Override
-    public HyriRank getRank() {
+    public @NotNull IHyriRank getRank() {
         return this.rank;
     }
 
     @Override
-    public void setRank(HyriRank rank) {
-        this.rank = rank;
-
-        HyriAPI.get().getEventBus().publish(new HyriRankUpdatedEvent(this.uuid));
-    }
-
-    @Override
-    public HyriPlus getHyriPlus() {
-        if (this.hyriPlus == null) {
-            this.hyriPlus = new HyriPlus();
-        }
-
-        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
-            this.hyriPlus.setDuration(1000L);
-            this.hyriPlus.enable();
-        }
+    public IHyriPlus getHyriPlus() {
         return this.hyriPlus;
     }
 
     @Override
-    public boolean hasHyriPlus() {
-        if (this.rank.isStaff() || this.rank.is(HyriPlayerRankType.PARTNER)) {
-            return true;
-        }
-        return !this.getHyriPlus().hasExpire();
-    }
-
-    @Override
-    public int getAvailableHosts() {
-        return this.rank.isSuperior(HyriPlayerRankType.EPIC) ? 1 : this.availableHosts;
-    }
-
-    @Override
-    public void setAvailableHosts(int availableHosts) {
-        this.availableHosts = availableHosts;
-    }
-
-    @Override
-    public List<UUID> getPlayersBannedFromHost() {
-        return this.playersBannedFromHost;
-    }
-
-    @Override
-    public void addPlayerBannedFromHost(UUID playerId) {
-        this.playersBannedFromHost.add(playerId);
-    }
-
-    @Override
-    public void removePlayerBannedFromHost(UUID playerId) {
-        this.playersBannedFromHost.remove(playerId);
-    }
-
-    @Override
-    public List<String> getFavoriteHostConfigs() {
-        return this.favoriteHostConfigs;
-    }
-
-    @Override
-    public void addFavoriteHostConfig(String configId) {
-        this.favoriteHostConfigs.add(configId);
-    }
-
-    @Override
-    public void removeFavoriteHostConfig(String configId) {
-        this.favoriteHostConfigs.remove(configId);
-    }
-
-    @Override
     public IHyriMoney getHyris() {
-        this.hyris.setPlayerUUID(this.uuid);
-
         return this.hyris;
     }
 
     @Override
     public IHyriMoney getGems() {
-        this.gems.setPlayerUUID(this.uuid);
-
         return this.gems;
     }
 
     @Override
-    public IHyriLeveling getNetworkLeveling() {
-        this.networkLeveling.setPlayerId(this.uuid);
-
+    public NetworkLeveling getNetworkLeveling() {
         return this.networkLeveling;
     }
 
@@ -232,7 +308,7 @@ public class HyriPlayer implements IHyriPlayer {
         if (this.rank.isStaff()) {
             return this.rank.getPriority();
         }
-        return this.hasHyriPlus() ? HyriPlus.PRIORITY : this.rank.getPriority();
+        return this.hyriPlus.has() ? IHyriPlus.PRIORITY : this.rank.getPriority();
     }
 
     @Override
@@ -240,13 +316,11 @@ public class HyriPlayer implements IHyriPlayer {
         if (this.rank.isStaff()) {
             return this.rank.getTabListPriority();
         }
-        return this.hasHyriPlus() ? HyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
+        return this.hyriPlus.has() ? IHyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
     }
 
     @Override
     public IHyriPlayerSettings getSettings() {
-        this.settings.providePlayerId(this.uuid);
-
         return this.settings;
     }
 
@@ -256,151 +330,38 @@ public class HyriPlayer implements IHyriPlayer {
     }
 
     @Override
-    public IHyriFriendHandler getFriendHandler() {
-        return HyriAPI.get().getFriendManager().createHandler(this.uuid);
+    public @NotNull ObjectId getGuild() {
+        return this.guild;
     }
 
     @Override
-    public List<String> getStatistics() {
-        return Collections.unmodifiableList(new ArrayList<>(this.statistics.keySet()));
+    public void setGuild(@NotNull ObjectId guild) {
+        this.guild = guild;
     }
 
     @Override
-    public <T extends HyriPlayerData> T getStatistics(String key, Class<T> statisticsClass) {
-        final JsonElement serialized = this.statistics.get(key);
-
-        if (serialized != null) {
-            return HyriAPI.GSON.fromJson(serialized, statisticsClass);
-        }
-        return null;
+    public @NotNull IHyriFriendsModule getFriends() {
+        return this.friends;
     }
 
     @Override
-    public void addStatistics(String key, HyriPlayerData statistics) {
-        this.statistics.put(key, HyriAPI.GSON.toJsonTree(statistics));
+    public @NotNull IHyriAuthModule getAuth() {
+        return this.auth;
     }
 
     @Override
-    public void removeStatistics(String key) {
-        this.statistics.remove(key);
+    public @NotNull IHyriStatisticsModule getStatistics() {
+        return this.statistics;
     }
 
     @Override
-    public boolean hasStatistics(String key) {
-        return this.statistics.containsKey(key);
+    public @NotNull IHyriPlayerDataModule getData() {
+        return this.data;
     }
 
     @Override
-    public List<String> getData() {
-        return Collections.unmodifiableList(new ArrayList<>(this.data.keySet()));
-    }
-
-    @Override
-    public <T extends HyriPlayerData> T getData(String key, Class<T> dataClass) {
-        final JsonElement serialized = this.data.get(key);
-
-        if (serialized != null) {
-            return HyriAPI.GSON.fromJson(serialized, dataClass);
-        }
-        return null;
-    }
-
-    @Override
-    public void addData(String key, HyriPlayerData data) {
-        this.data.put(key, HyriAPI.GSON.toJsonTree(data));
-    }
-
-    @Override
-    public void removeData(String key) {
-        this.data.remove(key);
-    }
-
-    @Override
-    public boolean hasData(String key) {
-        return this.data.containsKey(key);
-    }
-
-    @Override
-    public boolean addTransaction(String type, String name, IHyriTransactionContent content) {
-        if (this.hasTransaction(type, name)) {
-            return false;
-        }
-
-        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
-
-        transactions.add(new HyriTransaction(name, System.currentTimeMillis(), content));
-
-        this.transactions.put(type, transactions);
-
-        return true;
-    }
-
-    @Override
-    public boolean removeTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.transactions.getOrDefault(type, new ArrayList<>());
-
-        if (transactions == null) {
-            return false;
-        }
-
-        final HyriTransaction transaction = this.getTransaction(type, name);
-
-        if (transaction == null) {
-            return false;
-        }
-
-        transactions.remove(transaction);
-
-        this.transactions.put(type, transactions);
-
-        return true;
-    }
-
-    @Override
-    public HyriTransaction getTransaction(String type, String name) {
-        final List<HyriTransaction> transactions = this.transactions.get(type);
-
-        if (transactions == null) {
-            return null;
-        }
-
-        for (final HyriTransaction transaction : transactions) {
-            if (transaction.name().equals(name)) {
-                return transaction;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean hasTransaction(String type, String name) {
-        final List<? extends IHyriTransaction> transactions = this.transactions.get(type);
-
-        if (transactions == null) {
-            return false;
-        }
-
-        for (final IHyriTransaction transaction : transactions) {
-            if (transaction.name().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public List<HyriTransaction> getTransactions(String type) {
-        return this.transactions.get(type);
-    }
-
-    @Override
-    public Map<String, List<HyriTransaction>> getTransactions() {
-        return Collections.unmodifiableMap(this.transactions);
-    }
-
-    @Override
-    public List<String> getTransactionsTypes() {
-        return Collections.unmodifiableList(new ArrayList<>(this.transactions.keySet()));
+    public @NotNull IHyriTransactionsModule getTransactions() {
+        return this.transactions;
     }
 
 }

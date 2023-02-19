@@ -10,8 +10,8 @@ import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
 import fr.hyriode.api.player.event.PlayerJoinServerEvent;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.event.PlayerQuitServerEvent;
-import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.rank.type.HyriStaffRankType;
+import fr.hyriode.api.player.model.IHyriNickname;
+import fr.hyriode.api.rank.StaffRank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,6 +22,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,6 +35,8 @@ public class JoinListener implements Listener {
 
     private final CHyriAPIImpl hyriAPI;
     private final HyriJoinManager joinManager;
+
+    private final Map<UUID, Long> connections = new HashMap<>();
 
     public JoinListener() {
         this.hyriAPI = (CHyriAPIImpl) HyriAPI.get();
@@ -68,7 +72,7 @@ public class JoinListener implements Listener {
             return;
         }
 
-        if (account.getRank().is(HyriStaffRankType.ADMINISTRATOR)) {
+        if (account.getRank().is(StaffRank.ADMINISTRATOR)) {
             player.setOp(true);
         }
 
@@ -81,7 +85,7 @@ public class JoinListener implements Listener {
             account.setName(player.getName());
             account.setLastLoginDate(loginTime);
 
-            playerManager.setPlayerId(account.getName(), playerId);
+            playerManager.savePlayerId(account.getName(), playerId);
 
             session.setLastServer(session.getServer());
             session.setServer(HyriAPI.get().getServer().getName());
@@ -92,6 +96,7 @@ public class JoinListener implements Listener {
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
 
+        this.connections.put(playerId, System.currentTimeMillis());
         this.hyriAPI.getLanguageManager().setCache(playerId, account.getSettings().getLanguage());
         this.joinManager.onJoin(player);
 
@@ -110,11 +115,11 @@ public class JoinListener implements Listener {
 
         this.joinManager.onLogout(player);
 
-        if (account != null && HyriAPI.get().getConfig().isDevEnvironment()) {
-            final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
+        account.getStatistics().addPlayTime(HyriAPI.get().getServer().getType(), System.currentTimeMillis() - this.connections.remove(playerId));
+        account.update();
 
-            account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
-            account.update();
+        if (HyriAPI.get().getConfig().isDevEnvironment()) {
+            final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
 
             if (session != null) {
                 final IHyriNickname nickname = session.getNickname();

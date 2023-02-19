@@ -46,38 +46,38 @@ public interface IHyriPartyManager {
     void removeParty(@NotNull UUID uuid);
 
     /**
-     * Send a party's invitation to a given player
+     * Send a party's request to a given player
      *
      * @param partyId The identifier of the party
-     * @param sender The sender of the invitation
-     * @param player The player that will receive the invitation
+     * @param sender The sender of the request
+     * @param target The player that will receive the request
      */
-    void sendInvitation(UUID partyId, UUID sender, UUID player);
+    void sendRequest(UUID partyId, UUID sender, UUID target);
 
     /**
-     * Remove a party's invitation from a given player
-     *
-     * @param partyId The identifier of the party
-     * @param playerId The {@link UUID} of the player
-     */
-    void removeInvitation(UUID partyId, UUID playerId);
-
-    /**
-     * Check if a player has an invitation of a party
+     * Remove a party's request from a given player
      *
      * @param partyId The identifier of the party
      * @param playerId The {@link UUID} of the player
-     * @return <code>true</code> if the player has an invitation from the party
      */
-    boolean hasInvitation(UUID partyId, UUID playerId);
+    void removeRequest(UUID partyId, UUID playerId);
 
     /**
-     * Get all the invitations of a player
+     * Check if a player has a request of a party
+     *
+     * @param partyId The identifier of the party
+     * @param playerId The {@link UUID} of the player
+     * @return <code>true</code> if the player has a request from the party
+     */
+    boolean hasRequest(UUID partyId, UUID playerId);
+
+    /**
+     * Get all the requests of a player
      *
      * @param player The {@link UUID} of the player
-     * @return A list of {@link HyriPartyInvitation}
+     * @return A list of {@link HyriPartyRequest}
      */
-    List<HyriPartyInvitation> getInvitations(UUID player);
+    List<HyriPartyRequest> getRequests(UUID player);
 
     /**
      * Get the party of a player by giving his {@link UUID}

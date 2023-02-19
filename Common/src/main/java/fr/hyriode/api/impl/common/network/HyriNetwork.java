@@ -4,13 +4,18 @@ import fr.hyriode.api.impl.common.network.counter.HyriGlobalCounter;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.network.counter.IHyriGlobalCounter;
+import fr.hyriode.api.serialization.DataSerializable;
+import fr.hyriode.api.serialization.ObjectDataInput;
+import fr.hyriode.api.serialization.ObjectDataOutput;
+
+import java.io.IOException;
 
 /**
  * Project: HyriAPI
  * Created by AstFaster
  * on 13/04/2022 at 16:43
  */
-public class HyriNetwork implements IHyriNetwork {
+public class HyriNetwork implements IHyriNetwork, DataSerializable {
 
     private int slots;
     private String motd;
@@ -22,6 +27,21 @@ public class HyriNetwork implements IHyriNetwork {
         this.maintenance = new HyriMaintenance();
     }
 
+    @Override
+    public void write(ObjectDataOutput output) throws IOException {
+        output.writeInt(this.slots);
+        output.writeString(this.motd);
+
+        this.maintenance.write(output);
+    }
+
+    @Override
+    public void read(ObjectDataInput input) throws IOException {
+        this.slots = input.readInt();
+        this.motd = input.readString();
+
+        this.maintenance.read(input);
+    }
 
     @Override
     public IHyriGlobalCounter getPlayerCounter() {

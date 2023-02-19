@@ -136,8 +136,7 @@ public class HostConfig implements IHostConfig {
             final String gameType = object.get("game-type").getAsString();
             final String name = object.get("name").getAsString();
             final String icon = object.get("icon").getAsString();
-            final JsonElement privateElement = object.get("private");
-            final boolean private_ = privateElement != null && privateElement.getAsBoolean();
+            final boolean private_ = object.get("private").getAsBoolean();
             final Map<String, Value> serializedValues = ctx.deserialize(object.get("values"), new TypeToken<Map<String, Value>>() {}.getType());
             final Map<String, Object> values = new HashMap<>();
 

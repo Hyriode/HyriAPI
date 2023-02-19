@@ -2,8 +2,7 @@ package fr.hyriode.api.impl.common.money;
 
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.money.IHyriMoneyAction;
-
-import java.util.UUID;
+import fr.hyriode.api.player.IHyriPlayer;
 
 /**
  * Created by AstFaster
@@ -11,18 +10,18 @@ import java.util.UUID;
  */
 public class Gems extends HyriMoney {
 
-    public Gems(UUID playerUUID) {
-        super(playerUUID);
+    public Gems(IHyriPlayer player) {
+        super(player);
     }
 
     @Override
     public IHyriMoneyAction add(long amount) {
-        return new HyriMoneyAction(IHyriMoneyAction.Type.ADD, this.playerUUID, amount, this).withMultiplier(false);
+        return new HyriMoneyAction(IHyriMoneyAction.Type.ADD, this.player.getUniqueId(), amount, this).withMultiplier(false);
     }
 
     @Override
     public IHyriMoneyAction remove(long amount) {
-        return new HyriMoneyAction(IHyriMoneyAction.Type.REMOVE, this.playerUUID, amount, this).withMultiplier(false);
+        return new HyriMoneyAction(IHyriMoneyAction.Type.REMOVE, this.player.getUniqueId(), amount, this).withMultiplier(false);
     }
 
     @Override

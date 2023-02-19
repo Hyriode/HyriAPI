@@ -1,12 +1,18 @@
 package fr.hyriode.api.impl.common.party;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.party.HyriPartyRank;
 import fr.hyriode.api.party.IHyriParty;
 import fr.hyriode.api.party.event.*;
 import fr.hyriode.api.player.IHyriPlayerSession;
+import fr.hyriode.api.serialization.DataSerializable;
+import fr.hyriode.api.serialization.ObjectDataInput;
+import fr.hyriode.api.serialization.ObjectDataOutput;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -14,25 +20,29 @@ import java.util.*;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class HyriParty implements IHyriParty {
+public class HyriParty implements IHyriParty, DataSerializable {
 
-    private final UUID id;
+    @Expose
+    private UUID id = UUID.randomUUID();
+    @Expose
     private UUID leader;
 
-    private final Map<UUID, HyriPartyRank> members;
+    @Expose
+    private Map<UUID, HyriPartyRank> members = new HashMap<>();
 
-    private final long creationDate;
+    @Expose
+    private long creationDate = System.currentTimeMillis();
 
-    private boolean privateParty;
-    private boolean chatEnabled;
+    @Expose
+    @SerializedName("private")
+    private boolean _private = true;
+    @Expose
+    private boolean chatEnabled = true;
+
+    public HyriParty() {}
 
     public HyriParty(UUID leader) {
-        this.id = UUID.randomUUID();
         this.leader = leader;
-        this.members = new HashMap<>();
-        this.creationDate = System.currentTimeMillis();
-        this.privateParty = true;
-        this.chatEnabled = true;
 
         this.members.put(this.leader, HyriPartyRank.LEADER);
 
@@ -42,6 +52,38 @@ public class HyriParty implements IHyriParty {
             session.setParty(this.id);
             session.update();
         }
+    }
+
+    @Override
+    public void write(ObjectDataOutput output) throws IOException {
+        output.writeUUID(this.id);
+        output.writeUUID(this.leader);
+        output.writeInt(this.members.size());
+
+        for (Map.Entry<UUID, HyriPartyRank> entry : this.members.entrySet()) {
+            output.writeUUID(entry.getKey());
+            output.writeInt(entry.getValue().getId());
+        }
+
+        output.writeLong(this.creationDate);
+        output.writeBoolean(this._private);
+        output.writeBoolean(this.chatEnabled);
+    }
+
+    @Override
+    public void read(ObjectDataInput input) throws IOException {
+        this.id = input.readUUID();
+        this.leader = input.readUUID();
+
+        final int size = input.readInt();
+
+        for (int i = 0; i < size; i++) {
+            this.members.put(input.readUUID(), HyriPartyRank.getById(input.readInt()));
+        }
+
+        this.creationDate = input.readLong();
+        this._private = input.readBoolean();
+        this.chatEnabled = input.readBoolean();
     }
 
     @Override
@@ -101,7 +143,7 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public void invitePlayer(UUID sender, UUID uuid) {
-        HyriAPI.get().getPartyManager().sendInvitation(this.id, sender, uuid);
+        HyriAPI.get().getPartyManager().sendRequest(this.id, sender, uuid);
     }
 
     @Override
@@ -206,12 +248,12 @@ public class HyriParty implements IHyriParty {
 
     @Override
     public boolean isPrivate() {
-        return this.privateParty;
+        return this._private;
     }
 
     @Override
     public void setPrivate(boolean privateParty) {
-        this.privateParty = privateParty;
+        this._private = privateParty;
 
         this.update();
 

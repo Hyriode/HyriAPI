@@ -1,31 +1,30 @@
 package fr.hyriode.api.impl.common.player;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
-import fr.hyriode.api.impl.common.player.nickname.HyriNickname;
+import fr.hyriode.api.impl.common.player.model.HyriNickname;
+import fr.hyriode.api.impl.common.player.model.HyriRank;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.player.nickname.HyriNicknameUpdatedEvent;
-import fr.hyriode.api.player.nickname.IHyriNickname;
-import fr.hyriode.api.rank.HyriRank;
+import fr.hyriode.api.rank.PlayerRank;
+import fr.hyriode.api.serialization.DataSerializable;
+import fr.hyriode.api.serialization.ObjectDataInput;
+import fr.hyriode.api.serialization.ObjectDataOutput;
 import fr.hyriode.api.util.DataDictionary;
-import fr.hyriode.api.util.Skin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Created by AstFaster
  * on 23/11/2022 at 20:49
  */
-public class HyriPlayerSession implements IHyriPlayerSession {
+public class HyriPlayerSession implements IHyriPlayerSession, DataSerializable {
 
-    private transient Date loginDateObj;
-
-    private final UUID playerId;
-    private final long loginDate;
+    private UUID playerId;
+    private long loginDate;
 
     private UUID privateMessageTarget;
     private UUID party;
@@ -35,7 +34,7 @@ public class HyriPlayerSession implements IHyriPlayerSession {
     private String server;
     private String lastServer;
 
-    private HyriNickname nickname;
+    private final HyriNickname nickname = new HyriNickname();
 
     private boolean playing;
     private boolean moderating;
@@ -43,9 +42,59 @@ public class HyriPlayerSession implements IHyriPlayerSession {
 
     private final DataDictionary data = new DataDictionary();
 
+    public HyriPlayerSession() {}
+
     public HyriPlayerSession(UUID playerId, long loginDate) {
         this.playerId = playerId;
         this.loginDate = loginDate;
+    }
+
+    @Override
+    public void write(ObjectDataOutput output) throws IOException {
+        output.writeUUID(this.playerId);
+        output.writeLong(this.loginDate);
+        output.writeUUID(this.privateMessageTarget);
+        output.writeUUID(this.party);
+        output.writeUUID(this.queue);
+        output.writeString(this.proxy);
+        output.writeString(this.server);
+        output.writeString(this.lastServer);
+
+        this.nickname.write(output);
+
+        output.writeBoolean(this.playing);
+        output.writeBoolean(this.moderating);
+        output.writeBoolean(this.vanished);
+        output.writeInt(this.data.size());
+
+        for (Map.Entry<String, String> entry : this.data.entrySet()) {
+            output.writeString(entry.getKey());
+            output.writeString(entry.getValue());
+        }
+    }
+
+    @Override
+    public void read(ObjectDataInput input) throws IOException {
+        this.playerId = input.readUUID();
+        this.loginDate = input.readLong();
+        this.privateMessageTarget = input.readUUID();
+        this.party = input.readUUID();
+        this.queue = input.readUUID();
+        this.proxy = input.readString();
+        this.server = input.readString();
+        this.lastServer = input.readString();
+
+        this.nickname.read(input);
+
+        this.playing = input.readBoolean();
+        this.moderating = input.readBoolean();
+        this.vanished = input.readBoolean();
+
+        final int size = input.readInt();
+
+        for (int i = 0; i < size; i++) {
+            this.data.put(input.readString(), input.readString());
+        }
     }
 
     @Override
@@ -55,12 +104,17 @@ public class HyriPlayerSession implements IHyriPlayerSession {
 
     @Override
     public String getNameWithRank() {
-        return this.nickname != null ? HyriChatColor.translateAlternateColorCodes('&', this.nickname.getRank().getDefaultPrefix() + HyriRank.SEPARATOR + this.nickname.getRank().getDefaultColor().toString() + this.nickname.getName()) : IHyriPlayer.get(this.playerId).getNameWithRank();
+        if (this.nickname.has()) {
+            final PlayerRank rank = this.nickname.getRank();
+
+            return HyriChatColor.translateAlternateColorCodes('&', rank.getDefaultPrefix() + (rank.withSeparator() ? HyriRank.SEPARATOR : "")  + rank.getDefaultColor().toString() + this.nickname.getName());
+        }
+        return IHyriPlayer.get(this.playerId).getNameWithRank();
     }
 
     @Override
-    public Date getLoginDate() {
-        return this.loginDateObj != null ? this.loginDateObj : (this.loginDateObj = new Date(this.loginDate));
+    public long getLoginDate() {
+        return this.loginDate;
     }
 
     @Override
@@ -124,20 +178,8 @@ public class HyriPlayerSession implements IHyriPlayerSession {
     }
 
     @Override
-    public @Nullable IHyriNickname getNickname() {
+    public HyriNickname getNickname() {
         return this.nickname;
-    }
-
-    @Override
-    public @NotNull IHyriNickname createNickname(String name, String skinOwner, Skin skin) {
-        return this.nickname = new HyriNickname(name, skinOwner, skin);
-    }
-
-    @Override
-    public void setNickname(IHyriNickname nickname) {
-        HyriAPI.get().getEventBus().publishAsync(new HyriNicknameUpdatedEvent(this.playerId, nickname));
-
-        this.nickname = (HyriNickname) nickname;
     }
 
     @Override

@@ -4,16 +4,8 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.clientsupport.ClientSupportManager;
 import fr.hyriode.api.impl.proxy.clientsupport.azlauncher.AZLauncherSupport;
 import fr.hyriode.api.impl.proxy.config.HyriAPIConfig;
-import fr.hyriode.api.impl.proxy.listener.JoinListener;
-import fr.hyriode.api.impl.proxy.listener.NetworkListener;
-import fr.hyriode.api.impl.proxy.listener.ProxyListener;
-import fr.hyriode.api.impl.proxy.player.PlayerLoader;
-import fr.hyriode.api.impl.proxy.task.OnlinePlayersTask;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
-import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
-
-import java.util.function.Consumer;
 
 /**
  * Project: HyriAPI

@@ -5,6 +5,8 @@ import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.network.event.HyriNetworkEventBus;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -35,12 +37,12 @@ public class HyriNetworkManager implements IHyriNetworkManager {
 
     @Override
     public IHyriNetwork getNetwork() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.GSON.fromJson(jedis.get(KEY), HyriNetwork.class));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.get().getDataSerializer().deserialize(new HyriNetwork(), jedis.get(KEY.getBytes(StandardCharsets.UTF_8))));
     }
 
     @Override
     public void setNetwork(IHyriNetwork network) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY, HyriAPI.GSON.toJson(network)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY.getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriNetwork) network)));
     }
 
 }

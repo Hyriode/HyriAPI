@@ -1,8 +1,8 @@
 package fr.hyriode.api.impl.proxy.receiver;
 
 import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
-import fr.hyriode.api.impl.common.player.title.PlayerTitlePacket;
-import fr.hyriode.api.impl.common.player.title.TitlePacket;
+import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
+import fr.hyriode.api.impl.common.player.packet.TitlePacket;
 import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;

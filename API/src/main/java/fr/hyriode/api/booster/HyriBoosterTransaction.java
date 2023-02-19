@@ -1,6 +1,7 @@
 package fr.hyriode.api.booster;
 
-import fr.hyriode.api.transaction.IHyriTransactionContent;
+import fr.hyriode.api.mongodb.MongoDocument;
+import fr.hyriode.api.player.model.IHyriTransactionContent;
 
 /**
  * Created by AstFaster
@@ -12,15 +13,31 @@ public class HyriBoosterTransaction implements IHyriTransactionContent {
     public static final String TRANSACTIONS_TYPE = "boosters";
 
     /** The multiplier of the booster */
-    private final double multiplier;
+    private double multiplier;
     /** The duration of the booster */
-    private final long duration;
+    private long duration;
     /** Define whether the booster of the transaction has been used or not */
     private boolean used;
+
+    public HyriBoosterTransaction() {}
 
     public HyriBoosterTransaction(double multiplier, long duration) {
         this.multiplier = multiplier;
         this.duration = duration;
+    }
+
+    @Override
+    public void save(MongoDocument document) {
+        document.append("multiplier", this.multiplier);
+        document.append("duration", this.duration);
+        document.append("used", this.used);
+    }
+
+    @Override
+    public void load(MongoDocument document) {
+        this.multiplier = document.getDouble("multiplier");
+        this.duration = document.getLong("duration");
+        this.used = document.getBoolean("used");
     }
 
     public double getMultiplier() {

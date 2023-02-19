@@ -1,7 +1,5 @@
 package fr.hyriode.api.leveling;
 
-import java.util.Set;
-
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -34,20 +32,9 @@ public interface IHyriLeveling {
      * Add a given amount of experience
      *
      * @param experience The amount to add
-     * @param multipliers Are multipliers used
-     * @return The added experience (with multipliers)
+     * @return The added experience
      */
-    double addExperience(double experience, boolean multipliers);
-
-    /**
-     * Add a given amount of experience
-     *
-     * @param experience The amount to add
-     * @return The added experience (with multipliers)
-     */
-    default double addExperience(double experience) {
-        return this.addExperience(experience, true);
-    }
+    double addExperience(double experience);
 
     /**
      * Remove a given amount of experience
@@ -89,20 +76,6 @@ public interface IHyriLeveling {
     default double applyMultiplier(double experience) {
         return experience;
     }
-
-    /**
-     * Claim a reward of a level
-     *
-     * @param level The level to claim the reward
-     */
-    void claimReward(int level);
-
-    /**
-     * Get all claimed level's rewards
-     *
-     * @return A set of level number
-     */
-    Set<Integer> getClaimedRewards();
 
     /**
      * The interface that represents a leveling algorithm

@@ -3,7 +3,11 @@ package fr.hyriode.api.impl.common.network;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.model.HyriMaintenanceEvent;
 import fr.hyriode.api.network.IHyriMaintenance;
+import fr.hyriode.api.serialization.DataSerializable;
+import fr.hyriode.api.serialization.ObjectDataInput;
+import fr.hyriode.api.serialization.ObjectDataOutput;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -11,11 +15,25 @@ import java.util.UUID;
  * Created by AstFaster
  * on 19/03/2022 at 09:08
  */
-public class HyriMaintenance implements IHyriMaintenance {
+public class HyriMaintenance implements IHyriMaintenance, DataSerializable {
 
     private boolean active;
     private UUID trigger;
     private String reason;
+
+    @Override
+    public void write(ObjectDataOutput output) throws IOException {
+        output.writeBoolean(this.active);
+        output.writeUUID(this.trigger);
+        output.writeString(this.reason);
+    }
+
+    @Override
+    public void read(ObjectDataInput input) throws IOException {
+        this.active = input.readBoolean();
+        this.trigger = input.readUUID();
+        this.reason = input.readString();
+    }
 
     @Override
     public boolean enable(UUID trigger, String reason) {

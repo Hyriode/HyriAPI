@@ -2,7 +2,7 @@ package fr.hyriode.api.game;
 
 import fr.hyriode.api.HyriAPI;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Project: HyriAPI
@@ -38,17 +38,18 @@ public interface IHyriGameInfo {
      * Get a game type by giving its name
      *
      * @param name The name of the type to get
-     * @return A {@linkplain HyriGameType game type} object
+     * @return A {@linkplain IHyriGameType game type} object
      */
-    HyriGameType getType(String name);
+    IHyriGameType getType(String name);
 
     /**
      * Add a type to the game
      *
+     * @param id The id of the type to add
      * @param name The name of the type to add
-     * @param type The type object
+     * @param displayName The display name of the type to add
      */
-    void addType(String name, HyriGameType type);
+    void addType(int id, String name, String displayName);
 
     /**
      * Remove a type from the game
@@ -58,11 +59,11 @@ public interface IHyriGameInfo {
     void removeType(String name);
 
     /**
-     * Get all the types of the game
+     * Get the types of the game
      *
-     * @return A map of {@link HyriGameType}
+     * @return A list of {@linkplain IHyriGameType game type}
      */
-    Map<String, HyriGameType> getTypes();
+    List<IHyriGameType> getTypes();
 
     /**
      * Update the game info

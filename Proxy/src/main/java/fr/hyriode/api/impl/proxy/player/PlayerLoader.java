@@ -7,7 +7,8 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
-import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.api.player.model.IHyriNickname;
+import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.apache.http.HttpResponse;
@@ -88,17 +89,23 @@ public class PlayerLoader {
         session.update();
 
         if (account != null) { // Might be null if the player is crack and doesn't have an account yet
-            account.setName(name);
+            final String oldName = account.getName();
+
+            if (!oldName.equals(name)) {
+                playerManager.deletePlayerId(oldName);
+
+                account.setName(name);
+            }
+
             account.setLastLoginDate(loginTime);
             account.update();
         }
 
-        playerManager.setPlayerId(name, playerId);
+        playerManager.savePlayerId(name, playerId);
     }
 
     public void handleDisconnection(ProxiedPlayer player, boolean login) {
         final UUID playerId = player.getUniqueId();
-        final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
         final IHyriPlayerManager pm = HyriAPI.get().getPlayerManager();
 
@@ -113,16 +120,27 @@ public class PlayerLoader {
         }
 
         if (!login) { // All this stuff doesn't have to be done if the player has been kicked while logging in
-            if (account != null) {
-                HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
-
-                account.setPlayTime(account.getPlayTime() + (System.currentTimeMillis() - account.getLastLoginDate()));
-                account.update();
-            }
-
+            HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId, session == null ? null : session.getParty()));
             HyriAPI.get().getProxy().removePlayer(playerId);
         }
+    }
+
+    public boolean isOnline(UUID playerId) {
+        final boolean online = HyriAPI.get().getPlayerManager().isOnline(playerId);
+
+        if (online) {
+            for (HyggProxy proxy : HyriAPI.get().getProxyManager().getProxies()) {
+                if (proxy.getPlayers().contains(playerId)) {
+                    return true;
+                }
+            }
+
+            HyriAPI.get().getPlayerManager().deleteSession(playerId);
+
+            return false;
+        }
+        return false;
     }
 
     public static class MojangProfile {

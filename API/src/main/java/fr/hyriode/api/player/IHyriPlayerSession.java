@@ -1,9 +1,8 @@
 package fr.hyriode.api.player;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.player.nickname.IHyriNickname;
+import fr.hyriode.api.player.model.IHyriNickname;
 import fr.hyriode.api.util.DataDictionary;
-import fr.hyriode.api.util.Skin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +36,7 @@ public interface IHyriPlayerSession {
      *
      * @return A {@link Date}
      */
-    Date getLoginDate();
+    long getLoginDate();
 
     /**
      * Get the latest player the player sent a message to
@@ -146,33 +145,7 @@ public interface IHyriPlayerSession {
      *
      * @return A {@link IHyriNickname}
      */
-    @Nullable IHyriNickname getNickname();
-
-    /**
-     * Create a nickname for the player
-     *
-     * @param name The name to use as a nickname
-     * @param skinOwner The owner of the skin that will be used
-     * @param skin The skin that will be used
-     * @return The created {@link IHyriNickname}
-     */
-    @NotNull IHyriNickname createNickname(String name, String skinOwner, Skin skin);
-
-    /**
-     * Set the current nickname of the player.
-     *
-     * @param nickname The new {@link IHyriNickname}
-     */
-    void setNickname(IHyriNickname nickname);
-
-    /**
-     * Check if the player has a nickname
-     *
-     * @return <code>true</code> if yes
-     */
-    default boolean hasNickname() {
-        return this.getNickname() != null;
-    }
+    IHyriNickname getNickname();
 
     /**
      * Check whether the player is playing a game or not.
@@ -236,7 +209,7 @@ public interface IHyriPlayerSession {
      * @param playerId The {@link UUID} of the player
      * @return The found {@link IHyriPlayerSession}
      */
-    static @Nullable IHyriPlayerSession get(UUID playerId) {
+    static IHyriPlayerSession get(UUID playerId) {
         return HyriAPI.get().getPlayerManager().getSession(playerId);
     }
 

@@ -1,7 +1,7 @@
 package fr.hyriode.api.mongodb;
 
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * Created by AstFaster

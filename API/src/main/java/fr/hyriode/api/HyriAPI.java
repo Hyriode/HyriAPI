@@ -6,8 +6,8 @@ import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.event.IHyriEventBus;
-import fr.hyriode.api.friend.IHyriFriendManager;
 import fr.hyriode.api.game.IHyriGameManager;
+import fr.hyriode.api.guild.IHyriGuildManager;
 import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.host.IHostManager;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
@@ -22,7 +22,6 @@ import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.party.IHyriPartyManager;
 import fr.hyriode.api.player.IHyriPlayerManager;
-import fr.hyriode.api.player.auth.IHyriAuthManager;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.proxy.IHyriProxyManager;
 import fr.hyriode.api.pubsub.IHyriPubSub;
@@ -30,12 +29,12 @@ import fr.hyriode.api.queue.IHyriQueueManager;
 import fr.hyriode.api.redis.IRedis;
 import fr.hyriode.api.redis.IRedisProcessor;
 import fr.hyriode.api.scheduler.IHyriScheduler;
+import fr.hyriode.api.serialization.ClassSerializer;
+import fr.hyriode.api.serialization.DataSerializer;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.ILobbyAPI;
 import fr.hyriode.api.server.join.IHyriJoinManager;
-import fr.hyriode.api.settings.IHyriSettingsManager;
-import fr.hyriode.api.util.ClassSerializer;
 import fr.hyriode.api.util.HyriAPIException;
 import fr.hyriode.api.world.generation.IWorldGenerationAPI;
 import fr.hyriode.hyreos.api.HyreosAPI;
@@ -181,6 +180,13 @@ public abstract class HyriAPI {
     public abstract IMongoDB getMongoDB();
 
     /**
+     * Get the data serializer instance
+     *
+     * @return The {@link DataSerializer} instance
+     */
+    public abstract DataSerializer getDataSerializer();
+
+    /**
      * Get the default event bus
      *
      * @return The default {@link IHyriEventBus} instance
@@ -288,23 +294,16 @@ public abstract class HyriAPI {
     /**
      * Get the player manager
      *
-     * @return {@link IHyriPlayerManager}
+     * @return The {@link IHyriPlayerManager} instance
      */
     public abstract IHyriPlayerManager getPlayerManager();
 
     /**
-     * Get the player settings manager
+     * Get the guild manager
      *
-     * @return {@link IHyriSettingsManager}
+     * @return The {@link IHyriGuildManager} instance
      */
-    public abstract IHyriSettingsManager getPlayerSettingsManager();
-
-    /**
-     * Get the player's authentication manager
-     *
-     * @return The {@link IHyriAuthManager} instance
-     */
-    public abstract IHyriAuthManager getAuthManager();
+    public abstract IHyriGuildManager getGuildManager();
 
     /**
      * Get the language manager instance; it contains all languages-API methods
@@ -333,13 +332,6 @@ public abstract class HyriAPI {
      * @return {@link IHyriPartyManager}
      */
     public abstract IHyriPartyManager getPartyManager();
-
-    /**
-     * Get the friend manager instance
-     *
-     * @return The {@link IHyriFriendManager} instance
-     */
-    public abstract IHyriFriendManager getFriendManager();
 
     /**
      * Get the chat manager
