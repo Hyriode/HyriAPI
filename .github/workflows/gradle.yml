@@ -30,6 +30,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${{ github.sha }} | cut -c1-8`" >> $GITHUB_ENV
+
       - name: Build with Gradle
         run: ./gradlew build
         env:
@@ -37,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Build shade jar with Gradle
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJar -PbuildNumber=${{ github.run_number }} -PcommitSha=${SHORT_SHA}
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
