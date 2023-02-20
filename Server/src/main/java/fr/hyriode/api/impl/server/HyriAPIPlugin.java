@@ -4,12 +4,13 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.IHyriAPIConfig;
 import fr.hyriode.api.impl.server.config.HyriAPIConfig;
 import fr.hyriode.api.server.IHyriServer;
-import fr.hyriode.hystia.api.world.IWorldManager;
+import fr.hyriode.api.world.IHyriWorld;
+import fr.hyriode.api.world.IHyriWorldManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Project: HyriAPI
@@ -35,39 +36,34 @@ public class HyriAPIPlugin extends JavaPlugin {
             final IHyriServer server = HyriAPI.get().getServer();
 
             if (server != null) {
-                final IWorldManager worldManager = this.api.getHystiaAPI().getWorldManager();
+                final IHyriWorldManager worldManager = this.api.getWorldManager();
                 final String serverType = server.getType();
                 final String gameType = server.getGameType();
 
-                String mapName = HyriAPI.get().getServer().getMap();
-                if (mapName == null) {
-                    final List<String> maps = gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType);
+                IHyriWorld map = null;
 
-                    if (maps != null && maps.size() > 0) {
-                        Collections.shuffle(maps);
+                if (server.getMap() != null) {
+                    map = gameType != null ? worldManager.getWorld(serverType, gameType, server.getMap()) : worldManager.getWorld(serverType, server.getMap());
+                }
 
+                if (map == null) {
+                    final List<IHyriWorld> maps = gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType);
+
+                    if (maps.size() > 0) {
                         HyriAPI.get().log("Available maps:");
 
-                        for (String map : maps) {
-                            HyriAPI.get().log(" - " + map);
+                        for (IHyriWorld value : maps) {
+                            HyriAPI.get().log(" - " + value.getName());
                         }
 
-                        mapName = maps.get(0);
+                        map = maps.get(ThreadLocalRandom.current().nextInt(maps.size()));
                     }
                 }
 
-                if (mapName != null) {
-                    this.api.getServer().setMap(mapName);
+                if (map != null) {
+                    this.api.getServer().setMap(map.getName());
 
-                    if (gameType != null) {
-                        HyriAPI.get().log("Loaded '" + mapName + "' map for the server (" + serverType + "#" + gameType + ").");
-
-                        worldManager.loadWorld(new File("world"), serverType, gameType, mapName);
-                    } else {
-                        HyriAPI.get().log("Loaded '" + mapName + "' map for the server (" + serverType + ").");
-
-                        worldManager.loadWorld(new File("world"), serverType, "default", mapName);
-                    }
+                    map.load(new File("world"));
                 }
             }
         }
