@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -47,7 +48,10 @@ public class HyriAPIPlugin extends JavaPlugin {
                 }
 
                 if (map == null) {
-                    final List<IHyriWorld> maps = gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType);
+                    final List<IHyriWorld> maps = (gameType == null ? worldManager.getWorlds(serverType) : worldManager.getWorlds(serverType, gameType))
+                            .stream()
+                            .filter(IHyriWorld::isEnabled)
+                            .collect(Collectors.toList());
 
                     if (maps.size() > 0) {
                         HyriAPI.get().log("Available maps:");
