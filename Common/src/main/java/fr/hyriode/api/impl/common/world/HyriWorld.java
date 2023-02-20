@@ -8,6 +8,7 @@ import fr.hyriode.api.world.IHyriWorldManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ import java.util.UUID;
  * on 19/02/2023 at 18:54
  */
 public class HyriWorld implements IHyriWorld, MongoSerializable {
+
+    private String initialName;
 
     private final String database;
     private String category;
@@ -30,6 +33,7 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
     public HyriWorld(String database, String name) {
         this.database = database;
         this.name = name;
+        this.initialName = this.name;
     }
 
     public HyriWorld(String database, String category, String name, List<String> authors) {
@@ -75,6 +79,10 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
     @Override
     public @NotNull String getName() {
         return this.name;
+    }
+
+    public String getInitialName() {
+        return this.initialName;
     }
 
     @Override
@@ -143,7 +151,7 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
         private String category = IHyriWorldManager.DEFAULT_CATEGORY;
         private String name;
 
-        private List<String> authors;
+        private List<String> authors = new ArrayList<>();
 
         @Override
         public @NotNull IBuilder withDatabase(@NotNull String database) {

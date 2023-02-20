@@ -53,8 +53,6 @@ public class WorldsFS {
 
         if (file != null) {
             this.gridFSBucket.delete(file.getObjectId());
-
-            HyriAPI.get().log("Deleted '" + world.getName() + "' world (database: " + this.database + "; category: " + world.getCategory() + ").");
         }
     }
 
@@ -75,8 +73,12 @@ public class WorldsFS {
         }
     }
 
-    public void updateMetadata(String category, String name, Document metadata) {
-        this.filesCollection.updateOne(Filters.and(Filters.eq("metadata.category", category), Filters.eq("filename", name)), Updates.combine(Updates.set("metadata", metadata), Updates.set("filename", name)));
+    public void update(String category, String initialName, String name, Document metadata) {
+        this.filesCollection.updateOne(Filters.and(Filters.eq("metadata.category", category), Filters.eq("filename", initialName)), Updates.combine(Updates.set("metadata", metadata), Updates.set("filename", name)));
+    }
+
+    public void rename(String category, String oldName, String newName) {
+        this.gridFSBucket.rename(this.getDocument(category, oldName).getObjectId("_id"), newName);
     }
 
     public GridFSFile getFile(HyriWorld world) {

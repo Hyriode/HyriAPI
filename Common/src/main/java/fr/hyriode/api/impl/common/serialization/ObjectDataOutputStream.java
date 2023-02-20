@@ -91,7 +91,12 @@ public class ObjectDataOutputStream implements ObjectDataOutput {
     }
 
     @Override
-    public void writeUUID(@NotNull UUID uuid) throws IOException {
+    public void writeUUID(UUID uuid) throws IOException {
+        if (uuid == null) {
+            this.writeLong(NULL_ARRAY_LENGTH);
+            return;
+        }
+
         this.writeLong(uuid.getMostSignificantBits());
         this.writeLong(uuid.getLeastSignificantBits());
     }
