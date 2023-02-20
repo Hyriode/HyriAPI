@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import fr.hyriode.api.booster.IHyriBoosterManager;
 import fr.hyriode.api.chat.channel.IHyriChatChannelManager;
 import fr.hyriode.api.config.IHyriAPIConfig;
+import fr.hyriode.api.config.IHyriConfigManager;
 import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.guild.IHyriGuildManager;
@@ -36,9 +37,9 @@ import fr.hyriode.api.server.IHyriServerManager;
 import fr.hyriode.api.server.ILobbyAPI;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.util.HyriAPIException;
+import fr.hyriode.api.world.IHyriWorldManager;
 import fr.hyriode.api.world.generation.IWorldGenerationAPI;
 import fr.hyriode.hyreos.api.HyreosAPI;
-import fr.hyriode.hystia.api.IHystiaAPI;
 import redis.clients.jedis.Jedis;
 
 import java.util.logging.Level;
@@ -215,18 +216,18 @@ public abstract class HyriAPI {
     public abstract IHyggdrasilManager getHyggdrasilManager();
 
     /**
-     * Get the instance of Hystia API
-     *
-     * @return The {@link IHystiaAPI} instance
-     */
-    public abstract IHystiaAPI getHystiaAPI();
-
-    /**
      * Get the Hyreos API instance
      *
      * @return The {@link HyreosAPI} instance
      */
     public abstract HyreosAPI getHyreosAPI();
+
+    /**
+     * Get the manager of configurations stored in database
+     *
+     * @return The {@link IHyriConfigManager} instance
+     */
+    public abstract IHyriConfigManager getConfigManager();
 
     /**
      * Get the class that can be used to get or edit information of the network
@@ -255,6 +256,13 @@ public abstract class HyriAPI {
      * @return The {@link ILobbyAPI} instance
      */
     public abstract ILobbyAPI getLobbyAPI();
+
+    /**
+     * Get the manager related to world storing
+     *
+     * @return The {@link IHyriWorldManager} instance
+     */
+    public abstract IHyriWorldManager getWorldManager();
 
     /**
      * Get the API related to the world generation system.

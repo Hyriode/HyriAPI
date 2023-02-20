@@ -1,10 +1,10 @@
 package fr.hyriode.api.server;
 
 import fr.hyriode.api.application.IHyriApplication;
+import fr.hyriode.api.config.IHyriConfig;
 import fr.hyriode.api.host.HostData;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import fr.hyriode.hystia.api.config.IConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,9 +171,9 @@ public interface IHyriServer extends IHyriApplication<HyggServer.State> {
      *
      * @param configClass The class of the config
      * @param <T> The type of the config
-     * @return A {@link IConfig} object
+     * @return A {@link IHyriConfig} object
      */
-    <T extends IConfig> T getConfig(Class<T> configClass);
+    <T extends IHyriConfig> T getConfig(Class<T> configClass);
 
     /**
      * Reset the current configuration of the server.<br>

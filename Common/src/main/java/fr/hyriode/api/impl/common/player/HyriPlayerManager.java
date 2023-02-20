@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * Created by AstFaster
  * on 23/07/2021 at 11:29
  */
-public class CHyriPlayerManager implements IHyriPlayerManager {
+public class HyriPlayerManager implements IHyriPlayerManager {
 
     private static final long TTL = TimeUnit.HOURS.toSeconds(48);
 
@@ -53,7 +53,7 @@ public class CHyriPlayerManager implements IHyriPlayerManager {
 
     private final MongoCollection<Document> accountsCollection;
 
-    public CHyriPlayerManager() {
+    public HyriPlayerManager() {
         this.nicknameManager = new HyriNicknameManager();
         this.whitelistManager = new HyriWhitelistManager();
         this.accountsCollection = HyriAPI.get().getMongoDB().getDatabase("players").getCollection("accounts");

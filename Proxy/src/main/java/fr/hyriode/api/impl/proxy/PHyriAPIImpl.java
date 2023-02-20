@@ -3,7 +3,7 @@ package fr.hyriode.api.impl.proxy;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
 import fr.hyriode.api.impl.proxy.listener.*;
-import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
+import fr.hyriode.api.impl.proxy.player.PHyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.ChatReceiver;
 import fr.hyriode.api.impl.proxy.receiver.PlayerReceiver;
 import fr.hyriode.api.impl.proxy.receiver.StopReceiver;
@@ -49,7 +49,7 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
         super.init(environment, logger);
 
         this.proxy = new HyriProxy(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
-        this.playerManager = new HyriPlayerManager();
+        this.playerManager = new PHyriPlayerManager();
     }
 
     @Override

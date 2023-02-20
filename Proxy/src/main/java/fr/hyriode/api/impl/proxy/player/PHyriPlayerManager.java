@@ -1,6 +1,6 @@
 package fr.hyriode.api.impl.proxy.player;
 
-import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
+import fr.hyriode.api.impl.common.player.HyriPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by AstFaster
  * on 13/02/2022 at 15:30
  */
-public class HyriPlayerManager extends CHyriPlayerManager {
+public class PHyriPlayerManager extends HyriPlayerManager {
 
     @Override
     public UUID getPlayerId(String name) {

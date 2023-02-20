@@ -3,7 +3,7 @@ package fr.hyriode.api.impl.proxy.receiver;
 import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
 import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.packet.TitlePacket;
-import fr.hyriode.api.impl.proxy.player.HyriPlayerManager;
+import fr.hyriode.api.impl.proxy.player.PHyriPlayerManager;
 import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
@@ -29,13 +29,13 @@ public class PlayerReceiver implements IHyriPacketReceiver {
             final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(titlePacket.getPlayerId());
 
             if (player != null) {
-                HyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
+                PHyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
             }
         } else if (packet instanceof TitlePacket) {
             final TitlePacket titlePacket = (TitlePacket) packet;
 
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-                HyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
+                PHyriPlayerManager.sendTitleToPlayer(player, titlePacket.getTitle(), titlePacket.getSubtitle(), titlePacket.getFadeIn(), titlePacket.getStay(), titlePacket.getFadeOut());
             }
         } else if (packet instanceof PlayerServerSendPacket) {
             final PlayerServerSendPacket sendPacket = (PlayerServerSendPacket) packet;
