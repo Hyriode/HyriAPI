@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public interface ObjectDataOutput extends DataOutput, Closeable {
 
-    void writeUUID(@NotNull UUID uuid) throws IOException;
+    void writeUUID(UUID uuid) throws IOException;
 
     @Deprecated
     void writeUTF(@NotNull String string) throws IOException;

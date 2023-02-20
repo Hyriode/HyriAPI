@@ -42,6 +42,7 @@ public class HyriConfigManager implements IHyriConfigManager {
         return this.getConfig(clazz, database, DEFAULT_CATEGORY, name);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void saveConfig(IHyriConfig config, String database, String category, String name) {
         final MongoCollection<Document> collection = this.getCollection(database);
@@ -52,7 +53,7 @@ public class HyriConfigManager implements IHyriConfigManager {
         metadata.append("name", name);
         document.append("metadata", metadata);
 
-        collection.updateOne(Filters.eq("metadata", metadata), document, new UpdateOptions().upsert(true));
+        collection.replaceOne(Filters.eq("metadata", metadata), document, new UpdateOptions().upsert(true));
     }
 
     @Override

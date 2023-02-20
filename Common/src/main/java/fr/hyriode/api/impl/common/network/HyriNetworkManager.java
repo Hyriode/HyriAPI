@@ -37,7 +37,11 @@ public class HyriNetworkManager implements IHyriNetworkManager {
 
     @Override
     public IHyriNetwork getNetwork() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> HyriAPI.get().getDataSerializer().deserialize(new HyriNetwork(), jedis.get(KEY.getBytes(StandardCharsets.UTF_8))));
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final byte[] bytes = jedis.get(KEY.getBytes(StandardCharsets.UTF_8));
+
+            return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriNetwork(), bytes);
+        });
     }
 
     @Override

@@ -45,11 +45,12 @@ public class HyriWorldManager implements IHyriWorldManager {
     public void saveWorld(@NotNull IHyriWorld world, @NotNull UUID worldId) {}
 
     @Override
-    public void updateWorld(@NotNull IHyriWorld world) {
+    public void updateWorld(@NotNull IHyriWorld in) {
+        final HyriWorld world = (HyriWorld) in;
         final WorldsFS storage = this.getStorage(world.getDatabase());
-        final Document metadata = MongoSerializer.serialize((HyriWorld) world);
+        final Document metadata = MongoSerializer.serialize(world);
 
-        storage.updateMetadata(world.getCategory(), world.getName(), metadata);
+        storage.update(world.getCategory(), world.getInitialName(), world.getName(), metadata);
 
         HyriAPI.get().log("Updated '" + world.getName() + "' world (database: " + world.getDatabase() + "; category: " + world.getCategory() + ").");
     }

@@ -96,7 +96,13 @@ public class ObjectDataInputStream implements ObjectDataInput {
 
     @Override
     public UUID readUUID() throws IOException {
-        return new UUID(this.readLong(), this.readLong());
+        final long mostSigBits = this.readLong();
+
+        if (mostSigBits == NULL_ARRAY_LENGTH) {
+            return null;
+        }
+
+        return new UUID(mostSigBits, this.readLong());
     }
 
     @Override
