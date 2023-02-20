@@ -74,6 +74,8 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     @Expose
     private final HyriFriendsModule friends = new HyriFriendsModule(this);
     @Expose
+    private final HyriPlayerHostModule hosts = new HyriPlayerHostModule();
+    @Expose
     private final HyriAuthModule auth = new HyriAuthModule();
     @Expose
     private final HyriStatisticsModule statistics = new HyriStatisticsModule();
@@ -111,6 +113,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.friends.save(document);
 
         document.append("auth", MongoSerializer.serialize(this.auth));
+        document.append("hosts", MongoSerializer.serialize(this.hosts));
         document.append("statistics", MongoSerializer.serialize(this.statistics));
 
         this.data.save(document);
@@ -140,6 +143,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
 
         this.friends.load(document);
         this.auth.load(MongoDocument.of(document.get("auth", Document.class)));
+        this.hosts.load(MongoDocument.of(document.get("hosts", Document.class)));
         this.statistics.load(MongoDocument.of(document.get("statistics", Document.class)));
         this.data.load(document);
         this.transactions.load(MongoDocument.of(document.get("transactions", Document.class)));
@@ -171,7 +175,8 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         output.writeString(this.guild == null ? null : this.guild.toHexString());
 
         this.auth.write(output);
-        this.settings.write(output);
+        this.hosts.write(output);
+        this.statistics.write(output);
         this.data.write(output);
         this.transactions.write(output);
     }
@@ -205,7 +210,8 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.guild = guildId == null ? null : new ObjectId(guildId);
 
         this.auth.read(input);
-        this.settings.read(input);
+        this.hosts.read(input);
+        this.statistics.read(input);
         this.data.read(input);
         this.transactions.read(input);
     }
@@ -347,6 +353,11 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     @Override
     public @NotNull IHyriAuthModule getAuth() {
         return this.auth;
+    }
+
+    @Override
+    public @NotNull IHyriPlayerHostModule getHosts() {
+        return this.hosts;
     }
 
     @Override

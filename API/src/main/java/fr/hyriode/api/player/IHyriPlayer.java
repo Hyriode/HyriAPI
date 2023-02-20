@@ -191,6 +191,13 @@ public interface IHyriPlayer {
     @NotNull IHyriAuthModule getAuth();
 
     /**
+     * Get the hosts module of the player
+     *
+     * @return The {@link IHyriPlayerHostModule} instance
+     */
+    @NotNull IHyriPlayerHostModule getHosts();
+
+    /**
      * Get the statistics handler of the player
      *
      * @return The {@linkplain IHyriStatisticsModule} instance
