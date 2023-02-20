@@ -25,6 +25,9 @@ jobs:
       - name: Edit libraries folder permissions
         run: sudo chmod -R 777 Server/libs/
 
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${{ github.sha }} | cut -c1-8`" >> $GITHUB_ENV
+
       - name: Build with Gradle
         run: gradle build
         env:
@@ -32,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Publish to GitHub Packages
-        run: gradle publish -PbuildNumber=${{ github.run_number }} -PcommitSha=${{ github_sha::7}}
+        run: gradle publish -PbuildNumber=${{ github.run_number }} -PcommitSha=${SHORT_SHA}
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
