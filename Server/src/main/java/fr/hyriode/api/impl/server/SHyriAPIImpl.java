@@ -4,16 +4,16 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
 import fr.hyriode.api.impl.server.join.HyriJoinManager;
 import fr.hyriode.api.impl.server.join.JoinListener;
-import fr.hyriode.api.impl.server.player.HyriPlayerManager;
+import fr.hyriode.api.impl.server.player.SHyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.SoundReceiver;
 import fr.hyriode.api.impl.server.receiver.StopReceiver;
+import fr.hyriode.api.impl.server.world.SHyriWorldManager;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
-import fr.hyriode.hystia.api.IHystiaAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -51,9 +51,9 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         super.init(environment, logger);
 
         this.server = new HyriServer(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
-        this.playerManager = new HyriPlayerManager();
+        this.worldManager = new SHyriWorldManager();
+        this.playerManager = new SHyriPlayerManager();
         this.joinManager = new HyriJoinManager();
-//        this.hystiaAPI = new HystiaSpigot(this.plugin, this.getMongoDB().getClient()); // TODO
     }
 
     @Override
@@ -103,11 +103,6 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
     @Override
     public HyriServer getServer() {
         return this.server;
-    }
-
-    @Override
-    public IHystiaAPI getHystiaAPI() {
-        return this.hystiaAPI;
     }
 
     @Override

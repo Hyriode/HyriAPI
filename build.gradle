@@ -28,16 +28,6 @@ allprojects {
         mavenCentral()
 
         maven {
-            name = 'Hystia_maven'
-            url = 'https://maven.pkg.github.com/Hyriode/Hystia/'
-
-            credentials {
-                username System.getenv('GITHUB_USERNAME')
-                password System.getenv('GITHUB_TOKEN')
-            }
-        }
-
-        maven {
             name = 'Hyreos_maven'
             url = 'https://maven.pkg.github.com/Hyriode/Hyreos/'
 

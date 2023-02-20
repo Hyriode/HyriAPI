@@ -1,6 +1,6 @@
 package fr.hyriode.api.impl.server.player;
 
-import fr.hyriode.api.impl.common.player.CHyriPlayerManager;
+import fr.hyriode.api.impl.common.player.HyriPlayerManager;
 import fr.hyriode.api.impl.server.util.SpigotReflection;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * Created by AstFaster
  * on 13/02/2022 at 15:30
  */
-public class HyriPlayerManager extends CHyriPlayerManager {
+public class SHyriPlayerManager extends HyriPlayerManager {
 
     @Override
     public UUID getPlayerId(String name) {

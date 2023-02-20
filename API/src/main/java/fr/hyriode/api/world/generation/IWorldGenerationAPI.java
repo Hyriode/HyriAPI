@@ -1,5 +1,6 @@
 package fr.hyriode.api.world.generation;
 
+import fr.hyriode.api.world.IHyriWorld;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,9 +22,9 @@ public interface IWorldGenerationAPI {
      * Get all the available worlds for a given type
      *
      * @param type The type of worlds to search
-     * @return A list of world name
+     * @return A list of world
      */
-    List<String> getWorlds(WorldGenerationType type);
+    List<IHyriWorld> getWorlds(WorldGenerationType type);
 
     /**
      * Store a new world in database

@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.world.generation;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.world.IHyriWorld;
 import fr.hyriode.api.world.generation.IWorldGenerationAPI;
 import fr.hyriode.api.world.generation.WorldGenerationData;
 import fr.hyriode.api.world.generation.WorldGenerationType;
@@ -19,18 +20,24 @@ public class WorldGenerationAPI implements IWorldGenerationAPI {
     public static final String DATABASE = "world-generation";
 
     @Override
-    public List<String> getWorlds(WorldGenerationType type) {
-        return HyriAPI.get().getHystiaAPI().getWorldManager().getWorlds(DATABASE, type.name());
+    public List<IHyriWorld> getWorlds(WorldGenerationType type) {
+        return HyriAPI.get().getWorldManager().getWorlds(DATABASE, type.name());
     }
 
     @Override
     public void addWorld(UUID worldId, WorldGenerationType type, String name) {
-        HyriAPI.get().getHystiaAPI().getWorldManager().saveWorld(worldId, DATABASE, type.name(), name);
+        final IHyriWorld world = HyriAPI.get().getWorldManager().newWorld()
+                .withDatabase(DATABASE)
+                .withCategory(type.name())
+                .withName(name)
+                .build();
+
+        HyriAPI.get().getWorldManager().saveWorld(world, worldId);
     }
 
     @Override
     public void removeWorld(WorldGenerationType type, String name) {
-        HyriAPI.get().getHystiaAPI().getWorldManager().deleteWorld(DATABASE, type.name(), name);
+        HyriAPI.get().getWorldManager().deleteWorld(DATABASE, type.name(), name);
     }
 
     @Override

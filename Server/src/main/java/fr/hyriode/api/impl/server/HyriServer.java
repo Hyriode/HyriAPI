@@ -1,12 +1,12 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.config.IHyriConfig;
 import fr.hyriode.api.host.HostData;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggApplication;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggData;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
-import fr.hyriode.hystia.api.config.IConfig;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class HyriServer implements IHyriServer {
 
     private final long startedTime;
 
-    private IConfig config;
+    private IHyriConfig config;
 
     public HyriServer(HyggApplication application) {
         if (application == null) {
@@ -224,12 +224,12 @@ public class HyriServer implements IHyriServer {
     }
 
     @Override
-    public <T extends IConfig> T getConfig(Class<T> configClass) {
+    public <T extends IHyriConfig> T getConfig(Class<T> configClass) {
         if (this.config != null) {
             return configClass.cast(this.config);
         }
 
-        final T config = HyriAPI.get().getHystiaAPI().getConfigManager().getConfig(configClass, this.type, this.gameType, this.map);
+        final T config = HyriAPI.get().getConfigManager().getConfig(configClass, this.type, this.gameType, this.map);
 
         this.config = config;
 

@@ -5,7 +5,6 @@ import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.game.rotating.IHyriRotatingGameManager;
 import fr.hyriode.api.impl.common.game.rotating.HyriRotatingGameManager;
-import fr.hyriode.hystia.api.world.IWorldManager;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 
@@ -25,12 +24,9 @@ public class HyriGameManager implements IHyriGameManager {
     private static final String KEY = "games:";
 
     private final IHyriRotatingGameManager rotatingGameManager;
-    private final IWorldManager worldManager;
 
     public HyriGameManager() {
         this.rotatingGameManager = new HyriRotatingGameManager();
-//        this.worldManager = HyriAPI.get().getHystiaAPI().getWorldManager(); TODO
-        this.worldManager = null;
     }
 
     @Override
