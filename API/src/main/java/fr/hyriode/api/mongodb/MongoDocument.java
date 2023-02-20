@@ -51,6 +51,8 @@ public class MongoDocument extends Document {
      * @param key The key of the data
      * @param serializables The data to serialize
      * @param implClass The implementation class of the serializables
+     * @param <T> The type of serializables
+     * @param <I> The implementation class of the serializables
      * @return This {@link MongoDocument} instance
      */
     public <T, I extends MongoSerializable> MongoDocument appendCollection(String key, Collection<T> serializables, Class<I> implClass) {

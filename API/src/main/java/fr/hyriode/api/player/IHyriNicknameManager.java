@@ -15,7 +15,7 @@ public interface IHyriNicknameManager {
      * Check whether a nickname is available or not
      *
      * @param name The name to check
-     * @return <cdoe>true</cdoe> if the nickname is available
+     * @return <code>true</code> if the nickname is available
      */
     boolean isNicknameAvailable(String name);
 
