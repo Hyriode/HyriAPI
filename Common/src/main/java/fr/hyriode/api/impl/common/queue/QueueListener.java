@@ -4,6 +4,8 @@ import fr.hyriode.api.event.HyriEventHandler;
 import fr.hyriode.api.queue.IHyriQueueHandler;
 import fr.hyriode.api.queue.event.PlayerJoinQueueEvent;
 import fr.hyriode.api.queue.event.PlayerLeaveQueueEvent;
+import fr.hyriode.api.queue.event.QueueDisabledEvent;
+import fr.hyriode.api.queue.event.QueueUpdatedEvent;
 
 import java.util.function.Consumer;
 
@@ -27,6 +29,16 @@ class QueueListener {
     @HyriEventHandler
     public void onLeave(PlayerLeaveQueueEvent event) {
         this.triggerHandlers(handler -> handler.onLeaveQueue(event));
+    }
+
+    @HyriEventHandler
+    public void onUpdate(QueueUpdatedEvent event) {
+        this.triggerHandlers(handler -> handler.onUpdate(event));
+    }
+
+    @HyriEventHandler
+    public void onDisable(QueueDisabledEvent event) {
+        this.triggerHandlers(handler -> handler.onDisable(event));
     }
 
     private void triggerHandlers(Consumer<IHyriQueueHandler> handlerConsumer) {

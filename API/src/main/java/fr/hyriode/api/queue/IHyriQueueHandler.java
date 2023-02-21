@@ -1,8 +1,6 @@
 package fr.hyriode.api.queue;
 
-import fr.hyriode.api.queue.event.PlayerJoinQueueEvent;
-import fr.hyriode.api.queue.event.PlayerLeaveQueueEvent;
-import fr.hyriode.api.queue.event.QueueEvent;
+import fr.hyriode.api.queue.event.*;
 
 /**
  * Project: HyriAPI
@@ -26,5 +24,19 @@ public interface IHyriQueueHandler {
      * @param event The triggered {@link QueueEvent}
      */
     default void onLeaveQueue(PlayerLeaveQueueEvent event) {}
+
+    /**
+     * Triggered each time a queue is updated
+     *
+     * @param event The triggered {@link QueueEvent}
+     */
+    default void onUpdate(QueueUpdatedEvent event) {}
+
+    /**
+     * Triggered each time a queue is disabled
+     *
+     * @param event The triggered {@link QueueEvent}
+     */
+    default void onDisable(QueueDisabledEvent event) {}
 
 }
