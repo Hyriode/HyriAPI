@@ -125,14 +125,18 @@ public class HyriQueue implements IHyriQueue, DataSerializable {
             final Set<UUID> group = new HashSet<>();
             final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(player);
 
-            for (UUID member : party.getMembers().keySet()) {
-                final IHyriPlayerSession session = IHyriPlayerSession.get(member);
+            if (party != null) {
+                for (UUID member : party.getMembers().keySet()) {
+                    final IHyriPlayerSession session = IHyriPlayerSession.get(member);
 
-                if (session == null || session.isPlaying() || session.isModerating()) {
-                    continue;
+                    if (session == null || session.isPlaying() || session.isModerating()) {
+                        continue;
+                    }
+
+                    group.add(member);
                 }
-
-                group.add(member);
+            } else {
+                group.add(player);
             }
 
             totalPlayers.add(group);

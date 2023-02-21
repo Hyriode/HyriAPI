@@ -80,7 +80,7 @@ public class PlayerLoader {
         }
     }
 
-    public void loadPlayerAccount(UUID playerId, IHyriPlayer account, String name) {
+    public void loadPlayerAccount(UUID playerId, IHyriPlayer account, String name, String ip) {
         final long loginTime = System.currentTimeMillis();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
         final IHyriPlayerSession session = new HyriPlayerSession(playerId, loginTime);
@@ -97,6 +97,7 @@ public class PlayerLoader {
                 account.setName(name);
             }
 
+            account.setLastIP(ip);
             account.setLastLoginDate(loginTime);
             account.update();
         }
