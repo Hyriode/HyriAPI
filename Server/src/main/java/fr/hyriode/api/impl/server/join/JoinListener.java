@@ -124,7 +124,7 @@ public class JoinListener implements Listener {
             if (session != null) {
                 final IHyriNickname nickname = session.getNickname();
 
-                if (nickname != null) {
+                if (nickname.has()) {
                     playerManager.getNicknameManager().removeUsedNickname(nickname.getName());
                 }
 

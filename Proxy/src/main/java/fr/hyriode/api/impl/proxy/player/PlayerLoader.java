@@ -112,7 +112,7 @@ public class PlayerLoader {
         if (session != null) {
             final IHyriNickname nickname = session.getNickname();
 
-            if (nickname != null) {
+            if (nickname.has()) {
                 pm.getNicknameManager().removeUsedNickname(nickname.getName());
             }
 

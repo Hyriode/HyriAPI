@@ -46,6 +46,8 @@ public class JoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(PreLoginEvent event) {
         try {
+            final long before = System.nanoTime();
+
             final PendingConnection connection = event.getConnection();
             final String name = connection.getName();
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
@@ -100,6 +102,8 @@ public class JoinListener implements Listener {
             this.playerLoader.loadPlayerAccount(playerId, account, name);
 
             event.setEncrypting(account != null && account.getAuth().isPremium());
+
+            System.out.println("Connection took " + (System.nanoTime() - before) + "ns to process.");
         } catch (Exception e) {
             e.printStackTrace();
 

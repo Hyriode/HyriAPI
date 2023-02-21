@@ -44,10 +44,8 @@ public class HyriPlayerDataModule extends HashMap<String, Document> implements I
     public void load(MongoDocument document) {
         final Document data = document.get("data", Document.class);
 
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            final Document dataDocument = (Document) entry.getValue();
-
-            this.put(entry.getKey(), dataDocument);
+        for (String key : data.keySet()) {
+            this.put(key, data.get(key, Document.class));
         }
     }
 

@@ -47,11 +47,22 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
         document.append("games", this.games);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void load(MongoDocument document) {
-        this.playTime = document.get("play_time", this.playTime.getClass());
-        this.games = document.get("games", this.games.getClass());
+        final MongoDocument playTime = MongoDocument.of(document.get("play_time", Document.class));
+
+        for (String key : playTime.keySet()) {
+            this.playTime.put(key, playTime.getLong(key));
+        }
+
+        final MongoDocument games = MongoDocument.of(document.get("games", Document.class));
+
+        for (String key : games.keySet()) {
+            this.games.put(key, games.get(key, Document.class));
+        }
+
+        // Load total play time cache
+        this.playTime.values().forEach(time -> this.totalPlayTime += time);
     }
 
     @Override
@@ -86,6 +97,9 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
         for (int i = 0; i < gamesSize; i++) {
             this.games.put(input.readString(), MongoSerializer.deserialize(input.readByteArray()));
         }
+
+        // Load total play time cache
+        this.playTime.values().forEach(time -> this.totalPlayTime += time);
     }
 
     @Override

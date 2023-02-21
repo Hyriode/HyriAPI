@@ -137,7 +137,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.hyris.setAmount(document.getLong("hyris"));
         this.gems.setAmount(document.getLong("gems"));
 
-        this.networkLeveling.load(MongoDocument.of(document.get("settings", Document.class)));
+        this.networkLeveling.load(MongoDocument.of(document.get("network_leveling", Document.class)));
 
         this.guild = document.getObjectId("guild");
 
@@ -242,6 +242,10 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     @Override
     public String getPrefix() {
         final String prefix = this.rank.getPrefix();
+
+        if (this.rank.isStaff()) {
+            return prefix;
+        }
 
         if (this.hyriPlus.has() && this.rank.getPlayerType() == PlayerRank.EPIC) {
             return prefix + this.hyriPlus.getColor() + "+";

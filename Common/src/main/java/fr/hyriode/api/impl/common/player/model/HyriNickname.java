@@ -33,8 +33,13 @@ public class HyriNickname implements IHyriNickname, DataSerializable {
     public void write(ObjectDataOutput output) throws IOException {
         output.writeString(this.name);
         output.writeString(this.skinOwner);
-        output.writeString(this.skin.getTextureData());
-        output.writeString(this.skin.getTextureSignature());
+        output.writeBoolean(this.skin != null);
+
+        if (this.skin != null) {
+            output.writeString(this.skin.getTextureData());
+            output.writeString(this.skin.getTextureSignature());
+        }
+
         output.writeInt(this.rank);
     }
 
@@ -42,7 +47,11 @@ public class HyriNickname implements IHyriNickname, DataSerializable {
     public void read(ObjectDataInput input) throws IOException {
         this.name = input.readString();
         this.skinOwner = input.readString();
-        this.skin = new Skin(input.readString(), input.readString());
+
+        if (input.readBoolean()) {
+            this.skin = new Skin(input.readString(), input.readString());
+        }
+
         this.rank = input.readInt();
     }
 
