@@ -74,7 +74,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     @Expose
     private final HyriFriendsModule friends = new HyriFriendsModule(this);
     @Expose
-    private final HyriPlayerHostModule hosts = new HyriPlayerHostModule();
+    private final HyriPlayerHostModule hosts = new HyriPlayerHostModule(this);
     @Expose
     private final HyriAuthModule auth = new HyriAuthModule();
     @Expose
