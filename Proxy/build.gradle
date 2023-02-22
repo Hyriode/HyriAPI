@@ -11,6 +11,7 @@ shadowJar {
 dependencies {
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':Common')
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
 }
 
 publishing {

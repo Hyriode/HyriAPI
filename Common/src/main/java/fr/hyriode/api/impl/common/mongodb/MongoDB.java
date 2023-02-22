@@ -32,12 +32,12 @@ public class MongoDB implements IMongoDB {
                 .retryWrites(true)
                 .build();
 
-        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
-        Logger.getLogger("org.mongodb.driver.connection").setLevel(Level.OFF);
-        Logger.getLogger("org.mongodb.driver.client").setLevel(Level.OFF);
-
         this.client = MongoClients.create(settings);
         this.connected = true;
+
+//        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
+//        Logger.getLogger("org.mongodb.driver.connection").setLevel(Level.OFF);
+//        Logger.getLogger("org.mongodb.driver.client").setLevel(Level.OFF);
     }
 
     public void stopConnection() {
