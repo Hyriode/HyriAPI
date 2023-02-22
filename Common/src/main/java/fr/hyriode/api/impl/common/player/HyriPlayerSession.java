@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.player;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.impl.common.player.model.HyriNickname;
 import fr.hyriode.api.impl.common.player.model.HyriRank;
@@ -23,23 +24,36 @@ import java.util.UUID;
  */
 public class HyriPlayerSession implements IHyriPlayerSession, DataSerializable {
 
+    @Expose
     private UUID playerId;
+    @Expose
     private long loginDate;
 
+    @Expose
     private UUID privateMessageTarget;
+    @Expose
     private UUID party;
+    @Expose
     private UUID queue;
 
+    @Expose
     private String proxy;
+    @Expose
     private String server;
+    @Expose
     private String lastServer;
 
+    @Expose
     private final HyriNickname nickname = new HyriNickname();
 
+    @Expose
     private boolean playing;
+    @Expose
     private boolean moderating;
+    @Expose
     private boolean vanished;
 
+    @Expose
     private final DataDictionary data = new DataDictionary();
 
     public HyriPlayerSession() {}

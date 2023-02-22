@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.game.rotating;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.rotating.IHyriRotatingGame;
@@ -15,7 +16,9 @@ import java.io.IOException;
  */
 public class HyriRotatingGame implements IHyriRotatingGame, DataSerializable {
 
+    @Expose
     private String gameName;
+    @Expose
     private long sinceWhen;
 
     public HyriRotatingGame() {}

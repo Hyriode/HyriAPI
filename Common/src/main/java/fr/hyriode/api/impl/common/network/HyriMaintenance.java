@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.network;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.model.HyriMaintenanceEvent;
 import fr.hyriode.api.network.IHyriMaintenance;
@@ -17,8 +18,11 @@ import java.util.UUID;
  */
 public class HyriMaintenance implements IHyriMaintenance, DataSerializable {
 
+    @Expose
     private boolean active;
+    @Expose
     private UUID trigger;
+    @Expose
     private String reason;
 
     @Override

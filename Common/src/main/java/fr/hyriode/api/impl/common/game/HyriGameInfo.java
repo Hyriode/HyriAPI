@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.game;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameType;
 import fr.hyriode.api.serialization.DataSerializable;
@@ -17,8 +18,11 @@ import java.util.List;
  */
 public class HyriGameInfo implements IHyriGameInfo, DataSerializable {
 
+    @Expose
     private String name;
+    @Expose
     private String displayName;
+    @Expose
     private final List<IHyriGameType> types = new ArrayList<>();
 
     public HyriGameInfo() {}

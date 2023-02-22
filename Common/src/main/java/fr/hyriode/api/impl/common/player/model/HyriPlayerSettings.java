@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.player.model;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.chat.channel.HyriChatChannel;
 import fr.hyriode.api.language.HyriLanguage;
@@ -22,16 +23,27 @@ import java.io.IOException;
  */
 public class HyriPlayerSettings implements IHyriPlayerSettings, MongoSerializable, DataSerializable {
 
+    @Expose
     private boolean friendRequestsEnabled = true;
+    @Expose
     private boolean friendConnectionNotificationEnabled = true;
+    @Expose
     private SettingsLevel partyRequestsLevel = SettingsLevel.ALL;
+    @Expose
     private SettingsLevel privateMessagesLevel = SettingsLevel.ALL;
+    @Expose
     private SettingsLevel privateMessagesSoundLevel = SettingsLevel.ALL;
+    @Expose
     private SettingsLevel playersVisibilityLevel = SettingsLevel.ALL;
+    @Expose
     private SettingsLevel globalChatLevel = SettingsLevel.ALL;
+    @Expose
     private HyriLanguage language = HyriLanguage.FR;
+    @Expose
     private boolean autoQueueEnabled = true;
+    @Expose
     private boolean followPartyEnabled = true;
+    @Expose
     private HyriChatChannel chatChannel = HyriChatChannel.GLOBAL;
 
     private final IHyriPlayer player;

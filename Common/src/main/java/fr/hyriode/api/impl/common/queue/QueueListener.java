@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * Created by AstFaster
  * on 16/07/2022 at 10:04
  */
-class QueueListener {
+public class QueueListener {
 
     private final HyriQueueManager queueManager;
 

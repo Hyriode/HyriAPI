@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.game;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.game.IHyriGameType;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
@@ -14,8 +15,11 @@ import java.io.IOException;
  */
 public class HyriGameType implements IHyriGameType, DataSerializable {
 
+    @Expose
     private int id;
+    @Expose
     private String name;
+    @Expose
     private String displayName;
 
     public HyriGameType() {}

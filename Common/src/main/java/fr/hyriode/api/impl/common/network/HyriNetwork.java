@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.common.network;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.impl.common.network.counter.HyriGlobalCounter;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
@@ -17,8 +18,11 @@ import java.io.IOException;
  */
 public class HyriNetwork implements IHyriNetwork, DataSerializable {
 
+    @Expose
     private int slots;
+    @Expose
     private String motd;
+    @Expose
     private final HyriMaintenance maintenance;
 
     public HyriNetwork() {
