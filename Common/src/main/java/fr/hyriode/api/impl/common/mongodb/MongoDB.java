@@ -29,6 +29,7 @@ public class MongoDB implements IMongoDB {
         final ConnectionString connectionString = new ConnectionString(config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
+                .retryWrites(true)
                 .build();
 
         Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);

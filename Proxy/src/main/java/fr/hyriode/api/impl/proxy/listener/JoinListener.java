@@ -98,7 +98,7 @@ public class JoinListener implements Listener {
                 }
             }
 
-            this.playerLoader.loadPlayerAccount(playerId, account, name, ((InetSocketAddress) connection.getSocketAddress()).getHostName());
+            this.playerLoader.loadPlayerAccount(playerId, account, name, ((InetSocketAddress) connection.getSocketAddress()).getAddress().getHostAddress());
 
             event.setEncrypting(account != null && account.getAuth().isPremium());
         } catch (Exception e) {

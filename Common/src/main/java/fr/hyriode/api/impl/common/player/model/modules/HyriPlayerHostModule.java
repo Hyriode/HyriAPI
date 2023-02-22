@@ -1,8 +1,11 @@
 package fr.hyriode.api.impl.common.player.model.modules;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.mongodb.MongoDocument;
 import fr.hyriode.api.mongodb.MongoSerializable;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.model.modules.IHyriPlayerHostModule;
+import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
 import fr.hyriode.api.serialization.ObjectDataOutput;
@@ -18,9 +21,18 @@ import java.util.stream.Collectors;
  */
 public class HyriPlayerHostModule implements IHyriPlayerHostModule, MongoSerializable, DataSerializable {
 
+    @Expose
     private int availableHosts;
+    @Expose
     private final Set<UUID> bannedPlayers = new HashSet<>();
+    @Expose
     private final Set<String> favoriteConfigs = new HashSet<>();
+
+    private final IHyriPlayer account;
+
+    public HyriPlayerHostModule(IHyriPlayer account) {
+        this.account = account;
+    }
 
     @Override
     public void save(MongoDocument document) {
@@ -71,6 +83,14 @@ public class HyriPlayerHostModule implements IHyriPlayerHostModule, MongoSeriali
 
     @Override
     public int getAvailableHosts() {
+        if (this.account.getRank().isSuperior(PlayerRank.PARTNER)) {
+            return 1;
+        }
+
+        if (this.account.getHyriPlus().has()) {
+            return 1;
+        }
+
         return this.availableHosts;
     }
 
