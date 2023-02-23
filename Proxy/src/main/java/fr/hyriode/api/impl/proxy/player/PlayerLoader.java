@@ -48,9 +48,9 @@ public class PlayerLoader {
             return cachedProfile;
         }
 
-        try (final CloseableHttpClient client = HttpClients.createDefault()) {
+        try {
             final HttpGet request = new HttpGet("https://api.mojang.com/users/profiles/minecraft/" + playerName);
-            final HttpResponse response = client.execute(request);
+            final HttpResponse response = HyriAPI.get().getHttpRequester().getClient().execute(request);
             final int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode == 200 || statusCode == 204 || statusCode == 404) {

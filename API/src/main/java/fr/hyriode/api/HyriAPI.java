@@ -11,6 +11,7 @@ import fr.hyriode.api.game.IHyriGameManager;
 import fr.hyriode.api.guild.IHyriGuildManager;
 import fr.hyriode.api.host.IHostConfigManager;
 import fr.hyriode.api.host.IHostManager;
+import fr.hyriode.api.http.IHttpRequester;
 import fr.hyriode.api.hyggdrasil.IHyggdrasilManager;
 import fr.hyriode.api.language.IHyriLanguageManager;
 import fr.hyriode.api.leaderboard.IHyriLeaderboardProvider;
@@ -179,6 +180,13 @@ public abstract class HyriAPI {
      * @return The {@link IMongoDB} instance
      */
     public abstract IMongoDB getMongoDB();
+
+    /**
+     * Get the HTTP requester instance
+     *
+     * @return The {@link IHttpRequester} instance
+     */
+    public abstract IHttpRequester getHttpRequester();
 
     /**
      * Get the data serializer instance

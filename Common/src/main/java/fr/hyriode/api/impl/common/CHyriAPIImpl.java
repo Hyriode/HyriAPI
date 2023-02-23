@@ -15,6 +15,7 @@ import fr.hyriode.api.impl.common.game.HyriGameManager;
 import fr.hyriode.api.impl.common.guild.HyriGuildManager;
 import fr.hyriode.api.impl.common.host.HostConfigManager;
 import fr.hyriode.api.impl.common.host.HostManager;
+import fr.hyriode.api.impl.common.http.HttpRequester;
 import fr.hyriode.api.impl.common.hyggdrasil.HyggdrasilManager;
 import fr.hyriode.api.impl.common.language.HyriLanguageManager;
 import fr.hyriode.api.impl.common.leaderboard.HyriLeaderboardProvider;
@@ -66,8 +67,9 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
     protected Redis redisConnection;
     protected RedisProcessor redisProcessor;
-
     protected MongoDB mongoDB;
+
+    protected HttpRequester httpRequester;
 
     protected DataSerializer dataSerializer;
 
@@ -130,6 +132,9 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.mongoDB = new MongoDB(this.configuration.getMongoDBConfig());
         this.mongoDB.startConnection();
 
+        /// Http
+        this.httpRequester = new HttpRequester();
+
         // Data storage
         this.dataSerializer = new DataSerializerImpl();
 
@@ -183,6 +188,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     }
 
     public void stop() {
+        this.httpRequester.stop();
+
         if (this.redisConnection.isConnected()) {
             this.pubSub.stop();
             this.redisProcessor.stop();
@@ -233,6 +240,11 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public IMongoDB getMongoDB() {
         return this.mongoDB;
+    }
+
+    @Override
+    public HttpRequester getHttpRequester() {
+        return this.httpRequester;
     }
 
     @Override
