@@ -109,11 +109,12 @@ public class JoinListener implements Listener {
         final Player player = event.getPlayer();
         final UUID playerId = player.getUniqueId();
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
-        final IHyriPlayer account = IHyriPlayer.get(playerId);
 
         event.setQuitMessage("");
 
         this.joinManager.onLogout(player);
+
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
 
         account.getStatistics().addPlayTime(HyriAPI.get().getServer().getType(), System.currentTimeMillis() - this.connections.remove(playerId));
         account.update();
