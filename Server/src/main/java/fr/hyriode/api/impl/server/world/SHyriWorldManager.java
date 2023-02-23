@@ -1,5 +1,6 @@
 package fr.hyriode.api.impl.server.world;
 
+import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.impl.common.world.HyriWorldManager;
 import fr.hyriode.api.world.IHyriWorld;
 import org.bukkit.Bukkit;
@@ -14,7 +15,7 @@ import java.util.UUID;
  */
 public class SHyriWorldManager extends HyriWorldManager {
 
-    public SHyriWorldManager() {
+    public SHyriWorldManager(MongoDB mongoDB) {
         super(mongoDB);
     }
 

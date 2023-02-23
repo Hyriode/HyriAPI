@@ -51,7 +51,7 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         super.init(environment, logger);
 
         this.server = new HyriServer(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
-        this.worldManager = new SHyriWorldManager();
+        this.worldManager = new SHyriWorldManager(this.mongoDB);
         this.playerManager = new SHyriPlayerManager();
         this.joinManager = new HyriJoinManager();
     }
