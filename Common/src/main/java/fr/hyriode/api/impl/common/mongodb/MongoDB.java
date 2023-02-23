@@ -22,11 +22,16 @@ public class MongoDB implements IMongoDB {
 
     private MongoClient client;
 
+    private final MongoDBConfig config;
+
+    public MongoDB(MongoDBConfig config) {
+        this.config = config;
+    }
+
     public void startConnection() {
         HyriAPI.get().log("Starting MongoDB connection...");
 
-        final MongoDBConfig config = HyriAPI.get().getConfig().getMongoDBConfig();
-        final ConnectionString connectionString = new ConnectionString(config.toURL());
+        final ConnectionString connectionString = new ConnectionString(this.config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .retryWrites(true)

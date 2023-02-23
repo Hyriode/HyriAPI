@@ -127,7 +127,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         // Databases connections
         this.redisConnection = new Redis(this);
         this.redisProcessor = new RedisProcessor();
-        this.mongoDB = new MongoDB();
+        this.mongoDB = new MongoDB(this.configuration.getMongoDBConfig());
         this.mongoDB.startConnection();
 
         // Data storage
