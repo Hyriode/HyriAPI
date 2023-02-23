@@ -54,32 +54,32 @@ public class HyriPlayerSettings implements IHyriPlayerSettings, MongoSerializabl
 
     @Override
     public void save(MongoDocument document) {
-        document.append("friends_requests", this.friendRequestsEnabled);
-        document.append("friend_connection_notification", this.friendConnectionNotificationEnabled);
-        document.append("party_requests", this.partyRequestsLevel.name());
-        document.append("private_messages", this.privateMessagesLevel.name());
-        document.append("private_messages_sound", this.privateMessagesSoundLevel.name());
-        document.append("players_visibility", this.playersVisibilityLevel.name());
-        document.append("global_chat", this.globalChatLevel.name());
+        document.append("friendsRequests", this.friendRequestsEnabled);
+        document.append("friendConnectionNotification", this.friendConnectionNotificationEnabled);
+        document.append("partyRequests", this.partyRequestsLevel.name());
+        document.append("privateMessages", this.privateMessagesLevel.name());
+        document.append("privateMessagesSound", this.privateMessagesSoundLevel.name());
+        document.append("playersVisibility", this.playersVisibilityLevel.name());
+        document.append("globalChat", this.globalChatLevel.name());
         document.append("language", this.language.name());
-        document.append("auto_queue", this.autoQueueEnabled);
-        document.append("follow_party", this.followPartyEnabled);
-        document.append("chat_channel", this.chatChannel.name());
+        document.append("autoQueue", this.autoQueueEnabled);
+        document.append("followParty", this.followPartyEnabled);
+        document.append("chatChannel", this.chatChannel.name());
     }
 
     @Override
     public void load(MongoDocument document) {
-        this.friendRequestsEnabled = document.getBoolean("friends_requests");
-        this.friendConnectionNotificationEnabled = document.getBoolean("friend_connection_notification");
-        this.partyRequestsLevel = SettingsLevel.valueOf(document.getString("party_requests"));
-        this.privateMessagesLevel = SettingsLevel.valueOf(document.getString("private_messages"));
-        this.privateMessagesSoundLevel = SettingsLevel.valueOf(document.getString("private_messages_sound"));
-        this.playersVisibilityLevel = SettingsLevel.valueOf(document.getString("players_visibility"));
-        this.globalChatLevel = SettingsLevel.valueOf(document.getString("global_chat"));
+        this.friendRequestsEnabled = document.getBoolean("friendsRequests");
+        this.friendConnectionNotificationEnabled = document.getBoolean("friendConnectionNotification");
+        this.partyRequestsLevel = SettingsLevel.valueOf(document.getString("partyRequests"));
+        this.privateMessagesLevel = SettingsLevel.valueOf(document.getString("privateMessages"));
+        this.privateMessagesSoundLevel = SettingsLevel.valueOf(document.getString("privateMessagesSound"));
+        this.playersVisibilityLevel = SettingsLevel.valueOf(document.getString("playersVisibility"));
+        this.globalChatLevel = SettingsLevel.valueOf(document.getString("globalChat"));
         this.language = HyriLanguage.valueOf(document.getString("language"));
-        this.autoQueueEnabled = document.getBoolean("auto_queue");
-        this.followPartyEnabled = document.getBoolean("follow_party");
-        this.chatChannel = HyriChatChannel.valueOf(document.getString("chat_channel"));
+        this.autoQueueEnabled = document.getBoolean("autoQueue");
+        this.followPartyEnabled = document.getBoolean("followParty");
+        this.chatChannel = HyriChatChannel.valueOf(document.getString("chatChannel"));
     }
 
     @Override

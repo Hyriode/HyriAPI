@@ -98,16 +98,16 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     public void save(MongoDocument document) {
         document.append("_id", this.uuid.toString());
         document.append("name", this.name);
-        document.append("name_history", this.nameHistory);
-        document.append("last_ip", this.lastIP);
-        document.append("first_login_date", this.firstLoginDate);
-        document.append("last_login_date", this.lastLoginDate);
+        document.append("nameHistory", this.nameHistory);
+        document.append("lastIp", this.lastIP);
+        document.append("firstLoginDate", this.firstLoginDate);
+        document.append("lastLoginDate", this.lastLoginDate);
         document.append("rank", MongoSerializer.serialize(this.rank));
-        document.append("hyri_plus", MongoSerializer.serialize(this.hyriPlus));
+        document.append("hyriPlus", MongoSerializer.serialize(this.hyriPlus));
         document.append("settings", MongoSerializer.serialize(this.settings));
         document.append("hyris", this.hyris.getAmount());
         document.append("gems", this.gems.getAmount());
-        document.append("network_leveling", MongoSerializer.serialize(this.networkLeveling));
+        document.append("networkLeveling", MongoSerializer.serialize(this.networkLeveling));
         document.append("guild", this.guild);
 
         this.friends.save(document);
@@ -125,19 +125,19 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     public void load(MongoDocument document) {
         this.uuid = UUID.fromString(document.getString("_id"));
         this.name = document.getString("name");
-        this.nameHistory.addAll(document.getList("name_history", String.class));
-        this.lastIP = document.getString("last_ip");
-        this.firstLoginDate = document.getLong("first_login_date");
-        this.lastLoginDate = document.getLong("last_login_date");
+        this.nameHistory.addAll(document.getList("nameHistory", String.class));
+        this.lastIP = document.getString("lastIp");
+        this.firstLoginDate = document.getLong("firstLoginDate");
+        this.lastLoginDate = document.getLong("lastLoginDate");
 
         this.rank.load(MongoDocument.of(document.get("rank", Document.class)));
-        this.hyriPlus.load(MongoDocument.of(document.get("hyri_plus", Document.class)));
+        this.hyriPlus.load(MongoDocument.of(document.get("hyriPlus", Document.class)));
         this.settings.load(MongoDocument.of(document.get("settings", Document.class)));
 
         this.hyris.setAmount(document.getLong("hyris"));
         this.gems.setAmount(document.getLong("gems"));
 
-        this.networkLeveling.load(MongoDocument.of(document.get("network_leveling", Document.class)));
+        this.networkLeveling.load(MongoDocument.of(document.get("networkLeveling", Document.class)));
 
         this.guild = document.getObjectId("guild");
 

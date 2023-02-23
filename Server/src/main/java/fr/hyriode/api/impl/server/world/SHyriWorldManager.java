@@ -14,6 +14,10 @@ import java.util.UUID;
  */
 public class SHyriWorldManager extends HyriWorldManager {
 
+    public SHyriWorldManager() {
+        super(mongoDB);
+    }
+
     @Override
     public void saveWorld(@NotNull IHyriWorld world, @NotNull UUID worldId) {
         final World bukkitWorld = Bukkit.getWorld(worldId);

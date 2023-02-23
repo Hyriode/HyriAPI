@@ -30,8 +30,9 @@ public class MongoDocument extends Document {
      * @param key The key of the enums
      * @param enums The list of enum
      * @return This {@link MongoDocument} instance
+     * @param <T> The type of the enum
      */
-    public MongoDocument appendEnums(String key, Collection<Enum<?>> enums) {
+    public <T extends Enum<T>> MongoDocument appendEnums(String key, Collection<T> enums) {
         this.append(key, enums.stream().map(Enum::name).collect(Collectors.toList()));
 
         return this;
@@ -45,8 +46,8 @@ public class MongoDocument extends Document {
      * @return A list of enum
      * @param <T> The type of the enum
      */
-    public <T extends Enum<T>> List<Enum<T>> getEnums(String key, Class<T> enumClass) {
-        final List<Enum<T>> enums = new ArrayList<>();
+    public <T extends Enum<T>> List<T> getEnums(String key, Class<T> enumClass) {
+        final List<T> enums = new ArrayList<>();
         final List<String> enumsStr = this.getList(key, String.class);
 
         for (String enumStr : enumsStr) {

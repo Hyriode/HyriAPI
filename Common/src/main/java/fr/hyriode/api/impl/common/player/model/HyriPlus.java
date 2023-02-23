@@ -44,22 +44,17 @@ public class HyriPlus implements IHyriPlus, MongoSerializable, DataSerializable 
     @Override
     public void save(MongoDocument document) {
         document.append("duration", this.duration);
-        document.append("enabled_date", this.enabledDate);
+        document.append("enabledDate", this.enabledDate);
         document.append("color", this.color.name());
-        document.append("colors", this.colors.stream().map(Enum::name).collect(Collectors.toList()));
+        document.appendEnums("colors", this.colors);
     }
 
     @Override
     public void load(MongoDocument document) {
         this.duration = document.getLong("duration");
-        this.enabledDate = document.getLong("enabled_date");
+        this.enabledDate = document.getLong("enabledDate");
         this.color = HyriChatColor.valueOf(document.getString("color"));
-
-        final List<String> colors = document.getList("colors", String.class);
-
-        for (String color : colors) {
-            this.colors.add(HyriChatColor.valueOf(color));
-        }
+        this.colors.addAll(document.getEnums("colors", HyriChatColor.class));
     }
 
     @Override

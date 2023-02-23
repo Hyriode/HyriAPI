@@ -56,7 +56,7 @@ public class GuildRank implements IGuildRank, MongoSerializable, DataSerializabl
         document.append("default", this._default);
         document.append("leader", this.leader);
         document.append("priority", this.priority);
-        document.append("created_date", this.createdDate);
+        document.append("createdDate", this.createdDate);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class GuildRank implements IGuildRank, MongoSerializable, DataSerializabl
         this._default = document.getBoolean("default");
         this.leader = document.getBoolean("leader");
         this.priority = document.getInteger("priority");
-        this.createdDate = document.getLong("created_date");
+        this.createdDate = document.getLong("createdDate");
     }
 
     @Override

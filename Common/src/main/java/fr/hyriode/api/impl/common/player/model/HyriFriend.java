@@ -32,13 +32,13 @@ public class HyriFriend implements IHyriFriend, MongoSerializable, DataSerializa
     @Override
     public void save(MongoDocument document) {
         document.append("uuid", this.uuid.toString());
-        document.append("added_date", this.whenAdded);
+        document.append("addedDate", this.whenAdded);
     }
 
     @Override
     public void load(MongoDocument document) {
         this.uuid = UUID.fromString(document.getString("uuid"));
-        this.whenAdded = document.getLong("added_date");
+        this.whenAdded = document.getLong("addedDate");
     }
 
     @Override

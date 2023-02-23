@@ -43,21 +43,21 @@ public class HyriRank implements IHyriRank, MongoSerializable, DataSerializable 
     @Override
     public void save(MongoDocument document) {
         document.append("prefix", this.prefix);
-        document.append("main_color", this.mainColor == null ? null : this.mainColor.name());
-        document.append("player_type", this.playerType.name());
-        document.append("staff_type", this.staffType == null ? null : this.staffType.name());
+        document.append("mainColor", this.mainColor == null ? null : this.mainColor.name());
+        document.append("playerType", this.playerType.name());
+        document.append("staffType", this.staffType == null ? null : this.staffType.name());
     }
 
     @Override
     public void load(MongoDocument document) {
         this.prefix = document.getString("prefix");
 
-        final String mainColor = document.getString("main_color");
+        final String mainColor = document.getString("mainColor");
 
         this.mainColor = mainColor == null ? null : HyriChatColor.valueOf(mainColor);
-        this.playerType = PlayerRank.valueOf(document.getString("player_type"));
+        this.playerType = PlayerRank.valueOf(document.getString("playerType"));
 
-        final String staffType = document.getString("staff_type");
+        final String staffType = document.getString("staffType");
 
         this.staffType = staffType == null ? null : StaffRank.valueOf(staffType);
     }

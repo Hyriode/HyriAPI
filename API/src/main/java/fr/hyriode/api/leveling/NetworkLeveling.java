@@ -66,13 +66,13 @@ public class NetworkLeveling implements IHyriLeveling, MongoSerializable, DataSe
     @Override
     public void save(MongoDocument document) {
         document.append("experience", this.experience);
-        document.append("claimed_rewards", this.claimedRewards);
+        document.append("claimedRewards", this.claimedRewards);
     }
 
     @Override
     public void load(MongoDocument document) {
         this.experience = document.getDouble("experience");
-        this.claimedRewards.addAll(document.getList("claimed_rewards", Integer.class));
+        this.claimedRewards.addAll(document.getList("claimedRewards", Integer.class));
     }
 
     @Override

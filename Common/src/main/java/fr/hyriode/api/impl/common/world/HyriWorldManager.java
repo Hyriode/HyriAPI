@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.world;
 
 import com.mongodb.client.MongoCursor;
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.mongodb.MongoDocument;
 import fr.hyriode.api.mongodb.MongoSerializer;
 import fr.hyriode.api.world.IHyriWorld;
@@ -20,9 +21,11 @@ public class HyriWorldManager implements IHyriWorldManager {
 
     private final Map<String, WorldsFS> storages = new HashMap<>();
 
+    private final MongoDB mongoDB;
     private final WorldCompression compression;
 
-    public HyriWorldManager() {
+    public HyriWorldManager(MongoDB mongoDB) {
+        this.mongoDB = mongoDB;
         this.compression = new WorldCompression();
     }
 
@@ -152,7 +155,7 @@ public class HyriWorldManager implements IHyriWorldManager {
             return fileStorage;
         }
 
-        fileStorage = new WorldsFS(database);
+        fileStorage = new WorldsFS(this.mongoDB, database);
 
         this.storages.put(database, fileStorage);
 

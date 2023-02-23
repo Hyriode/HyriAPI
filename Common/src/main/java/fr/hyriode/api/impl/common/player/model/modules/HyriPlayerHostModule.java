@@ -37,15 +37,15 @@ public class HyriPlayerHostModule implements IHyriPlayerHostModule, MongoSeriali
     @Override
     public void save(MongoDocument document) {
         document.append("available", this.availableHosts);
-        document.append("banned_players", this.bannedPlayers.stream().map(UUID::toString).collect(Collectors.toList()));
-        document.append("favorite_configs", this.favoriteConfigs);
+        document.append("bannedPlayers", this.bannedPlayers.stream().map(UUID::toString).collect(Collectors.toList()));
+        document.append("favoriteConfigs", this.favoriteConfigs);
     }
 
     @Override
     public void load(MongoDocument document) {
         this.availableHosts = document.getInteger("available");
-        document.getList("banned_players", String.class).forEach(uuid -> this.bannedPlayers.add(UUID.fromString(uuid)));
-        this.favoriteConfigs.addAll(document.getList("favorite_configs", String.class));
+        document.getList("bannedPlayers", String.class).forEach(uuid -> this.bannedPlayers.add(UUID.fromString(uuid)));
+        this.favoriteConfigs.addAll(document.getList("favoriteConfigs", String.class));
     }
 
     @Override

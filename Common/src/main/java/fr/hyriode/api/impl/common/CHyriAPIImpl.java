@@ -151,7 +151,7 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.configManager = new HyriConfigManager();
         this.networkManager = new HyriNetworkManager();
         if (!this.isServer()) {
-            this.worldManager = new HyriWorldManager();
+            this.worldManager = new HyriWorldManager(this.mongoDB);
         }
         this.worldGenerationAPI = new WorldGenerationAPI();
         this.queueManager = new HyriQueueManager();

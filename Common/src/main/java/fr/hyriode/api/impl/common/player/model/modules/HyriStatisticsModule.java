@@ -43,13 +43,13 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
     public void save(MongoDocument document) {
         this.synchronizeData();
 
-        document.append("play_time", this.playTime);
+        document.append("playTime", this.playTime);
         document.append("games", this.games);
     }
 
     @Override
     public void load(MongoDocument document) {
-        final MongoDocument playTime = MongoDocument.of(document.get("play_time", Document.class));
+        final MongoDocument playTime = MongoDocument.of(document.get("playTime", Document.class));
 
         for (String key : playTime.keySet()) {
             this.playTime.put(key, playTime.getLong(key));

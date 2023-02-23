@@ -48,18 +48,18 @@ public class GuildMember implements IGuildMember, MongoSerializable, DataSeriali
     public void save(MongoDocument document) {
         document.append("uuid", this.uuid.toString());
         document.append("rank", this.rank);
-        document.append("earned_experience", this.earnedExperience);
-        document.append("deposited_hyris", this.depositedHyris);
-        document.append("joined_date", this.joinedDate);
+        document.append("earnedExperience", this.earnedExperience);
+        document.append("depositedHyris", this.depositedHyris);
+        document.append("joinedDate", this.joinedDate);
     }
 
     @Override
     public void load(MongoDocument document) {
         this.uuid = UUID.fromString(document.getString("uuid"));
         this.rank = document.getString("rank");
-        this.earnedExperience = document.getDouble("earned_experience");
-        this.depositedHyris = document.getLong("deposited_hyris");
-        this.joinedDate = document.getLong("joined_date");
+        this.earnedExperience = document.getDouble("earnedExperience");
+        this.depositedHyris = document.getLong("depositedHyris");
+        this.joinedDate = document.getLong("joinedDate");
     }
 
     @Override

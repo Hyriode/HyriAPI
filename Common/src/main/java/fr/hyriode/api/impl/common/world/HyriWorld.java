@@ -49,7 +49,7 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
     public void save(MongoDocument document) {
         document.append("category", this.category);
         document.append("enabled", this.enabled);
-        document.append("creation_date", this.creationDate);
+        document.append("creationDate", this.creationDate);
         document.append("authors", this.authors);
     }
 
@@ -57,7 +57,7 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
     public void load(MongoDocument document) {
         this.category = document.getString("category");
         this.enabled = document.getBoolean("enabled");
-        this.creationDate = document.getLong("creation_date");
+        this.creationDate = document.getLong("creationDate");
         this.authors = document.getList("authors", String.class);
     }
 

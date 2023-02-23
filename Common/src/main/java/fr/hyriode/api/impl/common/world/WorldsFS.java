@@ -11,6 +11,7 @@ import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.mongodb.MongoSerializer;
 import org.bson.Document;
 
@@ -22,12 +23,10 @@ public class WorldsFS {
 
     private final GridFSBucket gridFSBucket;
     private final MongoCollection<Document> filesCollection;
-    private final String database;
 
-    public WorldsFS(String database) {
-        this.database = database;
-        this.gridFSBucket = GridFSBuckets.create(HyriAPI.get().getMongoDB().getDatabase(this.database), "worlds");
-        this.filesCollection = HyriAPI.get().getMongoDB().getDatabase(this.database).getCollection("worlds.files");
+    public WorldsFS(MongoDB mongoDB, String database) {
+        this.gridFSBucket = GridFSBuckets.create(mongoDB.getDatabase(database), "worlds");
+        this.filesCollection = mongoDB.getDatabase(database).getCollection("worlds.files");
     }
 
     public void upload(HyriWorld world, byte[] data) {
