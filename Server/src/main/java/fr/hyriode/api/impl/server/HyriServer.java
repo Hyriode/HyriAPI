@@ -166,14 +166,14 @@ public class HyriServer implements IHyriServer {
 
     @Override
     public void addPlayer(@NotNull UUID player) {
-        this.playingPlayers.add(player);
+        this.players.add(player);
 
         this.update();
     }
 
     @Override
     public void removePlayer(@NotNull UUID player) {
-        this.playingPlayers.remove(player);
+        this.players.remove(player);
 
         this.update();
     }
