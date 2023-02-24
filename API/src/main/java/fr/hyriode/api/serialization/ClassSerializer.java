@@ -32,9 +32,7 @@ public class ClassSerializer<T> implements JsonSerializer<T>, JsonDeserializer<T
             final String content = object.get(CONTENT).getAsString();
 
             return HyggdrasilAPI.NORMAL_GSON.fromJson(content, (Type) clazz);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        } catch (ClassNotFoundException ignored) {}
         return null;
     }
 
