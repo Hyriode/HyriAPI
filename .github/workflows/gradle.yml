@@ -44,12 +44,3 @@ jobs:
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: HyriAPI
-          path: |
-            Server/build/libs/
-            Proxy/build/libs/
-          retention-days: 7
