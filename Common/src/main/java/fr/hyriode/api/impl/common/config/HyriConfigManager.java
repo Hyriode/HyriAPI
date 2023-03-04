@@ -6,6 +6,7 @@ import com.mongodb.client.model.UpdateOptions;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.IHyriConfig;
 import fr.hyriode.api.config.IHyriConfigManager;
+import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import org.bson.Document;
 
 import java.util.HashMap;
@@ -18,6 +19,12 @@ import java.util.Map;
 public class HyriConfigManager implements IHyriConfigManager {
 
     private final Map<String, MongoCollection<Document>> configsCollections = new HashMap<>();
+
+    private final MongoDB mongoDB;
+
+    public HyriConfigManager(MongoDB mongoDB) {
+        this.mongoDB = mongoDB;
+    }
 
     @Override
     public <T extends IHyriConfig> T getConfig(Class<T> clazz, String database, String category, String name) {
@@ -84,7 +91,7 @@ public class HyriConfigManager implements IHyriConfigManager {
             return collection;
         }
 
-        collection = HyriAPI.get().getMongoDB().getDatabase(database).getCollection("configs");
+        collection = this.mongoDB.getDatabase(database).getCollection("configs");
 
         this.configsCollections.put(database, collection);
 
