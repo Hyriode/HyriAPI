@@ -20,6 +20,7 @@ import java.util.UUID;
 public class HyriWorld implements IHyriWorld, MongoSerializable {
 
     private String initialName;
+    private String initialCategory;
 
     private final String database;
     private String category;
@@ -59,6 +60,8 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
         this.enabled = document.getBoolean("enabled");
         this.creationDate = document.getLong("creationDate");
         this.authors = document.getList("authors", String.class);
+
+        this.initialCategory = this.category;
     }
 
     @Override
@@ -83,6 +86,10 @@ public class HyriWorld implements IHyriWorld, MongoSerializable {
 
     public String getInitialName() {
         return this.initialName;
+    }
+
+    public String getInitialCategory() {
+        return this.initialCategory;
     }
 
     @Override

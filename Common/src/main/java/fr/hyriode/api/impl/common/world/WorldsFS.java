@@ -72,12 +72,8 @@ public class WorldsFS {
         }
     }
 
-    public void update(String category, String initialName, String name, Document metadata) {
-        this.filesCollection.updateOne(Filters.and(Filters.eq("metadata.category", category), Filters.eq("filename", initialName)), Updates.combine(Updates.set("metadata", metadata), Updates.set("filename", name)));
-    }
-
-    public void rename(String category, String oldName, String newName) {
-        this.gridFSBucket.rename(this.getDocument(category, oldName).getObjectId("_id"), newName);
+    public void update(String initialCategory, String initialName, String name, Document metadata) {
+        this.filesCollection.updateOne(Filters.and(Filters.eq("metadata.category", initialCategory), Filters.eq("filename", initialName)), Updates.combine(Updates.set("metadata", metadata), Updates.set("filename", name)));
     }
 
     public GridFSFile getFile(HyriWorld world) {

@@ -53,7 +53,7 @@ public class HyriWorldManager implements IHyriWorldManager {
         final WorldsFS storage = this.getStorage(world.getDatabase());
         final Document metadata = MongoSerializer.serialize(world);
 
-        storage.update(world.getCategory(), world.getInitialName(), world.getName(), metadata);
+        storage.update(world.getInitialCategory(), world.getInitialName(), world.getName(), metadata);
 
         HyriAPI.get().log("Updated '" + world.getName() + "' world (database: " + world.getDatabase() + "; category: " + world.getCategory() + ").");
     }
