@@ -9,6 +9,7 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.config.MongoDBConfig;
 import fr.hyriode.api.mongodb.IMongoDB;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,15 +35,18 @@ public class MongoDB implements IMongoDB {
         final ConnectionString connectionString = new ConnectionString(this.config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
+                .applyToConnectionPoolSettings(builder -> builder.minSize(5)
+                        .maxConnectionLifeTime(30, TimeUnit.MINUTES))
+                .applyToSocketSettings(builder -> builder.connectTimeout(2000, TimeUnit.MILLISECONDS))
                 .retryWrites(true)
                 .build();
 
         this.client = MongoClients.create(settings);
         this.connected = true;
 
-//        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
-//        Logger.getLogger("org.mongodb.driver.connection").setLevel(Level.OFF);
-//        Logger.getLogger("org.mongodb.driver.client").setLevel(Level.OFF);
+        Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
+        Logger.getLogger("org.mongodb.driver.connection").setLevel(Level.OFF);
+        Logger.getLogger("org.mongodb.driver.client").setLevel(Level.OFF);
     }
 
     public void stopConnection() {
