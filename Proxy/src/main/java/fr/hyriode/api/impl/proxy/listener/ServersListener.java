@@ -25,13 +25,6 @@ public class ServersListener {
         }
 
         eventBus.subscribe(HyggServerStartedEvent.class, event -> this.addServer(event.getServer().getName()));
-        eventBus.subscribe(HyggServerUpdatedEvent.class, event -> {
-            final String serverName = event.getServer().getName();
-
-            if (ProxyServer.getInstance().getServerInfo(serverName) == null) {
-                this.addServer(serverName);
-            }
-        });
         eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.removeServer(event.getServer().getName()));
     }
 
