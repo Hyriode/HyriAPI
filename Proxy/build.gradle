@@ -11,35 +11,6 @@ shadowJar {
 dependencies {
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':Common')
-    implementation 'ch.qos.logback:logback-classic:1.2.11'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            pom {
-                groupId = project.group
-                artifactId = 'hyriapi-proxy'
-                version = project.version
-                name = 'HyriAPI'
-                description = 'Project with the proxy implementation of HyriAPI'
-                url = 'https://github.com/Hyriode/HyriAPI'
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            credentials {
-                username System.getenv('GITHUB_USERNAME')
-                password System.getenv('GITHUB_TOKEN')
-            }
-            name = "HyriAPI_maven"
-            url = "https://maven.pkg.github.com/Hyriode/HyriAPI"
-        }
-    }
 }
 
 processResources {
