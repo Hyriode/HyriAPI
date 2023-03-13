@@ -14,14 +14,18 @@ import java.util.UUID;
  */
 public abstract class QueueEvent extends HyriEvent {
 
-    private final IHyriQueue queue;
+    private final UUID queueId;
 
     public QueueEvent(IHyriQueue queue) {
-        this.queue = queue;
+        this.queueId = queue.getId();
     }
 
     public IHyriQueue getQueue() {
-        return this.queue;
+        return HyriAPI.get().getQueueManager().getQueue(this.queueId);
+    }
+
+    public UUID getQueueId() {
+        return this.queueId;
     }
 
 }
