@@ -12,9 +12,9 @@ import fr.hyriode.api.server.join.packet.PlayerJoinPacket;
  */
 public class JoinReceiver implements IHyriPacketReceiver {
 
-    private final HyriJoinManager joinManager;
+    private final JoinManager joinManager;
 
-    public JoinReceiver(HyriJoinManager joinManager) {
+    public JoinReceiver(JoinManager joinManager) {
         this.joinManager = joinManager;
     }
 

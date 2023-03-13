@@ -16,11 +16,11 @@ import java.util.UUID;
  * Created by AstFaster
  * on 18/04/2022 at 21:54
  */
-public class HyriJoinManager implements IHyriJoinManager {
+public class JoinManager implements IHyriJoinManager {
 
     private final TreeMap<Integer, IHyriJoinHandler> handlers;
 
-    public HyriJoinManager() {
+    public JoinManager() {
         this.handlers = new TreeMap<>();
 
         HyriAPI.get().getPubSub().subscribe(HyriChannel.SERVERS, new JoinReceiver(this));

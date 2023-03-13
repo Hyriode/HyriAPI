@@ -34,13 +34,13 @@ import java.util.UUID;
 public class JoinListener implements Listener {
 
     private final CHyriAPIImpl hyriAPI;
-    private final HyriJoinManager joinManager;
+    private final JoinManager joinManager;
 
     private final Map<UUID, Long> connections = new HashMap<>();
 
     public JoinListener() {
         this.hyriAPI = (CHyriAPIImpl) HyriAPI.get();
-        this.joinManager = (HyriJoinManager) hyriAPI.getJoinManager();
+        this.joinManager = (JoinManager) hyriAPI.getJoinManager();
     }
 
     @EventHandler(priority = EventPriority.LOW)

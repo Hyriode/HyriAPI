@@ -1,5 +1,6 @@
 package fr.hyriode.api.queue.event;
 
+import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.queue.IHyriQueue;
 
 /**
@@ -8,10 +9,16 @@ import fr.hyriode.api.queue.IHyriQueue;
  *
  * Event triggered each time a queue is disabled.
  */
-public class QueueDisabledEvent extends QueueEvent {
+public class QueueDisabledEvent extends HyriEvent {
+
+    private final IHyriQueue queue;
 
     public QueueDisabledEvent(IHyriQueue queue) {
-        super(queue);
+        this.queue = queue;
+    }
+
+    public IHyriQueue getQueue() {
+        return this.queue;
     }
 
 }

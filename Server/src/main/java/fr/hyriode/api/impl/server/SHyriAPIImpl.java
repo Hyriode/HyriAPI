@@ -2,7 +2,7 @@ package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
-import fr.hyriode.api.impl.server.join.HyriJoinManager;
+import fr.hyriode.api.impl.server.join.JoinManager;
 import fr.hyriode.api.impl.server.join.JoinListener;
 import fr.hyriode.api.impl.server.player.SHyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.SoundReceiver;
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class SHyriAPIImpl extends CHyriAPIImpl {
 
     private HyriServer server;
-    private HyriJoinManager joinManager;
+    private JoinManager joinManager;
 
     private final HyriAPIPlugin plugin;
 
@@ -53,7 +53,7 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         this.server = new HyriServer(this.hyggdrasilManager.withHyggdrasil() ? this.hyggdrasilManager.getApplication() : null);
         this.worldManager = new SHyriWorldManager(this.mongoDB);
         this.playerManager = new SHyriPlayerManager();
-        this.joinManager = new HyriJoinManager();
+        this.joinManager = new JoinManager();
     }
 
     @Override
