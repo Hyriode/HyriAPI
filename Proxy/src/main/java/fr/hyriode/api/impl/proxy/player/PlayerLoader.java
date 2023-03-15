@@ -13,8 +13,6 @@ import net.md_5.bungee.Util;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;

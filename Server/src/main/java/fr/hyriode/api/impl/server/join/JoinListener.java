@@ -98,7 +98,12 @@ public class JoinListener implements Listener {
 
         this.connections.put(playerId, System.currentTimeMillis());
         this.hyriAPI.getLanguageManager().setCache(playerId, account.getSettings().getLanguage());
-        this.joinManager.onJoin(player);
+
+        try {
+            this.joinManager.onJoin(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinServerEvent(playerId, HyriAPI.get().getServer().getName()));
         HyriAPI.get().getServer().addPlayer(player.getUniqueId());
@@ -112,7 +117,11 @@ public class JoinListener implements Listener {
 
         event.setQuitMessage("");
 
-        this.joinManager.onLogout(player);
+        try {
+            this.joinManager.onLogout(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         final IHyriPlayer account = IHyriPlayer.get(playerId);
 
