@@ -137,6 +137,10 @@ public class HyriServer implements IHyriServer {
 
     @Override
     public void setState(HyggServer.State state) {
+        if (this.state == state) {
+            return;
+        }
+
         this.state = state;
 
         HyriAPI.get().log("State changed to " + state.name() + ".");
