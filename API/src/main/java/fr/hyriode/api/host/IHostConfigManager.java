@@ -36,6 +36,22 @@ public interface IHostConfigManager {
     void deleteConfig(IHostConfig config);
 
     /**
+     * Get a {@linkplain IHostConfig host config} from its id
+     *
+     * @param id The identifier of the config
+     * @return The {@link IHostConfig} linked to the given id; or <code>null</code> if no config has been found
+     */
+    IHostConfig getConfig(String id);
+
+    /**
+     * Check whether a given config id exists or not
+     *
+     * @param id The id of the config to check
+     * @return <code>true</code> if the config exists
+     */
+    boolean existsConfig(String id);
+
+    /**
      * Get the total of config loadings
      *
      * @param id The identifier of the config
@@ -54,23 +70,17 @@ public interface IHostConfigManager {
      * Get all the configs of a given player
      *
      * @param playerId The {@link UUID} of the player
-     * @return A list of {@link IHostConfig}; or an empty list if the player doesn't have any config
+     * @return A list of config id; or an empty list if the player doesn't have any config
      */
-    List<IHostConfig> getPlayerConfigs(UUID playerId);
-
-    /**
-     * Get a {@linkplain IHostConfig host config} from its id
-     *
-     * @param id The identifier of the config
-     * @return The {@link IHostConfig} linked to the given id; or <code>null</code> if no config has been found
-     */
-    IHostConfig getConfig(String id);
+    List<String> getPlayerConfigs(UUID playerId);
 
     /**
      * Get all the configs available on the server
      *
+     * @param start The start of the range
+     * @param stop The end of the range
      * @return A list of config id
      */
-    List<String> getConfigs();
+    List<String> getConfigs(long start, long stop);
 
 }

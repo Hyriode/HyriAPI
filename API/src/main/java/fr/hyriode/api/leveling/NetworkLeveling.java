@@ -48,7 +48,7 @@ public class NetworkLeveling implements IHyriLeveling, MongoSerializable, DataSe
             if (level == 0) {
                 return 0.0D;
             }
-            return Math.ceil(180 * level * Math.sqrt(level) + 300);
+            return Math.ceil(480 * level * Math.sqrt(level) + 300);
         }
     };
 

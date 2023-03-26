@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.host.IHostConfig;
 import fr.hyriode.api.host.IHostConfigManager;
+import redis.clients.jedis.Pipeline;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
@@ -21,8 +23,9 @@ public class HostConfigManager implements IHostConfigManager {
     private static final char[] ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789".toCharArray();
 
     private static final String KEY = "host-configs:";
-    private static final BiFunction<UUID, String, String> KEY_FORMATTER = (owner, id) -> KEY + owner.toString() + ":" + id;
+
     private static final String LOADINGS_KEY = "host-configs-loadings";
+    private static final String LIST_KEY = "host-configs-list";
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(HostConfig.class, new HostConfig.Serializer())
@@ -35,46 +38,26 @@ public class HostConfigManager implements IHostConfigManager {
 
     @Override
     public void saveConfig(IHostConfig config) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY_FORMATTER.apply(config.getOwner(), config.getId()), GSON.toJson(config)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final Pipeline pipeline = jedis.pipelined();
+            final String configId = config.getId();
+
+            pipeline.set(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
+            pipeline.rpush(LIST_KEY, configId);
+            pipeline.sync();
+        });
     }
 
     @Override
     public void deleteConfig(IHostConfig config) {
         HyriAPI.get().getRedisProcessor().process(jedis -> {
+            final Pipeline pipeline = jedis.pipelined();
             final String configId = config.getId();
 
-            jedis.del(KEY_FORMATTER.apply(config.getOwner(), configId), GSON.toJson(config));
-            jedis.zrem(LOADINGS_KEY, configId);
-        });
-    }
-
-    @Override
-    public long getConfigLoadings(String id) {
-        try {
-            return (long) (double) HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(LOADINGS_KEY, id));
-        } catch (NullPointerException e) {
-            return 0;
-        }
-    }
-
-    @Override
-    public void addConfigLoading(String id) {
-        if (this.getConfig(id) == null) {
-            return;
-        }
-
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zincrby(LOADINGS_KEY, 1.0D, id));
-    }
-
-    @Override
-    public List<IHostConfig> getPlayerConfigs(UUID playerId) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-           final List<IHostConfig> configs = new ArrayList<>();
-
-           for (String key : jedis.keys(KEY + playerId.toString() + ":*")) {
-               configs.add(GSON.fromJson(jedis.get(key), HostConfig.class));
-           }
-           return configs;
+            pipeline.del(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
+            pipeline.zrem(LOADINGS_KEY, configId);
+            pipeline.lrem(LIST_KEY, 1, configId);
+            pipeline.sync();
         });
     }
 
@@ -89,15 +72,44 @@ public class HostConfigManager implements IHostConfigManager {
     }
 
     @Override
-    public List<String> getConfigs() {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> {
-            final List<String> configs = new ArrayList<>();
+    public boolean existsConfig(String id) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.keys(KEY + "*:" + id).size() > 0);
+    }
 
-            for (String key : jedis.keys(KEY + "*")) {
-                configs.add(key.split(":")[2]);
-            }
-            return configs;
+    @Override
+    public long getConfigLoadings(String id) {
+        try {
+            return (long) (double) HyriAPI.get().getRedisProcessor().get(jedis -> jedis.zscore(LOADINGS_KEY, id));
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public void addConfigLoading(String id) {
+        if (!this.existsConfig(id)) {
+            return;
+        }
+
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.zincrby(LOADINGS_KEY, 1.0D, id));
+    }
+
+    @Override
+    public List<String> getPlayerConfigs(UUID playerId) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+           final List<String> configs = new ArrayList<>();
+           final Set<String> keys = jedis.keys(KEY + playerId.toString() + ":*");
+
+           for (String key : keys) {
+               configs.add(key.split(":")[2]);
+           }
+           return configs;
         });
+    }
+
+    @Override
+    public List<String> getConfigs(long start, long stop) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.lrange(LIST_KEY, start, stop));
     }
 
     private String generateId() {
