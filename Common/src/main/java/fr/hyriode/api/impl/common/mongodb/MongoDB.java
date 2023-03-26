@@ -35,8 +35,6 @@ public class MongoDB implements IMongoDB {
         final ConnectionString connectionString = new ConnectionString(this.config.toURL());
         final MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
-                .applyToConnectionPoolSettings(builder -> builder.minSize(5)
-                        .maxConnectionLifeTime(30, TimeUnit.MINUTES))
                 .applyToSocketSettings(builder -> builder.connectTimeout(2000, TimeUnit.MILLISECONDS))
                 .retryWrites(true)
                 .build();

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -62,6 +63,19 @@ public class HyriQueueManager implements IHyriQueueManager {
             final byte[] bytes = jedis.get((REDIS_KEY + queueId.toString()).getBytes(StandardCharsets.UTF_8));
 
             return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriQueue(), bytes);
+        });
+    }
+
+    @Override
+    public @NotNull List<IHyriQueue> getQueues() {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> {
+            final List<IHyriQueue> queues = new ArrayList<>();
+            final Set<byte[]> keys = jedis.keys((REDIS_KEY + "*").getBytes(StandardCharsets.UTF_8));
+
+            for (byte[] key : keys) {
+                queues.add(HyriAPI.get().getDataSerializer().deserialize(new HyriQueue(), jedis.get(key)));
+            }
+            return queues;
         });
     }
 

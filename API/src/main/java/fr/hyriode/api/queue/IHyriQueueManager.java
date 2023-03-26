@@ -3,6 +3,7 @@ package fr.hyriode.api.queue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -58,6 +59,13 @@ public interface IHyriQueueManager {
      * @return The found {@link IHyriQueue}
      */
     @Nullable IHyriQueue getQueue(UUID queueId);
+
+    /**
+     * Get all the registered queues
+     *
+     * @return A list of {@link IHyriQueue}
+     */
+    @NotNull List<IHyriQueue> getQueues();
 
     /**
      * Update a queue in cache
