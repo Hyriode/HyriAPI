@@ -25,7 +25,7 @@ public class HostConfigManager implements IHostConfigManager {
     private static final String KEY = "host-configs:";
 
     private static final String LOADINGS_KEY = "host-configs-loadings";
-    private static final String LIST_KEY = "host-configs-list";
+    private static final String PUBLIC_LIST_KEY = "host-configs-public-list";
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(HostConfig.class, new HostConfig.Serializer())
@@ -43,7 +43,12 @@ public class HostConfigManager implements IHostConfigManager {
             final String configId = config.getId();
 
             pipeline.set(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
-            pipeline.rpush(LIST_KEY, configId);
+            pipeline.lrem(PUBLIC_LIST_KEY, 1, configId);
+
+            if (!config.isPrivate()) {
+                pipeline.rpush(PUBLIC_LIST_KEY, configId);
+            }
+
             pipeline.sync();
         });
     }
@@ -56,7 +61,7 @@ public class HostConfigManager implements IHostConfigManager {
 
             pipeline.del(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
             pipeline.zrem(LOADINGS_KEY, configId);
-            pipeline.lrem(LIST_KEY, 1, configId);
+            pipeline.lrem(PUBLIC_LIST_KEY, 1, configId);
             pipeline.sync();
         });
     }
@@ -108,8 +113,8 @@ public class HostConfigManager implements IHostConfigManager {
     }
 
     @Override
-    public List<String> getConfigs(long start, long stop) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.lrange(LIST_KEY, start, stop));
+    public List<String> getPublicConfigs(long start, long stop) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.lrange(PUBLIC_LIST_KEY, start, stop));
     }
 
     private String generateId() {

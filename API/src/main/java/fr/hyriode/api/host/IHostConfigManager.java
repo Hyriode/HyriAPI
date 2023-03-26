@@ -75,12 +75,12 @@ public interface IHostConfigManager {
     List<String> getPlayerConfigs(UUID playerId);
 
     /**
-     * Get all the configs available on the server
+     * Get all the public configs available on the server
      *
      * @param start The start of the range
      * @param stop The end of the range
      * @return A list of config id
      */
-    List<String> getConfigs(long start, long stop);
+    List<String> getPublicConfigs(long start, long stop);
 
 }
