@@ -49,12 +49,24 @@ public class JoinListener implements Listener {
         try {
             final PendingConnection connection = event.getConnection();
             final String name = connection.getName();
+            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
+            final IHyriMaintenance maintenance = network.getMaintenance();
 
             UUID playerId = playerManager.getPlayerId(name);
             PlayerLoader.MojangProfile mojangProfile = null;
 
             if (playerId == null) {
+                if (maintenance.isActive()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.createMaintenanceMessage(maintenance));
+                    return;
+                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.SERVER_FULL_MESSAGE);
+                    return;
+                }
+
                 mojangProfile = this.playerLoader.fetchMojangProfile(name);
                 playerId = mojangProfile.getPlayerId();
             }
@@ -62,6 +74,18 @@ public class JoinListener implements Listener {
             IHyriPlayer account = IHyriPlayer.get(playerId);
 
             if (account != null) {
+                final boolean bypass = account.getRank().isStaff() || playerManager.getWhitelistManager().isWhitelisted(name);
+
+                if (maintenance.isActive() && !bypass) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.createMaintenanceMessage(maintenance));
+                    return;
+                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && !bypass) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.SERVER_FULL_MESSAGE);
+                    return;
+                }
+
                 if (this.playerLoader.isOnline(playerId)) { // Check if the player is not online
                     event.setCancelled(true);
                     event.setCancelReason(MessageUtil.ALREADY_ONLINE);
@@ -115,24 +139,11 @@ public class JoinListener implements Listener {
 
         if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
             final UUID playerId = player.getUniqueId();
-            final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
             final IHyriPlayer account = IHyriPlayer.get(playerId);
-            final IHyriMaintenance maintenance = network.getMaintenance();
 
             event.setCancelled(true);
 
-            if (account != null && (account.getRank().isStaff() || HyriAPI.get().getPlayerManager().getWhitelistManager().isWhitelisted(player.getName()))) {
-                this.connectToNetwork(player, account, event);
-                return;
-            }
-
-            if (maintenance.isActive()) {
-                player.disconnect(MessageUtil.createMaintenanceMessage(maintenance));
-            } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && (account == null || account.getRank().isDefault())) {
-                player.disconnect(MessageUtil.SERVER_FULL_MESSAGE);
-            } else {
-                this.connectToNetwork(player, account, event);
-            }
+            this.connectToNetwork(player, account, event);
         }
     }
 
