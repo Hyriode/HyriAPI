@@ -77,10 +77,11 @@ public interface IHostConfigManager {
     /**
      * Get all the public configs available on the server
      *
+     * @param game The game of the configs
      * @param start The start of the range
      * @param stop The end of the range
      * @return A list of config id
      */
-    List<String> getPublicConfigs(long start, long stop);
+    List<String> getPublicConfigs(String game, String gameType, long start, long stop);
 
 }

@@ -25,7 +25,7 @@ public class HostConfigManager implements IHostConfigManager {
     private static final String KEY = "host-configs:";
 
     private static final String LOADINGS_KEY = "host-configs-loadings";
-    private static final String PUBLIC_LIST_KEY = "host-configs-public-list";
+    private static final String PUBLIC_LIST_KEY = "host-configs-public:";
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(HostConfig.class, new HostConfig.Serializer())
@@ -41,12 +41,13 @@ public class HostConfigManager implements IHostConfigManager {
         HyriAPI.get().getRedisProcessor().process(jedis -> {
             final Pipeline pipeline = jedis.pipelined();
             final String configId = config.getId();
+            final String publicKey = PUBLIC_LIST_KEY + config.getGame() + ":" + config.getGameType();
 
             pipeline.set(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
-            pipeline.lrem(PUBLIC_LIST_KEY, 1, configId);
+            pipeline.lrem(publicKey, 1, configId);
 
             if (!config.isPrivate()) {
-                pipeline.rpush(PUBLIC_LIST_KEY, configId);
+                pipeline.rpush(publicKey, configId);
             }
 
             pipeline.sync();
@@ -61,7 +62,7 @@ public class HostConfigManager implements IHostConfigManager {
 
             pipeline.del(KEY + config.getOwner().toString() + ":" + configId, GSON.toJson(config));
             pipeline.zrem(LOADINGS_KEY, configId);
-            pipeline.lrem(PUBLIC_LIST_KEY, 1, configId);
+            pipeline.lrem(PUBLIC_LIST_KEY + config.getGame() + ":" + config.getGameType(), 1, configId);
             pipeline.sync();
         });
     }
@@ -113,8 +114,8 @@ public class HostConfigManager implements IHostConfigManager {
     }
 
     @Override
-    public List<String> getPublicConfigs(long start, long stop) {
-        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.lrange(PUBLIC_LIST_KEY, start, stop));
+    public List<String> getPublicConfigs(String game, String gameType, long start, long stop) {
+        return HyriAPI.get().getRedisProcessor().get(jedis -> jedis.lrange(PUBLIC_LIST_KEY + game + ":" + gameType, start, stop));
     }
 
     private String generateId() {
