@@ -28,6 +28,8 @@ import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Project: HyriAPI
@@ -106,6 +108,16 @@ public class JoinListener implements Listener {
             }
 
             if (account == null) { // Player doesn't exist so a new account need to be created
+                if (maintenance.isActive()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.createMaintenanceMessage(maintenance));
+                    return;
+                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(MessageUtil.SERVER_FULL_MESSAGE);
+                    return;
+                }
+
                 if (!this.playerLoader.isNameValid(name)) {
                     event.setCancelled(true);
                     event.setCancelReason(MessageUtil.INVALID_NAME);

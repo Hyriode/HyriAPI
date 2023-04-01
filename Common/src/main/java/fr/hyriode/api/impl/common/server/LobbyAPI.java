@@ -66,7 +66,7 @@ public class LobbyAPI implements ILobbyAPI {
                 final UUID player = players.poll(); // Remove a player from the queue (declared as evacuated)
 
                 // Finally, evacuate the player
-                HyriAPI.get().getServerManager().sendPlayerToServer(player, serverName);
+                HyriAPI.get().getServerManager().sendPlayerToServer(player, lobby.getName());
             }
         }
     }
