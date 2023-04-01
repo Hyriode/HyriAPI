@@ -1,11 +1,14 @@
 package fr.hyriode.api.impl.common.player;
 
 import com.google.gson.annotations.Expose;
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.impl.common.player.model.HyriNickname;
 import fr.hyriode.api.impl.common.player.model.HyriRank;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
+import fr.hyriode.api.player.event.ModerationUpdatedEvent;
+import fr.hyriode.api.player.event.VanishUpdatedEvent;
 import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
@@ -214,6 +217,8 @@ public class HyriPlayerSession implements IHyriPlayerSession, DataSerializable {
     @Override
     public void setModerating(boolean moderating) {
         this.moderating = moderating;
+
+        HyriAPI.get().getEventBus().publish(new ModerationUpdatedEvent(this));
     }
 
     @Override
@@ -224,6 +229,8 @@ public class HyriPlayerSession implements IHyriPlayerSession, DataSerializable {
     @Override
     public void setVanished(boolean vanished) {
         this.vanished = vanished;
+
+        HyriAPI.get().getEventBus().publish(new VanishUpdatedEvent(this));
     }
 
     @Override

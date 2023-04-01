@@ -97,7 +97,7 @@ public class HyriNickname implements IHyriNickname, DataSerializable {
 
     @Override
     public void setRank(PlayerRank rank) {
-        this.rank = rank.getId();
+        this.rank = rank == null ? -1 : rank.getId();
     }
 
     @Override
