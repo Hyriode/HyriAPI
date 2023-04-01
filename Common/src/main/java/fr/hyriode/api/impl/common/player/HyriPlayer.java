@@ -2,7 +2,7 @@ package fr.hyriode.api.impl.common.player;
 
 import com.google.gson.annotations.Expose;
 import fr.hyriode.api.color.HyriChatColor;
-import fr.hyriode.api.impl.common.money.Gems;
+import fr.hyriode.api.impl.common.money.Hyodes;
 import fr.hyriode.api.impl.common.money.Hyris;
 import fr.hyriode.api.impl.common.player.model.HyriPlayerSettings;
 import fr.hyriode.api.impl.common.player.model.HyriPlus;
@@ -64,7 +64,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     @Expose
     private final Hyris hyris = new Hyris(this);
     @Expose
-    private final Gems gems = new Gems(this);
+    private final Hyodes hyodes = new Hyodes(this);
     @Expose
     private final NetworkLeveling networkLeveling = new NetworkLeveling(this);
 
@@ -106,7 +106,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         document.append("hyriPlus", MongoSerializer.serialize(this.hyriPlus));
         document.append("settings", MongoSerializer.serialize(this.settings));
         document.append("hyris", this.hyris.getAmount());
-        document.append("gems", this.gems.getAmount());
+        document.append("hyodes", this.hyodes.getAmount());
         document.append("networkLeveling", MongoSerializer.serialize(this.networkLeveling));
         document.append("guild", this.guild);
 
@@ -135,7 +135,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.settings.load(MongoDocument.of(document.get("settings", Document.class)));
 
         this.hyris.setAmount(document.getLong("hyris"));
-        this.gems.setAmount(document.getLong("gems"));
+        this.hyodes.setAmount(document.containsKey("hyodes") ? document.getLong("hyodes") : document.getLong("gems"));
 
         this.networkLeveling.load(MongoDocument.of(document.get("networkLeveling", Document.class)));
 
@@ -168,7 +168,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.settings.write(output);
 
         output.writeLong(this.hyris.getAmount());
-        output.writeLong(this.gems.getAmount());
+        output.writeLong(this.hyodes.getAmount());
 
         this.networkLeveling.write(output);
 
@@ -201,7 +201,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         this.settings.read(input);
 
         this.hyris.setAmount(input.readLong());
-        this.gems.setAmount(input.readLong());
+        this.hyodes.setAmount(input.readLong());
 
         this.networkLeveling.read(input);
 
@@ -304,8 +304,8 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     }
 
     @Override
-    public IHyriMoney getGems() {
-        return this.gems;
+    public IHyriMoney getHyodes() {
+        return this.hyodes;
     }
 
     @Override

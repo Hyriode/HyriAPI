@@ -8,9 +8,9 @@ import fr.hyriode.api.player.IHyriPlayer;
  * Created by AstFaster
  * on 01/12/2022 at 19:57
  */
-public class Gems extends HyriMoney {
+public class Hyodes extends HyriMoney {
 
-    public Gems(IHyriPlayer player) {
+    public Hyodes(IHyriPlayer player) {
         super(player);
     }
 
@@ -26,7 +26,7 @@ public class Gems extends HyriMoney {
 
     @Override
     public String getName() {
-        return "Gems";
+        return "Hyodes";
     }
 
     @Override

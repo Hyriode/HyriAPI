@@ -121,11 +121,11 @@ public interface IHyriPlayer {
     IHyriMoney getHyris();
 
     /**
-     * Get player Gems money
+     * Get player Hyodes money
      *
      * @return A {@link IHyriMoney} instance
      */
-    IHyriMoney getGems();
+    IHyriMoney getHyodes();
 
     /**
      * Get the player leveling on the network
