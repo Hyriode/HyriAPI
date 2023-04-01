@@ -1,6 +1,9 @@
 package fr.hyriode.api.booster;
 
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.HyriEvent;
+
+import java.util.UUID;
 
 /**
  * Project: HyriAPI
@@ -10,15 +13,15 @@ import fr.hyriode.api.event.HyriEvent;
 public class HyriBoosterEvent extends HyriEvent {
 
     /** The booster that triggered the event */
-    private final IHyriBooster booster;
+    private final UUID boosterId;
 
     /**
      * Constructor of {@link HyriBoosterEvent}
      *
-     * @param booster The concerned booster
+     * @param boosterId The if of the concerned booster
      */
-    public HyriBoosterEvent(IHyriBooster booster) {
-        this.booster = booster;
+    public HyriBoosterEvent(UUID boosterId) {
+        this.boosterId = boosterId;
     }
 
     /**
@@ -27,7 +30,7 @@ public class HyriBoosterEvent extends HyriEvent {
      * @return A {@link IHyriBooster}
      */
     public IHyriBooster getBooster() {
-        return this.booster;
+        return HyriAPI.get().getBoosterManager().getBooster(this.boosterId);
     }
 
 }

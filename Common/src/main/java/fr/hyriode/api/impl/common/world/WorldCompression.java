@@ -89,7 +89,7 @@ public class WorldCompression {
 
         for (final File f : Objects.requireNonNull(folder.listFiles())) {
             if (f.isDirectory()) {
-                result.addAll(listFiles(f));
+                result.addAll(this.listFiles(f));
             }
 
             if (f.isFile()) {

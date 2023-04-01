@@ -35,7 +35,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
             pipeline.sync();
         });
 
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriBoosterEvent(booster));
+        HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriBoosterEvent(booster.getIdentifier()));
 
         return booster;
     }
