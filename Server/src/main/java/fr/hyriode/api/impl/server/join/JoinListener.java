@@ -12,6 +12,7 @@ import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.event.PlayerQuitServerEvent;
 import fr.hyriode.api.player.model.IHyriNickname;
 import fr.hyriode.api.rank.StaffRank;
+import fr.hyriode.api.server.IHyriServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -124,8 +125,17 @@ public class JoinListener implements Listener {
         }
 
         final IHyriPlayer account = IHyriPlayer.get(playerId);
+        final IHyriServer server = HyriAPI.get().getServer();
+        final long playTime = System.currentTimeMillis() - this.connections.remove(playerId);
 
-        account.getStatistics().addPlayTime(HyriAPI.get().getServer().getType(), System.currentTimeMillis() - this.connections.remove(playerId));
+        account.getStatistics().addPlayTime(server.getType(), playTime);
+
+        final String gameType = server.getGameType();
+
+        if (gameType != null) {
+            account.getStatistics().addPlayTime(server.getType() + "#" + gameType, playTime);
+        }
+
         account.update();
 
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
@@ -147,7 +157,8 @@ public class JoinListener implements Listener {
         this.hyriAPI.getLanguageManager().removeCache(playerId);
 
         HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitServerEvent(playerId, HyriAPI.get().getServer().getName()));
-        HyriAPI.get().getServer().removePlayer(playerId);
+
+        server.removePlayer(playerId);
     }
 
 }

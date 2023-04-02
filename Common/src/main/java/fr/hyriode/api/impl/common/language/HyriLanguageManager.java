@@ -36,7 +36,7 @@ public class HyriLanguageManager implements IHyriLanguageManager {
 
     @HyriEventHandler
     public void onLanguageUpdated(HyriLanguageUpdatedEvent event) {
-        this.languageCache.put(event.getPlayerId(), event.getLanguage());
+        this.setCache(event.getPlayerId(), event.getLanguage());
     }
 
     public void setCache(UUID player, HyriLanguage language) {
