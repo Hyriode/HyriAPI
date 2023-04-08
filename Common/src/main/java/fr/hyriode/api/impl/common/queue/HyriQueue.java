@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.queue;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.party.IHyriParty;
+import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.queue.IHyriQueue;
 import fr.hyriode.api.serialization.DataSerializable;
@@ -128,8 +129,9 @@ public class HyriQueue implements IHyriQueue, DataSerializable {
             if (party != null) {
                 for (UUID member : party.getMembers().keySet()) {
                     final IHyriPlayerSession session = IHyriPlayerSession.get(member);
+                    final IHyriPlayer account = IHyriPlayer.get(member);
 
-                    if (session == null || session.isPlaying() || session.isModerating()) {
+                    if (session == null || session.isPlaying() || session.isModerating() || !account.getSettings().isFollowPartyEnabled()) {
                         continue;
                     }
 
