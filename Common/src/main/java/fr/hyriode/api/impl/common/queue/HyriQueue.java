@@ -126,7 +126,7 @@ public class HyriQueue implements IHyriQueue, DataSerializable {
             final Set<UUID> group = new HashSet<>();
             final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(player);
 
-            if (party != null) {
+            if (party != null && party.isLeader(player)) {
                 for (UUID member : party.getMembers().keySet()) {
                     final IHyriPlayerSession session = IHyriPlayerSession.get(member);
                     final IHyriPlayer account = IHyriPlayer.get(member);
