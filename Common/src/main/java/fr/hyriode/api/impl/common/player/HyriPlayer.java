@@ -174,6 +174,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
 
         output.writeString(this.guild == null ? null : this.guild.toHexString());
 
+        this.friends.write(output);
         this.auth.write(output);
         this.hosts.write(output);
         this.statistics.write(output);
@@ -209,6 +210,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
 
         this.guild = guildId == null ? null : new ObjectId(guildId);
 
+        this.friends.read(input);
         this.auth.read(input);
         this.hosts.read(input);
         this.statistics.read(input);
