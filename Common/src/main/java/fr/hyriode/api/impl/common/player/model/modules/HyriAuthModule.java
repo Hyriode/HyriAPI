@@ -60,7 +60,7 @@ public class HyriAuthModule implements IHyriAuthModule, MongoSerializable, DataS
 
     @Override
     public void setPremium(boolean premium) {
-        this.premium = true;
+        this.premium = premium;
         this.hash = null;
     }
 
