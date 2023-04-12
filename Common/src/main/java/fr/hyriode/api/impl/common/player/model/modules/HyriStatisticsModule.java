@@ -62,7 +62,11 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
         }
 
         // Load total play time cache
-        this.playTime.values().forEach(time -> this.totalPlayTime += time);
+        this.playTime.forEach((key, time) -> {
+            if (!key.contains("#")) {
+                this.totalPlayTime += time;
+            }
+        });
     }
 
     @Override
@@ -114,7 +118,9 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
 
     @Override
     public void addPlayTime(@NotNull String category, long playTime) {
-        this.totalPlayTime += playTime;
+        if (!category.contains("#")) {
+            this.totalPlayTime += playTime;
+        }
 
         this.playTime.merge(category, playTime, Long::sum);
     }
