@@ -46,8 +46,12 @@ public class JoinListener implements Listener {
         this.playerLoader = new PlayerLoader();
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPreLogin(PreLoginEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         try {
             final PendingConnection connection = event.getConnection();
             final String name = connection.getName();

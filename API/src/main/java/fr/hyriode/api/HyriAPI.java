@@ -43,6 +43,7 @@ import fr.hyriode.api.world.generation.IWorldGenerationAPI;
 import fr.hyriode.hyreos.api.HyreosAPI;
 import redis.clients.jedis.Jedis;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 public abstract class HyriAPI {

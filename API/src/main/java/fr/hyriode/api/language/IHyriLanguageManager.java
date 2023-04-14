@@ -1,9 +1,12 @@
 package fr.hyriode.api.language;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Created by AstFaster
@@ -13,12 +16,23 @@ public interface IHyriLanguageManager {
 
     /**
      * Load all languages messages from languages files that are in the given folder.<br>
-     * Languages files have to be in the following format: 'language_code'.json. Some examples: en.json, fr.json, es.json...
+     * Languages files have to be in the following format: 'language_code'.json. E.g. en.json, fr.json, es.json...
      *
      * @param folder The folder that contains language files
-     * @return The list of all messages loaded
+     * @return The list of loaded messages
      */
     Collection<HyriLanguageMessage> loadLanguagesMessages(File folder);
+
+    /**
+     * Load all languages messages from languages resources folder.<br>
+     * Languages files have to be in the following format: 'language_code'.json. E.g. en.json, fr.json, es.json...
+     *
+     * @param folder The folder of the messages
+     * @param resourceFolder The resource folder of the messages
+     * @param resourceProvider The provider of a resource from a path
+     * @return The list of loaded messages
+     */
+    Collection<HyriLanguageMessage> loadLanguagesMessages(Path folder, String resourceFolder, Function<String, InputStream> resourceProvider);
 
     /**
      * Register an adapter for a given object class

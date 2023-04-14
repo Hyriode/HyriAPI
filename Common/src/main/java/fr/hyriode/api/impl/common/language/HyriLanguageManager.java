@@ -5,16 +5,23 @@ import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.event.HyriEventHandler;
 import fr.hyriode.api.language.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Created by AstFaster
@@ -100,6 +107,62 @@ public class HyriLanguageManager implements IHyriLanguageManager {
         this.messages.putAll(messages); // Finally, add all loaded messages
 
         return messages.values();
+    }
+
+    @Override
+    public Collection<HyriLanguageMessage> loadLanguagesMessages(Path folder, String resourceFolder, Function<String, InputStream> resourceProvider) {
+        for (HyriLanguage language : HyriLanguage.values()) {
+            final String path = resourceFolder + language.getCode() + ".json";
+
+            try (final InputStream inputStream = resourceProvider.apply(path)) {
+                if (inputStream == null) {
+                    System.err.println("Cannot get resource from '" + path + "'!");
+                    continue;
+                }
+
+                final Path langFile = Paths.get(folder.toString(), language.getCode() + ".json");
+                final boolean exists = Files.exists(langFile);
+
+                if (!exists) {
+                    FileUtils.copyInputStreamToFile(inputStream, langFile.toFile());
+                    continue;
+                }
+
+                try (final InputStream existingInput = Files.newInputStream(langFile); final InputStream clonedInput = resourceProvider.apply(path)) {
+                    if (!this.toMD5(clonedInput).equals(this.toMD5(existingInput)) && !HyriAPI.get().getConfig().isDevEnvironment()) {
+                        continue;
+                    }
+
+                    Files.delete(langFile);
+                    FileUtils.copyInputStreamToFile(inputStream, langFile.toFile());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this.loadLanguagesMessages(folder.toFile());
+    }
+
+    public String toMD5(InputStream inputStream) {
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("MD5");
+            final byte[] data = new byte[8195];
+
+            int read;
+            while ((read = inputStream.read(data)) != -1) {
+                digest.update(data, 0, read);
+            }
+
+            final StringBuilder builder = new StringBuilder();
+
+            for (byte aByte : digest.digest()) {
+                builder.append(Integer.toString(((aByte & 0xFF) + 0x100), 16).substring(1));
+            }
+
+            return builder.toString();
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -85,8 +85,8 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         return money.getColor() +
                 sign +
                 finalAmount + " " +
-                money.getName() + (withMultipliers ? ("+" + (int) (multipliers * 100)) + "%" + (reason != null ? " ┃ " + reason + ")" : ")") : "") +
-                (!withMultipliers && reason != null ? "(" + reason + ")" : "");
+                money.getName() + (withMultipliers ?  ("+" + (int) (multipliers * 100)) + "%" + (reason != null ? " ┃ " + reason + ")" : ")") : "") +
+                (!withMultipliers && reason != null ? " (" + reason + ")" : "");
     }
 
 }
