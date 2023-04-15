@@ -1,6 +1,7 @@
 package fr.hyriode.api.sound;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.packet.HyriPacket;
 
 import java.util.UUID;
@@ -11,8 +12,6 @@ import java.util.UUID;
  * on 29/04/2022 at 18:15
  */
 public class HyriSoundPacket extends HyriPacket {
-
-    public static final String CHANNEL = "sounds";
 
     private final UUID target;
     private final HyriSound sound;
@@ -43,7 +42,7 @@ public class HyriSoundPacket extends HyriPacket {
     }
 
     public static void send(UUID target, HyriSound sound, float volume, float pitch) {
-        HyriAPI.get().getPubSub().send(CHANNEL, new HyriSoundPacket(target, sound, volume, pitch));
+        HyriAPI.get().getPubSub().send(HyriChannel.SERVERS, new HyriSoundPacket(target, sound, volume, pitch));
     }
 
 }

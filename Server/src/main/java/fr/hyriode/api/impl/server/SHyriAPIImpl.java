@@ -5,10 +5,11 @@ import fr.hyriode.api.impl.common.CHyriAPIImpl;
 import fr.hyriode.api.impl.server.join.JoinManager;
 import fr.hyriode.api.impl.server.join.JoinListener;
 import fr.hyriode.api.impl.server.player.SHyriPlayerManager;
-import fr.hyriode.api.impl.server.receiver.SoundReceiver;
+import fr.hyriode.api.impl.server.receiver.ServerReceiver;
 import fr.hyriode.api.impl.server.receiver.StopReceiver;
 import fr.hyriode.api.impl.server.world.SHyriWorldManager;
 import fr.hyriode.api.language.HyriLanguage;
+import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -77,7 +78,7 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
             processor.registerReceiver(HyggChannel.SERVERS, new StopReceiver());
         }
 
-        this.pubSub.subscribe(HyriSoundPacket.CHANNEL, new SoundReceiver());
+        this.pubSub.subscribe(HyriChannel.SERVERS, new ServerReceiver());
 
         // Register Spigot listeners
         final Consumer<Listener> register = listener -> this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);

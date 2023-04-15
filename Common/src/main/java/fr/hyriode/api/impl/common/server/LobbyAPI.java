@@ -2,6 +2,7 @@ package fr.hyriode.api.impl.common.server;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.server.ILobbyAPI;
+import fr.hyriode.api.server.event.ServerEvacuationEvent;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 
 import java.util.*;
@@ -69,6 +70,11 @@ public class LobbyAPI implements ILobbyAPI {
                 HyriAPI.get().getServerManager().sendPlayerToServer(player, lobby.getName());
             }
         }
+
+        // Trigger evacuation event
+        final ServerEvacuationEvent event = new ServerEvacuationEvent(serverName);
+
+        HyriAPI.get().getNetworkManager().getEventBus().publish(event);
     }
 
 }
