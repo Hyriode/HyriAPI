@@ -20,6 +20,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 
+import java.nio.file.Paths;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,9 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
     @Override
     protected void postInit() {
         super.postInit();
+
+        // Load languages from files and resources
+        this.languageManager.loadLanguagesMessages(Paths.get(this.plugin.getDataFolder().toPath().toString(), "lang"), "/lang/", HyriAPIPlugin.class::getResourceAsStream);
 
         // Register a language adapter
         this.languageManager.registerAdapter(ProxiedPlayer.class, (message, player) -> message.getValue(player.getUniqueId()));

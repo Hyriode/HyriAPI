@@ -182,7 +182,13 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.languageManager.registerAdapter(UUID.class, (message, uuid) -> {
             final HyriLanguage cachedLanguage = this.languageManager.getCache(uuid);
 
-            return cachedLanguage != null ? message.getValue(cachedLanguage) : message.getValue(IHyriPlayer.get(uuid));
+            if (cachedLanguage != null) {
+                return message.getValue(cachedLanguage);
+            }
+
+            final IHyriPlayer account = IHyriPlayer.get(uuid);
+
+            return account != null ? message.getValue(account) : message.getValue(HyriLanguage.FR);
         });
         this.hyggdrasilManager.sendData();
     }

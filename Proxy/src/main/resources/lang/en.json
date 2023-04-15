@@ -1,0 +1,12 @@
+{
+  "line.support": "&fSupport: &b%support%",
+  "line.store": "&fStore: &b%store%",
+
+  "message.maintenance": "&cThe server is currently under maintenance!",
+  "message.server-full": "&cThe server is full !\n\n&fPurchase a &aVIP+ &frank on our &bstore &fto be prioritized.\n\n&fStore: &bhyriode.fr/store",
+  "message.no-server": "&cThere is no server available!",
+  "message.invalid-name": "&cYour name is invalid!",
+  "message.profile-loading-error": "&cCouldn't load your profile!",
+  "message.profile-taken": "&cYour name is now owned by a premium user!",
+  "message.already-online": "&cYou are already connected to the server!"
+}

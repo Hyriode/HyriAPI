@@ -1,9 +1,8 @@
 package fr.hyriode.api.impl.proxy.listener;
 
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.event.HyriEventHandler;
 import fr.hyriode.api.event.model.HyriMaintenanceEvent;
-import fr.hyriode.api.impl.proxy.util.MessageUtil;
+import fr.hyriode.api.impl.proxy.language.ProxyMessage;
 import fr.hyriode.api.player.IHyriPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,10 +18,10 @@ public class NetworkListener {
     public void onMaintenance(HyriMaintenanceEvent event) {
         if (event.getAction() == HyriMaintenanceEvent.Action.ENABLED) {
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-                final IHyriPlayer account = HyriAPI.get().getPlayerManager().getPlayer(player.getUniqueId());
+                final IHyriPlayer account = IHyriPlayer.get(player.getUniqueId());
 
-                if (!account.getRank().isStaff()) {
-                    player.disconnect(MessageUtil.createMaintenanceMessage(event.getMaintenance()));
+                if (account == null || !account.getRank().isStaff()) {
+                    player.disconnect(ProxyMessage.MAINTENANCE.asFramedComponents(account, true));
                 }
             }
         }

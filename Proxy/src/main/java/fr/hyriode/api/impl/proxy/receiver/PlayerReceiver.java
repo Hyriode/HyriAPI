@@ -4,7 +4,6 @@ import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
 import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.packet.TitlePacket;
 import fr.hyriode.api.impl.proxy.player.PHyriPlayerManager;
-import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.packet.model.PlayerLimboSendPacket;
@@ -12,6 +11,7 @@ import fr.hyriode.api.packet.model.PlayerServerSendPacket;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 import java.util.UUID;
 
@@ -50,7 +50,7 @@ public class PlayerReceiver implements IHyriPacketReceiver {
             final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(kickPacket.getPlayerId());
 
             if (player != null) {
-                player.disconnect(MessageUtil.deserializeComponent(kickPacket.getComponent()));
+                player.disconnect(ComponentSerializer.parse(kickPacket.getComponent()));
             }
         }
     }

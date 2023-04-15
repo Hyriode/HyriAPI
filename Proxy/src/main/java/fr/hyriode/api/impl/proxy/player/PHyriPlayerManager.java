@@ -1,11 +1,11 @@
 package fr.hyriode.api.impl.proxy.player;
 
 import fr.hyriode.api.impl.common.player.HyriPlayerManager;
-import fr.hyriode.api.impl.proxy.util.MessageUtil;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public class PHyriPlayerManager extends HyriPlayerManager {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
         if (player != null) {
-            player.disconnect(MessageUtil.deserializeComponent(reason));
+            player.disconnect(ComponentSerializer.parse(reason));
             return;
         }
         super.kickPlayer(uuid, reason);
@@ -43,7 +43,7 @@ public class PHyriPlayerManager extends HyriPlayerManager {
 
         if (player != null) {
             if (component) {
-                player.sendMessage(MessageUtil.deserializeComponent(message));
+                player.sendMessage(ComponentSerializer.parse(message));
             } else {
                 player.sendMessage(TextComponent.fromLegacyText(message));
             }
