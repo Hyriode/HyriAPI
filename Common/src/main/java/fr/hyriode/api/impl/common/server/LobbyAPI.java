@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.limbo.IHyriLimboManager;
 import fr.hyriode.api.server.ILobbyAPI;
 import fr.hyriode.api.server.event.ServerEvacuationEvent;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;

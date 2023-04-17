@@ -25,11 +25,7 @@ public class ServersListener {
 
     public void register() {
         this.eventBus.subscribe(HyggServerStartedEvent.class, event -> this.serverManager.addServer(event.getServer()));
-        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> {
-            if (event.getServer().getState() != HyggServer.State.SHUTDOWN) {
-                this.serverManager.addServer(event.getServer());
-            }
-        });
+        this.eventBus.subscribe(HyggServerUpdatedEvent.class, event -> this.serverManager.addServer(event.getServer()));
         this.eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.serverManager.removeServer(event.getServer().getName()));
     }
 
