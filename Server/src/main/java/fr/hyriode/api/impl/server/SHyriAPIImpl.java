@@ -6,12 +6,10 @@ import fr.hyriode.api.impl.server.join.JoinManager;
 import fr.hyriode.api.impl.server.join.JoinListener;
 import fr.hyriode.api.impl.server.player.SHyriPlayerManager;
 import fr.hyriode.api.impl.server.receiver.ServerReceiver;
-import fr.hyriode.api.impl.server.receiver.StopReceiver;
 import fr.hyriode.api.impl.server.world.SHyriWorldManager;
 import fr.hyriode.api.language.HyriLanguage;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.server.join.IHyriJoinManager;
-import fr.hyriode.api.sound.HyriSoundPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
 import fr.hyriode.hyggdrasil.api.protocol.packet.HyggPacketProcessor;
@@ -70,13 +68,6 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
             }
             return message.getValue(HyriLanguage.EN);
         });
-
-        // Register receivers
-        if (this.hyggdrasilManager.withHyggdrasil()) {
-            final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
-
-            processor.registerReceiver(HyggChannel.SERVERS, new StopReceiver());
-        }
 
         this.pubSub.subscribe(HyriChannel.SERVERS, new ServerReceiver());
 

@@ -6,7 +6,6 @@ import fr.hyriode.api.impl.proxy.listener.*;
 import fr.hyriode.api.impl.proxy.player.PHyriPlayerManager;
 import fr.hyriode.api.impl.proxy.receiver.ChatReceiver;
 import fr.hyriode.api.impl.proxy.receiver.PlayerReceiver;
-import fr.hyriode.api.impl.proxy.receiver.StopReceiver;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.pubsub.IHyriPubSub;
@@ -78,10 +77,6 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
 
         // Register receivers
         if (this.hyggdrasilManager.withHyggdrasil()) {
-            final HyggPacketProcessor processor = this.hyggdrasilManager.getHyggdrasilAPI().getPacketProcessor();
-
-            processor.registerReceiver(HyggChannel.PROXIES, new StopReceiver());
-
             new ServersListener().register();
             new LimbosListener().register();
         }

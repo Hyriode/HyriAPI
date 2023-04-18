@@ -25,11 +25,7 @@ public class ProxiesListener {
 
     public void register() {
         this.eventBus.subscribe(HyggProxyStartedEvent.class, event -> this.proxyManager.addProxy(event.getProxy()));
-        this.eventBus.subscribe(HyggProxyUpdatedEvent.class, event -> {
-            if (event.getProxy().getState() != HyggProxy.State.SHUTDOWN) {
-                this.proxyManager.addProxy(event.getProxy());
-            }
-        });
+        this.eventBus.subscribe(HyggProxyUpdatedEvent.class, event -> this.proxyManager.addProxy(event.getProxy()));
         this.eventBus.subscribe(HyggProxyStoppedEvent.class, event -> this.proxyManager.removeProxy(event.getProxy()));
     }
 

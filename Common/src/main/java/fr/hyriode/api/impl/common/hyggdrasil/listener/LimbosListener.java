@@ -25,11 +25,7 @@ public class LimbosListener {
 
     public void register() {
         this.eventBus.subscribe(HyggLimboStartedEvent.class, event -> this.limboManager.addLimbo(event.getLimbo()));
-        this.eventBus.subscribe(HyggLimboUpdatedEvent.class, event -> {
-            if (event.getLimbo().getState() != HyggLimbo.State.SHUTDOWN) {
-                this.limboManager.addLimbo(event.getLimbo());
-            }
-        });
+        this.eventBus.subscribe(HyggLimboUpdatedEvent.class, event -> this.limboManager.addLimbo(event.getLimbo()));
         this.eventBus.subscribe(HyggLimboStoppedEvent.class, event -> this.limboManager.removeLimbo(event.getLimbo().getName()));
     }
 
