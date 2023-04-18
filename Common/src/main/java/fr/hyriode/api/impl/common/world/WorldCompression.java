@@ -1,9 +1,7 @@
 package fr.hyriode.api.impl.common.world;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -56,9 +54,8 @@ public class WorldCompression {
 
     public void unzipWorld(File worldFolder, byte[] bytes) {
         try (final ZipInputStream inputStream = new ZipInputStream(new ByteArrayInputStream(bytes)))  {
-            final byte[] buffer = new byte[1024];
-
             ZipEntry entry = inputStream.getNextEntry();
+
             while (entry != null) {
                 final File newFile = new File(entry.getName().replace("world", worldFolder.getName()).replace("\\", "/"));
                 final File parent = newFile.getParentFile();
@@ -67,18 +64,17 @@ public class WorldCompression {
                     throw new IOException("Failed to create directory " + parent);
                 }
 
+                final byte[] buffer = new byte[1024];
                 final FileOutputStream outputStream = new FileOutputStream(newFile);
 
                 int len;
                 while ((len = inputStream.read(buffer)) > 0) {
                     outputStream.write(buffer, 0, len);
                 }
-                outputStream.close();
 
+                outputStream.close();
                 entry = inputStream.getNextEntry();
             }
-
-            inputStream.closeEntry();
         } catch (IOException e) {
             e.printStackTrace();
         }

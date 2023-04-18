@@ -10,10 +10,12 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.common.mongodb.MongoDB;
 import fr.hyriode.api.mongodb.MongoSerializer;
 import org.bson.Document;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Created by AstFaster
@@ -63,12 +65,22 @@ public class WorldsFS {
         }
 
         try (final GridFSDownloadStream downloadStream = this.gridFSBucket.openDownloadStream(file.getObjectId())) {
-            final int length = (int) downloadStream.getGridFSFile().getLength();
-            final byte[] data = new byte[length];
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final byte[] buffer = new byte[downloadStream.getGridFSFile().getChunkSize()];
 
-            downloadStream.read(data);
+            int len;
+            while ((len = downloadStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, len);
+            }
+
+            final byte[] data = outputStream.toByteArray();
+
+            outputStream.flush();
+            outputStream.close();
 
             return data;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
