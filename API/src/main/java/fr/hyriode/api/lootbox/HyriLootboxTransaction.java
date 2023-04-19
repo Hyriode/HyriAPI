@@ -25,7 +25,7 @@ public class HyriLootboxTransaction implements IHyriTransactionContent {
 
     @Override
     public void save(MongoDocument document) {
-        document.append("rarity", this.rarity);
+        document.append("rarity", this.rarity.name());
     }
 
     @Override
