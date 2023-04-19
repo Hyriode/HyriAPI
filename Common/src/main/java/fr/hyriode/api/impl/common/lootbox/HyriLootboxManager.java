@@ -7,7 +7,9 @@ import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.model.IHyriTransaction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by AstFaster
@@ -18,15 +20,20 @@ public class HyriLootboxManager implements IHyriLootboxManager {
     @Override
     public void giveLootbox(IHyriPlayer player, HyriLootboxRarity rarity) {
         player.getTransactions().add(HyriLootboxTransaction.TRANSACTIONS_TYPE, new HyriLootboxTransaction(rarity));
+        player.update();
     }
 
     @Override
-    public List<HyriLootboxRarity> getLootboxes(IHyriPlayer player) {
-        final List<HyriLootboxRarity> lootboxes = new ArrayList<>();
+    public Map<String, HyriLootboxRarity> getLootboxes(IHyriPlayer player) {
+        final Map<String, HyriLootboxRarity> lootboxes = new HashMap<>();
         final List<IHyriTransaction> transactions = player.getTransactions().getAll(HyriLootboxTransaction.TRANSACTIONS_TYPE);
 
+        if (transactions == null) {
+            return lootboxes;
+        }
+
         for (IHyriTransaction transaction : transactions) {
-            lootboxes.add(transaction.loadContent(new HyriLootboxTransaction()).getRarity());
+            lootboxes.put(transaction.name(), transaction.loadContent(new HyriLootboxTransaction()).getRarity());
         }
         return lootboxes;
     }

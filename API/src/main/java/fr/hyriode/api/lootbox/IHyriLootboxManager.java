@@ -3,6 +3,7 @@ package fr.hyriode.api.lootbox;
 import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by AstFaster
@@ -22,8 +23,8 @@ public interface IHyriLootboxManager {
      * Get all the owned lootboxes of a player
      *
      * @param player The player
-     * @return A list of {@link HyriLootboxRarity}
+     * @return A map of {@link HyriLootboxRarity} linked to their transaction name
      */
-    List<HyriLootboxRarity> getLootboxes(IHyriPlayer player);
+    Map<String, HyriLootboxRarity> getLootboxes(IHyriPlayer player);
 
 }
