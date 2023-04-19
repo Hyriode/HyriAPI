@@ -27,7 +27,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
     public IHyriBooster enableBooster(UUID owner, String game, double multiplier, long duration) {
         final IHyriPlayer account = IHyriPlayer.get(owner);
         final Type type = account.getRank().is(StaffRank.ADMINISTRATOR) ? Type.COMBINED : Type.NORMAL;
-        final List<IHyriBooster> boosters = this.getBoosters()
+        final List<IHyriBooster> boosters = this.getBoosters(game)
                 .stream()
                 .sorted(Comparator.comparingLong(IHyriBooster::getEnabledDate))
                 .collect(Collectors.toList());
@@ -91,6 +91,22 @@ public class HyriBoosterManager implements IHyriBoosterManager {
             }
             return boosters;
         });
+    }
+
+    @Override
+    public List<IHyriBooster> getActiveBoosters() {
+        return this.getBoosters()
+                .stream()
+                .filter(IHyriBooster::isEnabled)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IHyriBooster> getActiveBoosters(String game) {
+        return this.getBoosters(game)
+                .stream()
+                .filter(IHyriBooster::isEnabled)
+                .collect(Collectors.toList());
     }
 
     @Override

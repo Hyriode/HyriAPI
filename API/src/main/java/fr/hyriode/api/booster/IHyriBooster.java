@@ -17,7 +17,7 @@ public interface IHyriBooster {
     UUID getIdentifier();
 
     /**
-     * Get the type of the booster
+     * Get the type of the booster.
      *
      * @return A {@link Type}
      */

@@ -31,7 +31,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
         // Fetching boosters to apply multipliers
         final IHyriBoosterManager boosterManager = HyriAPI.get().getBoosterManager();
-        final List<IHyriBooster> boosters = boosterManager.getBoosters(HyriAPI.get().getServer().getType());
+        final List<IHyriBooster> boosters = boosterManager.getActiveBoosters(HyriAPI.get().getServer().getType());
 
         for (IHyriBooster booster : boosters) {
             multipliers += booster.getMultiplier();

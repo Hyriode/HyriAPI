@@ -43,11 +43,26 @@ public interface IHyriBoosterManager {
     Map<String, HyriBoosterTransaction> getPlayerBoosters(IHyriPlayer player);
 
     /**
-     * Get all actives boosters on the network
+     * Get all boosters on the network
      *
      * @return A list of {@link IHyriBooster}
      */
     List<IHyriBooster> getBoosters();
+
+    /**
+     * Get all boosters on a given game
+     *
+     * @param game A game name (E.g bedwars, therunner)
+     * @return A list of {@link IHyriBooster}
+     */
+    List<IHyriBooster> getBoosters(String game);
+
+    /**
+     * Get all actives boosters on the network
+     *
+     * @return A list of {@link IHyriBooster}
+     */
+    List<IHyriBooster> getActiveBoosters();
 
     /**
      * Get all actives boosters on a given game
@@ -55,7 +70,7 @@ public interface IHyriBoosterManager {
      * @param game A game name (E.g bedwars, therunner)
      * @return A list of {@link IHyriBooster}
      */
-    List<IHyriBooster> getBoosters(String game);
+    List<IHyriBooster> getActiveBoosters(String game);
 
     /**
      * Get an active booster by its identifier
