@@ -1,16 +1,17 @@
 package fr.hyriode.api.impl.common.booster;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.booster.HyriBoosterEvent;
-import fr.hyriode.api.booster.HyriBoosterTransaction;
-import fr.hyriode.api.booster.IHyriBooster;
-import fr.hyriode.api.booster.IHyriBoosterManager;
+import fr.hyriode.api.booster.*;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.model.IHyriTransaction;
+import fr.hyriode.api.rank.StaffRank;
 import redis.clients.jedis.Pipeline;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static fr.hyriode.api.booster.IHyriBooster.*;
 
 /**
  * Project: HyriAPI
@@ -24,18 +25,25 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     @Override
     public IHyriBooster enableBooster(UUID owner, String game, double multiplier, long duration) {
-        final HyriBooster booster = new HyriBooster(game, multiplier, owner, duration, System.currentTimeMillis());
+        final IHyriPlayer account = IHyriPlayer.get(owner);
+        final Type type = account.getRank().is(StaffRank.ADMINISTRATOR) ? Type.COMBINED : Type.NORMAL;
+        final List<IHyriBooster> boosters = this.getBoosters()
+                .stream()
+                .sorted(Comparator.comparingLong(IHyriBooster::getEnabledDate))
+                .collect(Collectors.toList());
+        final long enabledDate = boosters.size() == 0 || type == Type.COMBINED ? System.currentTimeMillis() : boosters.get(boosters.size() - 1).getDisabledDate();
+        final HyriBooster booster = new HyriBooster(game, type, multiplier, owner, duration, enabledDate);
 
         HyriAPI.get().getRedisProcessor().process(jedis -> {
             final byte[] key = (KEY + game + ":" + booster.getIdentifier().toString()).getBytes(StandardCharsets.UTF_8);
             final Pipeline pipeline = jedis.pipelined();
 
             pipeline.set(key, HyriAPI.get().getDataSerializer().serialize(booster));
-            pipeline.expire(key, duration);
+            pipeline.expire(key, (System.currentTimeMillis() - booster.getEnabledDate()) / 1000 + duration);
             pipeline.sync();
         });
 
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new HyriBoosterEvent(booster.getIdentifier()));
+        HyriAPI.get().getNetworkManager().getEventBus().publish(new BoosterQueuedEvent(booster.getIdentifier()));
 
         return booster;
     }

@@ -16,6 +16,7 @@ import java.util.UUID;
 public class HyriBooster implements IHyriBooster, DataSerializable {
 
     private UUID identifier;
+    private Type type;
     private UUID owner;
     private String game;
     private double multiplier;
@@ -24,10 +25,11 @@ public class HyriBooster implements IHyriBooster, DataSerializable {
 
     public HyriBooster() {}
 
-    public HyriBooster(String game, double multiplier, UUID owner, long duration, long enabledDate) {
+    public HyriBooster(String game, Type type, double multiplier, UUID owner, long duration, long enabledDate) {
         this.identifier = UUID.randomUUID();
-        this.game = game;
+        this.type = type;
         this.multiplier = multiplier;
+        this.game = game;
         this.owner = owner;
         this.duration = duration;
         this.enabledDate = enabledDate;
@@ -36,6 +38,7 @@ public class HyriBooster implements IHyriBooster, DataSerializable {
     @Override
     public void write(ObjectDataOutput output) throws IOException {
         output.writeUUID(this.identifier);
+        output.writeString(this.type.name());
         output.writeUUID(this.owner);
         output.writeString(this.game);
         output.writeDouble(this.multiplier);
@@ -46,6 +49,7 @@ public class HyriBooster implements IHyriBooster, DataSerializable {
     @Override
     public void read(ObjectDataInput input) throws IOException {
         this.identifier = input.readUUID();
+        this.type = Type.valueOf(input.readString());
         this.owner = input.readUUID();
         this.game = input.readString();
         this.multiplier = input.readDouble();
@@ -56,6 +60,11 @@ public class HyriBooster implements IHyriBooster, DataSerializable {
     @Override
     public UUID getIdentifier() {
         return this.identifier;
+    }
+
+    @Override
+    public Type getType() {
+        return this.type;
     }
 
     @Override
@@ -76,6 +85,11 @@ public class HyriBooster implements IHyriBooster, DataSerializable {
     @Override
     public long getDuration() {
         return this.duration;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabledDate <= System.currentTimeMillis();
     }
 
     @Override

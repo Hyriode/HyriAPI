@@ -17,6 +17,13 @@ public interface IHyriBooster {
     UUID getIdentifier();
 
     /**
+     * Get the type of the booster
+     *
+     * @return A {@link Type}
+     */
+    Type getType();
+
+    /**
      * Get the unique id of the booster's owner
      *
      * @return A player {@link UUID}
@@ -46,7 +53,14 @@ public interface IHyriBooster {
     long getDuration();
 
     /**
-     * Get the time when the booster has been enabled.
+     * Check whether the booster is enabled or not
+     *
+     * @return <code>true</code> if it is enabled
+     */
+    boolean isEnabled();
+
+    /**
+     * Get the time when the booster has been enabled (or will be enabled).
      *
      * @return A timestamp (in milliseconds)
      */
@@ -58,5 +72,17 @@ public interface IHyriBooster {
      * @return A timestamp (in milliseconds)
      */
     long getDisabledDate();
+
+    /**
+     * The different types of boosters running on the network.
+     */
+    enum Type {
+
+        /** This booster is combined to other boosters. It bypasses the queue system. */
+        COMBINED,
+        /** This booster is a normal booster. It uses the queue system */
+        NORMAL
+
+    }
 
 }
