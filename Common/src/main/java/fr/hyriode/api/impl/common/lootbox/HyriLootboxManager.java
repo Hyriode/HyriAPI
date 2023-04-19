@@ -24,8 +24,8 @@ public class HyriLootboxManager implements IHyriLootboxManager {
     }
 
     @Override
-    public Map<String, HyriLootboxRarity> getLootboxes(IHyriPlayer player) {
-        final Map<String, HyriLootboxRarity> lootboxes = new HashMap<>();
+    public Map<String, HyriLootboxTransaction> getLootboxes(IHyriPlayer player) {
+        final Map<String, HyriLootboxTransaction> lootboxes = new HashMap<>();
         final List<IHyriTransaction> transactions = player.getTransactions().getAll(HyriLootboxTransaction.TRANSACTIONS_TYPE);
 
         if (transactions == null) {
@@ -33,7 +33,7 @@ public class HyriLootboxManager implements IHyriLootboxManager {
         }
 
         for (IHyriTransaction transaction : transactions) {
-            lootboxes.put(transaction.name(), transaction.loadContent(new HyriLootboxTransaction()).getRarity());
+            lootboxes.put(transaction.name(), transaction.loadContent(new HyriLootboxTransaction()));
         }
         return lootboxes;
     }

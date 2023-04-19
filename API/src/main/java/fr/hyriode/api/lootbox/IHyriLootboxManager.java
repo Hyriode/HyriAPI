@@ -25,6 +25,6 @@ public interface IHyriLootboxManager {
      * @param player The player
      * @return A map of {@link HyriLootboxRarity} linked to their transaction name
      */
-    Map<String, HyriLootboxRarity> getLootboxes(IHyriPlayer player);
+    Map<String, HyriLootboxTransaction> getLootboxes(IHyriPlayer player);
 
 }
