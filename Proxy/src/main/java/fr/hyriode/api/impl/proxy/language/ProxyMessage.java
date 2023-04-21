@@ -70,7 +70,7 @@ public enum ProxyMessage {
                 .append(object == null ? this.asLang().getValue(HyriLanguage.FR) : this.asString(object))
                 .append(separateSupport ? "\n\n" : "\n")
                 .reset()
-                .append(ProxyMessage.SUPPORT.asString(object).replace("%support%", HyriConstants.DISCORD_URL))
+                .append(object == null ? ProxyMessage.SUPPORT.asLang().getValue(HyriLanguage.FR) : ProxyMessage.SUPPORT.asString(object).replace("%support%", HyriConstants.DISCORD_URL))
                 .append("\n\n")
                 .append("----------------------------------------------------").color(ChatColor.DARK_AQUA).strikethrough(true)
                 .create();
