@@ -50,7 +50,7 @@ public class JoinListener implements Listener {
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final UUID uuid = event.getUniqueId();
 
-            if (playerManager.getPlayer(uuid) == null) {
+            if (playerManager.getPlayer(uuid) == null && HyriAPI.get().getConfig().isDevEnvironment()) {
                 playerManager.createPlayer(Bukkit.getServer().getOnlineMode(), uuid, event.getName());
             }
 
