@@ -68,7 +68,7 @@ public enum ProxyMessage {
                 .append("\n\n")
                 .reset()
                 .append(object == null ? this.asLang().getValue(HyriLanguage.FR) : this.asString(object))
-                .append(separateSupport ? "\n\n" : "")
+                .append(separateSupport ? "\n\n" : "\n")
                 .reset()
                 .append(ProxyMessage.SUPPORT.asString(object).replace("%support%", HyriConstants.DISCORD_URL))
                 .append("\n\n")

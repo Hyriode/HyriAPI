@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Project: HyriAPI
@@ -18,6 +19,8 @@ import java.util.UUID;
  * on 13/02/2022 at 15:59
  */
 public class HyriProxy implements IHyriProxy {
+
+    private final ReentrantReadWriteLock playersLock = new ReentrantReadWriteLock();
 
     private final String name;
 
@@ -73,21 +76,39 @@ public class HyriProxy implements IHyriProxy {
 
     @Override
     public @NotNull Set<UUID> getPlayers() {
-        return Collections.unmodifiableSet(this.players);
+        this.playersLock.readLock().lock();
+
+        try {
+            return Collections.unmodifiableSet(this.players);
+        } finally {
+            this.playersLock.readLock().unlock();
+        }
     }
 
     @Override
     public void addPlayer(@NotNull UUID player) {
-        this.players.add(player);
+        this.playersLock.writeLock().lock();
 
-        this.update();
+        try {
+            this.players.add(player);
+
+            this.update();
+        } finally {
+            this.playersLock.writeLock().unlock();
+        }
     }
 
     @Override
     public void removePlayer(@NotNull UUID player) {
-        this.players.remove(player);
+        this.playersLock.writeLock().lock();
 
-        this.update();
+        try {
+            this.players.remove(player);
+
+            this.update();
+        } finally {
+            this.playersLock.writeLock().unlock();
+        }
     }
 
     @Override
