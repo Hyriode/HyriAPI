@@ -135,7 +135,6 @@ public class JoinListener implements Listener {
                 }
 
                 if (mojangProfile.isPremium()) { // Only create the account if the player is premium! (for crack users it will be after being registered)
-                    System.out.println("Creating player account");
                     account = playerManager.createPlayer(true, playerId, name);
                 }
             }
