@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Project: HyriAPI
@@ -23,8 +22,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * on 23/07/2021 at 11:29
  */
 public class HyriServer implements IHyriServer {
-
-    private final ReentrantReadWriteLock playersLock = new ReentrantReadWriteLock();
 
     private final String name;
     private final String type;
@@ -168,76 +165,40 @@ public class HyriServer implements IHyriServer {
 
     @Override
     public @NotNull Set<UUID> getPlayers() {
-        this.playersLock.readLock().lock();
-
-        try {
-            return Collections.unmodifiableSet(this.players);
-        } finally {
-            this.playersLock.readLock().unlock();
-        }
+        return Collections.unmodifiableSet(this.players);
     }
 
     @Override
     public void addPlayer(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
+        this.players.add(player);
 
-        try {
-            this.players.add(player);
-
-            this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
-        }
+        this.update();
     }
 
     @Override
     public void removePlayer(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
+        this.players.remove(player);
 
-        try {
-            this.players.remove(player);
-
-            this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
-        }
+        this.update();
     }
 
     @Override
     public @NotNull Set<UUID> getPlayersPlaying() {
-        this.playersLock.readLock().lock();
-
-        try {
-            return Collections.unmodifiableSet(this.playingPlayers);
-        } finally {
-            this.playersLock.readLock().unlock();
-        }
+        return Collections.unmodifiableSet(this.playingPlayers);
     }
 
     @Override
     public void addPlayerPlaying(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
+        this.playingPlayers.add(player);
 
-        try {
-            this.playingPlayers.add(player);
-
-            this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
-        }
+        this.update();
     }
 
     @Override
     public void removePlayerPlaying(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
+        this.playingPlayers.remove(player);
 
-        try {
-            this.playingPlayers.remove(player);
-
-            this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
-        }
+        this.update();
     }
 
     @Override
