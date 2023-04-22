@@ -69,7 +69,7 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
             network.setSlots(plugin.getConfiguration().getSlots());
         }
 
-        if (network.getMotd() == null) {
+        if (network.getMotd() == null || !network.getMotd().equals(plugin.getConfiguration().getMotd())) {
             network.setMotd(plugin.getConfiguration().getMotd());
         }
 
