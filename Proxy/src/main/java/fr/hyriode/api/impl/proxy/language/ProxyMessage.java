@@ -27,7 +27,8 @@ public enum ProxyMessage {
     INVALID_NAME("message.invalid-name"),
     PROFILE_LOADING_ERROR("message.profile-loading-error"),
     PROFILE_TAKEN("message.profile-taken"),
-    ALREADY_ONLINE("message.already-online")
+    ALREADY_ONLINE("message.already-online"),
+    IP_LIMIT("message.ip-limit")
 
     ;
 

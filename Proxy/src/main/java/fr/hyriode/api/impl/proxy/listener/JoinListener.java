@@ -26,9 +26,12 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Project: HyriAPI
@@ -37,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JoinListener implements Listener {
 
+    private final Map<String, AtomicInteger> ipLimits = new ConcurrentHashMap<>();
     private final Set<UUID> reconnections = ConcurrentHashMap.newKeySet();
 
     private final PlayerLoader playerLoader;
@@ -139,7 +143,19 @@ public class JoinListener implements Listener {
                 }
             }
 
-            this.playerLoader.loadPlayerAccount(playerId, account, name, ((InetSocketAddress) connection.getSocketAddress()).getAddress().getHostAddress());
+            final String ip = ((InetSocketAddress) connection.getSocketAddress()).getAddress().getHostAddress();
+            final AtomicInteger ipLimit = this.ipLimits.getOrDefault(ip, new AtomicInteger(0));
+
+            if (ipLimit.incrementAndGet() > 3) {
+                this.ipLimits.remove(ip);
+
+                event.setCancelled(true);
+                event.setCancelReason(ProxyMessage.IP_LIMIT.asFramedComponents(null, true));
+                return;
+            }
+
+            this.ipLimits.put(ip, ipLimit);
+            this.playerLoader.loadPlayerAccount(playerId, account, name, ip);
 
             event.setEncrypting(account != null && account.getAuth().isPremium());
         } catch (Exception e) {
@@ -193,6 +209,13 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
+        final String ip = ((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress().getHostAddress();
+        final AtomicInteger ipLimit = this.ipLimits.get(ip);
+
+        if (ipLimit != null && ipLimit.decrementAndGet() <= 0) {
+            this.ipLimits.remove(ip);
+        }
+
         this.playerLoader.handleDisconnection(event.getPlayer(), false);
     }
 
