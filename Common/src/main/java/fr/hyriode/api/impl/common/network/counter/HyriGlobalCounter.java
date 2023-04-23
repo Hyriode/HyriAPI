@@ -5,11 +5,16 @@ import fr.hyriode.api.network.counter.IHyriCategoryCounter;
 import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by AstFaster
  * on 08/07/2022 at 10:39
  */
 public class HyriGlobalCounter implements IHyriGlobalCounter {
+
+    private final Map<String, IHyriCategoryCounter> counters = new HashMap<>();
 
     @Override
     public int getPlayers() {
@@ -22,7 +27,11 @@ public class HyriGlobalCounter implements IHyriGlobalCounter {
 
     @Override
     public IHyriCategoryCounter getCategory(String name) {
-        return new HyriCategoryCounter(name);
+        final IHyriCategoryCounter categoryCounter = this.counters.getOrDefault(name, new HyriCategoryCounter(name));
+
+        this.counters.putIfAbsent(name, categoryCounter);
+
+        return categoryCounter;
     }
 
 }

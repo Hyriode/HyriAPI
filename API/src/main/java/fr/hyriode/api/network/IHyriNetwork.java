@@ -15,6 +15,7 @@ public interface IHyriNetwork {
      *
      * @return The {@linkplain IHyriGlobalCounter global counter} object
      */
+    @Deprecated
     IHyriGlobalCounter getPlayerCounter();
 
     /**

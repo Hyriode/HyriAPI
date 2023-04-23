@@ -1,6 +1,7 @@
 package fr.hyriode.api.network;
 
 import fr.hyriode.api.event.IHyriEventBus;
+import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 import fr.hyriode.api.network.event.HyriNetworkEventBus;
 
 /**
@@ -24,6 +25,13 @@ public interface IHyriNetworkManager {
      * @return The {@link IHyriNetwork} instance
      */
     IHyriNetwork getNetwork();
+
+    /**
+     * Get the player counter
+     *
+     * @return The {@linkplain IHyriGlobalCounter global counter} object
+     */
+    IHyriGlobalCounter getPlayerCounter();
 
     /**
      * Set the network instance

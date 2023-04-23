@@ -1,8 +1,10 @@
 package fr.hyriode.api.impl.common.network;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.common.network.counter.HyriGlobalCounter;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.network.IHyriNetworkManager;
+import fr.hyriode.api.network.counter.IHyriGlobalCounter;
 import fr.hyriode.api.network.event.HyriNetworkEventBus;
 
 import java.nio.charset.StandardCharsets;
@@ -17,9 +19,11 @@ public class HyriNetworkManager implements IHyriNetworkManager {
     private static final String KEY = "network";
 
     private final HyriNetworkEventBus eventBus;
+    private final HyriGlobalCounter globalCounter;
 
     public HyriNetworkManager() {
         this.eventBus = new HyriNetworkEventBus();
+        this.globalCounter = new HyriGlobalCounter();
 
         IHyriNetwork network = this.getNetwork();
 
@@ -42,6 +46,11 @@ public class HyriNetworkManager implements IHyriNetworkManager {
 
             return bytes == null ? null : HyriAPI.get().getDataSerializer().deserialize(new HyriNetwork(), bytes);
         });
+    }
+
+    @Override
+    public IHyriGlobalCounter getPlayerCounter() {
+        return this.globalCounter;
     }
 
     @Override
