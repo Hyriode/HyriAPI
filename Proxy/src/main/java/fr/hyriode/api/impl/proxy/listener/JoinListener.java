@@ -58,6 +58,13 @@ public class JoinListener implements Listener {
 
         try {
             final PendingConnection connection = event.getConnection();
+
+            if (connection.getVersion() > 578) { // 1.15
+                event.setCancelled(true);
+                event.setCancelReason(ProxyMessage.BAD_VERSION.asFramedComponents(null, true));
+                return;
+            }
+
             final String name = connection.getName();
             final IHyriNetworkManager networkManager = HyriAPI.get().getNetworkManager();
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();

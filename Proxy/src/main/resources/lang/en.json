@@ -9,5 +9,6 @@
   "message.profile-loading-error": "&cCouldn't load your profile!",
   "message.profile-taken": "&cYour name is now owned by a premium user!",
   "message.already-online": "&cYou are already connected to the server!",
-  "message.ip-limit": "&cYou exceeded the connection limits!"
+  "message.ip-limit": "&cYou exceeded the connection limits!",
+  "message.bad-version": "&cYou are using a not-supported Minecraft version\n&fWe advise you to use the &b1.8 &fone."
 }

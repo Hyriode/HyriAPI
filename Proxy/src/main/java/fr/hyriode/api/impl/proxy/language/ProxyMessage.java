@@ -28,7 +28,8 @@ public enum ProxyMessage {
     PROFILE_LOADING_ERROR("message.profile-loading-error"),
     PROFILE_TAKEN("message.profile-taken"),
     ALREADY_ONLINE("message.already-online"),
-    IP_LIMIT("message.ip-limit")
+    IP_LIMIT("message.ip-limit"),
+    BAD_VERSION("message.bad-version"),
 
     ;
 
