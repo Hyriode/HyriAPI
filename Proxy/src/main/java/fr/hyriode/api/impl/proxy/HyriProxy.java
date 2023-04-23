@@ -20,8 +20,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class HyriProxy implements IHyriProxy {
 
-    private final ReentrantReadWriteLock playersLock = new ReentrantReadWriteLock();
-
     private final String name;
 
     private final HyggData data;
@@ -76,38 +74,20 @@ public class HyriProxy implements IHyriProxy {
 
     @Override
     public @NotNull Set<UUID> getPlayers() {
-        this.playersLock.readLock().lock();
-
-        try {
-            return Collections.unmodifiableSet(this.players);
-        } finally {
-            this.playersLock.readLock().unlock();
-        }
+        return Collections.unmodifiableSet(this.players);
     }
 
     @Override
     public void addPlayer(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
-
-        try {
-            this.players.add(player);
-
+        if (this.players.add(player)) {
             this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
         }
     }
 
     @Override
     public void removePlayer(@NotNull UUID player) {
-        this.playersLock.writeLock().lock();
-
-        try {
-            this.players.remove(player);
-
+        if (this.players.remove(player)) {
             this.update();
-        } finally {
-            this.playersLock.writeLock().unlock();
         }
     }
 

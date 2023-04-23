@@ -121,8 +121,9 @@ public class PlayerLoader {
         if (!login) { // All this stuff doesn't have to be done if the player has been kicked while logging in
             HyriAPI.get().getQueueManager().removePlayerFromQueue(playerId);
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerQuitNetworkEvent(playerId, session == null ? null : session.getParty()));
-            HyriAPI.get().getProxy().removePlayer(playerId);
         }
+
+        HyriAPI.get().getProxy().removePlayer(playerId);
     }
 
     public boolean isOnline(UUID playerId) {

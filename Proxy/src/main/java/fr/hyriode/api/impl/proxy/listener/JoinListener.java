@@ -61,7 +61,6 @@ public class JoinListener implements Listener {
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final IHyriMaintenance maintenance = network.getMaintenance();
-
             final boolean whitelisted = playerManager.getWhitelistManager().isWhitelisted(name);
 
             UUID playerId = playerManager.getPlayerId(name);
@@ -121,7 +120,7 @@ public class JoinListener implements Listener {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.MAINTENANCE.asFramedComponents(null, true));
                     return;
-                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots()) {
+                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && !whitelisted) {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.SERVER_FULL.asFramedComponents(null, false));
                     return;
