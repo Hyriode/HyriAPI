@@ -5,6 +5,7 @@ import fr.hyriode.api.impl.proxy.language.ProxyMessage;
 import fr.hyriode.api.impl.proxy.player.PlayerLoader;
 import fr.hyriode.api.network.IHyriMaintenance;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.network.IHyriNetworkManager;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
@@ -58,6 +59,7 @@ public class JoinListener implements Listener {
         try {
             final PendingConnection connection = event.getConnection();
             final String name = connection.getName();
+            final IHyriNetworkManager networkManager = HyriAPI.get().getNetworkManager();
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
             final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
             final IHyriMaintenance maintenance = network.getMaintenance();
@@ -71,7 +73,7 @@ public class JoinListener implements Listener {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.MAINTENANCE.asFramedComponents(null, true));
                     return;
-                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots()) {
+                } else if (networkManager.getPlayerCounter().getPlayers() >= network.getSlots()) {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.SERVER_FULL.asFramedComponents(null, false));
                     return;
@@ -90,7 +92,7 @@ public class JoinListener implements Listener {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.MAINTENANCE.asFramedComponents(account, true));
                     return;
-                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && !bypass && !account.getRank().isSuperior(PlayerRank.VIP_PLUS)) {
+                } else if (networkManager.getPlayerCounter().getPlayers() >= network.getSlots() && !bypass && !account.getRank().isSuperior(PlayerRank.VIP_PLUS)) {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.SERVER_FULL.asFramedComponents(account, false));
                     return;
@@ -120,7 +122,7 @@ public class JoinListener implements Listener {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.MAINTENANCE.asFramedComponents(null, true));
                     return;
-                } else if (network.getPlayerCounter().getPlayers() >= network.getSlots() && !whitelisted) {
+                } else if (networkManager.getPlayerCounter().getPlayers() >= network.getSlots() && !whitelisted) {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.SERVER_FULL.asFramedComponents(null, false));
                     return;

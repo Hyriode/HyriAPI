@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.proxy.listener;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.proxy.config.HyriAPIConfig;
 import fr.hyriode.api.network.IHyriNetwork;
+import fr.hyriode.api.network.IHyriNetworkManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ServerPing;
@@ -28,8 +29,9 @@ public class ProxyListener implements Listener {
     @EventHandler
     public void onPing(ProxyPingEvent event) {
         final int protocolNumber = event.getConnection().getVersion();
-        final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
-        final int players = network.getPlayerCounter().getPlayers();
+        final IHyriNetworkManager networkManager = HyriAPI.get().getNetworkManager();
+        final IHyriNetwork network = networkManager.getNetwork();
+        final int players = networkManager.getPlayerCounter().getPlayers();
         final int slots = network.getSlots();
         final ServerPing ping = new ServerPing();
         final ServerPing.PlayerInfo[] playerInfo = new ServerPing.PlayerInfo[]{};

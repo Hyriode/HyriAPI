@@ -68,7 +68,7 @@ public class JoinListener implements Listener {
         final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
-        if (account == null) {
+        if (account == null || playerManager.getSession(playerId) == null) {
             player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
             return;
         }
