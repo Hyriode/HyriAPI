@@ -68,17 +68,6 @@ public class JoinListener implements Listener {
         final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriPlayerManager playerManager = HyriAPI.get().getPlayerManager();
 
-        if (account == null || playerManager.getSession(playerId) == null) {
-            player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
-            return;
-        }
-
-        if (account.getRank().is(StaffRank.ADMINISTRATOR)) {
-            player.setOp(true);
-        }
-
-        event.setJoinMessage("");
-
         if (HyriAPI.get().getConfig().isDevEnvironment()) {
             final long loginTime = System.currentTimeMillis();
             final IHyriPlayerSession session = new HyriPlayerSession(playerId, loginTime);
@@ -96,6 +85,17 @@ public class JoinListener implements Listener {
 
             HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
         }
+
+        if (account == null || playerManager.getSession(playerId) == null) {
+            player.kickPlayer(ChatColor.RED + "An error occurred while loading your profile!");
+            return;
+        }
+
+        if (account.getRank().is(StaffRank.ADMINISTRATOR)) {
+            player.setOp(true);
+        }
+
+        event.setJoinMessage("");
 
         this.connections.put(playerId, System.currentTimeMillis());
         this.hyriAPI.getLanguageManager().setCache(playerId, account.getSettings().getLanguage());
