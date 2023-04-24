@@ -60,7 +60,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
     }
 
     private void cachePlayer(HyriPlayer player) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final Pipeline pipeline = jedis.pipelined();
             final byte[] key = (PLAYERS_KEY + player.getUniqueId().toString()).getBytes(StandardCharsets.UTF_8);
 
@@ -100,7 +100,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void savePlayerId(String name, UUID uuid) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final Pipeline pipeline = jedis.pipelined();
             final String key = IDS_KEY + name.toLowerCase();
 
@@ -112,7 +112,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void deletePlayerId(String name) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(IDS_KEY + name.toLowerCase()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(IDS_KEY + name.toLowerCase()));
     }
 
     @Override
@@ -206,7 +206,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void updateSession(@NotNull IHyriPlayerSession session) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final byte[] key = (SESSIONS_KEY + session.getPlayerId().toString()).getBytes(StandardCharsets.UTF_8);
 
             jedis.set(key, HyriAPI.get().getDataSerializer().serialize((HyriPlayerSession) session));
@@ -215,7 +215,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void deleteSession(@NotNull UUID playerId) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del((SESSIONS_KEY + playerId).getBytes(StandardCharsets.UTF_8)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del((SESSIONS_KEY + playerId).getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override
