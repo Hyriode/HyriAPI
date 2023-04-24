@@ -34,16 +34,16 @@ public class HyriBoosterManager implements IHyriBoosterManager {
         final long enabledDate = boosters.size() == 0 || type == Type.COMBINED ? System.currentTimeMillis() : boosters.get(boosters.size() - 1).getDisabledDate();
         final HyriBooster booster = new HyriBooster(game, type, multiplier, owner, duration, enabledDate);
 
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
             final byte[] key = (KEY + game + ":" + booster.getIdentifier().toString()).getBytes(StandardCharsets.UTF_8);
             final Pipeline pipeline = jedis.pipelined();
 
             pipeline.set(key, HyriAPI.get().getDataSerializer().serialize(booster));
             pipeline.expire(key, (System.currentTimeMillis() - booster.getEnabledDate()) / 1000 + duration);
             pipeline.sync();
-        });
 
-        HyriAPI.get().getNetworkManager().getEventBus().publish(new BoosterQueuedEvent(booster.getIdentifier()));
+            HyriAPI.get().getNetworkManager().getEventBus().publish(new BoosterQueuedEvent(booster.getIdentifier()));
+        });
 
         return booster;
     }
@@ -142,7 +142,7 @@ public class HyriBoosterManager implements IHyriBoosterManager {
 
     @Override
     public void addThank(UUID booster, UUID player) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
             final boolean exists = jedis.exists(THANKS_KEY + booster.toString());
 
             jedis.sadd(THANKS_KEY + booster, player.toString());

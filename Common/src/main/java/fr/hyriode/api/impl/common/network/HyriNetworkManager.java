@@ -55,7 +55,7 @@ public class HyriNetworkManager implements IHyriNetworkManager {
 
     @Override
     public void setNetwork(IHyriNetwork network) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(KEY.getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriNetwork) network)));
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(KEY.getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriNetwork) network)));
     }
 
 }

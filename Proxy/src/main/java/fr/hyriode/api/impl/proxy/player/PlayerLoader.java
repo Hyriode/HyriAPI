@@ -63,10 +63,10 @@ public class PlayerLoader {
                     profile = new MojangProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
                 }
 
-                HyriAPI.get().getRedisProcessor().process(jedis -> {
+                HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
                     jedis.set(key, HyriAPI.GSON.toJson(profile));
-                    // Save the fetched profile for 24 hours
-                    jedis.expire(key, 24 * 60 * 60L);
+                    // Save the fetched profile for 48 hours
+                    jedis.expire(key, 48 * 60 * 60L);
                 });
 
                 return profile;

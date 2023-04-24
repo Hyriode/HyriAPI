@@ -57,7 +57,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void updateParty(@NotNull IHyriParty party) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set((REDIS_KEY + party.getId()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriParty) party)));
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set((REDIS_KEY + party.getId()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriParty) party)));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class HyriPartyManager implements IHyriPartyManager {
                 session.update();
             }
 
-            HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(REDIS_KEY + uuid));
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(REDIS_KEY + uuid));
         }
     }
 
@@ -84,7 +84,7 @@ public class HyriPartyManager implements IHyriPartyManager {
     public void sendRequest(UUID partyId, UUID sender, UUID target) {
         final HyriPartyRequestImpl invitation = new HyriPartyRequestImpl(partyId, sender, target);
 
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
             final Pipeline pipeline = jedis.pipelined();
             final byte[] key = (INVITATIONS_KEY + target.toString() + ":" + partyId.toString()).getBytes(StandardCharsets.UTF_8);
 
@@ -98,7 +98,7 @@ public class HyriPartyManager implements IHyriPartyManager {
 
     @Override
     public void removeRequest(UUID partyId, UUID playerId) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(INVITATIONS_KEY + playerId.toString() + ":" + partyId.toString()));
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(INVITATIONS_KEY + playerId.toString() + ":" + partyId.toString()));
     }
 
     @Override
