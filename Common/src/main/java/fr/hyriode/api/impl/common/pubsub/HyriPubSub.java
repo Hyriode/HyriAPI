@@ -28,19 +28,16 @@ public class HyriPubSub implements IHyriPubSub {
 
     private static final String CHANNEL_PREFIX = "hyriode@";
 
-    private Thread senderThread;
     private Thread subscriberThread;
 
     private boolean running;
 
-    private final Sender sender;
     private final Subscriber subscriber;
 
     private final IRedis redisConnection;
 
     public HyriPubSub() {
         this.redisConnection = HyriAPI.get().getRedisConnection().clone();
-        this.sender = new Sender();
         this.subscriber = new Subscriber();
 
         this.start();
@@ -50,9 +47,6 @@ public class HyriPubSub implements IHyriPubSub {
         HyriAPI.get().log("Starting Redis PubSub...");
 
         this.running = true;
-
-        this.senderThread = new Thread(sender, "SenderThread");
-        this.senderThread.start();
 
         this.subscriberThread = new Thread(() -> {
             while (this.running) {
@@ -70,14 +64,11 @@ public class HyriPubSub implements IHyriPubSub {
         pool.close();
         pool.destroy();
 
-        this.sender.running = this.running = false;
-
         if (this.subscriber.isSubscribed()) {
             this.subscriber.punsubscribe();
         }
 
         this.subscriberThread.interrupt();
-        this.senderThread.interrupt();
     }
 
     @Override
@@ -89,15 +80,17 @@ public class HyriPubSub implements IHyriPubSub {
 
     @Override
     public void send(String channel, HyriPacket packet, Runnable callback) {
-        final HyriPacketEvent event = new HyriPacketSendEvent(packet, channel);
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+            final HyriPacketEvent event = new HyriPacketSendEvent(packet, channel);
 
-        HyriAPI.get().getEventBus().publish(event);
+            HyriAPI.get().getEventBus().publish(event);
 
-        if (event.isCancelled()) {
-            return;
-        }
+            if (event.isCancelled()) {
+                return;
+            }
 
-        this.sender.send(new HyriPubSubMessage(CHANNEL_PREFIX + event.getChannel(), HyriAPI.GSON.toJson(event.getPacket()), callback));
+            jedis.publish(CHANNEL_PREFIX + event.getChannel(), HyriAPI.GSON.toJson(event.getPacket()));
+        });
     }
 
     @Override
@@ -107,70 +100,6 @@ public class HyriPubSub implements IHyriPubSub {
 
     public IRedis getRedisConnection() {
         return this.redisConnection;
-    }
-
-    private class Sender implements Runnable {
-
-        private final LinkedBlockingQueue<HyriPubSubMessage> messages = new LinkedBlockingQueue<>();
-
-        private boolean running = true;
-
-        private Jedis jedis;
-
-        public void send(HyriPubSubMessage message) {
-            this.messages.add(message);
-        }
-
-        @Override
-        public void run() {
-            this.check();
-
-            while (this.running) {
-                try {
-                    this.process(this.messages.take());
-                } catch (InterruptedException e) {
-                    this.jedis.close();
-                    return;
-                }
-            }
-        }
-
-        private void process(HyriPubSubMessage message) {
-            boolean published = false;
-
-            while (!published) {
-                try {
-                    final Runnable callback = message.getCallback();
-
-                    this.jedis.publish(message.getChannel(), message.getMessage());
-
-                    if (callback != null) {
-                        callback.run();
-                    }
-
-                    published = true;
-                } catch (Exception e) {
-                    this.check();
-                }
-            }
-        }
-
-        private void check() {
-            try {
-                this.jedis = redisConnection.getResource();
-            } catch (Exception e) {
-                HyriAPI.get().log(Level.SEVERE, "[" + this.getClass().getSimpleName() + "] Couldn't connect to Redis server. Error: " + e.getMessage() + ". Recheck in 5 seconds.");
-
-                try {
-                    Thread.sleep(5000);
-
-                    this.check();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-
     }
 
     private static class Subscriber extends JedisPubSub {
