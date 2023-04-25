@@ -124,8 +124,8 @@ public class JoinListener implements Listener {
             e.printStackTrace();
         }
 
-        final IHyriPlayer account = IHyriPlayer.get(playerId);
         final IHyriServer server = HyriAPI.get().getServer();
+        final IHyriPlayer account = IHyriPlayer.get(playerId);
         final long playTime = System.currentTimeMillis() - this.connections.remove(playerId);
 
         account.getStatistics().addPlayTime(server.getType(), playTime);

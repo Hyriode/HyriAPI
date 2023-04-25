@@ -8,14 +8,22 @@ import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.event.PlayerQuitNetworkEvent;
 import fr.hyriode.api.player.model.IHyriNickname;
+import fr.hyriode.api.util.HyriAPIException;
 import fr.hyriode.hyggdrasil.api.proxy.HyggProxy;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -47,16 +55,29 @@ public class PlayerLoader {
         }
 
         try {
-            final HttpGet request = new HttpGet("https://api.mojang.com/users/profiles/minecraft/" + playerName);
-            final HttpResponse response = HyriAPI.get().getHttpRequester().getClient().execute(request);
-            final int statusCode = response.getStatusLine().getStatusCode();
+            final URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + playerName);
+            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            if (statusCode == 200 || statusCode == 204 || statusCode == 404) {
-                final boolean premium = statusCode == 200;
+            connection.setRequestMethod("GET");
+
+            final int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT) { // success
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                final StringBuilder response = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+
+                final boolean premium = responseCode == 200;
 
                 MojangProfile profile;
                 if (premium) {
-                    final JsonObject body = HyriAPI.GSON.fromJson(EntityUtils.toString(response.getEntity()), JsonObject.class);
+                    final JsonObject body = HyriAPI.GSON.fromJson(response.toString(), JsonObject.class);
 
                     profile = new MojangProfile(Util.getUUID(body.get("id").getAsString()), true);
                 } else {
@@ -65,13 +86,12 @@ public class PlayerLoader {
 
                 HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
                     jedis.set(key, HyriAPI.GSON.toJson(profile));
-                    // Save the fetched profile for 48 hours
-                    jedis.expire(key, 48 * 60 * 60L);
+                    // Save the fetched profile for 3 months
+                    jedis.expire(key, 90 * 24 * 60 * 60L);
                 });
-
                 return profile;
             } else {
-                throw new RuntimeException("An error occurred while requesting to Mojang!");
+                throw new HyriAPIException("An error occurred while requesting to Mojang!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

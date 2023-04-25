@@ -7,6 +7,7 @@
   "message.no-server": "&cThere is no server available!",
   "message.invalid-name": "&cYour name is invalid!",
   "message.profile-loading-error": "&cCouldn't load your profile!",
+  "message.profile-authentication-error": "&cCouldn't authenticate your profile!",
   "message.profile-taken": "&cYour name is now owned by a premium user!",
   "message.already-online": "&cYou are already connected to the server!",
   "message.ip-limit": "&cYou exceeded the connection limits!",

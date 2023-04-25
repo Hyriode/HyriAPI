@@ -31,7 +31,7 @@ public class HttpRequester implements IHttpRequester {
     }
 
     @Override
-    public @NotNull HttpClient getClient() {
+    public @NotNull CloseableHttpClient getClient() {
         return this.client;
     }
 

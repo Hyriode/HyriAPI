@@ -6,6 +6,7 @@ import fr.hyriode.api.impl.server.config.HyriAPIConfig;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.world.IHyriWorld;
 import fr.hyriode.api.world.IHyriWorldManager;
+import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -30,6 +31,8 @@ public class HyriAPIPlugin extends JavaPlugin {
         this.api = new SHyriAPIImpl(this);
 
         this.loadMap();
+
+        HyriAPI.get().getServer().setState(HyggServer.State.READY);
     }
 
     private void loadMap() {

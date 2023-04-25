@@ -23,7 +23,6 @@ public class HyriAPIPlugin extends Plugin  {
         this.api = new PHyriAPIImpl(this);
 
         HyriAPI.get().getProxy().setState(HyggProxy.State.READY);
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new TestCommand());
     }
 
     @Override

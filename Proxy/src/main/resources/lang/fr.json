@@ -7,6 +7,7 @@
   "message.no-server": "&cAucun serveur n'est actuellement démarré !",
   "message.invalid-name": "&cVotre pseudo est invalide !",
   "message.profile-loading-error": "&cImpossible de charger votre profil !",
+  "message.profile-authentication-error": "&cImpossible d'authentifier votre profil !",
   "message.profile-taken": "&cVotre pseudo appartient désormais à un joueur Premium !",
   "message.already-online": "&cVous êtes déjà connecté sur le serveur",
   "message.ip-limit": "&cVous avez excédé le nombre de connexions maximales!",

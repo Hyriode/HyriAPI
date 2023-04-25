@@ -12,6 +12,7 @@ import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.player.event.PlayerJoinNetworkEvent;
 import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.api.server.reconnection.IHyriReconnectionData;
+import fr.hyriode.api.util.HyriAPIException;
 import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.server.HyggServer;
 import net.md_5.bungee.api.ProxyServer;
@@ -103,24 +104,10 @@ public class JoinListener implements Listener {
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.SERVER_FULL.asFramedComponents(account, false));
                     return;
-                }
-
-                if (this.playerLoader.isOnline(playerId)) { // Check if the player is not online
+                } else if (this.playerLoader.isOnline(playerId)) { // Check if the player is not online
                     event.setCancelled(true);
                     event.setCancelReason(ProxyMessage.ALREADY_ONLINE.asFramedComponents(account, true));
                     return;
-                } else if (!account.getAuth().isPremium()) { // Player is not premium but his name might have been taken
-                    if (mojangProfile == null) {
-                        mojangProfile = this.playerLoader.fetchMojangProfile(name);
-                    }
-
-                    if (mojangProfile.isPremium()) { // Mojang tells the queried name is now owned by a premium user. The crack player must transfer his account. And we will create a new account for the premium player.
-                        HyriAPI.get().getPlayerManager().savePlayerId(name, mojangProfile.getPlayerId());
-
-                        event.setCancelled(true);
-                        event.setCancelReason(ProxyMessage.PROFILE_TAKEN.asFramedComponents(account, true));
-                        return;
-                    }
                 }
             }
 
@@ -166,6 +153,9 @@ public class JoinListener implements Listener {
             this.playerLoader.loadPlayerAccount(playerId, account, name, ip);
 
             event.setEncrypting(account != null && account.getAuth().isPremium());
+        } catch (HyriAPIException e) {
+            event.setCancelled(true);
+            event.setCancelReason(ProxyMessage.PROFILE_AUTHENTICATION_ERROR.asFramedComponents(null, true));
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -245,7 +235,13 @@ public class JoinListener implements Listener {
                 serverInfo = ProxyServer.getInstance().getServerInfo(lobby.getName());
 
                 if (serverInfo != null) {
+                    System.out.println(serverInfo.getName());
                     HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
+
+                    event.setCancelled(false);
+                    event.setTarget(serverInfo);
+
+                    HyriAPI.get().getProxy().addPlayer(playerId);
                 }
             }
         } else { // If he is crack, connect him first to a limbo to authenticate
@@ -265,8 +261,6 @@ public class JoinListener implements Listener {
 
         event.setTarget(serverInfo);
         event.setCancelled(false);
-
-        HyriAPI.get().getProxy().addPlayer(playerId);
     }
 
 }
