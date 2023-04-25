@@ -103,7 +103,11 @@ public class HyriStatisticsModule implements IHyriStatisticsModule, MongoSeriali
         }
 
         // Load total play time cache
-        this.playTime.values().forEach(time -> this.totalPlayTime += time);
+        this.playTime.forEach((key, time) -> {
+            if (!key.contains("#")) {
+                this.totalPlayTime += time;
+            }
+        });
     }
 
     @Override
