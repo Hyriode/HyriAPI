@@ -62,7 +62,7 @@ public class PlayerLoader {
 
             final int responseCode = connection.getResponseCode();
 
-            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT) { // success
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT || responseCode == HttpURLConnection.HTTP_NOT_FOUND) { // success
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 final StringBuilder response = new StringBuilder();
 
@@ -89,6 +89,7 @@ public class PlayerLoader {
                     // Save the fetched profile for 3 months
                     jedis.expire(key, 90 * 24 * 60 * 60L);
                 });
+
                 return profile;
             } else {
                 throw new HyriAPIException("An error occurred while requesting to Mojang!");
