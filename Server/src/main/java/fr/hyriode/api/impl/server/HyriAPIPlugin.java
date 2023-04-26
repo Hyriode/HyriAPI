@@ -31,8 +31,6 @@ public class HyriAPIPlugin extends JavaPlugin {
         this.api = new SHyriAPIImpl(this);
 
         this.loadMap();
-
-        HyriAPI.get().getServer().setState(HyggServer.State.READY);
     }
 
     private void loadMap() {
