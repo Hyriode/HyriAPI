@@ -23,6 +23,8 @@ public class HyriAPIPlugin extends Plugin  {
         this.api = new PHyriAPIImpl(this);
 
         HyriAPI.get().getProxy().setState(HyggProxy.State.READY);
+
+        new TemporarilySyncTask();
     }
 
     @Override

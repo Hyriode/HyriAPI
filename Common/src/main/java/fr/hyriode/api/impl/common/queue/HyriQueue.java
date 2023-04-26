@@ -127,11 +127,17 @@ public class HyriQueue implements IHyriQueue, DataSerializable {
             final IHyriParty party = HyriAPI.get().getPartyManager().getPlayerParty(player);
 
             if (party != null && party.isLeader(player)) {
+                group.add(player);
+
                 for (UUID member : party.getMembers().keySet()) {
+                    if (member.equals(player)) {
+                        continue;
+                    }
+
                     final IHyriPlayerSession session = IHyriPlayerSession.get(member);
                     final IHyriPlayer account = IHyriPlayer.get(member);
 
-                    if (session == null || session.isPlaying() || session.isModerating() || !account.getSettings().isFollowPartyEnabled()) {
+                    if (session == null || session.isPlaying() || session.isModerating() || session.isQueuing() || !account.getSettings().isFollowPartyEnabled()) {
                         continue;
                     }
 

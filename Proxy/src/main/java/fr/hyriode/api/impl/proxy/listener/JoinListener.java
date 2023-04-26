@@ -235,7 +235,6 @@ public class JoinListener implements Listener {
                 serverInfo = ProxyServer.getInstance().getServerInfo(lobby.getName());
 
                 if (serverInfo != null) {
-                    System.out.println(serverInfo.getName());
                     HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new PlayerJoinNetworkEvent(playerId));
 
                     event.setCancelled(false);
