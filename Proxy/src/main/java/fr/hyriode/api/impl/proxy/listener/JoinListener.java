@@ -66,6 +66,17 @@ public class JoinListener implements Listener {
                 return;
             }
 
+            final String ip = ((InetSocketAddress) connection.getSocketAddress()).getAddress().getHostAddress();
+            final AtomicInteger ipLimit = this.ipLimits.getOrDefault(ip, new AtomicInteger(0));
+
+            if (ipLimit.incrementAndGet() > 3) {
+                this.ipLimits.remove(ip);
+
+                event.setCancelled(true);
+                event.setCancelReason(ProxyMessage.IP_LIMIT.asFramedComponents(null, true));
+                return;
+            }
+
             final String name = connection.getName();
             final IHyriNetworkManager networkManager = HyriAPI.get().getNetworkManager();
             final IHyriNetwork network = HyriAPI.get().getNetworkManager().getNetwork();
@@ -136,17 +147,6 @@ public class JoinListener implements Listener {
                 if (mojangProfile.isPremium()) { // Only create the account if the player is premium! (for crack users it will be after being registered)
                     account = playerManager.createPlayer(true, playerId, name);
                 }
-            }
-
-            final String ip = ((InetSocketAddress) connection.getSocketAddress()).getAddress().getHostAddress();
-            final AtomicInteger ipLimit = this.ipLimits.getOrDefault(ip, new AtomicInteger(0));
-
-            if (ipLimit.incrementAndGet() > 3) {
-                this.ipLimits.remove(ip);
-
-                event.setCancelled(true);
-                event.setCancelReason(ProxyMessage.IP_LIMIT.asFramedComponents(null, true));
-                return;
             }
 
             this.ipLimits.put(ip, ipLimit);
