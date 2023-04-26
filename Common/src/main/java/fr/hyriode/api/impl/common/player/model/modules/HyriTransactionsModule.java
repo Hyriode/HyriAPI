@@ -154,7 +154,7 @@ public class HyriTransactionsModule extends HashMap<String, List<IHyriTransactio
 
     @Override
     public boolean has(@NotNull String type, @NotNull String name) {
-        return this.get(name, type) != null;
+        return this.get(type, name) != null;
     }
 
 }
