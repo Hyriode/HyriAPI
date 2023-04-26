@@ -328,7 +328,7 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
         if (this.rank.isStaff()) {
             return this.rank.getTabListPriority();
         }
-        return this.hyriPlus.has() ? IHyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
+        return this.hyriPlus.has() && this.rank.is(PlayerRank.PARTNER) ? IHyriPlus.TAB_LIST_PRIORITY : this.rank.getTabListPriority();
     }
 
     @Override
