@@ -216,6 +216,12 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
+        final ServerKickEvent.Cause cause = event.getCause();
+
+        if (cause != ServerKickEvent.Cause.LOST_CONNECTION) {
+            return;
+        }
+
         final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
         if (lobby != null) {
