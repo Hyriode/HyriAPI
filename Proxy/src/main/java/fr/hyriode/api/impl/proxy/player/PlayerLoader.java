@@ -19,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -26,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -37,6 +39,8 @@ public class PlayerLoader {
 
     private static final Pattern NOTCHIAN_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
     private static final String PROFILES_CACHE_KEY = "proxy-mojang-profiles:";
+
+    private static final Function<String, UUID> CRACK_UUID = name -> UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
 
     public boolean isNameValid(String name) {
         return NOTCHIAN_NAME_PATTERN.matcher(name).find();
@@ -54,6 +58,7 @@ public class PlayerLoader {
             return cachedProfile;
         }
 
+        MojangProfile profile;
         try {
             final URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + playerName);
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -75,28 +80,32 @@ public class PlayerLoader {
 
                 final boolean premium = responseCode == 200;
 
-                MojangProfile profile;
                 if (premium) {
                     final JsonObject body = HyriAPI.GSON.fromJson(response.toString(), JsonObject.class);
 
                     profile = new MojangProfile(Util.getUUID(body.get("id").getAsString()), true);
                 } else {
-                    profile = new MojangProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
+                    profile = new MojangProfile(CRACK_UUID.apply(playerName), false);
                 }
-
-                HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
-                    jedis.set(key, HyriAPI.GSON.toJson(profile));
-                    // Save the fetched profile for 3 months
-                    jedis.expire(key, 90 * 24 * 60 * 60L);
-                });
-
                 return profile;
             } else {
                 throw new HyriAPIException("An error occurred while requesting to Mojang!");
             }
+        } catch (FileNotFoundException e) {
+            profile = new MojangProfile(CRACK_UUID.apply(playerName), false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        final MojangProfile finalProfile = profile;
+
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+            jedis.set(key, HyriAPI.GSON.toJson(finalProfile));
+            // Save the fetched profile for 3 months
+            jedis.expire(key, 90 * 24 * 60 * 60L);
+        });
+
+        return profile;
     }
 
     public void loadPlayerAccount(UUID playerId, IHyriPlayer account, String name, String ip) {

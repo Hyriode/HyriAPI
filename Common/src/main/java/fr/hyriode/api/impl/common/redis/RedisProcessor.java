@@ -17,22 +17,6 @@ import java.util.function.Function;
  */
 public class RedisProcessor implements IRedisProcessor {
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-    public void stop() {
-        HyriAPI.get().log("Stopping Redis processor (waiting for last requests to be done)...");
-
-        try {
-            if (!this.executorService.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
-                HyriAPI.get().log("Redis processor couldn't handle last Redis requests!");
-
-                this.executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            this.executorService.shutdownNow();
-        }
-    }
-
     @Override
     public void process(Consumer<Jedis> action) {
         try (final Jedis jedis = HyriAPI.get().getRedisResource()) {
@@ -44,7 +28,7 @@ public class RedisProcessor implements IRedisProcessor {
 
     @Override
     public void processAsync(Consumer<Jedis> action) {
-        this.executorService.execute(() -> this.process(action));
+        HyriAPI.get().getScheduler().runAsync(() -> this.process(action));
     }
 
     @Override

@@ -45,12 +45,12 @@ public class HyriGameManager implements IHyriGameManager {
 
     @Override
     public void saveGameInfo(IHyriGameInfo game) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set((KEY + game.getName()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriGameInfo) game)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set((KEY + game.getName()).getBytes(StandardCharsets.UTF_8), HyriAPI.get().getDataSerializer().serialize((HyriGameInfo) game)));
     }
 
     @Override
     public void deleteGameInfo(String name) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(KEY + name));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(KEY + name));
     }
 
     @Override

@@ -21,12 +21,12 @@ public class HyriNicknameManager implements IHyriNicknameManager {
 
     @Override
     public void addUsedNickname(String name, UUID playerId) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.set(REDIS_KEY + name.toLowerCase(), playerId.toString()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.set(REDIS_KEY + name.toLowerCase(), playerId.toString()));
     }
 
     @Override
     public void removeUsedNickname(String name) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(REDIS_KEY + name.toLowerCase()));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(REDIS_KEY + name.toLowerCase()));
     }
 
     @Override

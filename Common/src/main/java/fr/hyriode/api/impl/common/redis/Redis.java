@@ -63,12 +63,11 @@ public class Redis implements IRedis {
 
         config.setMaxTotal(-1);
         config.setJmxEnabled(false);
-        config.setMaxIdle(-1);
 
         if (this.password == null) {
-            this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000);
+            this.jedisPool = new JedisPool(config, this.hostname, this.port, 0);
         } else {
-            this.jedisPool = new JedisPool(config, this.hostname, this.port, 2000, this.password);
+            this.jedisPool = new JedisPool(config, this.hostname, this.port, 0, this.password);
         }
 
         try {

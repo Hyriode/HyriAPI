@@ -37,7 +37,7 @@ public class HyriPubSub implements IHyriPubSub {
     private final IRedis redisConnection;
 
     public HyriPubSub() {
-        this.redisConnection = HyriAPI.get().getRedisConnection().clone();
+        this.redisConnection = HyriAPI.get().getRedisConnection();
         this.subscriber = new Subscriber();
 
         this.start();

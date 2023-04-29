@@ -19,10 +19,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -215,6 +212,18 @@ public class JoinListener implements Listener {
         }
 
         this.playerLoader.handleDisconnection(event.getPlayer(), false);
+    }
+
+    @EventHandler
+    public void onKick(ServerKickEvent event) {
+        final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
+
+        if (lobby != null) {
+            final ServerInfo serverInfo =  ProxyServer.getInstance().getServerInfo(lobby.getName());
+
+            event.setCancelled(true);
+            event.setCancelServer(serverInfo);
+        }
     }
 
     private void connectToNetwork(ProxiedPlayer player, IHyriPlayer account, ServerConnectEvent event) {

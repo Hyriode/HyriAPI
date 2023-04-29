@@ -198,7 +198,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
 
         if (this.redisConnection.isConnected()) {
             this.pubSub.stop();
-            this.redisProcessor.stop();
             this.redisConnection.stop();
         }
 

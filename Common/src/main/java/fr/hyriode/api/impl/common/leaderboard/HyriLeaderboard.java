@@ -95,7 +95,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public void setScore(HyriLeaderboardScope scope, UUID id, double score) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final String key = this.getKey(scope);
 
             jedis.zadd(key, score, id.toString());
@@ -106,7 +106,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public void incrementScore(HyriLeaderboardScope scope, UUID id, double score) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final String key = this.getKey(scope);
 
             jedis.zincrby(key, score, id.toString());
@@ -117,7 +117,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public void removeScore(HyriLeaderboardScope scope, UUID id) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+        HyriAPI.get().getRedisProcessor().process(jedis -> {
             final String key = this.getKey(scope);
 
             jedis.zrem(key, id.toString());
@@ -137,7 +137,7 @@ public class HyriLeaderboard implements IHyriLeaderboard {
 
     @Override
     public void clear(HyriLeaderboardScope scope) {
-        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(this.getKey(scope)));
+        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(this.getKey(scope)));
     }
 
     private void checkExpiration(String key, HyriLeaderboardScope scope, Jedis jedis) {

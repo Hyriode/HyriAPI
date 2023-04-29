@@ -100,7 +100,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void savePlayerId(String name, UUID uuid) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> {
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
             final Pipeline pipeline = jedis.pipelined();
             final String key = IDS_KEY + name.toLowerCase();
 
@@ -112,7 +112,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void deletePlayerId(String name) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del(IDS_KEY + name.toLowerCase()));
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del(IDS_KEY + name.toLowerCase()));
     }
 
     @Override
@@ -215,7 +215,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     @Override
     public void deleteSession(@NotNull UUID playerId) {
-        HyriAPI.get().getRedisProcessor().process(jedis -> jedis.del((SESSIONS_KEY + playerId).getBytes(StandardCharsets.UTF_8)));
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.del((SESSIONS_KEY + playerId).getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override
