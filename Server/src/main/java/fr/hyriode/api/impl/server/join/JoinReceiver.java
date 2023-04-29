@@ -5,6 +5,8 @@ import fr.hyriode.api.packet.HyriPacket;
 import fr.hyriode.api.packet.IHyriPacketReceiver;
 import fr.hyriode.api.server.join.packet.PlayerJoinPacket;
 
+import java.util.UUID;
+
 /**
  * Project: HyriAPI
  * Created by AstFaster
@@ -21,13 +23,18 @@ public class JoinReceiver implements IHyriPacketReceiver {
     @Override
     public void receive(String channel, HyriPacket packet) {
         if (packet instanceof PlayerJoinPacket) {
-          final PlayerJoinPacket joinPacket = (PlayerJoinPacket) packet;
+            final PlayerJoinPacket joinPacket = (PlayerJoinPacket) packet;
 
-          if (!joinPacket.getTargetServer().equals(HyriAPI.get().getServer().getName())) {
+            if (!joinPacket.getTargetServer().equals(HyriAPI.get().getServer().getName())) {
               return;
-          }
+            }
 
-          this.joinManager.requestPlayerJoin(joinPacket.getPlayerId(), true);
+            final UUID player = joinPacket.getPlayerId();
+            final String message = this.joinManager.requestPlayerJoin(player, true);
+
+            if (message != null) {
+                HyriAPI.get().getPlayerManager().sendMessage(player, message);
+            }
         }
     }
 
