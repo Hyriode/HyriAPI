@@ -11,5 +11,7 @@
   "message.profile-taken": "&cVotre pseudo appartient désormais à un joueur Premium !",
   "message.already-online": "&cVous êtes déjà connecté sur le serveur",
   "message.ip-limit": "&cVous avez excédé le nombre de connexions maximales!",
-  "message.bad-version": "&cVous utilisez une version de Minecraft non-supportée!\n&fNous vous conseillons d'utiliser la version &b1.8&f."
+  "message.bad-version": "&cVous utilisez une version de Minecraft non-supportée!\n&fNous vous conseillons d'utiliser la version &b1.8&f.",
+
+  "message.fallback-redirection": "&cUne erreur est survenue lors de l'envoi vers %from_server%. Redirection en cours vers %to_server%..."
 }

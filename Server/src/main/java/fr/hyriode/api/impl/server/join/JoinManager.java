@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.server.join;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.language.HyriLanguageMessage;
 import fr.hyriode.api.packet.HyriChannel;
 import fr.hyriode.api.server.join.HyriJoinResponse;
 import fr.hyriode.api.server.join.IHyriJoinHandler;
@@ -73,6 +74,8 @@ public class JoinManager implements IHyriJoinManager {
 
         if (connect) {
             HyriAPI.get().getPlayerManager().connectPlayer(playerId, HyriAPI.get().getServer().getName());
+
+            return HyriLanguageMessage.get("message.join.sending").getValue(playerId).replace("%server%", HyriAPI.get().getServer().getName());
         }
         return null;
     }

@@ -32,6 +32,8 @@ public enum ProxyMessage {
     IP_LIMIT("message.ip-limit"),
     BAD_VERSION("message.bad-version"),
 
+    FALLBACK_REDIRECTION("message.fallback-redirection")
+
     ;
 
     private static final String HYPHENS = "----------------------";
