@@ -191,6 +191,9 @@ public abstract class CHyriAPIImpl extends HyriAPI {
             return account != null ? message.getValue(account) : message.getValue(HyriLanguage.FR);
         });
         this.hyggdrasilManager.sendData();
+
+        final HyriMoneyManager moneyManager = (HyriMoneyManager) this.moneyManager;
+        moneyManager.start();
     }
 
     public void stop() {

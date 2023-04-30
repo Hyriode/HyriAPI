@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.common.money;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
+import fr.hyriode.api.event.model.money.HyriCreditMoneyEvent;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -10,6 +11,7 @@ import fr.hyriode.api.player.IHyriPlayer;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static fr.hyriode.api.money.IHyriMoneyAction.Type;
 
@@ -19,6 +21,18 @@ import static fr.hyriode.api.money.IHyriMoneyAction.Type;
  * on 12/02/2022 at 15:54
  */
 public class HyriMoneyManager implements IHyriMoneyManager {
+
+    private long hyris;
+    private long hyodes;
+
+    public void start() {
+        HyriAPI.get().getScheduler().schedule(() -> {
+            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriCreditMoneyEvent(this.hyris, this.hyodes));
+
+            this.hyris = 0;
+            this.hyodes = 0;
+        }, 30, 30, TimeUnit.SECONDS);
+    }
 
     @Override
     public long applyBoosters(UUID playerId, IHyriMoney money, long amount) {
@@ -58,13 +72,31 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
         if (type == Type.ADD) {
             money.setAmount(money.getAmount() + amount);
+
+            if (money instanceof Hyris) {
+                this.hyris += amount;
+            } else if (money instanceof Hyodes) {
+                this.hyodes += amount;
+            }
         } else if (type == Type.REMOVE) {
             final long newAmount = money.getAmount() - amount;
 
             if (newAmount >= 0) {
                 money.setAmount(newAmount);
+
+                if (money instanceof Hyris) {
+                    this.hyris += newAmount;
+                } else if (money instanceof Hyodes) {
+                    this.hyodes += newAmount;
+                }
             } else {
                 money.setAmount(0);
+
+                if (money instanceof Hyris) {
+                    this.hyris = 0;
+                } else if (money instanceof Hyodes) {
+                    this.hyodes = 0;
+                }
             }
         }
 
@@ -73,6 +105,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
             HyriAPI.get().getPlayerManager().sendMessage(playerId, message);
         }
+
         return amount;
     }
 
