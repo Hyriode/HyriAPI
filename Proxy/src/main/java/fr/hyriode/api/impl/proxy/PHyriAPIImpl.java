@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.proxy;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.event.IHyriEventBus;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
 import fr.hyriode.api.impl.proxy.listener.*;
 import fr.hyriode.api.impl.proxy.player.PHyriPlayerManager;
@@ -91,7 +92,10 @@ public class PHyriAPIImpl extends CHyriAPIImpl {
         register.accept(new ProxyListener(this.plugin.getConfiguration()));
         register.accept(new JoinListener());
 
-        HyriAPI.get().getNetworkManager().getEventBus().register(new NetworkListener());
+        final IHyriEventBus eventBus = HyriAPI.get().getNetworkManager().getEventBus();
+
+        eventBus.register(new NetworkListener());
+        eventBus.register(new RestartListener());
     }
 
     @Override

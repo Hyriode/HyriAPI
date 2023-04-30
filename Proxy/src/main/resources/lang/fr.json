@@ -13,5 +13,9 @@
   "message.ip-limit": "&cVous avez excédé le nombre de connexions maximales!",
   "message.bad-version": "&cVous utilisez une version de Minecraft non-supportée!\n&fNous vous conseillons d'utiliser la version &b1.8&f.",
 
-  "message.fallback-redirection": "&cUne erreur est survenue lors de l'envoi vers %from_server%. Redirection en cours vers %to_server%..."
+  "message.fallback-redirection": "&cUne erreur est survenue lors de l'envoi vers %from_server%. Redirection en cours vers %to_server%...",
+
+  "proxy-restarting.title": "&c&lREDEMARRAGE",
+  "proxy-restarting.subtitle": "&fVotre proxy va redémarrer dans &c%count% &fsecondes",
+  "proxy-restarting.message": "&c&m--------------------------------------------------&r\n&cAttention: &fVotre &bproxy &fva &aredémarrer &fdans &c%count% &fsecondes!\n&c&m--------------------------------------------------"
 }

@@ -13,5 +13,9 @@
   "message.ip-limit": "&cYou exceeded the connection limits!",
   "message.bad-version": "&cYou are using a not-supported Minecraft version\n&fWe advise you to use the &b1.8 &fone.",
 
-  "message.fallback-redirection": "&cAn error occurred while sending you to %from_server%. Redirecting you to %to_server%..."
+  "message.fallback-redirection": "&cAn error occurred while sending you to %from_server%. Redirecting you to %to_server%...",
+
+  "proxy-restarting.title": "&c&lRESTARTING",
+  "proxy-restarting.subtitle": "&fYour proxy will restart in &c%count% &fseconds",
+  "proxy-restarting.message": "&c&m--------------------------------------------------&r\n&cAttention: &fYour &bproxy &fwill &arestart &fin &c%count% &fseconds!\n&c&m--------------------------------------------------"
 }

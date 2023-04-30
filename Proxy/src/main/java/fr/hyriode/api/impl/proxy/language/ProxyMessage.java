@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by AstFaster
@@ -32,7 +33,11 @@ public enum ProxyMessage {
     IP_LIMIT("message.ip-limit"),
     BAD_VERSION("message.bad-version"),
 
-    FALLBACK_REDIRECTION("message.fallback-redirection")
+    FALLBACK_REDIRECTION("message.fallback-redirection"),
+
+    PROXY_RESTARTING_TITLE("proxy-restarting.title"),
+    PROXY_RESTARTING_SUBTITLE("proxy-restarting.subtitle"),
+    PROXY_RESTARTING_MESSAGE("proxy-restarting.message"),
 
     ;
 
@@ -64,6 +69,10 @@ public enum ProxyMessage {
 
     public <T> BaseComponent[] asComponents(T object) {
         return TextComponent.fromLegacyText(this.asString(object));
+    }
+
+    public <T> BaseComponent[] asComponents(T object, Function<String, String> formatter) {
+        return TextComponent.fromLegacyText(formatter.apply(this.asString(object)));
     }
 
     public <T> BaseComponent[] asFramedComponents(T object, boolean separateSupport) {
