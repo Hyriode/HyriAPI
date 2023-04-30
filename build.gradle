@@ -30,16 +30,6 @@ allprojects {
         maven { url 'https://repo1.maven.org/maven2' }
 
         maven {
-            name = 'Hyreos_maven'
-            url = 'https://maven.pkg.github.com/Hyriode/Hyreos/'
-
-            credentials {
-                username System.getenv('GITHUB_USERNAME')
-                password System.getenv('GITHUB_TOKEN')
-            }
-        }
-
-        maven {
             name = 'Hyggdrasil_maven'
             url = 'https://maven.pkg.github.com/Hyriode/Hyggdrasil/'
 

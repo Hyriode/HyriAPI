@@ -50,7 +50,6 @@ import fr.hyriode.api.serialization.DataSerializer;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.hyggdrasil.api.protocol.data.HyggEnv;
-import fr.hyriode.hyreos.api.HyreosAPI;
 import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
@@ -78,7 +77,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     protected HyriScheduler scheduler;
 
     protected HyggdrasilManager hyggdrasilManager;
-    protected HyreosAPI hyreosAPI;
 
     protected HyriConfigManager configManager;
     protected HyriNetworkManager networkManager;
@@ -141,8 +139,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         // Internal systems
         this.eventBus = new HyriEventBus("default");
         this.pubSub = new HyriPubSub();
-        this.hyreosAPI = new HyreosAPI(this.pubSub.getRedisConnection().getPool());
-        this.hyreosAPI.start();
 
         // Hyggdrasil and servers/proxies management
         this.hyggdrasilManager = new HyggdrasilManager(environment);
@@ -191,6 +187,9 @@ public abstract class CHyriAPIImpl extends HyriAPI {
             return account != null ? message.getValue(account) : message.getValue(HyriLanguage.FR);
         });
         this.hyggdrasilManager.sendData();
+
+        final HyriMoneyManager moneyManager = (HyriMoneyManager) this.moneyManager;
+        moneyManager.start();
     }
 
     public void stop() {
@@ -201,7 +200,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
             this.redisConnection.stop();
         }
 
-        this.hyreosAPI.stop();
         this.mongoDB.stopConnection();
         this.scheduler.stop();
         this.hyggdrasilManager.stop();
@@ -275,11 +273,6 @@ public abstract class CHyriAPIImpl extends HyriAPI {
     @Override
     public HyggdrasilManager getHyggdrasilManager() {
         return this.hyggdrasilManager;
-    }
-
-    @Override
-    public HyreosAPI getHyreosAPI() {
-        return this.hyreosAPI;
     }
 
     @Override
