@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class HyriPartyManager implements IHyriPartyManager {
 
     public static final String REDIS_KEY = "parties:";
-    public static final String INVITATIONS_KEY = "parties-requests";
+    public static final String INVITATIONS_KEY = "parties-requests:";
 
     @Override
     public IHyriParty getParty(@NotNull UUID uuid) {
