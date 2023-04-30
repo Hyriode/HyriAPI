@@ -40,10 +40,8 @@ import fr.hyriode.api.server.join.IHyriJoinManager;
 import fr.hyriode.api.util.HyriAPIException;
 import fr.hyriode.api.world.IHyriWorldManager;
 import fr.hyriode.api.world.generation.IWorldGenerationAPI;
-import fr.hyriode.hyreos.api.HyreosAPI;
 import redis.clients.jedis.Jedis;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 
 public abstract class HyriAPI {
@@ -223,13 +221,6 @@ public abstract class HyriAPI {
      * @return The {@link IHyggdrasilManager} instance
      */
     public abstract IHyggdrasilManager getHyggdrasilManager();
-
-    /**
-     * Get the Hyreos API instance
-     *
-     * @return The {@link HyreosAPI} instance
-     */
-    public abstract HyreosAPI getHyreosAPI();
 
     /**
      * Get the manager of configurations stored in database
