@@ -29,7 +29,7 @@ public class HyriMoneyManager implements IHyriMoneyManager {
         HyriAPI.get().getScheduler().schedule(() -> {
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
                 jedis.incrBy(MetricsRedisKeys.HYRIS.getKey(), this.hyris);
-                jedis.incrBy(MetricsRedisKeys.HYODE.getKey(), this.hyodes);
+                jedis.incrBy(MetricsRedisKeys.HYODES.getKey(), this.hyodes);
             });
 
             this.hyris = 0;

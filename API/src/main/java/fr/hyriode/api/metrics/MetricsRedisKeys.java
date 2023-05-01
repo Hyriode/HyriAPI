@@ -3,7 +3,7 @@ package fr.hyriode.api.metrics;
 public enum MetricsRedisKeys {
 
     HYRIS("money:hyris"),
-    HYODE("money:hyode"),
+    HYODES("money:hyodes"),
 
     HYRI_PLUS("ranks:hyriplus"),
 
