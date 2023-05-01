@@ -3,6 +3,7 @@ package fr.hyriode.api.impl.common.money;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
+import fr.hyriode.api.metrics.MetricsRedisKeys;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -26,9 +27,9 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
-            HyriAPI.get().getRedisProcessor().process(jedis -> {
-                jedis.incrBy(IHyriMoneyManager.HYRIS_REDIS_KEY, this.hyris);
-                jedis.incrBy(IHyriMoneyManager.HYODES_REDIS_KEY, this.hyodes);
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+                jedis.incrBy(MetricsRedisKeys.HYRIS.getKey(), this.hyris);
+                jedis.incrBy(MetricsRedisKeys.HYODE.getKey(), this.hyodes);
             });
 
             this.hyris = 0;
