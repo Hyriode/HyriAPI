@@ -9,6 +9,10 @@ import java.util.UUID;
  */
 public interface IHyriMoneyManager {
 
+    String MONEY_REDIS_KEY = "statistics:money:";
+    String HYRIS_REDIS_KEY = MONEY_REDIS_KEY + "hyris";
+    String HYODES_REDIS_KEY = MONEY_REDIS_KEY + "hyodes";
+
     /**
      * Apply boosters multipliers on a given amount of money
      *

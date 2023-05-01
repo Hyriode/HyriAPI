@@ -3,7 +3,6 @@ package fr.hyriode.api.impl.common.money;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
-import fr.hyriode.api.event.model.money.HyriCreditMoneyEvent;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
@@ -27,7 +26,10 @@ public class HyriMoneyManager implements IHyriMoneyManager {
 
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
-            HyriAPI.get().getNetworkManager().getEventBus().publishAsync(new HyriCreditMoneyEvent(this.hyris, this.hyodes));
+            HyriAPI.get().getRedisProcessor().process(jedis -> {
+                jedis.incrBy(IHyriMoneyManager.HYRIS_REDIS_KEY, this.hyris);
+                jedis.incrBy(IHyriMoneyManager.HYODES_REDIS_KEY, this.hyodes);
+            });
 
             this.hyris = 0;
             this.hyodes = 0;
@@ -85,9 +87,9 @@ public class HyriMoneyManager implements IHyriMoneyManager {
                 money.setAmount(newAmount);
 
                 if (money instanceof Hyris) {
-                    this.hyris += newAmount;
+                    this.hyris -= amount;
                 } else if (money instanceof Hyodes) {
-                    this.hyodes += newAmount;
+                    this.hyodes -= amount;
                 }
             } else {
                 money.setAmount(0);
