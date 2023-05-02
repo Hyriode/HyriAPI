@@ -7,12 +7,12 @@ public enum MetricsRedisKeys {
 
     HYRI_PLUS("ranks:hyriplus"),
 
-    REGISTRED_PLAYERS("players:registred");
+    REGISTERED_PLAYERS("players:registered");
 
     private final String key;
 
     MetricsRedisKeys(String key) {
-        this.key = "hyreos:metrics:" + key + ":";
+        this.key = "hyreos:metrics:" + key;
     }
 
     public String getKey() {

@@ -64,7 +64,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
-            final String key = MetricsRedisKeys.REGISTRED_PLAYERS.getKey();
+            final String key = MetricsRedisKeys.REGISTERED_PLAYERS.getKey();
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.registeredPlayers));
 
             this.registeredPlayers = 0;
