@@ -11,6 +11,10 @@ public class RedisConfig {
     private final int port;
     private final String password;
 
+    public RedisConfig() {
+        this("", 6379, "");
+    }
+
     public RedisConfig(String hostname, int port, String password) {
         this.hostname = hostname;
         this.port = port;

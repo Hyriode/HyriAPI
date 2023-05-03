@@ -11,6 +11,7 @@ import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
 import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.packet.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
+import fr.hyriode.api.metrics.MetricsRedisKeys;
 import fr.hyriode.api.mongodb.MongoDocument;
 import fr.hyriode.api.mongodb.MongoSerializer;
 import fr.hyriode.api.packet.HyriChannel;
@@ -53,10 +54,21 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     private final MongoCollection<Document> accountsCollection;
 
+    private int registeredPlayers;
+
     public HyriPlayerManager() {
         this.nicknameManager = new HyriNicknameManager();
         this.whitelistManager = new HyriWhitelistManager();
         this.accountsCollection = HyriAPI.get().getMongoDB().getDatabase("players").getCollection("accounts");
+    }
+
+    public void start() {
+        HyriAPI.get().getScheduler().schedule(() -> {
+            final String key = MetricsRedisKeys.REGISTERED_PLAYERS.getKey();
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.registeredPlayers));
+
+            this.registeredPlayers = 0;
+        }, 30, 30, TimeUnit.SECONDS);
     }
 
     private void cachePlayer(HyriPlayer player) {
@@ -125,6 +137,8 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
         this.accountsCollection.insertOne(MongoSerializer.serialize(player));
         this.cachePlayer(player);
+
+        this.registeredPlayers++;
 
         return player;
     }

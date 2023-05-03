@@ -11,6 +11,10 @@ public class MongoDBConfig {
     private final String hostname;
     private final int port;
 
+    public MongoDBConfig() {
+        this("", "", "", 27017);
+    }
+
     public MongoDBConfig(String username, String password, String hostname, int port) {
         this.username = username;
         this.password = password;
