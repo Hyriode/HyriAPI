@@ -11,6 +11,7 @@ import fr.hyriode.api.limbo.IHyriLimbo;
 import fr.hyriode.api.proxy.IHyriProxy;
 import fr.hyriode.api.server.IHyriServer;
 import fr.hyriode.hyggdrasil.api.HyggdrasilAPI;
+import fr.hyriode.hyggdrasil.api.HyggdrasilStartedEvent;
 import fr.hyriode.hyggdrasil.api.limbo.HyggLimbo;
 import fr.hyriode.hyggdrasil.api.limbo.packet.HyggLimboInfoPacket;
 import fr.hyriode.hyggdrasil.api.protocol.HyggChannel;
@@ -61,6 +62,8 @@ public class HyggdrasilManager implements IHyggdrasilManager {
                     .withLogger(logger)
                     .build();
             this.hyggdrasilAPI.start();
+
+            this.hyggdrasilAPI.getEventBus().subscribe(HyggdrasilStartedEvent.class, event -> this.sendData());
 
             HyriAPI.get().getScheduler().schedule(this::sendData, 10, 120, TimeUnit.SECONDS);
         }
