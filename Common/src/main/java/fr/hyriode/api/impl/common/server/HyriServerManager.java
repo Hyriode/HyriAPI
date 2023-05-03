@@ -20,14 +20,11 @@ import java.util.function.Consumer;
  */
 public class HyriServerManager implements IHyriServerManager {
 
-    private final Map<String, HyggServer> servers;
+    private final Map<String, HyggServer> servers = new HashMap<>();
 
-    private final IHyriReconnectionHandler reconnectionHandler;
+    private final IHyriReconnectionHandler reconnectionHandler = new HyriReconnectionHandler();
 
     public HyriServerManager() {
-        this.reconnectionHandler = new HyriReconnectionHandler();
-        this.servers = new HashMap<>();
-
         if (HyriAPI.get().getConfig().withHyggdrasil()) {
             for (HyggServer server : HyriAPI.get().getHyggdrasilManager().getHyggdrasilAPI().getServersRequester().fetchServers()) {
                 this.servers.put(server.getName(), server);
@@ -78,6 +75,16 @@ public class HyriServerManager implements IHyriServerManager {
     @Override
     public void removeServer(String serverName, Runnable onRemoved) {
         this.runActionOnRequester(requester -> requester.removeServer(serverName, onRemoved));
+    }
+
+    @Override
+    public void pauseServer(String serverName, Runnable onPause) {
+        this.runActionOnRequester(requester -> requester.pauseServer(serverName, onPause));
+    }
+
+    @Override
+    public void unpauseServer(String serverName, Runnable onUnpause) {
+        this.runActionOnRequester(requester -> requester.resumeServer(serverName, onUnpause));
     }
 
     @Override

@@ -219,13 +219,19 @@ public class JoinListener implements Listener {
         final ProxiedPlayer player = event.getPlayer();
         final ServerKickEvent.Cause cause = event.getCause();
 
+        if (!player.isConnected()) {
+            return;
+        }
+
         if (cause == ServerKickEvent.Cause.LOST_CONNECTION || cause == ServerKickEvent.Cause.EXCEPTION) {
             final HyggServer lobby = HyriAPI.get().getLobbyAPI().getBestLobby();
 
             if (lobby != null) {
                 final ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(lobby.getName());
 
-                player.sendMessage(ProxyMessage.FALLBACK_REDIRECTION.asComponents(player));
+                player.sendMessage(ProxyMessage.FALLBACK_REDIRECTION.asComponents(player, input -> input
+                        .replace("%from_server%", event.getKickedFrom().getName())
+                        .replace("%to_server%", lobby.getName())));
 
                 event.setCancelled(true);
                 event.setCancelServer(serverInfo);

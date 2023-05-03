@@ -64,6 +64,22 @@ public interface IHyriServerManager {
     void removeServer(String serverName, Runnable onRemoved);
 
     /**
+     * Pause a server by giving its name
+     *
+     * @param serverName The name of the server to pause
+     * @param onPause The {@link Runnable} to run when the server will be paused
+     */
+    void pauseServer(String serverName, Runnable onPause);
+
+    /**
+     * Unpause a server by giving its name
+     *
+     * @param serverName The name of the server to pause
+     * @param onUnpause The {@link Runnable} to run when the server will be unpaused
+     */
+    void unpauseServer(String serverName, Runnable onUnpause);
+
+    /**
      * Wait for a server to have a given state
      *
      * @param serverName The name of the server
