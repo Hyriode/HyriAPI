@@ -86,11 +86,12 @@ public interface IHyriPlayer {
     void setLastLoginDate(long date);
 
     /**
-     * Get the last IP address of the player
+     * Authenticate an IP address
      *
-     * @return An IP address
+     * @param ip The ip address to authenticate
+     * @return <code>true</code> if the given ip is valid
      */
-    @NotNull String getLastIP();
+    boolean authenticateIP(@NotNull String ip);
 
     /**
      * Set the last IP address of the player
@@ -98,6 +99,13 @@ public interface IHyriPlayer {
      * @param ip A new IP address
      */
     void setLastIP(@NotNull String ip);
+
+    /**
+     * Returns the encrypted IP address of the player
+     *
+     * @return An encrypted IP address
+     */
+    @NotNull String getEncryptedIP();
 
     /**
      * Get the rank of the player

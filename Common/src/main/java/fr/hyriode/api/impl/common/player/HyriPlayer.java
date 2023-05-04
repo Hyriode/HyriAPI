@@ -25,6 +25,7 @@ import fr.hyriode.api.serialization.ObjectDataOutput;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -281,13 +282,18 @@ public class HyriPlayer implements IHyriPlayer, MongoSerializable, DataSerializa
     }
 
     @Override
-    public @NotNull String getLastIP() {
-        return this.lastIP;
+    public boolean authenticateIP(@NotNull String ip) {
+        return BCrypt.checkpw(ip, this.lastIP);
     }
 
     @Override
     public void setLastIP(@NotNull String ip) {
-        this.lastIP = ip;
+        this.lastIP = BCrypt.hashpw(ip, BCrypt.gensalt(6));
+    }
+
+    @Override
+    public @NotNull String getEncryptedIP() {
+        return this.lastIP;
     }
 
     @Override
