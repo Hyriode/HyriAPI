@@ -40,7 +40,11 @@ public class HyriTask implements IHyriTask {
         }
 
         while (this.running.get()) {
-            this.task.run();
+            try {
+                this.task.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             if (this.period <= 0) {
                 break;
