@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.common.player.model;
 
 import com.google.gson.annotations.Expose;
+import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.color.HyriChatColor;
 import fr.hyriode.api.mongodb.MongoDocument;
 import fr.hyriode.api.mongodb.MongoSerializable;
@@ -10,13 +11,12 @@ import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
 import fr.hyriode.api.serialization.ObjectDataOutput;
+import fr.hyriode.hylios.api.MetricsRedisKey;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Project: HyriAPI
@@ -85,6 +85,9 @@ public class HyriPlus implements IHyriPlus, MongoSerializable, DataSerializable 
     @Override
     public void enable() {
         this.enabledDate = System.currentTimeMillis();
+
+        final String key = MetricsRedisKey.HYRI_PLUS.getKey();
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incr(key));
     }
 
     @Override
@@ -102,6 +105,9 @@ public class HyriPlus implements IHyriPlus, MongoSerializable, DataSerializable 
         if (result) {
             this.enabledDate = -1;
             this.duration = 0;
+
+            final String key = MetricsRedisKey.HYRI_PLUS.getKey();
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.decr(key));
         }
         return result;
     }

@@ -8,7 +8,7 @@ import fr.hyriode.api.packet.event.HyriPacketReceiveEvent;
 import fr.hyriode.api.packet.event.HyriPacketSendEvent;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.redis.IRedis;
-import redis.clients.jedis.Jedis;
+import fr.hyriode.hylios.api.MetricsRedisKey;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
@@ -16,8 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Project: HyriAPI
@@ -35,6 +34,8 @@ public class HyriPubSub implements IHyriPubSub {
     private final Subscriber subscriber;
 
     private final IRedis redisConnection;
+
+    private long sent;
 
     public HyriPubSub() {
         this.redisConnection = HyriAPI.get().getRedisConnection();
@@ -54,6 +55,13 @@ public class HyriPubSub implements IHyriPubSub {
             }
         });
         this.subscriberThread.start();
+
+        HyriAPI.get().getScheduler().schedule(() -> {
+            final String key = MetricsRedisKey.HYRI_API_PACKETS.getKey();
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.sent));
+
+            this.sent = 0;
+        }, 10, 10, TimeUnit.SECONDS);
     }
 
     public void stop() {
@@ -89,6 +97,7 @@ public class HyriPubSub implements IHyriPubSub {
                 return;
             }
 
+            this.sent++;
             jedis.publish(CHANNEL_PREFIX + event.getChannel(), HyriAPI.GSON.toJson(event.getPacket()));
         });
     }

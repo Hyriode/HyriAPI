@@ -14,6 +14,7 @@ import fr.hyriode.api.rank.StaffRank;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
 import fr.hyriode.api.serialization.ObjectDataOutput;
+import fr.hyriode.hylios.api.MetricsRedisKey;
 
 import java.io.IOException;
 
@@ -148,9 +149,17 @@ public class HyriRank implements IHyriRank, MongoSerializable, DataSerializable 
 
     @Override
     public void setPlayerType(PlayerRank playerType) {
+        final PlayerRank old = this.playerType;
         this.playerType = playerType;
 
         HyriAPI.get().getEventBus().publish(new RankUpdatedEvent(this.player.getUniqueId()));
+
+        final String key = String.format(MetricsRedisKey.RANKS.getKey(), playerType.getName());
+        final String oldKey = String.format(MetricsRedisKey.RANKS.getKey(), old.getName());
+        HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
+            jedis.decr(oldKey);
+            jedis.incr(key);
+        });
     }
 
     @Override

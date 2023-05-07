@@ -189,8 +189,8 @@ public abstract class CHyriAPIImpl extends HyriAPI {
         this.hyggdrasilManager.sendData();
 
         final HyriMoneyManager moneyManager = (HyriMoneyManager) this.moneyManager;
-
-        moneyManager.start();
+        if (moneyManager != null) moneyManager.start();
+        if (this.playerManager != null) this.playerManager.start();
     }
 
     public void stop() {
