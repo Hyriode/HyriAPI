@@ -57,7 +57,7 @@ public class HyriPubSub implements IHyriPubSub {
         this.subscriberThread.start();
 
         HyriAPI.get().getScheduler().schedule(() -> {
-            final String key = MetricsRedisKey.HYRI_API_PACKETS.getKey();
+            final String key = MetricsRedisKey.HYRIAPI_PACKETS.getKey();
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.sent));
 
             this.sent = 0;
