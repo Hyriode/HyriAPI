@@ -21,7 +21,7 @@ import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.rank.StaffRank;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
-import fr.hyriode.hyreos.api.HyreosRedisKey;
+import fr.hyriode.hylios.api.HyliosMetricsRedisKey;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +64,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
-            final String key = HyreosRedisKey.REGISTERED_PLAYERS.getKey();
+            final String key = HyliosMetricsRedisKey.REGISTERED_PLAYERS.getKey();
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.registeredPlayers));
 
             this.registeredPlayers = 0;

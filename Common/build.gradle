@@ -14,8 +14,8 @@ repositories {
             username System.getenv('GITHUB_USERNAME')
             password System.getenv('GITHUB_TOKEN')
         }
-        name = "Hyreos_maven"
-        url = "https://maven.pkg.github.com/Hyriode/Hyreos"
+        name = "Hylios_maven"
+        url = "https://maven.pkg.github.com/Hyriode/Hylios"
     }
 }
 
@@ -51,5 +51,5 @@ dependencies {
     api project(':API')
     api 'org.mindrot:jbcrypt:0.4'
     api 'commons-io:commons-io:2.11.0'
-    api 'fr.hyriode:hyreos-api:1.0.3-SNAPSHOT'
+    api 'fr.hyriode:hylios-api:1.0.0-SNAPSHOT'
 }
