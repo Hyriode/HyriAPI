@@ -84,4 +84,8 @@ public enum PlayerRank implements IHyriRankType {
         return this.separator;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

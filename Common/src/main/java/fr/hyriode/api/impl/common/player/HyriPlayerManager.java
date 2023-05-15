@@ -11,7 +11,6 @@ import fr.hyriode.api.impl.common.player.packet.PlayerKickPacket;
 import fr.hyriode.api.impl.common.player.packet.PlayerTitlePacket;
 import fr.hyriode.api.impl.common.player.packet.TitlePacket;
 import fr.hyriode.api.impl.common.whitelist.HyriWhitelistManager;
-import fr.hyriode.api.metrics.MetricsRedisKeys;
 import fr.hyriode.api.mongodb.MongoDocument;
 import fr.hyriode.api.mongodb.MongoSerializer;
 import fr.hyriode.api.packet.HyriChannel;
@@ -22,6 +21,7 @@ import fr.hyriode.api.player.IHyriPlayerManager;
 import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.rank.StaffRank;
 import fr.hyriode.api.whitelist.IHyriWhitelistManager;
+import fr.hyriode.hylios.api.MetricsRedisKey;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +54,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     private final MongoCollection<Document> accountsCollection;
 
-    private int registeredPlayers;
+    private long registered;
 
     public HyriPlayerManager() {
         this.nicknameManager = new HyriNicknameManager();
@@ -64,11 +64,11 @@ public class HyriPlayerManager implements IHyriPlayerManager {
 
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
-            final String key = MetricsRedisKeys.REGISTERED_PLAYERS.getKey();
-            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.registeredPlayers));
+            final String key = MetricsRedisKey.REGISTERED_PLAYERS.getKey();
+            HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.registered));
 
-            this.registeredPlayers = 0;
-        }, 30, 30, TimeUnit.SECONDS);
+            this.registered = 0;
+        }, 10, 10, TimeUnit.SECONDS);
     }
 
     private void cachePlayer(HyriPlayer player) {
@@ -138,7 +138,7 @@ public class HyriPlayerManager implements IHyriPlayerManager {
         this.accountsCollection.insertOne(MongoSerializer.serialize(player));
         this.cachePlayer(player);
 
-        this.registeredPlayers++;
+        this.registered++;
 
         return player;
     }

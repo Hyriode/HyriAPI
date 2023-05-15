@@ -3,11 +3,11 @@ package fr.hyriode.api.impl.common.money;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.booster.IHyriBooster;
 import fr.hyriode.api.booster.IHyriBoosterManager;
-import fr.hyriode.api.metrics.MetricsRedisKeys;
 import fr.hyriode.api.money.IHyriMoney;
 import fr.hyriode.api.money.IHyriMoneyAction;
 import fr.hyriode.api.money.IHyriMoneyManager;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.hylios.api.MetricsRedisKey;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,13 +28,13 @@ public class HyriMoneyManager implements IHyriMoneyManager {
     public void start() {
         HyriAPI.get().getScheduler().schedule(() -> {
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> {
-                jedis.incrBy(MetricsRedisKeys.HYRIS.getKey(), this.hyris);
-                jedis.incrBy(MetricsRedisKeys.HYODES.getKey(), this.hyodes);
+                jedis.incrBy(MetricsRedisKey.HYRIS.getKey(), this.hyris);
+                jedis.incrBy(MetricsRedisKey.HYODES.getKey(), this.hyodes);
             });
 
             this.hyris = 0;
             this.hyodes = 0;
-        }, 30, 30, TimeUnit.SECONDS);
+        }, 10, 10, TimeUnit.SECONDS);
     }
 
     @Override
