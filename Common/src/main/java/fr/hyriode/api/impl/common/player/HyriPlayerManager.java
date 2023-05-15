@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HyriPlayerManager implements IHyriPlayerManager {
 
-    private static final long TTL = TimeUnit.HOURS.toSeconds(48);
+    private static final long TTL = TimeUnit.HOURS.toSeconds(30 * 24);
 
     // The key for primary indexing: uuid -> accounts
     private static final String PLAYERS_KEY = "players:";

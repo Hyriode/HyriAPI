@@ -40,6 +40,8 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         super(plugin.getConfiguration());
         this.plugin = plugin;
 
+        long before = System.currentTimeMillis();
+
         this.preInit();
         this.init(null, plugin.getLogger());
         this.postInit();

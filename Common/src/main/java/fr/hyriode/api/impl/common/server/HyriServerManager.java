@@ -69,32 +69,22 @@ public class HyriServerManager implements IHyriServerManager {
 
     @Override
     public void createServer(HyggServerCreationInfo serverInfo, Consumer<HyggServer> onCreated) {
-        this.runActionOnRequester(requester -> requester.createServer(serverInfo, onCreated));
+        this.request(requester -> requester.createServer(serverInfo, onCreated));
     }
 
     @Override
     public void removeServer(String serverName, Runnable onRemoved) {
-        this.runActionOnRequester(requester -> requester.removeServer(serverName, onRemoved));
-    }
-
-    @Override
-    public void pauseServer(String serverName, Runnable onPause) {
-        this.runActionOnRequester(requester -> requester.pauseServer(serverName, onPause));
-    }
-
-    @Override
-    public void unpauseServer(String serverName, Runnable onUnpause) {
-        this.runActionOnRequester(requester -> requester.resumeServer(serverName, onUnpause));
+        this.request(requester -> requester.removeServer(serverName, onRemoved));
     }
 
     @Override
     public void waitForState(String serverName, HyggServer.State state, Consumer<HyggServer> callback) {
-        this.runActionOnRequester(requester -> requester.waitForServerState(serverName, state, callback));
+        this.request(requester -> requester.waitForServerState(serverName, state, callback));
     }
 
     @Override
     public void waitForPlayers(String serverName, int players, Consumer<HyggServer> callback) {
-        this.runActionOnRequester(requester -> requester.waitForServerPlayers(serverName, players, callback));
+        this.request(requester -> requester.waitForServerPlayers(serverName, players, callback));
     }
 
     @Override
@@ -102,7 +92,7 @@ public class HyriServerManager implements IHyriServerManager {
         return this.reconnectionHandler;
     }
 
-    private void runActionOnRequester(Consumer<HyggServersRequester> action) {
+    private void request(Consumer<HyggServersRequester> action) {
         if (HyriAPI.get().getConfig().withHyggdrasil()) {
             final HyggServersRequester requester = HyriAPI.get().getHyggdrasilManager().getHyggdrasilAPI().getServersRequester();
 

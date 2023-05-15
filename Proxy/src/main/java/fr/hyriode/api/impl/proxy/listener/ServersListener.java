@@ -21,15 +21,27 @@ public class ServersListener {
         final HyggEventBus eventBus = HyriAPI.get().getHyggdrasilManager().getHyggdrasilAPI().getEventBus();
 
         for (HyggServer server : HyriAPI.get().getServerManager().getServers()) {
-            this.addServer(server.getName());
+            if (server.getState() == HyggServer.State.READY) {
+                this.addServer(server.getName());
+            }
         }
 
-        eventBus.subscribe(HyggServerStartedEvent.class, event -> this.addServer(event.getServer().getName()));
+        eventBus.subscribe(HyggServerUpdatedEvent.class, event -> {
+            final HyggServer server = event.getServer();
+
+            if (server.getState() == HyggServer.State.READY) {
+                this.addServer(server.getName());
+            }
+        });
         eventBus.subscribe(HyggServerStoppedEvent.class, event -> this.removeServer(event.getServer().getName()));
     }
 
     @SuppressWarnings("deprecation")
     private void addServer(String server) {
+        if (ProxyServer.getInstance().getServerInfo(server) != null) {
+            return;
+        }
+
         final ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(server, new InetSocketAddress(server, 25565), "", false);
 
         ProxyServer.getInstance().getServers().put(server, serverInfo);

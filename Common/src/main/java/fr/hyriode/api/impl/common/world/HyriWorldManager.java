@@ -60,12 +60,13 @@ public class HyriWorldManager implements IHyriWorldManager {
 
     @Override
     public void loadWorld(@NotNull IHyriWorld world, @NotNull File destinationFolder) {
+        final long before = System.currentTimeMillis();
         final WorldsFS storage = this.getStorage(world.getDatabase());
         final byte[] data = storage.download((HyriWorld) world);
 
         this.compression.unzipWorld(destinationFolder, data);
 
-        HyriAPI.get().log("Loaded '" + world.getName() + "' world (database: " + world.getDatabase() + "; category: " + world.getCategory() + ").");
+        HyriAPI.get().log("Loaded '" + world.getName() + "' world in " + (System.currentTimeMillis() - before) + "ms (database: " + world.getDatabase() + "; category: " + world.getCategory() + ").");
     }
 
     @Override
