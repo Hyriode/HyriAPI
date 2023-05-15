@@ -8,7 +8,7 @@ import fr.hyriode.api.packet.event.HyriPacketReceiveEvent;
 import fr.hyriode.api.packet.event.HyriPacketSendEvent;
 import fr.hyriode.api.pubsub.IHyriPubSub;
 import fr.hyriode.api.redis.IRedis;
-import fr.hyriode.hylios.api.MetricsRedisKey;
+import fr.hyriode.hyreos.api.HyreosRedisKey;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
@@ -57,7 +57,7 @@ public class HyriPubSub implements IHyriPubSub {
         this.subscriberThread.start();
 
         HyriAPI.get().getScheduler().schedule(() -> {
-            final String key = MetricsRedisKey.HYRIAPI_PACKETS.getKey();
+            final String key = HyreosRedisKey.HYRIAPI_PACKETS.getKey();
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incrBy(key, this.sent));
 
             this.sent = 0;

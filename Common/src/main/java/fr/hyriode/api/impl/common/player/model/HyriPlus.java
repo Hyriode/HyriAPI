@@ -11,7 +11,7 @@ import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.api.serialization.DataSerializable;
 import fr.hyriode.api.serialization.ObjectDataInput;
 import fr.hyriode.api.serialization.ObjectDataOutput;
-import fr.hyriode.hylios.api.MetricsRedisKey;
+import fr.hyriode.hyreos.api.HyreosRedisKey;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -86,7 +86,7 @@ public class HyriPlus implements IHyriPlus, MongoSerializable, DataSerializable 
     public void enable() {
         this.enabledDate = System.currentTimeMillis();
 
-        final String key = MetricsRedisKey.HYRI_PLUS.getKey();
+        final String key = HyreosRedisKey.HYRI_PLUS.getKey();
         HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.incr(key));
     }
 
@@ -106,7 +106,7 @@ public class HyriPlus implements IHyriPlus, MongoSerializable, DataSerializable 
             this.enabledDate = -1;
             this.duration = 0;
 
-            final String key = MetricsRedisKey.HYRI_PLUS.getKey();
+            final String key = HyreosRedisKey.HYRI_PLUS.getKey();
             HyriAPI.get().getRedisProcessor().processAsync(jedis -> jedis.decr(key));
         }
         return result;
