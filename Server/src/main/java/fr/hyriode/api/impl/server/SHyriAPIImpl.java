@@ -1,6 +1,7 @@
 package fr.hyriode.api.impl.server;
 
 import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.event.HyriEvent;
 import fr.hyriode.api.impl.common.CHyriAPIImpl;
 import fr.hyriode.api.impl.server.join.JoinManager;
 import fr.hyriode.api.impl.server.join.JoinListener;
@@ -40,8 +41,6 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
         super(plugin.getConfiguration());
         this.plugin = plugin;
 
-        long before = System.currentTimeMillis();
-
         this.preInit();
         this.init(null, plugin.getLogger());
         this.postInit();
@@ -78,6 +77,8 @@ public class SHyriAPIImpl extends CHyriAPIImpl {
 
         register.accept(new JoinListener());
     }
+
+    private static class EmptyEvent extends HyriEvent {}
 
     @Override
     public void log(Level level, String message) {

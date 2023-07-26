@@ -171,7 +171,7 @@ public class HyriRank implements IHyriRank, MongoSerializable, DataSerializable 
     public void setStaffType(StaffRank staffType) {
         this.staffType = staffType;
 
-        HyriAPI.get().getEventBus().publish(new RankUpdatedEvent(this.player.getUniqueId()));
+//        HyriAPI.get().getEventBus().publish(new RankUpdatedEvent(this.player.getUniqueId()));
     }
 
     @Override
